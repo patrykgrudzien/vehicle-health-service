@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>me.grudzien.patryk</groupId>
+    <artifactId>full-stack-web-app</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
+
+    <name>full-stack-web-app</name>
+    <description>Summary application using Spring Boot and Vue.js</description>
+
+    <modules>
+        <module>frontend</module>
+        <module>backend</module>
+    </modules>
+
+    <properties>
+        <!--########################### PLUGINS' VERSIONS ###########################-->
+        <!-- Maven frontend -->
+        <frontend-maven-plugin.version>1.6</frontend-maven-plugin.version>
+
+        <!--########################### DEPENDENCIES' VERSIONS ###########################-->
+        <!-- Spring -->
+        <spring.boot.version>1.5.8.RELEASE</spring.boot.version>
+        <spring.security.version>5.0.1.RELEASE</spring.security.version>
+        <!-- Node -->
+        <node.js.version>v8.9.4</node.js.version>
+        <node.download.root>https://nodejs.org/dist/</node.download.root>
+        <!-- Npm -->
+        <npm.version>5.6.0</npm.version>
+        <npm.download.root>http://registry.npmjs.org/npm/-/</npm.download.root>
+        <!-- H2 -->
+        <h2database.version>1.4.196</h2database.version>
+
+        <!--########################### PROJECT's DETAILS ###########################-->
+        <!-- Structure -->
+        <resources.output.directory>src/main/resources/public</resources.output.directory>
+        <frontend.target.dist.directory>frontend/target/dist</frontend.target.dist.directory>
+        <!-- JDK -->
+        <java.version>1.8</java.version>
+        <!-- Encoding -->
+        <project.build.source.encoding>UTF-8</project.build.source.encoding>
+        <project.reporting.output.encoding>UTF-8</project.reporting.output.encoding>
+    </properties>
+
+</project>
