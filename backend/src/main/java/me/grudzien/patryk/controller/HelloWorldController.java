@@ -1,12 +1,13 @@
 package me.grudzien.patryk.controller;
 
 import lombok.extern.log4j.Log4j;
-import me.grudzien.patryk.constants.CorsOrigins;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import me.grudzien.patryk.constants.CorsOrigins;
 
 @RestController
 @RequestMapping("/api")
