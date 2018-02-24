@@ -21,7 +21,6 @@
       callRestService() {
         this.axios.get(`api/hello`)
           .then(response => {
-            console.log(response);
             this.response = response.data;
           })
           .catch(error => {

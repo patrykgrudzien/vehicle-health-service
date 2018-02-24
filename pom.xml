@@ -37,6 +37,8 @@
         <npm.download.root>http://registry.npmjs.org/npm/-/</npm.download.root>
         <!-- H2 -->
         <h2database.version>1.4.196</h2database.version>
+        <!-- PostgreSql -->
+        <postgre.sql.version>42.2.1</postgre.sql.version>
 
         <!--########################### PROJECT's DETAILS ###########################-->
         <!-- Structure -->
