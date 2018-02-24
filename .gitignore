@@ -12,7 +12,7 @@
 *.log
 target/
 
-backend/src/main/resources/public/
+backend/src/main/resources/generated/frontend
 backend/target
 frontend/dist/
 frontend/node/

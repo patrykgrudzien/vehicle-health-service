@@ -8,7 +8,7 @@
     <groupId>me.grudzien.patryk</groupId>
     <artifactId>full-stack-web-app</artifactId>
     <packaging>pom</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
 
     <name>full-stack-web-app</name>
     <description>Summary application using Spring Boot and Vue.js</description>
@@ -20,8 +20,10 @@
 
     <properties>
         <!--########################### PLUGINS' VERSIONS ###########################-->
-        <!-- Maven frontend -->
+        <!-- Maven Frontend Plugin -->
         <frontend-maven-plugin.version>1.6</frontend-maven-plugin.version>
+        <!-- Maven Resource Plugin -->
+        <maven-resources-plugin.version>3.0.2</maven-resources-plugin.version>
 
         <!--########################### DEPENDENCIES' VERSIONS ###########################-->
         <!-- Spring -->
@@ -38,7 +40,7 @@
 
         <!--########################### PROJECT's DETAILS ###########################-->
         <!-- Structure -->
-        <resources.output.directory>src/main/resources/public</resources.output.directory>
+        <resources.generated.frontend.directory>src/main/resources/generated/frontend</resources.generated.frontend.directory>
         <frontend.target.dist.directory>frontend/target/dist</frontend.target.dist.directory>
         <!-- JDK -->
         <java.version>1.8</java.version>
