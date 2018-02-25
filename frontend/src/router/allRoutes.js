@@ -1,11 +1,12 @@
-import MainComponent from '../components/MainComponent';
+import Home from '../components/Home';
 import AboutMe from '../components/AboutMe';
 import AddTodoItem from '../components/AddTodoItem';
+import Register from '../components/Register';
 
 export default [
   {
-    path: '/main-component',
-    component: MainComponent
+    path: '/',
+    component: Home
   },
   {
     path: '/about-me',
@@ -14,5 +15,9 @@ export default [
   {
     path: '/add-todo',
     component: AddTodoItem
+  },
+  {
+    path: '/register',
+    component: Register
   }
 ];

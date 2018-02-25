@@ -2,7 +2,7 @@
   <div id="main-component">
     <h1>{{ message }}</h1>
     <div id="button-wrapper" class="row align-items-center justify-content-center">
-      <b-btn class="col" @click="callRestService">CALL Spring Boot REST backend service</b-btn>
+      <b-btn class="col-4" @click="callRestService">CALL Spring Boot REST backend service</b-btn>
     </div>
     <h4 v-if="response.length > 0">Backend response: {{ response }}</h4>
   </div>
@@ -12,7 +12,7 @@
   export default {
     data() {
       return {
-        message: 'Main App Component !',
+        message: 'Home !',
         response: [],
         errors: []
       }
