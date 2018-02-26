@@ -27,6 +27,32 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring.boot.version}</version>
             </plugin>
+            <!-- Maven Clean Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>${maven-clean-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>Remove generated.frontend folder</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                        <configuration>
+                            <followSymlinks>false</followSymlinks>
+                            <filesets>
+                                <fieldset>
+                                    <directory>${resources.generated.frontend.directory}</directory>
+                                </fieldset>
+                                <fieldset>
+                                    <directory>${resources.generated.directory}</directory>
+                                </fieldset>
+                            </filesets>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <!-- Maven Resources plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -120,5 +146,5 @@
             <version>${postgre.sql.version}</version>
         </dependency>
     </dependencies>
-    
+
 </project>
