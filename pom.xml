@@ -24,6 +24,8 @@
         <frontend-maven-plugin.version>1.6</frontend-maven-plugin.version>
         <!-- Maven Resource Plugin -->
         <maven-resources-plugin.version>3.0.2</maven-resources-plugin.version>
+        <!-- Maven Clean Plugin -->
+        <maven-clean-plugin.version>3.0.0</maven-clean-plugin.version>
 
         <!--########################### DEPENDENCIES' VERSIONS ###########################-->
         <!-- Spring -->
@@ -42,6 +44,7 @@
 
         <!--########################### PROJECT's DETAILS ###########################-->
         <!-- Structure -->
+        <resources.generated.directory>src/main/resources/generated</resources.generated.directory>
         <resources.generated.frontend.directory>src/main/resources/generated/frontend</resources.generated.frontend.directory>
         <frontend.target.dist.directory>frontend/target/dist</frontend.target.dist.directory>
         <!-- JDK -->
