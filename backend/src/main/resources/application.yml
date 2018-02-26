@@ -1,10 +1,31 @@
 server:
   port: 8088
+
 spring:
+  profiles:
+    active: dev-office
+
+---
+
+spring:
+  profiles: dev-home
   datasource:
     url: jdbc:postgresql://localhost:5432/full-stack-web-app-db
     username: postgres
     password: admin
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create
+
+---
+
+spring:
+  profiles: dev-office
+  datasource:
+    url: jdbc:postgresql://localhost:5432/full-stack-web-app-db
+    username: postgres
+    password: password
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
