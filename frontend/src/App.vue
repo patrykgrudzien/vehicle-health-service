@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <app-header/>
-    <router-view/>
+    <router-view v-animate-css="animationInfinite"/>
   </div>
 </template>
 
@@ -12,6 +12,14 @@
     components: {
       AppHeader
     },
+    data() {
+      return {
+        animationInfinite: {
+          classes: 'fadeIn',
+          duration: 1000,
+        }
+      }
+    }
   };
 </script>
 

@@ -7,6 +7,7 @@ import BootstrapVue from 'bootstrap-vue';
 // Import the styles directly (they can be added via script tags alternatively)
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
+import VAnimateCss from 'v-animate-css';
 import App from './App';
 
 // noinspection JSUnresolvedFunction
@@ -18,6 +19,7 @@ Vue.use(VueAxios, axios.create({
   }
 }));
 Vue.use(BootstrapVue);
+Vue.use(VAnimateCss);
 
 const myRouter = new VueRouter({
   routes: allRoutes,
