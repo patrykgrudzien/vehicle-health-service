@@ -5,7 +5,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import org.hibernate.validator.constraints.NotEmpty;
+
 import javax.validation.constraints.NotNull;
+
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -13,9 +17,25 @@ import javax.validation.constraints.NotNull;
 @Setter
 public class RegisterUser {
 
-	private @NotNull String name;
-	private @NotNull String lastName;
-	private @NotNull String email;
-	private @NotNull String password;
-	private @NotNull String confirmedPassword;
+	@NotNull
+	@NotEmpty
+	private String name;
+
+	@NotNull
+	@NotEmpty
+	private String lastName;
+
+	@NotNull
+	@NotEmpty
+	private String email;
+
+	@NotNull
+	@NotEmpty
+	private String password;
+
+	@NotNull
+	@NotEmpty
+	private String confirmedPassword;
+
+	private List<String> validationErrors;
 }

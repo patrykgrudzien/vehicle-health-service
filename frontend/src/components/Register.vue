@@ -98,7 +98,8 @@
       <b-col cols="2"></b-col>
       <b-col cols="8">
         <br>
-        <p v-if="response.length > 0">{{ response }}</p>
+        <p v-if="form.valid" style="font-weight: bold">{{ response }}</p>
+        <p v-if="form.validationError" style="color: red; font-weight: bold">{{ form.validationError }}</p>
       </b-col>
     </b-form-row>
   </b-containter>
@@ -118,7 +119,9 @@
           lastName: '',
           email: '',
           password: '',
-          confirmedPassword: ''
+          confirmedPassword: '',
+          validationError: '',
+          valid: false
         },
         show: true,
         response: ''
@@ -130,9 +133,10 @@
           this.axios.post(`register/check`, this.form)
             .then(response => {
               this.response = response.data;
+              this.form.valid = true;
             })
             .catch(error => {
-              this.errors.push(error);
+              this.form.validationError = error.response.data;
             })
         }
       },
@@ -143,6 +147,7 @@
         this.form.email = '';
         this.form.password = '';
         this.form.confirmedPassword = '';
+        this.form.validationError = '';
         /* Trick to reset/clear native browser form validation state */
         this.show = false;
         this.$nextTick(() => {

@@ -16,7 +16,8 @@
 
     <!--
         List of provided executions:
-        (1) Copy Vue.js frontend content
+        (1) Remove generated.frontend folder
+        (2) Copy Vue.js frontend content
     -->
 
     <build>
@@ -32,7 +33,10 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
                 <version>${maven-clean-plugin.version}</version>
+                <!-- EXECUTIONS -->
                 <executions>
+
+                    <!-- (1) Remove generated.frontend folder -->
                     <execution>
                         <id>Remove generated.frontend folder</id>
                         <phase>clean</phase>
@@ -61,7 +65,7 @@
                 <!-- EXECUTIONS -->
                 <executions>
 
-                    <!-- (1) Copy Vue.js frontend content -->
+                    <!-- (2) Copy Vue.js frontend content -->
                     <execution>
                         <id>copy Vue.js frontend content</id>
                         <phase>generate-resources</phase>
