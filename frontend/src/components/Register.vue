@@ -1,6 +1,6 @@
 <template>
   <b-containter>
-    <b-form @submit.prevent="onSubmit" @reset.prevent="onReset" v-if="show">
+    <b-form @submit="validateForm" @reset.prevent="onReset" v-if="show">
       <b-form-row>
         <b-col cols="2"></b-col>
         <!-- Your Name -->
@@ -11,8 +11,13 @@
             <b-form-input id="group-1"
                           type="text"
                           v-model="form.name"
-                          placeholder="Enter name">
+                          placeholder="Enter name"
+                          :class="{'is-invalid': missingName && form.attemptSubmit}">
             </b-form-input>
+            <!-- Name field validation -->
+            <div class="invalid-feedback">
+              Please provide your name
+            </div>
           </b-form-group>
         </b-col>
 
@@ -24,8 +29,13 @@
             <b-form-input id="group-2"
                           type="text"
                           v-model="form.lastName"
-                          placeholder="Enter last name">
+                          placeholder="Enter last name"
+                          :class="{'is-invalid': missingLastName && form.attemptSubmit}">
             </b-form-input>
+            <!-- Last name field validation -->
+            <div class="invalid-feedback">
+              Please provide your last name
+            </div>
           </b-form-group>
         </b-col>
         <b-col cols="2"></b-col>
@@ -41,8 +51,13 @@
             <b-form-input id="group-3"
                           type="email"
                           v-model="form.email"
-                          placeholder="Enter email">
+                          placeholder="Enter email"
+                          :class="{'is-invalid': missingEmail && form.attemptSubmit}">
             </b-form-input>
+            <!-- Email field validation -->
+            <div class="invalid-feedback">
+              Please provide your email
+            </div>
           </b-form-group>
         </b-col>
         <b-col cols="2"></b-col>
@@ -58,8 +73,13 @@
             <b-form-input id="group-4"
                           type="password"
                           v-model="form.password"
-                          placeholder="Enter your password">
+                          placeholder="Enter your password"
+                          :class="{'is-invalid': missingPassword && form.attemptSubmit}">
             </b-form-input>
+            <!-- Password field validation -->
+            <div class="invalid-feedback">
+              Please create a password
+            </div>
           </b-form-group>
         </b-col>
         <b-col cols="2"></b-col>
@@ -75,8 +95,13 @@
             <b-form-input id="group-5"
                           type="password"
                           v-model="form.confirmedPassword"
-                          placeholder="Confirm your password">
+                          placeholder="Confirm your password"
+                          :class="{'is-invalid': missingConfirmPassword && form.attemptSubmit}">
             </b-form-input>
+            <!-- Confirm password field validation -->
+            <div class="invalid-feedback">
+              Please confirm your password
+            </div>
           </b-form-group>
         </b-col>
         <b-col cols="2"></b-col>
@@ -87,7 +112,7 @@
         <b-col cols="2"></b-col>
         <b-col cols="8">
           <b-button type="submit" variant="primary">Submit</b-button>
-          <b-button type="reset" variant="danger">Reset</b-button>
+          <b-button :disabled="missingInputFields('&&')" type="reset" variant="danger">Reset</b-button>
         </b-col>
         <b-col cols="2"></b-col>
       </b-form-row>
@@ -98,8 +123,8 @@
       <b-col cols="2"></b-col>
       <b-col cols="8">
         <br>
-        <p v-if="form.valid" style="font-weight: bold">{{ response }}</p>
-        <p v-if="form.validationError" style="color: red; font-weight: bold">{{ form.validationError }}</p>
+        <p v-if="serverResponse" style="font-weight: bold">{{ serverResponse }}</p>
+        <p v-if="form.validationErrors" style="color: red; font-weight: bold">{{ form.validationErrors }}</p>
       </b-col>
     </b-form-row>
   </b-containter>
@@ -120,11 +145,11 @@
           email: '',
           password: '',
           confirmedPassword: '',
-          validationError: '',
-          valid: false
+          validationErrors: null,
+          attemptSubmit: false
         },
         show: true,
-        response: ''
+        serverResponse: ''
       }
     },
     methods: {
@@ -132,11 +157,12 @@
         {
           this.axios.post(`register/check`, this.form)
             .then(response => {
-              this.response = response.data;
-              this.form.valid = true;
+              this.serverResponse = response.data;
             })
             .catch(error => {
-              this.form.validationError = error.response.data;
+              if (!error.response) {
+                this.form.validationError = 'NETWORK ERROR !!!';
+              }
             })
         }
       },
@@ -153,6 +179,37 @@
         this.$nextTick(() => {
           this.show = true
         });
+      },
+
+      validateForm(event) {
+        this.form.attemptSubmit = true;
+        if (this.missingInputFields('||')) {
+          event.preventDefault();
+        }
+      },
+      missingInputFields(operator) {
+        if (operator === '||') {
+          return this.missingName || this.missingLastName || this.missingEmail || this.missingPassword || this.missingConfirmPassword;
+        } else if (operator === '&&') {
+          return this.missingName && this.missingLastName && this.missingEmail && this.missingPassword && this.missingConfirmPassword;
+        }
+      }
+    },
+    computed: {
+      missingName() {
+        return this.form.name === '';
+      },
+      missingLastName() {
+        return this.form.lastName === '';
+      },
+      missingEmail() {
+        return this.form.email === '';
+      },
+      missingPassword() {
+        return this.form.password === '';
+      },
+      missingConfirmPassword() {
+        return this.form.confirmedPassword === '';
       }
     }
   };
