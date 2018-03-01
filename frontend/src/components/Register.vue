@@ -4,6 +4,14 @@
     <b-form @submit.prevent="validateForm" @reset.prevent="clearFormFields" v-if="showForm" novalidate>
       <b-form-row>
         <b-col cols="2"></b-col>
+        <b-col cols="8">
+          <b-alert :show="showSuccessAlert" variant="success">You have been successfully registered.</b-alert>
+          <b-alert :show="showDangerAlert" variant="danger">Cannot connect to the server to finish registration.</b-alert>
+        </b-col>
+        <b-col cols="2"></b-col>
+      </b-form-row>
+      <b-form-row>
+        <b-col cols="2"></b-col>
         <!-- Your Name -->
         <b-col cols="4">
           <b-form-group id="group-1"
@@ -148,7 +156,9 @@
           attemptSubmit: false
         },
         showForm: true,
-        serverResponse: null
+        serverResponse: null,
+        showSuccessAlert: false,
+        showDangerAlert: false
       }
     },
     methods: {
@@ -172,12 +182,16 @@
         this.axios.post(`register/check`, this.form)
           .then(response => {
             this.showForm = true;
+            this.showSuccessAlert = true;
             this.serverResponse = response.data;
           })
           .catch(error => {
             this.showForm = true;
+            this.showDangerAlert = true;
             if (!error.response) {
-              this.serverResponse = 'NETWORK ERROR !!!';
+              this.serverResponse = null;
+            } else {
+              this.serverResponse = error.response.data;
             }
           })
       },
@@ -189,6 +203,7 @@
         this.form.password = '';
         this.form.confirmedPassword = '';
         this.form.validationError = '';
+        this.form.attemptSubmit = false;
         // Trick to reset/clear native browser form validation state
         this.showForm = false;
         this.$nextTick(() => {
