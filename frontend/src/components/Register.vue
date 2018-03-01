@@ -1,6 +1,7 @@
 <template>
   <b-containter>
-    <b-form @submit="validateForm" @reset.prevent="onReset" v-if="show">
+    <!-- novalidate (disables the browser default feedback tooltips) -->
+    <b-form @submit.prevent="validateForm" @reset.prevent="clearFormFields" v-if="showForm" novalidate>
       <b-form-row>
         <b-col cols="2"></b-col>
         <!-- Your Name -->
@@ -20,6 +21,7 @@
             </div>
           </b-form-group>
         </b-col>
+        <!-- Your Name -->
 
         <!-- Your Last Name -->
         <b-col cols="4">
@@ -38,6 +40,7 @@
             </div>
           </b-form-group>
         </b-col>
+        <!-- Your Last Name -->
         <b-col cols="2"></b-col>
       </b-form-row>
 
@@ -62,6 +65,7 @@
         </b-col>
         <b-col cols="2"></b-col>
       </b-form-row>
+      <!-- Email address -->
 
       <!-- Your Password -->
       <b-form-row>
@@ -84,6 +88,7 @@
         </b-col>
         <b-col cols="2"></b-col>
       </b-form-row>
+      <!-- Your Password -->
 
       <!-- Confirm Password -->
       <b-form-row>
@@ -106,27 +111,20 @@
         </b-col>
         <b-col cols="2"></b-col>
       </b-form-row>
+      <!-- Confirm Password -->
 
       <!-- Buttons -->
       <b-form-row>
         <b-col cols="2"></b-col>
         <b-col cols="8">
-          <b-button type="submit" variant="primary">Submit</b-button>
+          <b-button type="submit" variant="primary" v-b-modal.modal-1>Submit</b-button>
           <b-button :disabled="missingInputFields('&&')" type="reset" variant="danger">Reset</b-button>
         </b-col>
         <b-col cols="2"></b-col>
       </b-form-row>
-
+      <!-- Buttons -->
     </b-form>
 
-    <b-form-row>
-      <b-col cols="2"></b-col>
-      <b-col cols="8">
-        <br>
-        <p v-if="serverResponse" style="font-weight: bold">{{ serverResponse }}</p>
-        <p v-if="form.validationErrors" style="color: red; font-weight: bold">{{ form.validationErrors }}</p>
-      </b-col>
-    </b-form-row>
   </b-containter>
 </template>
 
@@ -145,46 +143,19 @@
           email: '',
           password: '',
           confirmedPassword: '',
-          validationErrors: null,
           attemptSubmit: false
         },
-        show: true,
-        serverResponse: ''
+        showForm: true,
+        serverResponse: null
       }
     },
     methods: {
-      onSubmit() {
-        {
-          this.axios.post(`register/check`, this.form)
-            .then(response => {
-              this.serverResponse = response.data;
-            })
-            .catch(error => {
-              if (!error.response) {
-                this.form.validationError = 'NETWORK ERROR !!!';
-              }
-            })
-        }
-      },
-      onReset() {
-        /* Reset our form values */
-        this.form.name = '';
-        this.form.lastName = '';
-        this.form.email = '';
-        this.form.password = '';
-        this.form.confirmedPassword = '';
-        this.form.validationError = '';
-        /* Trick to reset/clear native browser form validation state */
-        this.show = false;
-        this.$nextTick(() => {
-          this.show = true
-        });
-      },
-
-      validateForm(event) {
+      validateForm() {
         this.form.attemptSubmit = true;
         if (this.missingInputFields('||')) {
-          event.preventDefault();
+          console.log('Form filled incorrectly.')
+        } else {
+          this.submitForm();
         }
       },
       missingInputFields(operator) {
@@ -193,6 +164,33 @@
         } else if (operator === '&&') {
           return this.missingName && this.missingLastName && this.missingEmail && this.missingPassword && this.missingConfirmPassword;
         }
+      },
+      submitForm() {
+        {
+          this.axios.post(`register/check`, this.form)
+            .then(response => {
+              this.serverResponse = response.data;
+            })
+            .catch(error => {
+              if (!error.response) {
+                this.serverResponse = 'NETWORK ERROR !!!';
+              }
+            })
+        }
+      },
+      clearFormFields() {
+        /* Reset our form values */
+        this.form.name = '';
+        this.form.lastName = '';
+        this.form.email = '';
+        this.form.password = '';
+        this.form.confirmedPassword = '';
+        this.form.validationError = '';
+        /* Trick to reset/clear native browser form validation state */
+        this.showForm = false;
+        this.$nextTick(() => {
+          this.showForm = true
+        });
       }
     },
     computed: {
