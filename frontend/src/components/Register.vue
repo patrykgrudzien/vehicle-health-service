@@ -124,16 +124,18 @@
       </b-form-row>
       <!-- Buttons -->
     </b-form>
-
+    <circle-spinner v-if="!showForm" style="margin: 0 auto"/>
   </b-containter>
 </template>
 
 <script>
   import bContainer from 'bootstrap-vue/es/components/layout/container';
+  import CircleSpinner from 'vue-loading-spinner/src/components/Circle8';
 
   export default {
     components: {
-      'b-containter': bContainer
+      'b-containter': bContainer,
+      'circle-spinner': CircleSpinner
     },
     data() {
       return {
@@ -166,27 +168,28 @@
         }
       },
       submitForm() {
-        {
-          this.axios.post(`register/check`, this.form)
-            .then(response => {
-              this.serverResponse = response.data;
-            })
-            .catch(error => {
-              if (!error.response) {
-                this.serverResponse = 'NETWORK ERROR !!!';
-              }
-            })
-        }
+        this.showForm = false;
+        this.axios.post(`register/check`, this.form)
+          .then(response => {
+            this.showForm = true;
+            this.serverResponse = response.data;
+          })
+          .catch(error => {
+            this.showForm = true;
+            if (!error.response) {
+              this.serverResponse = 'NETWORK ERROR !!!';
+            }
+          })
       },
       clearFormFields() {
-        /* Reset our form values */
+        // Reset our form values
         this.form.name = '';
         this.form.lastName = '';
         this.form.email = '';
         this.form.password = '';
         this.form.confirmedPassword = '';
         this.form.validationError = '';
-        /* Trick to reset/clear native browser form validation state */
+        // Trick to reset/clear native browser form validation state
         this.showForm = false;
         this.$nextTick(() => {
           this.showForm = true
