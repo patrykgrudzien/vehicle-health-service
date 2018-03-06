@@ -3,30 +3,46 @@ server:
 
 spring:
   profiles:
-    active: dev-office
+    active: dev-home
 
 ---
 
 spring:
   profiles: dev-home
+# ===============================
+# = Hibernate datasource
+# ===============================
   datasource:
     url: jdbc:postgresql://localhost:5432/full-stack-web-app-db
     username: postgres
     password: admin
     driver-class-name: org.postgresql.Driver
+# ===============================
+# = JPA configurations
+# ===============================
   jpa:
+    show-sql: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.PostgreSQL94Dialect
 
 ---
 
 spring:
   profiles: dev-office
+# ===============================
+# = Hibernate datasource
+# ===============================
   datasource:
     url: jdbc:postgresql://localhost:5432/full-stack-web-app-db
     username: postgres
     password: password
     driver-class-name: org.postgresql.Driver
+# ===============================
+# = JPA configurations
+# ===============================
   jpa:
+    show-sql: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.PostgreSQL94Dialect

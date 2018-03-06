@@ -1,7 +1,7 @@
 import Home from '../components/Home';
 import AboutMe from '../components/AboutMe';
-import AddTodoItem from '../components/AddTodoItem';
-import Register from '../components/Register';
+import RegistrationForm from '../components/RegistrationForm';
+import LoginForm from '../components/LoginForm';
 
 export default [
   {
@@ -13,11 +13,11 @@ export default [
     component: AboutMe
   },
   {
-    path: '/add-todo',
-    component: AddTodoItem
+    path: '/registration-form',
+    component: RegistrationForm
   },
   {
-    path: '/register',
-    component: Register
+    path: '/login',
+    component: LoginForm
   }
 ];
