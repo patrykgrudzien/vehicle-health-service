@@ -5,16 +5,7 @@
         <router-link to="/" exact>Home</router-link>
       </li>
       <li>
-        <router-link to="/todos" exact>Todos</router-link>
-      </li>
-      <li>
-        <router-link to="/add-todo" exact>Add New Todo</router-link>
-      </li>
-      <li>
-        <router-link to="/register" exact>Register</router-link>
-      </li>
-      <li>
-        <router-link to="/login" exact>Login</router-link>
+        <router-link to="/registration-form" exact>Register</router-link>
       </li>
       <li>
         <router-link to="/about-me" exact>About me</router-link>
