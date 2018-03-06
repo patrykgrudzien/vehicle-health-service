@@ -225,6 +225,7 @@
               this.serverResponse = null;
             } else {
               this.serverResponse = error.response.data;
+              console.log(error.response.data.errorMessage);
             }
           })
       },
