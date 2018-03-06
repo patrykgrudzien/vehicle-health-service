@@ -29,6 +29,6 @@ public @interface FieldMatcher {
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
 	@interface List {
-		FieldMatcher[] multipleFieldsMatchers();
+		FieldMatcher[] value();
 	}
 }
