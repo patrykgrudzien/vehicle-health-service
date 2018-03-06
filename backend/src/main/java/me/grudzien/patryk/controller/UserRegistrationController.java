@@ -37,7 +37,7 @@ public class UserRegistrationController extends CorsController {
 			bindingResult.rejectValue("email", "There is already an account registered with that email.");
 		}
 		if (bindingResult.hasErrors()) {
-			return "ERRORS";
+			return bindingResult.getFieldError().getDefaultMessage();
 		}
 		customUserDetailsService.save(userRegistrationDto);
 		return "User has been created and saved to DB.";

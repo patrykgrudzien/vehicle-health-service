@@ -5,7 +5,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +15,7 @@ import java.util.stream.Collectors;
 import me.grudzien.patryk.domain.dto.UserRegistrationDto;
 import me.grudzien.patryk.domain.entities.CustomUser;
 import me.grudzien.patryk.domain.entities.Role;
+import me.grudzien.patryk.exceptions.exception.UserEmailNotFoundException;
 import me.grudzien.patryk.repository.UserRepository;
 
 @Service
@@ -31,10 +31,10 @@ public class CustomUserDetailsServiceImpl implements CustomUserDetailsService {
 	}
 
 	@Override
-	public UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException {
+	public UserDetails loadUserByUsername(final String email) throws UserEmailNotFoundException {
 		final CustomUser customUser = this.findByEmail(email);
 		if (customUser == null) {
-			throw new UsernameNotFoundException("Invalid email or password");
+			throw new UserEmailNotFoundException(email, "Invalid email address. User does not exist.");
 		}
 		return new User(customUser.getEmail(), customUser.getPassword(), mapRolesToAuthorities(customUser.getRoles()));
 	}
