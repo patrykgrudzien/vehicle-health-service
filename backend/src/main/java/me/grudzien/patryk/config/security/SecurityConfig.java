@@ -18,7 +18,7 @@ import me.grudzien.patryk.service.CustomUserDetailsService;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	// field injection to avoid circular dependency and BeanCurrentlyInCreationException
-	@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
+	@SuppressWarnings("SpringAutowiredFieldsWarningInspection")
 	@Autowired
 	private CustomUserDetailsService customUserDetailsService;
 

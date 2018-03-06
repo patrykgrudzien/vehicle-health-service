@@ -44,7 +44,6 @@
                             <goal>clean</goal>
                         </goals>
                         <configuration>
-                            <followSymlinks>false</followSymlinks>
                             <filesets>
                                 <fieldset>
                                     <directory>${resources.generated.frontend.directory}</directory>

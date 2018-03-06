@@ -16,7 +16,7 @@ import me.grudzien.patryk.validators.FieldMatcher;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldMatcher.List(multipleFieldsMatchers = {
+@FieldMatcher.List({
 		@FieldMatcher(first = "password", second = "confirmedPassword", message = "The password fields must match"),
 		@FieldMatcher(first = "email", second = "confirmedEmail", message = "The email fields must match")
 })
