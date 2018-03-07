@@ -23,7 +23,6 @@ public class ExceptionHandlingController {
 	@ExceptionHandler(UserEmailNotFoundException.class)
 	public ResponseEntity<ExceptionResponse> userEmailNotFound(final UserEmailNotFoundException exception) {
 		final ExceptionResponse response = ExceptionResponse.Builder()
-		                                                    .errorCode("Not Found")
 		                                                    .errorMessage(exception.getMessage())
 		                                                    .build();
 		return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
@@ -32,7 +31,6 @@ public class ExceptionHandlingController {
 	@ExceptionHandler(UserAlreadyExistsException.class)
 	public ResponseEntity<ExceptionResponse> userAlreadyExists(final UserAlreadyExistsException exception) {
 		final ExceptionResponse response = ExceptionResponse.Builder()
-		                                                    .errorCode("User already exists")
 		                                                    .errorMessage(exception.getMessage())
 		                                                    .build();
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
@@ -41,7 +39,6 @@ public class ExceptionHandlingController {
 	@ExceptionHandler(CustomUserValidationException.class)
 	public ResponseEntity<ExceptionResponse> customUserFieldsValidationException(final CustomUserValidationException exception) {
 		final ExceptionResponse response = ExceptionResponse.Builder()
-		                                                    .errorCode("Validation Error")
 		                                                    .errorMessage(exception.getMessage())
 		                                                    .errors(exception.getValidationErrors())
 		                                                    .build();

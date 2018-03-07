@@ -15,7 +15,6 @@ import java.util.List;
 @Builder(builderMethodName = "Builder")
 public class ExceptionResponse {
 
-	private String errorCode;
 	private String errorMessage;
 	private List<String> errors;
 }
