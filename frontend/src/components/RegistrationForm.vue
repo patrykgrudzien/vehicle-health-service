@@ -10,7 +10,7 @@
           </b-alert>
           <b-alert :show="showDangerAlert && errorMessage === null" variant="danger">Cannot connect to the server to finish registration.</b-alert>
           <b-alert :show="showDangerAlert && errorMessage !== null && errors === null" variant="danger">{{ errorMessage }}</b-alert>
-          <b-alert :show="showDangerAlert && errors !== null" variant="danger">
+          <b-alert :show="showDangerAlert && errorMessage !== null && errors !== null" variant="danger">
             <p class="error" v-for="error in errors">{{ error }}</p>
           </b-alert>
         </b-col>
@@ -217,11 +217,13 @@
         this.showForm = false;
         this.axios.post(`/registration/register-user-account`, this.form)
           .then(response => {
+            this.showDangerAlert = false;
             this.showForm = true;
             this.showSuccessAlert = true;
             this.successfulResponse = response.data;
           })
           .catch(error => {
+            this.showSuccessAlert = false;
             this.showForm = true;
             this.showDangerAlert = true;
             if (!error.response) {
