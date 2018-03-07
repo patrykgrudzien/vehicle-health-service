@@ -88,6 +88,24 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- Maven Heroku plugin -->
+            <plugin>
+                <groupId>com.heroku.sdk</groupId>
+                <artifactId>heroku-maven-plugin</artifactId>
+                <version>${heroku-maven-plugin.version}</version>
+                <!-- Configuration -->
+                <configuration>
+                    <appName>${heroku.app.name}</appName>
+                    <includeTarget>false</includeTarget>
+                    <includes>
+                        <include>${basedir}/${heroku.final.artifact.path}</include>
+                    </includes>
+                    <jdkVersion>1.8</jdkVersion>
+                    <processTypes>
+                        <web>java $JAVA_OPTS -jar ${heroku.final.artifact.path}</web>
+                    </processTypes>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -164,4 +182,11 @@
             <artifactId>commons-beanutils</artifactId>
         </dependency>
     </dependencies>
+
+    <properties>
+        <!-- Property needed for Heroku plugin -->
+        <heroku.app.name>heroku-${project.parent.artifactId}</heroku.app.name>
+        <heroku.final.artifact.path>target/${project.artifactId}-${project.version}.jar</heroku.final.artifact.path>
+    </properties>
+
 </project>
