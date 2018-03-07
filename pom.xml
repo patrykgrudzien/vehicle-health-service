@@ -26,6 +26,20 @@
         <maven-resources-plugin.version>3.0.2</maven-resources-plugin.version>
         <!-- Maven Clean Plugin -->
         <maven-clean-plugin.version>3.0.0</maven-clean-plugin.version>
+        <!-- Heroku Plugin -->
+        <!--
+            Using the Heroku Maven plugin has a number of advantages:
+            1) It maintains all configuration in a single place, eliminating the need of a "Procfile"
+            2) It requires no installation of heroku CLI and heroku deploy CLI plugin
+            3) It works out of the box on any CI server without any additional setup
+
+            - If the application is packaged as jar:
+              mvn heroku:deploy
+
+            - If the application is packaged as war:
+              mvn heroku:deploy-war
+        -->
+        <heroku-maven-plugin.version>2.0.3</heroku-maven-plugin.version>
 
         <!--########################### DEPENDENCIES' VERSIONS ###########################-->
         <!-- Spring -->
