@@ -14,6 +14,7 @@ import javax.validation.Valid;
 
 import me.grudzien.patryk.domain.dto.UserRegistrationDto;
 import me.grudzien.patryk.domain.entities.CustomUser;
+import me.grudzien.patryk.exceptions.exception.UserAlreadyExistsException;
 import me.grudzien.patryk.service.CustomUserDetailsService;
 
 @Log4j
@@ -29,17 +30,14 @@ public class UserRegistrationController extends CorsController {
 	}
 
 	@PostMapping("/register-user-account")
-	public @ResponseBody String checkRegisterEndpoint(@RequestBody @Valid final UserRegistrationDto userRegistrationDto,
-	                                                  final BindingResult bindingResult) {
-
+	public @ResponseBody String registerUserAccount(@RequestBody @Valid final UserRegistrationDto userRegistrationDto,
+	                                                final BindingResult bindingResult) {
 		final CustomUser existingUser = customUserDetailsService.findByEmail(userRegistrationDto.getEmail());
 		if (existingUser != null) {
-			bindingResult.rejectValue("email", "There is already an account registered with that email.");
+			throw new UserAlreadyExistsException("User with specified email address already exists.");
 		}
-		if (bindingResult.hasErrors()) {
-			return bindingResult.getFieldError().getDefaultMessage();
-		}
-		customUserDetailsService.save(userRegistrationDto);
-		return "User has been created and saved to DB.";
+		return customUserDetailsService.save(userRegistrationDto, bindingResult)
+		                               // I want to show on UI email's newly created user if validation passes
+		                               .getEmail();
 	}
 }

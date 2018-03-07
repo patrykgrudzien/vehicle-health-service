@@ -5,46 +5,46 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.constraints.NotNull;
 
 import me.grudzien.patryk.validators.FieldMatcher;
+import me.grudzien.patryk.validators.ValidEmail;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldMatcher.List({
-		@FieldMatcher(first = "password", second = "confirmedPassword", message = "The password fields must match"),
-		@FieldMatcher(first = "email", second = "confirmedEmail", message = "The email fields must match")
+		@FieldMatcher(first = "password", second = "confirmedPassword", message = "The password fields must match."),
+		@FieldMatcher(first = "email", second = "confirmedEmail", message = "The email fields must match.")
 })
 public class UserRegistrationDto {
 
-	@NotNull
-	@NotEmpty
+	@NotNull(message = "First name cannot be null.")
+	@NotEmpty(message = "First name cannot be empty.")
 	private String firstName;
 
-	@NotNull
-	@NotEmpty
+	@NotNull(message = "Last name cannot be null.")
+	@NotEmpty(message = "Last name cannot be empty.")
 	private String lastName;
 
-	@NotNull
-	@NotEmpty
-	@Email(message = "Provided email has incorrect format.")
+	@NotNull(message = "Email address cannot be null.")
+	@NotEmpty(message = "Email address cannot be empty.")
+	@ValidEmail
 	private String email;
 
-	@NotNull
-	@NotEmpty
-	@Email(message = "Provided email has incorrect format.")
+	@NotNull(message = "Confirmed email address cannot be null.")
+	@NotEmpty(message = "Confirmed email address cannot be empty.")
+	@ValidEmail
 	private String confirmedEmail;
 
-	@NotNull
-	@NotEmpty
+	@NotNull(message = "Password cannot be null.")
+	@NotEmpty(message = "Password cannot be empty.")
 	private String password;
 
-	@NotNull
-	@NotEmpty
+	@NotNull(message = "Confirmed password cannot be null.")
+	@NotEmpty(message = "Confirmed password cannot be empty.")
 	private String confirmedPassword;
 }
