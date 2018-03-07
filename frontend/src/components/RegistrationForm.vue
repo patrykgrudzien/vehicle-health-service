@@ -5,8 +5,13 @@
       <b-form-row>
         <b-col cols="2"></b-col>
         <b-col cols="8">
-          <b-alert :show="showSuccessAlert" variant="success">You have been successfully registered. Redirecting to login page...</b-alert>
-          <b-alert :show="showDangerAlert" variant="danger">Cannot connect to the server to finish registration.
+          <b-alert :show="showSuccessAlert" variant="success">
+            You have been successfully registered. You can login now using <b>{{ successfulResponse }}</b> email address.
+          </b-alert>
+          <b-alert :show="showDangerAlert && errorMessage === null" variant="danger">Cannot connect to the server to finish registration.</b-alert>
+          <b-alert :show="showDangerAlert && errorMessage !== null && errors === null" variant="danger">{{ errorMessage }}</b-alert>
+          <b-alert :show="showDangerAlert && errors !== null" variant="danger">
+            <p class="error" v-for="error in errors">{{ error }}</p>
           </b-alert>
         </b-col>
         <b-col cols="2"></b-col>
@@ -183,7 +188,9 @@
           attemptSubmit: false
         },
         showForm: true,
-        serverResponse: null,
+        successfulResponse: null,
+        errorMessage: '',
+        errors: [],
         showSuccessAlert: false,
         showDangerAlert: false
       }
@@ -212,20 +219,16 @@
           .then(response => {
             this.showForm = true;
             this.showSuccessAlert = true;
-            this.serverResponse = response.data;
-            console.log(this.serverResponse);
-            setTimeout(() => {
-              this.$router.push('login');
-            }, 4000);
+            this.successfulResponse = response.data;
           })
           .catch(error => {
             this.showForm = true;
             this.showDangerAlert = true;
             if (!error.response) {
-              this.serverResponse = null;
+              this.errorMessage = null;
             } else {
-              this.serverResponse = error.response.data;
-              console.log(error.response.data.errorMessage);
+              this.errorMessage = error.response.data.errorMessage;
+              this.errors = error.response.data.errors;
             }
           })
       },
@@ -271,4 +274,7 @@
 </script>
 
 <style scoped>
+  .error {
+    margin: 4px auto;
+  }
 </style>
