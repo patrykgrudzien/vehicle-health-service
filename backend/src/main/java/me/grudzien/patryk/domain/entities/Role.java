@@ -23,7 +23,7 @@ import javax.persistence.Table;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(builderMethodName = "Builder")
-@SequenceGenerator(name = "roleGenerator", sequenceName = "roleSequence", allocationSize = 10)
+@SequenceGenerator(name = "roleGenerator", sequenceName = "roleSequence", allocationSize = 1)
 public class Role {
 
 	@Id
