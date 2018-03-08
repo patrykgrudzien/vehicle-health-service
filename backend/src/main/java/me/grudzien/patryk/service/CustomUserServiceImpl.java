@@ -9,6 +9,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.context.request.WebRequest;
 
 import java.util.Collections;
 import java.util.stream.Collectors;
@@ -17,8 +18,9 @@ import me.grudzien.patryk.domain.dto.UserRegistrationDto;
 import me.grudzien.patryk.domain.entities.CustomUser;
 import me.grudzien.patryk.domain.entities.EmailVerificationToken;
 import me.grudzien.patryk.domain.entities.Role;
-import me.grudzien.patryk.events.OnRegistrationCompleteEvent;
+import me.grudzien.patryk.events.event.OnRegistrationCompleteEvent;
 import me.grudzien.patryk.exceptions.exception.CustomUserValidationException;
+import me.grudzien.patryk.exceptions.exception.UserAlreadyExistsException;
 import me.grudzien.patryk.repository.EmailVerificationTokenRepository;
 import me.grudzien.patryk.repository.CustomUserRepository;
 
@@ -43,12 +45,13 @@ public class CustomUserServiceImpl implements CustomUserService {
 	}
 
 	@Override
-	public Boolean doesEmailExist(final String email) {
-		return customUserRepository.findByEmail(email) != null;
-	}
+	public CustomUser registerNewCustomUserAccount(final UserRegistrationDto userRegistrationDto, final BindingResult bindingResult,
+	                                               final WebRequest webRequest) {
 
-	@Override
-	public CustomUser registerNewCustomUserAccount(final UserRegistrationDto userRegistrationDto, final BindingResult bindingResult) {
+		if (doesEmailExist(userRegistrationDto.getEmail())) {
+			log.error("User with specified email " + userRegistrationDto.getEmail() + " already exists.");
+			throw new UserAlreadyExistsException("User with specified email " + userRegistrationDto.getEmail() + " already exists.");
+		}
 		if (!bindingResult.hasErrors()) {
 			log.info("No validation errors during user registration.");
 			final CustomUser customUser = CustomUser.Builder()
@@ -62,7 +65,7 @@ public class CustomUserServiceImpl implements CustomUserService {
 
 			// we use Spring Event to create the token and send verification email (it should not be performed by controller directly)
 			log.info("Publisher published event for verification token generation.");
-			eventPublisher.publishEvent(new OnRegistrationCompleteEvent(newlyRegisterCustomUser));
+			eventPublisher.publishEvent(new OnRegistrationCompleteEvent(newlyRegisterCustomUser, webRequest.getContextPath()));
 
 			return newlyRegisterCustomUser;
 		} else {
@@ -75,6 +78,11 @@ public class CustomUserServiceImpl implements CustomUserService {
 			                                                     .distinct()
 			                                                     .collect(Collectors.toList()));
 		}
+	}
+
+	@Override
+	public Boolean doesEmailExist(final String email) {
+		return customUserRepository.findByEmail(email) != null;
 	}
 
 	@Override
