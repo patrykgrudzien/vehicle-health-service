@@ -4,6 +4,23 @@ server:
 spring:
   profiles:
     active: dev-home
+  # ===============================
+  # = JavaMail Configuration
+  # ===============================
+  mail:
+    default-encoding: utf-8
+    host: smtp.gmail.com
+    username: full.stack.web.app@gmail.com
+    password: password_qwerty
+    port: 587
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    test-connection: false
 
 ---
 

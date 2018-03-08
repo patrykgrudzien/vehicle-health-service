@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Log4j
 @RestController
 @RequestMapping("/api")
-public class HelloWorldController extends CorsController {
+public class HelloWorldController {
 
 	private static final String HELLO_TEXT = "Hello World from Full-Stack Web App";
 
