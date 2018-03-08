@@ -2,8 +2,8 @@ package me.grudzien.patryk.domain.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -27,8 +27,8 @@ import java.util.Collection;
 @Table(name = "CUSTOM_USER", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
 @Getter
 @Setter
-@ToString(of = {"id", "firstName", "lastName", "email", "roles"})
-@NoArgsConstructor
+@ToString(of = {"id", "firstName", "lastName", "email", "roles", "enabled"})
+@EqualsAndHashCode
 @AllArgsConstructor
 @Builder(builderMethodName = "Builder")
 @SequenceGenerator(name = "customUserGenerator", sequenceName = "customUserSequence", allocationSize = 1)
@@ -51,9 +51,16 @@ public class CustomUser {
 	@Column(name = "PASSWORD", nullable = false)
 	private String password;
 
+	@Column(name = "ENABLED")
+	private Boolean enabled;
+
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinTable(name = "USERS_ROLES",
-	           joinColumns = @JoinColumn(name = "USER_ID", referencedColumnName = "ID"),
+	           joinColumns = @JoinColumn(name = "CUSTOM_USER_ID", referencedColumnName = "ID"),
 	           inverseJoinColumns = @JoinColumn(name = "ROLE_ID", referencedColumnName = "ID"))
 	private Collection<Role> roles;
+
+	public CustomUser() {
+		this.enabled = false;
+	}
 }
