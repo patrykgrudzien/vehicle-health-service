@@ -2,15 +2,11 @@ package me.grudzien.patryk.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
@@ -18,37 +14,29 @@ import me.grudzien.patryk.domain.dto.UserRegistrationDto;
 import me.grudzien.patryk.domain.entities.CustomUser;
 import me.grudzien.patryk.domain.entities.Role;
 import me.grudzien.patryk.exceptions.exception.CustomUserValidationException;
-import me.grudzien.patryk.exceptions.exception.UserEmailNotFoundException;
 import me.grudzien.patryk.repository.UserRepository;
 
 @Service
-public class CustomUserDetailsServiceImpl implements CustomUserDetailsService {
+public class CustomUserServiceImpl implements CustomUserService {
 
 	private final UserRepository userRepository;
 	private final BCryptPasswordEncoder passwordEncoder;
 
 	@Autowired
-	public CustomUserDetailsServiceImpl(final UserRepository userRepository, final BCryptPasswordEncoder passwordEncoder) {
+	public CustomUserServiceImpl(final UserRepository userRepository, final BCryptPasswordEncoder passwordEncoder) {
 		this.userRepository = userRepository;
 		this.passwordEncoder = passwordEncoder;
 	}
 
 	@Override
-	public UserDetails loadUserByUsername(final String email) throws UserEmailNotFoundException {
-		final CustomUser customUser = this.findByEmail(email);
-		if (customUser == null) {
-			throw new UserEmailNotFoundException(email, "Invalid email address. User does not exist.");
-		}
-		return new User(customUser.getEmail(), customUser.getPassword(), mapRolesToAuthorities(customUser.getRoles()));
+	@Transactional(readOnly = true)
+	public Boolean doesEmailExist(final String email) {
+		return userRepository.findByEmail(email) != null;
 	}
 
 	@Override
-	public CustomUser findByEmail(final String email) {
-		return userRepository.findByEmail(email);
-	}
-
-	@Override
-	public CustomUser save(final UserRegistrationDto userRegistrationDto, final BindingResult bindingResult) {
+	@Transactional
+	public CustomUser registerNewUserAccount(final UserRegistrationDto userRegistrationDto, final BindingResult bindingResult) {
 		if (!bindingResult.hasErrors()) {
 			final CustomUser customUser = CustomUser.Builder()
 			                                        .firstName(userRegistrationDto.getFirstName())
@@ -67,11 +55,5 @@ public class CustomUserDetailsServiceImpl implements CustomUserDetailsService {
 			                                                     .distinct()
 			                                                     .collect(Collectors.toList()));
 		}
-	}
-
-	private Collection<? extends GrantedAuthority> mapRolesToAuthorities(final Collection<Role> roles) {
-		return roles.stream()
-		            .map(role -> new SimpleGrantedAuthority(role.getName()))
-		            .collect(Collectors.toList());
 	}
 }

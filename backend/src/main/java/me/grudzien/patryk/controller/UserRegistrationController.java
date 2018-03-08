@@ -13,31 +13,30 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 
 import me.grudzien.patryk.domain.dto.UserRegistrationDto;
-import me.grudzien.patryk.domain.entities.CustomUser;
 import me.grudzien.patryk.exceptions.exception.UserAlreadyExistsException;
-import me.grudzien.patryk.service.CustomUserDetailsService;
+import me.grudzien.patryk.service.CustomUserService;
 
 @Log4j
 @RestController
 @RequestMapping("/registration")
 public class UserRegistrationController extends CorsController {
 
-	private final CustomUserDetailsService customUserDetailsService;
+	private final CustomUserService customUserService;
 
 	@Autowired
-	public UserRegistrationController(final CustomUserDetailsService customUserDetailsService) {
-		this.customUserDetailsService = customUserDetailsService;
+	public UserRegistrationController(final CustomUserService customUserService) {
+		this.customUserService = customUserService;
 	}
 
 	@PostMapping("/register-user-account")
 	public @ResponseBody String registerUserAccount(@RequestBody @Valid final UserRegistrationDto userRegistrationDto,
 	                                                final BindingResult bindingResult) {
-		final CustomUser existingUser = customUserDetailsService.findByEmail(userRegistrationDto.getEmail());
-		if (existingUser != null) {
-			throw new UserAlreadyExistsException("User with specified email address already exists.");
+
+		if (customUserService.doesEmailExist(userRegistrationDto.getEmail())) {
+			throw new UserAlreadyExistsException("User with specified email " + userRegistrationDto.getEmail() + " already exists.");
 		}
-		return customUserDetailsService.save(userRegistrationDto, bindingResult)
-		                               // I want to show on UI email's newly created user if validation passes
-		                               .getEmail();
+		return customUserService.registerNewUserAccount(userRegistrationDto, bindingResult)
+		                        // I want to show on UI email's newly created user if validation passes
+		                        .getEmail();
 	}
 }

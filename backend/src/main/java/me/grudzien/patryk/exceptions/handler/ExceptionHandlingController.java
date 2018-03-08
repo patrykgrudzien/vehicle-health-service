@@ -2,12 +2,12 @@ package me.grudzien.patryk.exceptions.handler;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import me.grudzien.patryk.exceptions.exception.CustomUserValidationException;
 import me.grudzien.patryk.exceptions.exception.UserAlreadyExistsException;
-import me.grudzien.patryk.exceptions.exception.UserEmailNotFoundException;
 import me.grudzien.patryk.exceptions.pojo.ExceptionResponse;
 
 /**
@@ -20,8 +20,8 @@ import me.grudzien.patryk.exceptions.pojo.ExceptionResponse;
 @ControllerAdvice
 public class ExceptionHandlingController {
 
-	@ExceptionHandler(UserEmailNotFoundException.class)
-	public ResponseEntity<ExceptionResponse> userEmailNotFound(final UserEmailNotFoundException exception) {
+	@ExceptionHandler(UsernameNotFoundException.class)
+	public ResponseEntity<ExceptionResponse> userNotFoundForEmail(final UsernameNotFoundException exception) {
 		final ExceptionResponse response = ExceptionResponse.Builder()
 		                                                    .errorMessage(exception.getMessage())
 		                                                    .build();

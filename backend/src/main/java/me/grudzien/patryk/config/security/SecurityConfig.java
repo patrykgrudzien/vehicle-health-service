@@ -11,16 +11,18 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-import me.grudzien.patryk.service.CustomUserDetailsService;
+import me.grudzien.patryk.service.security.MyUserDetailsService;
 
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-	// field injection to avoid circular dependency and BeanCurrentlyInCreationException
-	@SuppressWarnings({"SpringAutowiredFieldsWarningInspection", "SpringJavaAutowiredFieldsWarningInspection"})
+	private final MyUserDetailsService myUserDetailsService;
+
 	@Autowired
-	private CustomUserDetailsService customUserDetailsService;
+	public SecurityConfig(final MyUserDetailsService myUserDetailsService) {
+		this.myUserDetailsService = myUserDetailsService;
+	}
 
 	@Override
 	protected void configure(final HttpSecurity http) throws Exception {
@@ -48,7 +50,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Bean
 	public DaoAuthenticationProvider authenticationProvider() {
 		final DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-		authenticationProvider.setUserDetailsService(customUserDetailsService);
+		authenticationProvider.setUserDetailsService(myUserDetailsService);
 		authenticationProvider.setPasswordEncoder(passwordEncoder());
 		return authenticationProvider;
 	}
