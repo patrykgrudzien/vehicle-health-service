@@ -1,4 +1,4 @@
-package me.grudzien.patryk.exceptions.handler;
+package me.grudzien.patryk.handlers.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import me.grudzien.patryk.exceptions.exception.CustomUserValidationException;
+import me.grudzien.patryk.exceptions.exception.TokenExpiredException;
+import me.grudzien.patryk.exceptions.exception.TokenNotFoundException;
 import me.grudzien.patryk.exceptions.exception.UserAlreadyExistsException;
 import me.grudzien.patryk.exceptions.pojo.ExceptionResponse;
 
@@ -41,6 +43,22 @@ public class ExceptionHandlingController {
 		final ExceptionResponse response = ExceptionResponse.Builder()
 		                                                    .errorMessage(exception.getMessage())
 		                                                    .errors(exception.getValidationErrors())
+		                                                    .build();
+		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler(TokenNotFoundException.class)
+	public ResponseEntity<ExceptionResponse> tokenNotFoundException(final TokenNotFoundException exception) {
+		final ExceptionResponse response = ExceptionResponse.Builder()
+		                                                    .errorMessage(exception.getMessage())
+		                                                    .build();
+		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler(TokenExpiredException.class)
+	public ResponseEntity<ExceptionResponse> tokenExpiredException(final TokenExpiredException exception) {
+		final ExceptionResponse response = ExceptionResponse.Builder()
+		                                                    .errorMessage(exception.getMessage())
 		                                                    .build();
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}

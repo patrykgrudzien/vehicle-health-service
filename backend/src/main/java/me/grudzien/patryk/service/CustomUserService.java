@@ -11,7 +11,9 @@ public interface CustomUserService {
 
 	Boolean doesEmailExist(String email);
 
-	CustomUser registerNewCustomUserAccount(UserRegistrationDto userRegistrationDto, BindingResult bindingResult, WebRequest webRequest);
+	void registerNewCustomUserAccount(UserRegistrationDto userRegistrationDto, BindingResult bindingResult, WebRequest webRequest);
+
+	void confirmRegistration(String emailVerificationToken);
 
 	CustomUser getCustomUser(String emailVerificationToken);
 

@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.context.request.WebRequest;
 
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
@@ -20,6 +21,8 @@ import me.grudzien.patryk.domain.entities.EmailVerificationToken;
 import me.grudzien.patryk.domain.entities.Role;
 import me.grudzien.patryk.events.event.OnRegistrationCompleteEvent;
 import me.grudzien.patryk.exceptions.exception.CustomUserValidationException;
+import me.grudzien.patryk.exceptions.exception.TokenExpiredException;
+import me.grudzien.patryk.exceptions.exception.TokenNotFoundException;
 import me.grudzien.patryk.exceptions.exception.UserAlreadyExistsException;
 import me.grudzien.patryk.repository.EmailVerificationTokenRepository;
 import me.grudzien.patryk.repository.CustomUserRepository;
@@ -45,8 +48,8 @@ public class CustomUserServiceImpl implements CustomUserService {
 	}
 
 	@Override
-	public CustomUser registerNewCustomUserAccount(final UserRegistrationDto userRegistrationDto, final BindingResult bindingResult,
-	                                               final WebRequest webRequest) {
+	public void registerNewCustomUserAccount(final UserRegistrationDto userRegistrationDto, final BindingResult bindingResult,
+	                                         final WebRequest webRequest) {
 
 		if (doesEmailExist(userRegistrationDto.getEmail())) {
 			log.error("User with specified email " + userRegistrationDto.getEmail() + " already exists.");
@@ -61,13 +64,11 @@ public class CustomUserServiceImpl implements CustomUserService {
 			                                        .password(passwordEncoder.encode(userRegistrationDto.getPassword()))
 			                                        .roles(Collections.singleton(new Role("ROLE_USER")))
 			                                        .build();
-			final CustomUser newlyRegisterCustomUser = customUserRepository.save(customUser);
+			customUserRepository.save(customUser);
 
 			// we use Spring Event to create the token and send verification email (it should not be performed by controller directly)
 			log.info("Publisher published event for verification token generation.");
-			eventPublisher.publishEvent(new OnRegistrationCompleteEvent(newlyRegisterCustomUser, webRequest.getContextPath()));
-
-			return newlyRegisterCustomUser;
+			eventPublisher.publishEvent(new OnRegistrationCompleteEvent(customUser, webRequest.getContextPath()));
 		} else {
 			log.error("Validation errors present during user registration.");
 			throw new CustomUserValidationException("Cannot save user. Validation errors.",
@@ -79,6 +80,27 @@ public class CustomUserServiceImpl implements CustomUserService {
 			                                                     .distinct()
 			                                                     .collect(Collectors.toList()));
 		}
+	}
+
+	@Override
+	public void confirmRegistration(final String emailVerificationToken) {
+		EmailVerificationToken token = getEmailVerificationToken(emailVerificationToken);
+		if (token == null) {
+			log.error("No verification token found.");
+			throw new TokenNotFoundException("No verification token found.");
+		}
+		Calendar calendar = Calendar.getInstance();
+		if (token.getExpiryDate().compareTo(calendar.getTime()) < 0) {
+			log.error("Verification token has expired.");
+			throw new TokenExpiredException("Verification token has expired.");
+		}
+		CustomUser user = token.getCustomUser();
+		user.setEnabled(Boolean.TRUE);
+		saveRegisteredCustomUser(user);
+		log.info("User account has been activated.");
+
+		emailVerificationTokenRepository.delete(token);
+		log.info("Token confirmed and deleted from database.");
 	}
 
 	@Override
