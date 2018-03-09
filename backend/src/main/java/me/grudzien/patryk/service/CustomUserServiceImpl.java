@@ -74,7 +74,8 @@ public class CustomUserServiceImpl implements CustomUserService {
 			                                        bindingResult.getAllErrors()
 			                                                     .stream()
 			                                                     .map(DefaultMessageSourceResolvable::getDefaultMessage)
-			                                                     // I'm checking two fields for email and two for password but there in no need to duplicate the same message
+			                                                     // I'm checking two fields for email and two for password but there is
+			                                                     // no need to duplicate the same message
 			                                                     .distinct()
 			                                                     .collect(Collectors.toList()));
 		}
