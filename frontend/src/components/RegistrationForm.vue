@@ -6,7 +6,7 @@
         <b-col cols="2"></b-col>
         <b-col cols="8">
           <b-alert :show="showSuccessAlert" variant="success">
-            You have been successfully registered. You can login now using <b>{{ successfulResponse }}</b> email address.
+            Thank you for registration! Check your <b>{{ form.email }}</b> email address to confirm newly created account.
           </b-alert>
           <b-alert :show="showDangerAlert && errorMessage === null" variant="danger">Cannot connect to the server to finish registration.</b-alert>
           <b-alert :show="showDangerAlert && errorMessage !== null && errors === null" variant="danger">{{ errorMessage }}</b-alert>

@@ -3,6 +3,8 @@ package me.grudzien.patryk.controller;
 import lombok.extern.log4j.Log4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,17 +33,15 @@ public class UserRegistrationController {
 	}
 
 	@PostMapping("/register-user-account")
-	public @ResponseBody String registerUserAccount(@RequestBody @Valid final UserRegistrationDto userRegistrationDto,
-	                                                final BindingResult bindingResult, final WebRequest webRequest) {
+	public @ResponseBody ResponseEntity<Void> registerUserAccount(@RequestBody @Valid final UserRegistrationDto userRegistrationDto,
+	                                                              final BindingResult bindingResult, final WebRequest webRequest) {
 
-		return customUserService.registerNewCustomUserAccount(userRegistrationDto, bindingResult, webRequest)
-		                        // I want to show on UI email's newly created user if validation passes
-		                        .getEmail();
+		customUserService.registerNewCustomUserAccount(userRegistrationDto, bindingResult, webRequest);
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
-	@GetMapping("/registration-confirm")
+	@GetMapping("/confirm")
 	public @ResponseBody String confirmRegistration(@RequestParam("token") final String token) {
-
 		return ">>>>>>>>>>>>>>>>>>>>>>>>>> CONFIRMING REGISTRATION TO BE DONE...";
 	}
 }

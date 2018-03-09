@@ -55,6 +55,8 @@
         <h2database.version>1.4.196</h2database.version>
         <!-- PostgreSql -->
         <postgre.sql.version>42.2.1</postgre.sql.version>
+        <!-- Google Guava -->
+        <guava.version>24.0-jre</guava.version>
 
         <!--########################### PROJECT's DETAILS ###########################-->
         <!-- Structure -->
