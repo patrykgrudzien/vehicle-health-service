@@ -35,13 +35,13 @@ public class UserRegistrationController {
 	@PostMapping("/register-user-account")
 	public @ResponseBody ResponseEntity<Void> registerUserAccount(@RequestBody @Valid final UserRegistrationDto userRegistrationDto,
 	                                                              final BindingResult bindingResult, final WebRequest webRequest) {
-
 		customUserService.registerNewCustomUserAccount(userRegistrationDto, bindingResult, webRequest);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	@GetMapping("/confirm")
-	public @ResponseBody String confirmRegistration(@RequestParam("token") final String token) {
-		return ">>>>>>>>>>>>>>>>>>>>>>>>>> CONFIRMING REGISTRATION TO BE DONE...";
+	public @ResponseBody ResponseEntity<Void> confirmRegistration(@RequestParam("token") final String token) {
+		customUserService.confirmRegistration(token);
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 }

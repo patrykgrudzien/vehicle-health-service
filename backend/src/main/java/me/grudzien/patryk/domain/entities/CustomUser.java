@@ -27,7 +27,7 @@ import java.util.Collection;
 @Table(name = "CUSTOM_USER", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
 @Getter
 @Setter
-@ToString(of = {"id", "firstName", "lastName", "email", "roles", "enabled"})
+@ToString(of = {"id", "firstName", "lastName", "email", "roles", "isEnabled"})
 @EqualsAndHashCode
 @AllArgsConstructor
 @Builder(builderMethodName = "Builder")
@@ -52,7 +52,7 @@ public class CustomUser {
 	private String password;
 
 	@Column(name = "ENABLED")
-	private Boolean enabled;
+	private boolean isEnabled;
 
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinTable(name = "USERS_ROLES",
@@ -61,6 +61,6 @@ public class CustomUser {
 	private Collection<Role> roles;
 
 	public CustomUser() {
-		this.enabled = false;
+		this.isEnabled = false;
 	}
 }

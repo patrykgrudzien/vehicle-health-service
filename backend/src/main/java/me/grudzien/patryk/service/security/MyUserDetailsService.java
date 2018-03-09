@@ -34,12 +34,16 @@ public class MyUserDetailsService implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException {
 		final CustomUser customUser = customUserRepository.findByEmail(email);
+		final boolean accountNonExpired = true;
+		final boolean credentialsNonExpired = true;
+		final boolean accountNonLocked = true;
 		if (customUser == null) {
 			log.error("No user found for specified email: " + email);
 			throw new UsernameNotFoundException("No user found for specified email: " + email);
 		}
 		log.info("User with " + email + " found");
-		return new User(customUser.getEmail(), customUser.getPassword(), mapRolesToAuthorities(customUser.getRoles()));
+		return new User(customUser.getEmail(), customUser.getPassword(), customUser.isEnabled(), accountNonExpired, credentialsNonExpired,
+		                accountNonLocked, mapRolesToAuthorities(customUser.getRoles()));
 	}
 
 	private Collection<? extends GrantedAuthority> mapRolesToAuthorities(final Collection<Role> roles) {
