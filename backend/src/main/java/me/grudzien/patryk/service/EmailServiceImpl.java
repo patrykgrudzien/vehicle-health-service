@@ -68,7 +68,7 @@ public class EmailServiceImpl implements EmailService {
 			messageHelper.setFrom(senderEmailAddress);
 
 			javaMailSender.send(message);
-		} catch (MessagingException messagingException) {
+		} catch (final MessagingException messagingException) {
 			log.error(messagingException);
 		}
 	}
