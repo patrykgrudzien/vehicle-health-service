@@ -4,15 +4,17 @@ import lombok.extern.log4j.Log4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
+
+import com.google.common.collect.ImmutableMap;
 
 import java.util.UUID;
 
+import me.grudzien.patryk.domain.dto.EmailDto;
 import me.grudzien.patryk.domain.entities.CustomUser;
 import me.grudzien.patryk.events.event.OnRegistrationCompleteEvent;
 import me.grudzien.patryk.service.CustomUserService;
+import me.grudzien.patryk.service.EmailService;
 
 /**
  * That listener is going to handle OnRegistrationCompleteEvent which is published by
@@ -23,20 +25,20 @@ import me.grudzien.patryk.service.CustomUserService;
 public class RegistrationCompleteListener implements ApplicationListener<OnRegistrationCompleteEvent> {
 
 	private final CustomUserService customUserService;
-	private final JavaMailSender javaMailSender;
+	private final EmailService emailService;
 
 	@Autowired
-	public RegistrationCompleteListener(final CustomUserService customUserService, final JavaMailSender javaMailSender) {
+	public RegistrationCompleteListener(final CustomUserService customUserService, final EmailService emailService) {
 		this.customUserService = customUserService;
-		this.javaMailSender = javaMailSender;
+		this.emailService = emailService;
 	}
 
 	@Override
 	public void onApplicationEvent(final OnRegistrationCompleteEvent event) {
-		this.createTokenAndSendEmail(event);
+		createVerificationTokenAndSendEmail(event);
 	}
 
-	private void createTokenAndSendEmail(final OnRegistrationCompleteEvent event) {
+	private void createVerificationTokenAndSendEmail(final OnRegistrationCompleteEvent event) {
 		log.info(String.format("Listener received event: %1s with user email: %2s", event.getEventName(), event.getCustomUser().getEmail()));
 
 		final CustomUser userBeingRegistered = event.getCustomUser();
@@ -47,13 +49,19 @@ public class RegistrationCompleteListener implements ApplicationListener<OnRegis
 
 		final String recipientAddress = userBeingRegistered.getEmail();
 		final String subject = "Registration Confirmation";
-		final String confirmationUrl = event.getApplicationUrl() + "registration-confirm?token=" + token;
+		final String confirmationUrl = event.getApplicationUrl() + "/confirm?token=" + token;
 
-		final SimpleMailMessage email = new SimpleMailMessage();
-		email.setTo(recipientAddress);
-		email.setSubject(subject);
-		email.setText("http://localhost:8080/" + confirmationUrl);
-		javaMailSender.send(email);
+		emailService.sendMessageUsingTemplate(EmailDto.Builder()
+		                                              .to(recipientAddress)
+		                                              .subject(subject)
+		                                              .content("http://localhost:8080/" + confirmationUrl)
+		                                              .templatePlaceholders(
+				                                              ImmutableMap.<String, Object>
+					                                                 builder()
+					                                                .put("userFirstName", userBeingRegistered.getFirstName())
+			                                                        .put("confirmationUrl", "http://localhost:8080" + confirmationUrl)
+			                                                        .build())
+		                                              .build());
 
 		log.info(subject + " email has been sent to " + recipientAddress);
 	}
