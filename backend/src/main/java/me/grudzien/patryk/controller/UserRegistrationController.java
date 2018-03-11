@@ -17,30 +17,35 @@ import org.springframework.web.context.request.WebRequest;
 
 import javax.validation.Valid;
 
+import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.domain.dto.UserRegistrationDto;
 import me.grudzien.patryk.service.CustomUserService;
 
 @Log4j
 @RestController
-@RequestMapping("/registration")
+@RequestMapping("${custom.properties.endpoints.registration.home}")
 public class UserRegistrationController {
 
 	private final CustomUserService customUserService;
+	private final CustomApplicationProperties customApplicationProperties;
 
 	@Autowired
-	public UserRegistrationController(final CustomUserService customUserService) {
+	public UserRegistrationController(final CustomUserService customUserService, final CustomApplicationProperties endpointsProperties) {
 		this.customUserService = customUserService;
+		this.customApplicationProperties = endpointsProperties;
 	}
 
-	@PostMapping("/register-user-account")
+	@PostMapping("${custom.properties.endpoints.registration.register-user-account}")
 	public @ResponseBody ResponseEntity<Void> registerUserAccount(@RequestBody @Valid final UserRegistrationDto userRegistrationDto,
 	                                                              final BindingResult bindingResult, final WebRequest webRequest) {
+		log.info("Inside: " + customApplicationProperties.getEndpoints().getRegistration().getHomeRegisterUserAccount());
 		customUserService.registerNewCustomUserAccount(userRegistrationDto, bindingResult, webRequest);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
-	@GetMapping("/confirm")
+	@GetMapping("${custom.properties.endpoints.registration.confirm-registration}")
 	public @ResponseBody ResponseEntity<Void> confirmRegistration(@RequestParam("token") final String token) {
+		log.info("Inside: " + customApplicationProperties.getEndpoints().getRegistration().getHomeConfirmRegistration());
 		customUserService.confirmRegistration(token);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
