@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.service.security.MyUserDetailsService;
 
 @EnableWebSecurity
@@ -18,10 +19,13 @@ import me.grudzien.patryk.service.security.MyUserDetailsService;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	private final MyUserDetailsService myUserDetailsService;
+	private final CustomApplicationProperties customApplicationProperties;
 
 	@Autowired
-	public SecurityConfig(final MyUserDetailsService myUserDetailsService) {
+	public SecurityConfig(final MyUserDetailsService myUserDetailsService,
+	                      final CustomApplicationProperties customApplicationProperties) {
 		this.myUserDetailsService = myUserDetailsService;
+		this.customApplicationProperties = customApplicationProperties;
 	}
 
 	@Override
@@ -31,14 +35,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			// disabling CSRF for now (testing purposes), later it'll be replaced by OAuth2 and JWT
 			.csrf().disable()
 		    .authorizeRequests()
-		        .antMatchers("registration/**")
-		        .permitAll()
+		        .antMatchers(customApplicationProperties.getEndpoints().getRegistration().getHome() + "/**").permitAll()
 		    .and()
 		        .logout()
 		        .invalidateHttpSession(Boolean.TRUE)
 		        .clearAuthentication(Boolean.TRUE)
-		        .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-		        .logoutSuccessUrl("/login?logout")
+		        .logoutRequestMatcher(new AntPathRequestMatcher(customApplicationProperties.getEndpoints().getLogout().getHome()))
+		        .logoutSuccessUrl(customApplicationProperties.getEndpoints().getLogout().getHomeSuccessUrl())
 		        .permitAll();
 	}
 

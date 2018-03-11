@@ -4,7 +4,7 @@
     <div id="button-wrapper" class="row align-items-center justify-content-center">
       <b-btn class="col-4" @click="callRestService">CALL Spring Boot REST backend service</b-btn>
     </div>
-    <h4 v-if="response.length > 0">Backend response: {{ response }}</h4>
+    <h4 v-if="response.length > 0">{{ response }}</h4>
   </div>
 </template>
 

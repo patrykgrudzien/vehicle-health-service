@@ -10,6 +10,7 @@ import com.google.common.collect.ImmutableMap;
 
 import java.util.UUID;
 
+import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.domain.dto.EmailDto;
 import me.grudzien.patryk.domain.entities.CustomUser;
 import me.grudzien.patryk.events.event.OnRegistrationCompleteEvent;
@@ -26,11 +27,14 @@ public class RegistrationCompleteListener implements ApplicationListener<OnRegis
 
 	private final CustomUserService customUserService;
 	private final EmailService emailService;
+	private final CustomApplicationProperties customApplicationProperties;
 
 	@Autowired
-	public RegistrationCompleteListener(final CustomUserService customUserService, final EmailService emailService) {
+	public RegistrationCompleteListener(final CustomUserService customUserService, final EmailService emailService,
+	                                    final CustomApplicationProperties customApplicationProperties) {
 		this.customUserService = customUserService;
 		this.emailService = emailService;
+		this.customApplicationProperties = customApplicationProperties;
 	}
 
 	@Override
@@ -49,17 +53,18 @@ public class RegistrationCompleteListener implements ApplicationListener<OnRegis
 
 		final String recipientAddress = userBeingRegistered.getEmail();
 		final String subject = "Registration Confirmation";
-		final String confirmationUrl = event.getApplicationUrl() + "/registration/confirm?token=" + token;
-
+		final String confirmationUrl = event.getApplicationUrl() + customApplicationProperties.getEndpoints()
+		                                                                                      .getRegistration()
+		                                                                                      .getHomeConfirmationUrl() + token;
 		emailService.sendMessageUsingTemplate(EmailDto.Builder()
 		                                              .to(recipientAddress)
 		                                              .subject(subject)
-		                                              .content("http://localhost:8080/" + confirmationUrl)
+		                                              .content(customApplicationProperties.getCorsOrigins().getFrontEndModule() + confirmationUrl)
 		                                              .templatePlaceholders(
 				                                              ImmutableMap.<String, Object>
 					                                                 builder()
 					                                                .put("userFirstName", userBeingRegistered.getFirstName())
-			                                                        .put("confirmationUrl", "http://localhost:8080" + confirmationUrl)
+			                                                        .put("confirmationUrl", customApplicationProperties.getCorsOrigins().getBackEndModule() + confirmationUrl)
 			                                                        .build())
 		                                              .build());
 
