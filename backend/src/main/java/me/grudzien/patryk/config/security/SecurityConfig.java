@@ -35,13 +35,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			// disabling CSRF for now (testing purposes), later it'll be replaced by OAuth2 and JWT
 			.csrf().disable()
 		    .authorizeRequests()
-		        .antMatchers(customApplicationProperties.getEndpoints().getRegistration().getHome() + "/**").permitAll()
+		        .antMatchers(customApplicationProperties.getEndpoints().getRegistration().getRoot() + "/**").permitAll()
+		        .anyRequest().permitAll()
 		    .and()
 		        .logout()
 		        .invalidateHttpSession(Boolean.TRUE)
 		        .clearAuthentication(Boolean.TRUE)
-		        .logoutRequestMatcher(new AntPathRequestMatcher(customApplicationProperties.getEndpoints().getLogout().getHome()))
-		        .logoutSuccessUrl(customApplicationProperties.getEndpoints().getLogout().getHomeSuccessUrl())
+		        .logoutRequestMatcher(new AntPathRequestMatcher(customApplicationProperties.getEndpoints().getLogout().getRoot()))
+		        .logoutSuccessUrl(customApplicationProperties.getEndpoints().getLogout().getRootSuccessUrl())
 		        .permitAll();
 	}
 

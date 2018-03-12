@@ -4,18 +4,20 @@ server:
 custom:
   properties:
     endpoints:
-       api:
-         home: /api
-         hello: /hello
-       registration:
-         home: /registration
-         register-user-account: /register-user-account
-         confirm-registration: /confirm
-         confirmation-url: /confirm?token=
-         resend-email-verification-token: /resend-verification-token?token=
-       logout:
-         home: /logout
-         success-url: ?logout
+      home:
+       root: /
+      server:
+        root: /server
+        health-check: /health-check
+      registration:
+        root: /registration
+        register-user-account: /register-user-account
+        confirm-registration: /confirm
+        confirmation-url: /confirm?token=
+        resend-email-verification-token: /resend-verification-token?token=
+      logout:
+        root: /logout
+        success-url: ?logout
     cors-origins:
       front-end-module: http://localhost:8080
       back-end-module: http://localhost:8088

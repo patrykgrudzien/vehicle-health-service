@@ -22,7 +22,7 @@ import me.grudzien.patryk.service.CustomUserService;
 
 @Log4j
 @RestController
-@RequestMapping("${custom.properties.endpoints.registration.home}")
+@RequestMapping("${custom.properties.endpoints.registration.root}")
 public class UserRegistrationController {
 
 	private final CustomUserService customUserService;
@@ -37,21 +37,21 @@ public class UserRegistrationController {
 	@PostMapping("${custom.properties.endpoints.registration.register-user-account}")
 	public ResponseEntity<Void> registerUserAccount(@RequestBody @Valid final UserRegistrationDto userRegistrationDto,
 	                                                final BindingResult bindingResult, final WebRequest webRequest) {
-		log.info("Inside: " + customApplicationProperties.getEndpoints().getRegistration().getHomeRegisterUserAccount());
+		log.info("Inside: " + customApplicationProperties.getEndpoints().getRegistration().getRootRegisterUserAccount());
 		customUserService.registerNewCustomUserAccount(userRegistrationDto, bindingResult, webRequest);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	@GetMapping("${custom.properties.endpoints.registration.confirm-registration}")
 	public ResponseEntity<Void> confirmRegistration(@RequestParam("token") final String token) {
-		log.info("Inside: " + customApplicationProperties.getEndpoints().getRegistration().getHomeConfirmRegistration());
+		log.info("Inside: " + customApplicationProperties.getEndpoints().getRegistration().getRootConfirmRegistration());
 		customUserService.confirmRegistration(token);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	@GetMapping("${custom.properties.endpoints.registration.resend-email-verification-token}")
 	public ResponseEntity<Void> resendEmailVerificationToken(@RequestParam("token") final String token) {
-		log.info("Inside: " + customApplicationProperties.getEndpoints().getRegistration().getHomeResendEmailVerificationToken());
+		log.info("Inside: " + customApplicationProperties.getEndpoints().getRegistration().getRootResendEmailVerificationToken());
 		customUserService.resendEmailVerificationToken(token);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}

@@ -85,17 +85,17 @@ public class CustomUserServiceImpl implements CustomUserService {
 
 	@Override
 	public void confirmRegistration(final String emailVerificationToken) {
-		EmailVerificationToken token = getEmailVerificationToken(emailVerificationToken);
+		final EmailVerificationToken token = getEmailVerificationToken(emailVerificationToken);
 		if (token == null) {
 			log.error("No verification token found.");
 			throw new TokenNotFoundException("No verification token found.");
 		}
-		Calendar calendar = Calendar.getInstance();
+		final Calendar calendar = Calendar.getInstance();
 		if (token.getExpiryDate().compareTo(calendar.getTime()) < 0) {
 			log.error("Verification token has expired.");
 			throw new TokenExpiredException("Verification token has expired.");
 		}
-		CustomUser user = token.getCustomUser();
+		final CustomUser user = token.getCustomUser();
 		user.setEnabled(Boolean.TRUE);
 		saveRegisteredCustomUser(user);
 		log.info("User account has been activated.");
@@ -127,7 +127,7 @@ public class CustomUserServiceImpl implements CustomUserService {
 
 	@Override
 	public EmailVerificationToken generateNewEmailVerificationToken(final String existingEmailVerificationToken) {
-		EmailVerificationToken existingToken = emailVerificationTokenRepository.findByToken(existingEmailVerificationToken);
+		final EmailVerificationToken existingToken = emailVerificationTokenRepository.findByToken(existingEmailVerificationToken);
 		log.info("Found expired token for user: " + existingToken.getCustomUser().getEmail());
 		existingToken.updateToken(UUID.randomUUID().toString());
 		log.info("New token: " + existingToken.getToken() + " generated successfully.");
@@ -136,8 +136,8 @@ public class CustomUserServiceImpl implements CustomUserService {
 
 	@Override
 	public void resendEmailVerificationToken(final String existingEmailVerificationToken) {
-		EmailVerificationToken newToken = generateNewEmailVerificationToken(existingEmailVerificationToken);
-		CustomUser existingUser = getCustomUser(newToken.getToken());
+		final EmailVerificationToken newToken = generateNewEmailVerificationToken(existingEmailVerificationToken);
+		final CustomUser existingUser = getCustomUser(newToken.getToken());
 	}
 
 	@Override

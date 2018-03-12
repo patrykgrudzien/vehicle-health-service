@@ -2,7 +2,7 @@
   <div id="main-component">
     <h1>{{ message }}</h1>
     <div id="button-wrapper" class="row align-items-center justify-content-center">
-      <b-btn class="col-4" @click="callRestService">CALL Spring Boot REST backend service</b-btn>
+      <b-btn class="col-4" @click="callRestService">Call Spring Boot REST</b-btn>
     </div>
     <h4 v-if="response.length > 0">{{ response }}</h4>
   </div>
@@ -12,14 +12,14 @@
   export default {
     data() {
       return {
-        message: 'Home !',
+        message: 'Server Health Check',
         response: [],
         errors: []
       }
     },
     methods: {
       callRestService() {
-        this.axios.get(`api/hello`)
+        this.axios.get(`/server/health-check`)
           .then(response => {
             this.response = response.data;
           })

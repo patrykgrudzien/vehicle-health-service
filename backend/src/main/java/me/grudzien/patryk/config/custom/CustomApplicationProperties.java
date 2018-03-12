@@ -17,55 +17,62 @@ public class CustomApplicationProperties {
 	@Setter
 	public static class Endpoints {
 
-		private Api api = new Api();
+		private Home home = new Home();
+		private Server server = new Server();
 		private Registration registration = new Registration();
 		private Logout logout = new Logout();
 
 		@Getter
 		@Setter
-		public static class Api {
-			private String home;
-			private String hello;
+		public static class Home {
+			private String root;
+		}
 
-			public String getHomeHello() {
-				return getHome() + getHello();
+		@Getter
+		@Setter
+		public static class Server {
+			private String root;
+			private String healthCheck;
+
+			public String getHomeHealthCheck() {
+				return getRoot() + getHealthCheck();
 			}
 		}
 
 		@Getter
 		@Setter
 		public static class Registration {
-			private String home;
+			private String root;
 			private String registerUserAccount;
 			private String confirmRegistration;
 			private String confirmationUrl;
 			private String resendEmailVerificationToken;
 
-			public String getHomeRegisterUserAccount() {
-				return getHome() + getRegisterUserAccount();
+			public String getRootRegisterUserAccount() {
+				return getRoot() + getRegisterUserAccount();
 			}
 
-			public String getHomeConfirmRegistration() {
-				return getHome() + getConfirmRegistration();
+			public String getRootConfirmRegistration() {
+				return getRoot() + getConfirmRegistration();
 			}
 
-			public String getHomeConfirmationUrl() {
-				return getHome() + getConfirmationUrl();
+			public String getRootConfirmationUrl() {
+				return getRoot() + getConfirmationUrl();
 			}
 
-			public String getHomeResendEmailVerificationToken() {
-				return getHome() + getResendEmailVerificationToken();
+			public String getRootResendEmailVerificationToken() {
+				return getRoot() + getResendEmailVerificationToken();
 			}
 		}
 
 		@Getter
 		@Setter
 		public static class Logout {
-			private String home;
+			private String root;
 			private String successUrl;
 
-			public String getHomeSuccessUrl() {
-				return getHome() + getSuccessUrl();
+			public String getRootSuccessUrl() {
+				return getRoot() + getSuccessUrl();
 			}
 		}
 	}
