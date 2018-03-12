@@ -15,99 +15,140 @@
     <packaging>jar</packaging>
 
     <!--
-        List of provided executions:
-        (1) Remove generated.frontend folder
-        (2) Copy Vue.js frontend content
+        List of provided executions by profiles:
+
+        PROFILE: build-backend-module-all-plugins
+        (1) Spring boot
+        (2) Remove generated.frontend folder
+        (3) Copy Vue.js frontend content
+
+        PROFILE: build-backend-module-heroku-deployment
+        (1) Spring boot
+        (2) Deploy .jar file to Heroku
     -->
 
-    <build>
-        <plugins>
-            <!-- Maven Spring Boot plugin -->
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${spring.boot.version}</version>
-            </plugin>
-            <!-- Maven Clean Plugin -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-clean-plugin</artifactId>
-                <version>${maven-clean-plugin.version}</version>
-                <!-- EXECUTIONS -->
-                <executions>
+    <profiles>
+        <!-- BUILD BACKEND MODULE ALL PLUGINS -->
+        <profile>
+            <id>build-backend-module-all-plugins</id>
+            <build>
+                <plugins>
+                    <!-- Maven Spring Boot plugin -->
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                        <version>${spring.boot.version}</version>
+                    </plugin>
+                    <!-- Maven Clean Plugin -->
+                    <plugin>
+                        <!-- (1) Spring boot -->
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-clean-plugin</artifactId>
+                        <version>${maven-clean-plugin.version}</version>
+                        <!-- EXECUTIONS -->
+                        <executions>
+                            <!-- (2) Remove generated.frontend folder -->
+                            <execution>
+                                <id>Remove generated.frontend folder</id>
+                                <phase>clean</phase>
+                                <goals>
+                                    <goal>clean</goal>
+                                </goals>
+                                <configuration>
+                                    <filesets>
+                                        <fieldset>
+                                            <directory>${resources.generated.frontend.directory}</directory>
+                                        </fieldset>
+                                        <fieldset>
+                                            <directory>${resources.generated.directory}</directory>
+                                        </fieldset>
+                                    </filesets>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!-- Maven Resources plugin -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>${maven-resources-plugin.version}</version>
+                        <!-- EXECUTIONS -->
+                        <executions>
+                            <!-- (3) Copy Vue.js frontend content -->
+                            <execution>
+                                <id>copy Vue.js frontend content</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <!-- Configuration -->
+                                <configuration>
+                                    <outputDirectory>${resources.generated.frontend.directory}</outputDirectory>
+                                    <overwrite>true</overwrite>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.parent.basedir}/${frontend.target.dist.directory}</directory>
+                                            <includes>
+                                                <include>static/</include>
+                                                <include>index.html</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
 
-                    <!-- (1) Remove generated.frontend folder -->
-                    <execution>
-                        <id>Remove generated.frontend folder</id>
-                        <phase>clean</phase>
-                        <goals>
-                            <goal>clean</goal>
-                        </goals>
-                        <configuration>
-                            <filesets>
-                                <fieldset>
-                                    <directory>${resources.generated.frontend.directory}</directory>
-                                </fieldset>
-                                <fieldset>
-                                    <directory>${resources.generated.directory}</directory>
-                                </fieldset>
-                            </filesets>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <!-- Maven Resources plugin -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>${maven-resources-plugin.version}</version>
-                <!-- EXECUTIONS -->
-                <executions>
-
-                    <!-- (2) Copy Vue.js frontend content -->
-                    <execution>
-                        <id>copy Vue.js frontend content</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <!-- Configuration -->
-                        <configuration>
-                            <outputDirectory>${resources.generated.frontend.directory}</outputDirectory>
-                            <overwrite>true</overwrite>
-                            <resources>
-                                <resource>
-                                    <directory>${project.parent.basedir}/${frontend.target.dist.directory}</directory>
+        <!-- BUILD BACKEND MODULE HEROKU DEPLOYMENT -->
+        <profile>
+            <id>build-backend-module-heroku-deployment</id>
+            <build>
+                <plugins>
+                    <!-- Maven Spring Boot plugin -->
+                    <plugin>
+                        <!-- (1) Spring boot -->
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                        <version>${spring.boot.version}</version>
+                    </plugin>
+                    <!-- Maven Heroku plugin -->
+                    <plugin>
+                        <groupId>com.heroku.sdk</groupId>
+                        <artifactId>heroku-maven-plugin</artifactId>
+                        <version>${heroku-maven-plugin.version}</version>
+                        <executions>
+                            <!-- (2) Deploy .jar file to Heroku -->
+                            <execution>
+                                <id>Deploy .jar file to Heroku</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>deploy</goal>
+                                </goals>
+                                <!-- Configuration -->
+                                <configuration>
+                                    <appName>${heroku.app.name}</appName>
+                                    <includeTarget>false</includeTarget>
                                     <includes>
-                                        <include>static/</include>
-                                        <include>index.html</include>
+                                        <include>${basedir}/${heroku.final.artifact.path}</include>
                                     </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <!-- Maven Heroku plugin -->
-            <plugin>
-                <groupId>com.heroku.sdk</groupId>
-                <artifactId>heroku-maven-plugin</artifactId>
-                <version>${heroku-maven-plugin.version}</version>
-                <!-- Configuration -->
-                <configuration>
-                    <appName>${heroku.app.name}</appName>
-                    <includeTarget>false</includeTarget>
-                    <includes>
-                        <include>${basedir}/${heroku.final.artifact.path}</include>
-                    </includes>
-                    <jdkVersion>1.8</jdkVersion>
-                    <processTypes>
-                        <web>java $JAVA_OPTS -jar ${heroku.final.artifact.path}</web>
-                    </processTypes>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+                                    <jdkVersion>1.8</jdkVersion>
+                                    <processTypes>
+                                        <web>java $JAVA_OPTS -jar ${heroku.final.artifact.path}</web>
+                                    </processTypes>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <dependencyManagement>
         <dependencies>

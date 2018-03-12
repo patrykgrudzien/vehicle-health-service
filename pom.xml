@@ -13,10 +13,35 @@
     <name>full-stack-web-app</name>
     <description>Summary application using Spring Boot and Vue.js</description>
 
-    <modules>
-        <module>frontend</module>
-        <module>backend</module>
-    </modules>
+    <profiles>
+        <!-- BUILD ALL MODULES -->
+        <profile>
+            <id>build-all-modules</id>
+            <modules>
+                <module>frontend</module>
+                <module>backend</module>
+            </modules>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+
+        <!-- BUILD BACKEND MODULE -->
+        <profile>
+            <id>build-backend-module</id>
+            <modules>
+                <module>backend</module>
+            </modules>
+        </profile>
+
+        <!-- BUILD FRONTEND MODULE -->
+        <profile>
+            <id>build-frontend-module</id>
+            <modules>
+                <module>frontend</module>
+            </modules>
+        </profile>
+    </profiles>
 
     <properties>
         <!--########################### PLUGINS' VERSIONS ###########################-->
