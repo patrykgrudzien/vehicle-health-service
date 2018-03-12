@@ -55,7 +55,7 @@ public class RegistrationCompleteListener implements ApplicationListener<OnRegis
 		final String subject = "Registration Confirmation";
 		final String confirmationUrl = event.getApplicationUrl() + customApplicationProperties.getEndpoints()
 		                                                                                      .getRegistration()
-		                                                                                      .getHomeConfirmationUrl() + token;
+		                                                                                      .getRootConfirmationUrl() + token;
 		emailService.sendMessageUsingTemplate(EmailDto.Builder()
 		                                              .to(recipientAddress)
 		                                              .subject(subject)
