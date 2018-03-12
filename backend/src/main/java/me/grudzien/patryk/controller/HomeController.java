@@ -25,6 +25,6 @@ public class HomeController {
 	@GetMapping
 	public @ResponseBody String home() {
 		log.info("Inside: " + customApplicationProperties.getEndpoints().getHome().getRoot());
-		return "Starting page...";
+		return "Welcome to the Home Page!";
 	}
 }

@@ -2,6 +2,9 @@
   <nav>
     <ul>
       <li>
+        <router-link to="/" exact>Home</router-link>
+      </li>
+      <li>
         <router-link to="/server-health" exact>Server Health</router-link>
       </li>
       <li>
