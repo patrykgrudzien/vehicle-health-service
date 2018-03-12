@@ -32,6 +32,11 @@
             <modules>
                 <module>backend</module>
             </modules>
+            <activation>
+                <file>
+                    <exists>backend/deployment-to-heroku-enabled</exists>
+                </file>
+            </activation>
         </profile>
 
         <!-- BUILD FRONTEND MODULE -->
