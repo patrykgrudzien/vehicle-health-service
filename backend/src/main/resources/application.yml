@@ -1,6 +1,6 @@
-server:
-  port: 8088
-
+# ===============================
+# = CUSTOM CONFIGURATION
+# ===============================
 custom:
   properties:
     endpoints:
@@ -22,6 +22,9 @@ custom:
       front-end-module: http://localhost:8080
       back-end-module: http://localhost:8088
 
+# ===============================
+# = SPRING
+# ===============================
 spring:
   profiles:
     active: dev-home
@@ -45,6 +48,8 @@ spring:
 
 ---
 
+server:
+  port: 8088
 spring:
   profiles: dev-home
 # ===============================
@@ -66,6 +71,8 @@ spring:
 
 ---
 
+server:
+  port: 8088
 spring:
   profiles: dev-office
 # ===============================
@@ -84,3 +91,10 @@ spring:
     hibernate:
       ddl-auto: create-drop
     database-platform: org.hibernate.dialect.PostgreSQL94Dialect
+
+---
+
+server:
+  port: ${PORT:8080}
+spring:
+  profiles: heroku-deployment
