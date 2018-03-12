@@ -21,5 +21,9 @@ public interface CustomUserService {
 
 	void createEmailVerificationToken(CustomUser customUser, String token);
 
+	EmailVerificationToken generateNewEmailVerificationToken(String existingEmailVerificationToken);
+
+	void resendEmailVerificationToken(String existingEmailVerificationToken);
+
 	EmailVerificationToken getEmailVerificationToken(String emailVerificationToken);
 }

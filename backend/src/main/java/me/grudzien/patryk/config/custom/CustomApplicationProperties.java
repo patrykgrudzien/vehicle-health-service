@@ -39,6 +39,7 @@ public class CustomApplicationProperties {
 			private String registerUserAccount;
 			private String confirmRegistration;
 			private String confirmationUrl;
+			private String resendEmailVerificationToken;
 
 			public String getHomeRegisterUserAccount() {
 				return getHome() + getRegisterUserAccount();
@@ -50,6 +51,10 @@ public class CustomApplicationProperties {
 
 			public String getHomeConfirmationUrl() {
 				return getHome() + getConfirmationUrl();
+			}
+
+			public String getHomeResendEmailVerificationToken() {
+				return getHome() + getResendEmailVerificationToken();
 			}
 		}
 

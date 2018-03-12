@@ -12,6 +12,7 @@ custom:
          register-user-account: /register-user-account
          confirm-registration: /confirm
          confirmation-url: /confirm?token=
+         resend-email-verification-token: /resend-verification-token?token=
        logout:
          home: /logout
          success-url: ?logout
