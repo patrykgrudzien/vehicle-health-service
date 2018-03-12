@@ -27,7 +27,7 @@ custom:
 # ===============================
 spring:
   profiles:
-    active: dev-home
+    active: heroku-deployment
   # ===============================
   # = JavaMail Configuration
   # ===============================
@@ -95,6 +95,6 @@ spring:
 ---
 
 server:
-  port: ${PORT:8080}
+  port: ${PORT:8088}
 spring:
   profiles: heroku-deployment
