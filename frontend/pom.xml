@@ -31,7 +31,6 @@
                 <version>${frontend-maven-plugin.version}</version>
                 <!-- EXECUTIONS -->
                 <executions>
-
                     <!-- (1) Install node and npm to run npm/node scripts -->
                     <execution>
                         <id>install node and npm</id>
@@ -48,7 +47,6 @@
                             <npmDownloadRoot>${npm.download.root}</npmDownloadRoot>
                         </configuration>
                     </execution>
-
                     <!-- (2) Set NPM Registry -->
                     <execution>
                         <id>npm set registry</id>
@@ -60,7 +58,6 @@
                             <arguments>config set registry https://registry.npmjs.org</arguments>
                         </configuration>
                     </execution>
-
                     <!-- (3) Set SSL privilege -->
                     <execution>
                         <id>npm set non-strict ssl</id>
@@ -73,7 +70,6 @@
                             <arguments>config set strict-ssl false</arguments>
                         </configuration>
                     </execution>
-
                     <!-- (4) Install all project dependencies -->
                     <execution>
                         <id>npm install</id>
@@ -88,7 +84,6 @@
                             <arguments>install</arguments>
                         </configuration>
                     </execution>
-
                     <!-- (5) Build and minify static files -->
                     <execution>
                         <id>npm run build</id>
