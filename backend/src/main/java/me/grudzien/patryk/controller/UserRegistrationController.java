@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 
@@ -36,17 +35,24 @@ public class UserRegistrationController {
 	}
 
 	@PostMapping("${custom.properties.endpoints.registration.register-user-account}")
-	public @ResponseBody ResponseEntity<Void> registerUserAccount(@RequestBody @Valid final UserRegistrationDto userRegistrationDto,
-	                                                              final BindingResult bindingResult, final WebRequest webRequest) {
+	public ResponseEntity<Void> registerUserAccount(@RequestBody @Valid final UserRegistrationDto userRegistrationDto,
+	                                                final BindingResult bindingResult, final WebRequest webRequest) {
 		log.info("Inside: " + customApplicationProperties.getEndpoints().getRegistration().getHomeRegisterUserAccount());
 		customUserService.registerNewCustomUserAccount(userRegistrationDto, bindingResult, webRequest);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	@GetMapping("${custom.properties.endpoints.registration.confirm-registration}")
-	public @ResponseBody ResponseEntity<Void> confirmRegistration(@RequestParam("token") final String token) {
+	public ResponseEntity<Void> confirmRegistration(@RequestParam("token") final String token) {
 		log.info("Inside: " + customApplicationProperties.getEndpoints().getRegistration().getHomeConfirmRegistration());
 		customUserService.confirmRegistration(token);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
+	@GetMapping("${custom.properties.endpoints.registration.resend-email-verification-token}")
+	public ResponseEntity<Void> resendEmailVerificationToken(@RequestParam("token") final String token) {
+		log.info("Inside: " + customApplicationProperties.getEndpoints().getRegistration().getHomeResendEmailVerificationToken());
+		customUserService.resendEmailVerificationToken(token);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 }

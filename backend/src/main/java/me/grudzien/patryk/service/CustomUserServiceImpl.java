@@ -13,6 +13,7 @@ import org.springframework.web.context.request.WebRequest;
 
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import me.grudzien.patryk.domain.dto.UserRegistrationDto;
@@ -122,6 +123,21 @@ public class CustomUserServiceImpl implements CustomUserService {
 	@Override
 	public void createEmailVerificationToken(final CustomUser customUser, final String token) {
 		emailVerificationTokenRepository.save(new EmailVerificationToken(token, customUser));
+	}
+
+	@Override
+	public EmailVerificationToken generateNewEmailVerificationToken(final String existingEmailVerificationToken) {
+		EmailVerificationToken existingToken = emailVerificationTokenRepository.findByToken(existingEmailVerificationToken);
+		log.info("Found expired token for user: " + existingToken.getCustomUser().getEmail());
+		existingToken.updateToken(UUID.randomUUID().toString());
+		log.info("New token: " + existingToken.getToken() + " generated successfully.");
+		return emailVerificationTokenRepository.save(existingToken);
+	}
+
+	@Override
+	public void resendEmailVerificationToken(final String existingEmailVerificationToken) {
+		EmailVerificationToken newToken = generateNewEmailVerificationToken(existingEmailVerificationToken);
+		CustomUser existingUser = getCustomUser(newToken.getToken());
 	}
 
 	@Override
