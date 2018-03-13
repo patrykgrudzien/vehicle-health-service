@@ -10,7 +10,7 @@ public class CreateFileOnActiveHerokuProfile {
 
 	public static void main(final String[] args) {
 		try {
-			Files.readLines(new File("src/main/resources/application.yml"), Charsets.UTF_8)
+			Files.readLines(new File("backend/src/main/resources/application.yml"), Charsets.UTF_8)
 			     .stream()
 			     // filtering to find active profile
 			     .filter(line -> line.contains("active: "))
@@ -27,10 +27,11 @@ public class CreateFileOnActiveHerokuProfile {
 	private static String createFile(final String activeProfileName) {
 		try {
 			// heroku-deployment-enabled
-			Files.touch(new File(activeProfileName + "-enabled"));
+			Files.touch(new File("backend/" +activeProfileName + "-enabled"));
 		} catch (final IOException exception) {
 			System.out.println(exception.getMessage());
 		}
+		System.out.println("File >>>> " + activeProfileName + "-enabled <<<< has been created!");
 		return "File >>>> " + activeProfileName + "-enabled <<<< has been created!";
 	}
 }
