@@ -25,6 +25,7 @@
         PROFILE: build-backend-module-heroku-deployment
         (1) Spring boot
         (2) Deploy .jar file to Heroku
+        (3) Remove heroku-deployment-enabled file
     -->
 
     <profiles>
@@ -35,13 +36,13 @@
                 <plugins>
                     <!-- Maven Spring Boot plugin -->
                     <plugin>
+                        <!-- (1) Spring boot -->
                         <groupId>org.springframework.boot</groupId>
                         <artifactId>spring-boot-maven-plugin</artifactId>
                         <version>${spring.boot.version}</version>
                     </plugin>
                     <!-- Maven Clean Plugin -->
                     <plugin>
-                        <!-- (1) Spring boot -->
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-clean-plugin</artifactId>
                         <version>${maven-clean-plugin.version}</version>
@@ -98,6 +99,23 @@
                             </execution>
                         </executions>
                     </plugin>
+                    <!-- Maven Exec Plugin -->
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>${exec-maven-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>java</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <mainClass>me.grudzien.patryk.CreateFileOnActiveHerokuProfile</mainClass>
+                        </configuration>
+                    </plugin>
                 </plugins>
             </build>
             <activation>
@@ -145,11 +163,42 @@
                             </execution>
                         </executions>
                     </plugin>
+                    <!-- Maven Clean Plugin -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-clean-plugin</artifactId>
+                        <version>${maven-clean-plugin.version}</version>
+                        <!-- EXECUTIONS -->
+                        <executions>
+                            <!-- (3) Remove heroku-deployment-enabled file -->
+                            <execution>
+                                <id>Remove heroku-deployment-enabled file</id>
+                                <phase>clean</phase>
+                                <goals>
+                                    <goal>clean</goal>
+                                </goals>
+                                <configuration>
+                                    <filesets>
+                                        <fileset>
+                                            <directory>${project.basedir}</directory>
+                                            <includes>
+                                                <include>${heroku-deployment-enabled.file}</include>
+                                            </includes>
+                                            <excludes>
+                                                <exclude>src/**</exclude>
+                                                <exclude>pom.xml</exclude>
+                                            </excludes>
+                                        </fileset>
+                                    </filesets>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
                 </plugins>
             </build>
             <activation>
                 <file>
-                    <exists>deployment-to-heroku-enabled</exists>
+                    <exists>heroku-deployment-enabled</exists>
                 </file>
             </activation>
         </profile>
