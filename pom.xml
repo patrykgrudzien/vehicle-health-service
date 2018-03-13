@@ -34,7 +34,7 @@
             </modules>
             <activation>
                 <file>
-                    <exists>backend/deployment-to-heroku-enabled</exists>
+                    <exists>backend/${heroku-deployment-enabled.file}</exists>
                 </file>
             </activation>
         </profile>
@@ -70,6 +70,8 @@
               mvn heroku:deploy-war
         -->
         <heroku-maven-plugin.version>2.0.3</heroku-maven-plugin.version>
+        <!-- Exec Maven Plugin -->
+        <exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
 
         <!--########################### DEPENDENCIES' VERSIONS ###########################-->
         <!-- Spring -->
@@ -99,6 +101,8 @@
         <!-- Encoding -->
         <project.build.source.encoding>UTF-8</project.build.source.encoding>
         <project.reporting.output.encoding>UTF-8</project.reporting.output.encoding>
+        <!-- Heroku deployment trigger -->
+        <heroku-deployment-enabled.file>heroku-deployment-enabled</heroku-deployment-enabled.file>
     </properties>
 
 </project>
