@@ -20,12 +20,15 @@
         PROFILE: build-backend-module-all-plugins
         (1) Spring boot
         (2) Remove generated.frontend folder
-        (3) Copy Vue.js frontend content
+        (3) Remove heroku-deployment-enabled file
+        (4) Copy Vue.js frontend content
+        (5) Exec Maven Plugin
 
         PROFILE: build-backend-module-heroku-deployment
         (1) Spring boot
         (2) Deploy .jar file to Heroku
         (3) Remove heroku-deployment-enabled file
+        (4) Remove generated.frontend folder
     -->
 
     <profiles>
@@ -66,6 +69,28 @@
                                     </filesets>
                                 </configuration>
                             </execution>
+                            <!-- (3) Remove heroku-deployment-enabled file -->
+                            <execution>
+                                <id>Remove heroku-deployment-enabled file</id>
+                                <phase>clean</phase>
+                                <goals>
+                                    <goal>clean</goal>
+                                </goals>
+                                <configuration>
+                                    <filesets>
+                                        <fileset>
+                                            <directory>${project.basedir}</directory>
+                                            <includes>
+                                                <include>${heroku-deployment-enabled.file}</include>
+                                            </includes>
+                                            <excludes>
+                                                <exclude>src/**</exclude>
+                                                <exclude>pom.xml</exclude>
+                                            </excludes>
+                                        </fileset>
+                                    </filesets>
+                                </configuration>
+                            </execution>
                         </executions>
                     </plugin>
                     <!-- Maven Resources plugin -->
@@ -75,7 +100,7 @@
                         <version>${maven-resources-plugin.version}</version>
                         <!-- EXECUTIONS -->
                         <executions>
-                            <!-- (3) Copy Vue.js frontend content -->
+                            <!-- (4) Copy Vue.js frontend content -->
                             <execution>
                                 <id>copy Vue.js frontend content</id>
                                 <phase>generate-resources</phase>
@@ -101,6 +126,7 @@
                     </plugin>
                     <!-- Maven Exec Plugin -->
                     <plugin>
+                        <!-- (5) Exec Maven Plugin -->
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
                         <version>${exec-maven-plugin.version}</version>
@@ -197,6 +223,24 @@
                                                 <exclude>pom.xml</exclude>
                                             </excludes>
                                         </fileset>
+                                    </filesets>
+                                </configuration>
+                            </execution>
+                            <!-- (4) Remove generated.frontend folder -->
+                            <execution>
+                                <id>Remove generated.frontend folder</id>
+                                <phase>clean</phase>
+                                <goals>
+                                    <goal>clean</goal>
+                                </goals>
+                                <configuration>
+                                    <filesets>
+                                        <fieldset>
+                                            <directory>${resources.generated.frontend.directory}</directory>
+                                        </fieldset>
+                                        <fieldset>
+                                            <directory>${resources.generated.directory}</directory>
+                                        </fieldset>
                                     </filesets>
                                 </configuration>
                             </execution>
