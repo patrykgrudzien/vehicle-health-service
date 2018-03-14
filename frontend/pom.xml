@@ -13,27 +13,18 @@
 
     <artifactId>frontend</artifactId>
 
-    <!--
-        List of provided executions by profiles:
-
-        PROFILE: build-frontend-module-all-plugins
-        (1) Install node and npm to run npm/node scripts
-        (2) Set NPM Registry
-        (3) Set SSL privilege
-        (4) Install all project dependencies
-        (5) Build and minify static files
-
-        PROFILE: build-frontend-module-dev
-        (1) Install all project dependencies
-        (2) Build and minify static files
-    -->
-
     <profiles>
         <!-- BUILD FRONTEND MODULE ALL PRUGINS -->
         <profile>
-            <id>build-frontend-module-all-plugins</id>
+            <id>build-frontend-module-all-plugins-heroku</id>
             <build>
                 <plugins>
+                     <!-- Maven clean plugin -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-clean-plugin</artifactId>
+                        <version>${maven-clean-plugin.version}</version>
+                    </plugin>
                     <!-- Maven frontend plugin -->
                     <plugin>
                         <groupId>com.github.eirslett</groupId>
@@ -109,6 +100,11 @@
                     </plugin>
                 </plugins>
             </build>
+            <activation>
+                <file>
+                    <exists>../${heroku-deployment-enabled.file}</exists>
+                </file>
+            </activation>
         </profile>
 
         <!-- BUILD FRONTEND MODULE DEV -->

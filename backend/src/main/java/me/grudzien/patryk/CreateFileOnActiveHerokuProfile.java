@@ -1,17 +1,28 @@
 package me.grudzien.patryk;
 
+import lombok.extern.log4j.Log4j;
+
+import org.springframework.core.io.FileSystemResource;
+
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 
-import java.io.File;
 import java.io.IOException;
 
+/**
+ * This class is used by exec-maven-plugin which is gonna execute this main() method and create file which is a trigger for
+ * heroku-maven-plugin to start deployment process on Heroku.
+ */
+@Log4j
 public class CreateFileOnActiveHerokuProfile {
+
+	private static final String BACKEND_MODULE_NAME = "backend";
 
 	public static void main(final String[] args) {
 		try {
-			Files.readLines(new File("backend/src/main/resources/application.yml"), Charsets.UTF_8)
+			Files.readLines(new FileSystemResource(resolveApplicationYmlPath()).getFile(), Charsets.UTF_8)
 			     .stream()
+			     .peek(System.out::println)
 			     // filtering to find active profile
 			     .filter(line -> line.contains("active: "))
 			     // taking only active profile name after ": " character
@@ -20,18 +31,38 @@ public class CreateFileOnActiveHerokuProfile {
 			// if present generate file which will fire Heroku Maven Plugin and appropriate profiles
 			.ifPresent(CreateFileOnActiveHerokuProfile::createFile);
 		} catch (final IOException exception) {
-			System.out.println(exception.getMessage());
+			log.error(exception.getMessage());
 		}
 	}
 
 	private static String createFile(final String activeProfileName) {
+		final String successMessage = "File >>>> " + activeProfileName + "-enabled <<<< has been created!";
 		try {
 			// heroku-deployment-enabled
-			Files.touch(new File("backend/" +activeProfileName + "-enabled"));
+			Files.touch(new FileSystemResource(resolveHerokuDeploymentEnabledFileOutputPath(activeProfileName)).getFile());
+			log.info(successMessage);
 		} catch (final IOException exception) {
-			System.out.println(exception.getMessage());
+			log.error(exception.getMessage());
 		}
-		System.out.println("File >>>> " + activeProfileName + "-enabled <<<< has been created!");
-		return "File >>>> " + activeProfileName + "-enabled <<<< has been created!";
+		return "createFile() method executed.";
+	}
+
+	private static String resolveApplicationYmlPath() throws IOException {
+		final FileSystemResource fileSystemResource = new FileSystemResource("src/main/resources/application.yml");
+		final String path = fileSystemResource.getURI().getPath();
+
+		if (path.contains(BACKEND_MODULE_NAME) || path.equals("")) {
+			return "src/main/resources/application.yml";
+		} else {
+			return BACKEND_MODULE_NAME + "/src/main/resources/application.yml";
+		}
+	}
+
+	private static String resolveHerokuDeploymentEnabledFileOutputPath(final String activeProfileName) throws IOException {
+		if (new FileSystemResource("").getURI().getPath().contains(BACKEND_MODULE_NAME)) {
+			return "../" + activeProfileName + "-enabled";
+		} else {
+			return activeProfileName + "-enabled";
+		}
 	}
 }
