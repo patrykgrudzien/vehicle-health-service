@@ -25,4 +25,4 @@ frontend/test/unit/coverage
 frontend/yarn-error.log
 frontend/yarn.lock
 security/target/
-backend/deployment-to-heroku-enabled
+deployment-to-heroku-enabled

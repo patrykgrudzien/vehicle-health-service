@@ -14,27 +14,10 @@
     <artifactId>backend</artifactId>
     <packaging>jar</packaging>
 
-    <!--
-        List of provided executions by profiles:
-
-        PROFILE: build-backend-module-all-plugins
-        (1) Spring boot
-        (2) Remove generated.frontend folder
-        (3) Remove heroku-deployment-enabled file
-        (4) Copy Vue.js frontend content
-        (5) Exec Maven Plugin
-
-        PROFILE: build-backend-module-heroku-deployment
-        (1) Spring boot
-        (2) Deploy .jar file to Heroku
-        (3) Remove heroku-deployment-enabled file
-        (4) Remove generated.frontend folder
-    -->
-
     <profiles>
         <!-- BUILD BACKEND MODULE ALL PLUGINS -->
         <profile>
-            <id>build-backend-module-all-plugins</id>
+            <id>build-backend-module-dev</id>
             <build>
                 <plugins>
                     <!-- Maven Spring Boot plugin -->
@@ -79,14 +62,10 @@
                                 <configuration>
                                     <filesets>
                                         <fileset>
-                                            <directory>${project.basedir}</directory>
+                                            <directory>${project.parent.basedir}</directory>
                                             <includes>
                                                 <include>${heroku-deployment-enabled.file}</include>
                                             </includes>
-                                            <excludes>
-                                                <exclude>src/**</exclude>
-                                                <exclude>pom.xml</exclude>
-                                            </excludes>
                                         </fileset>
                                     </filesets>
                                 </configuration>
@@ -214,14 +193,10 @@
                                 <configuration>
                                     <filesets>
                                         <fileset>
-                                            <directory>${project.basedir}</directory>
+                                            <directory>${project.parent.basedir}</directory>
                                             <includes>
                                                 <include>${heroku-deployment-enabled.file}</include>
                                             </includes>
-                                            <excludes>
-                                                <exclude>src/**</exclude>
-                                                <exclude>pom.xml</exclude>
-                                            </excludes>
                                         </fileset>
                                     </filesets>
                                 </configuration>
@@ -250,7 +225,7 @@
             </build>
             <activation>
                 <file>
-                    <exists>heroku-deployment-enabled</exists>
+                    <exists>../${heroku-deployment-enabled.file}</exists>
                 </file>
             </activation>
         </profile>
@@ -349,7 +324,7 @@
 
     <properties>
         <!-- Property needed for Heroku plugin -->
-        <heroku.app.name>heroku-${project.parent.artifactId}</heroku.app.name>
+        <heroku.app.name>heroku-web-app-${project.artifactId}-module</heroku.app.name>
         <heroku.final.artifact.path>target/${project.artifactId}-${project.version}.jar</heroku.final.artifact.path>
     </properties>
 

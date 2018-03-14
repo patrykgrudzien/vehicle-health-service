@@ -22,7 +22,9 @@
                 <module>backend</module>
             </modules>
             <activation>
-                <activeByDefault>true</activeByDefault>
+                <file>
+                    <missing>${heroku-deployment-enabled.file}</missing>
+                </file>
             </activation>
         </profile>
 
@@ -34,7 +36,7 @@
             </modules>
             <activation>
                 <file>
-                    <exists>backend/${heroku-deployment-enabled.file}</exists>
+                    <exists>${heroku-deployment-enabled.file}</exists>
                 </file>
             </activation>
         </profile>
@@ -45,6 +47,11 @@
             <modules>
                 <module>frontend</module>
             </modules>
+            <activation>
+                <file>
+                    <exists>${heroku-deployment-enabled.file}</exists>
+                </file>
+            </activation>
         </profile>
     </profiles>
 
