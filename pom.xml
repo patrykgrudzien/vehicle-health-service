@@ -13,47 +13,10 @@
     <name>full-stack-web-app</name>
     <description>Summary application using Spring Boot and Vue.js</description>
 
-    <profiles>
-        <!-- BUILD ALL MODULES -->
-        <profile>
-            <id>build-all-modules</id>
-            <modules>
-                <module>frontend</module>
-                <module>backend</module>
-            </modules>
-            <activation>
-                <file>
-                    <missing>${heroku-deployment-enabled.file}</missing>
-                </file>
-            </activation>
-        </profile>
-
-        <!-- BUILD BACKEND MODULE -->
-        <profile>
-            <id>build-backend-module</id>
-            <modules>
-                <module>backend</module>
-            </modules>
-            <activation>
-                <file>
-                    <exists>${heroku-deployment-enabled.file}</exists>
-                </file>
-            </activation>
-        </profile>
-
-        <!-- BUILD FRONTEND MODULE -->
-        <profile>
-            <id>build-frontend-module</id>
-            <modules>
-                <module>frontend</module>
-            </modules>
-            <activation>
-                <file>
-                    <exists>${heroku-deployment-enabled.file}</exists>
-                </file>
-            </activation>
-        </profile>
-    </profiles>
+    <modules>
+        <module>frontend</module>
+        <module>backend</module>
+    </modules>
 
     <properties>
         <!--########################### PLUGINS' VERSIONS ###########################-->
@@ -99,8 +62,7 @@
 
         <!--########################### PROJECT's DETAILS ###########################-->
         <!-- Structure -->
-        <resources.generated.directory>src/main/resources/generated</resources.generated.directory>
-        <resources.generated.frontend.directory>src/main/resources/generated/frontend</resources.generated.frontend.directory>
+        <resources.static.directory>src/main/resources/static</resources.static.directory>
         <frontend.target.dist.directory>frontend/target/dist</frontend.target.dist.directory>
         <!-- JDK -->
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -109,7 +71,8 @@
         <project.build.source.encoding>UTF-8</project.build.source.encoding>
         <project.reporting.output.encoding>UTF-8</project.reporting.output.encoding>
         <!-- Heroku deployment trigger -->
-        <heroku-deployment-enabled.file>heroku-deployment-enabled</heroku-deployment-enabled.file>
+        <heroku-deployment-frontend-enabled.file>heroku-deployment-frontend-enabled</heroku-deployment-frontend-enabled.file>
+        <heroku-deployment-backend-enabled.file>heroku-deployment-backend-enabled</heroku-deployment-backend-enabled.file>
     </properties>
 
 </project>

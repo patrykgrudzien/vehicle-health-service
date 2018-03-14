@@ -14,16 +14,37 @@
     <artifactId>frontend</artifactId>
 
     <profiles>
-        <!-- BUILD FRONTEND MODULE ALL PRUGINS -->
+        <!-- BUILD FRONTEND MODULE DEV -->
         <profile>
-            <id>build-frontend-module-all-plugins-heroku</id>
+            <id>build-frontend-module-dev</id>
             <build>
                 <plugins>
                      <!-- Maven clean plugin -->
                     <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-clean-plugin</artifactId>
-                        <version>${maven-clean-plugin.version}</version>
+                      <groupId>org.apache.maven.plugins</groupId>
+                      <artifactId>maven-clean-plugin</artifactId>
+                      <version>${maven-clean-plugin.version}</version>
+                      <!-- EXECUTIONS -->
+                      <executions>
+                        <!-- (3) Remove heroku-deployment-enabled file -->
+                        <execution>
+                          <id>Remove heroku-deployment-frontend-enabled file</id>
+                          <phase>clean</phase>
+                          <goals>
+                            <goal>clean</goal>
+                          </goals>
+                          <configuration>
+                            <filesets>
+                              <fileset>
+                                <directory>${basedir}</directory>
+                                <includes>
+                                  <include>${heroku-deployment-frontend-enabled.file}</include>
+                                </includes>
+                              </fileset>
+                            </filesets>
+                          </configuration>
+                        </execution>
+                      </executions>
                     </plugin>
                     <!-- Maven frontend plugin -->
                     <plugin>
@@ -101,15 +122,15 @@
                 </plugins>
             </build>
             <activation>
-                <file>
-                    <exists>../${heroku-deployment-enabled.file}</exists>
-                </file>
+              <file>
+                <missing>${heroku-deployment-frontend-enabled.file}</missing>
+              </file>
             </activation>
         </profile>
 
-        <!-- BUILD FRONTEND MODULE DEV -->
+        <!-- BUILD FRONTEND MODULE HEROKU DEPLOYMENT -->
         <profile>
-            <id>build-frontend-module-dev</id>
+            <id>build-frontend-module-heroku-deployment</id>
             <build>
                 <plugins>
                     <!-- Maven frontend plugin -->
@@ -121,7 +142,7 @@
                         <executions>
                             <!-- (1) Install all project dependencies -->
                             <execution>
-                                <id>npm install</id>
+                                <id>HEROKU (npm install)</id>
                                 <goals>
                                     <goal>npm</goal>
                                 </goals>
@@ -135,7 +156,7 @@
                             </execution>
                             <!-- (2) Build and minify static files -->
                             <execution>
-                                <id>npm run build</id>
+                                <id>HEROKU (npm run build)</id>
                                 <goals>
                                     <goal>npm</goal>
                                 </goals>
@@ -146,10 +167,38 @@
                             </execution>
                         </executions>
                     </plugin>
+                  <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>${maven-clean-plugin.version}</version>
+                    <!-- EXECUTIONS -->
+                    <executions>
+                      <!-- (3) Remove heroku-deployment-enabled file -->
+                      <execution>
+                        <id>HEROKU (Remove heroku-deployment-frontend-enabled file)</id>
+                        <phase>clean</phase>
+                        <goals>
+                          <goal>clean</goal>
+                        </goals>
+                        <configuration>
+                          <filesets>
+                            <fileset>
+                              <directory>${basedir}</directory>
+                              <includes>
+                                <include>${heroku-deployment-frontend-enabled.file}</include>
+                              </includes>
+                            </fileset>
+                          </filesets>
+                        </configuration>
+                      </execution>
+                    </executions>
+                  </plugin>
                 </plugins>
             </build>
             <activation>
-                <activeByDefault>true</activeByDefault>
+                <file>
+                  <exists>${heroku-deployment-frontend-enabled.file}</exists>
+                </file>
             </activation>
         </profile>
     </profiles>

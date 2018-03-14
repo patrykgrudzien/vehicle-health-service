@@ -12,8 +12,8 @@
 *.log
 target/
 
-backend/src/main/resources/generated/frontend
 backend/target
+frontend/target
 frontend/dist/
 frontend/node/
 frontend/node_modules/
@@ -25,4 +25,5 @@ frontend/test/unit/coverage
 frontend/yarn-error.log
 frontend/yarn.lock
 security/target/
-deployment-to-heroku-enabled
+
+backend/heroku-deployment-backend-enabled

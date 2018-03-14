@@ -15,7 +15,7 @@
     <packaging>jar</packaging>
 
     <profiles>
-        <!-- BUILD BACKEND MODULE ALL PLUGINS -->
+        <!-- BUILD BACKEND MODULE DEV -->
         <profile>
             <id>build-backend-module-dev</id>
             <build>
@@ -34,9 +34,9 @@
                         <version>${maven-clean-plugin.version}</version>
                         <!-- EXECUTIONS -->
                         <executions>
-                            <!-- (2) Remove generated.frontend folder -->
+                            <!-- (2a) Remove static folder -->
                             <execution>
-                                <id>Remove generated.frontend folder</id>
+                                <id>Remove static folder</id>
                                 <phase>clean</phase>
                                 <goals>
                                     <goal>clean</goal>
@@ -44,17 +44,14 @@
                                 <configuration>
                                     <filesets>
                                         <fieldset>
-                                            <directory>${resources.generated.frontend.directory}</directory>
-                                        </fieldset>
-                                        <fieldset>
-                                            <directory>${resources.generated.directory}</directory>
+                                            <directory>${resources.static.directory}</directory>
                                         </fieldset>
                                     </filesets>
                                 </configuration>
                             </execution>
-                            <!-- (3) Remove heroku-deployment-enabled file -->
+                            <!-- (2b) Remove heroku-deployment-enabled file -->
                             <execution>
-                                <id>Remove heroku-deployment-enabled file</id>
+                                <id>Remove heroku-deployment-backend-enabled file</id>
                                 <phase>clean</phase>
                                 <goals>
                                     <goal>clean</goal>
@@ -62,9 +59,9 @@
                                 <configuration>
                                     <filesets>
                                         <fileset>
-                                            <directory>${project.parent.basedir}</directory>
+                                            <directory>${basedir}</directory>
                                             <includes>
-                                                <include>${heroku-deployment-enabled.file}</include>
+                                                <include>${heroku-deployment-backend-enabled.file}</include>
                                             </includes>
                                         </fileset>
                                     </filesets>
@@ -88,7 +85,7 @@
                                 </goals>
                                 <!-- Configuration -->
                                 <configuration>
-                                    <outputDirectory>${resources.generated.frontend.directory}</outputDirectory>
+                                    <outputDirectory>${resources.static.directory}</outputDirectory>
                                     <overwrite>true</overwrite>
                                     <resources>
                                         <resource>
@@ -124,7 +121,9 @@
                 </plugins>
             </build>
             <activation>
-                <activeByDefault>true</activeByDefault>
+                <file>
+                    <missing>${heroku-deployment-backend-enabled.file}</missing>
+                </file>
             </activation>
         </profile>
 
@@ -156,7 +155,7 @@
                         <executions>
                             <!-- (2) Deploy .jar file to Heroku -->
                             <execution>
-                                <id>Deploy .jar file to Heroku</id>
+                                <id>HEROKU (Deploy .jar file to Heroku)</id>
                                 <phase>install</phase>
                                 <goals>
                                     <goal>deploy</goal>
@@ -185,7 +184,7 @@
                         <executions>
                             <!-- (3) Remove heroku-deployment-enabled file -->
                             <execution>
-                                <id>Remove heroku-deployment-enabled file</id>
+                                <id>HEROKU (Remove heroku-deployment-backend-enabled file)</id>
                                 <phase>clean</phase>
                                 <goals>
                                     <goal>clean</goal>
@@ -193,17 +192,17 @@
                                 <configuration>
                                     <filesets>
                                         <fileset>
-                                            <directory>${project.parent.basedir}</directory>
+                                            <directory>${basedir}</directory>
                                             <includes>
-                                                <include>${heroku-deployment-enabled.file}</include>
+                                                <include>${heroku-deployment-backend-enabled.file}</include>
                                             </includes>
                                         </fileset>
                                     </filesets>
                                 </configuration>
                             </execution>
-                            <!-- (4) Remove generated.frontend folder -->
+                            <!-- (4) Remove static folder -->
                             <execution>
-                                <id>Remove generated.frontend folder</id>
+                                <id>HEROKU (Remove src/main/resources/static folder)</id>
                                 <phase>clean</phase>
                                 <goals>
                                     <goal>clean</goal>
@@ -211,10 +210,7 @@
                                 <configuration>
                                     <filesets>
                                         <fieldset>
-                                            <directory>${resources.generated.frontend.directory}</directory>
-                                        </fieldset>
-                                        <fieldset>
-                                            <directory>${resources.generated.directory}</directory>
+                                            <directory>${resources.static.directory}</directory>
                                         </fieldset>
                                     </filesets>
                                 </configuration>
@@ -225,7 +221,7 @@
             </build>
             <activation>
                 <file>
-                    <exists>../${heroku-deployment-enabled.file}</exists>
+                    <exists>${heroku-deployment-backend-enabled.file}</exists>
                 </file>
             </activation>
         </profile>
