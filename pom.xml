@@ -70,9 +70,6 @@
         <!-- Encoding -->
         <project.build.source.encoding>UTF-8</project.build.source.encoding>
         <project.reporting.output.encoding>UTF-8</project.reporting.output.encoding>
-        <!-- Heroku deployment trigger -->
-        <heroku-deployment-frontend-enabled.file>heroku-deployment-frontend-enabled</heroku-deployment-frontend-enabled.file>
-        <heroku-deployment-backend-enabled.file>heroku-deployment-backend-enabled</heroku-deployment-backend-enabled.file>
     </properties>
 
 </project>

@@ -65,7 +65,7 @@
                                         <fileset>
                                             <directory>${basedir}</directory>
                                             <includes>
-                                                <include>${heroku-deployment-backend-enabled.file}</include>
+                                                <include>heroku-deployment-backend-enabled</include>
                                             </includes>
                                         </fileset>
                                     </filesets>
@@ -126,9 +126,8 @@
             </build>
             <activation>
                 <file>
-                    <missing>${heroku-deployment-backend-enabled.file}</missing>
+                    <missing>heroku-deployment-backend-enabled</missing>
                 </file>
-                <activeByDefault>true</activeByDefault>
             </activation>
         </profile>
         <!--
@@ -189,7 +188,7 @@
                                         <fileset>
                                             <directory>${basedir}</directory>
                                             <includes>
-                                                <include>${heroku-deployment-backend-enabled.file}</include>
+                                                <include>heroku-deployment-backend-enabled</include>
                                             </includes>
                                         </fileset>
                                     </filesets>
@@ -216,9 +215,8 @@
             </build>
             <activation>
                 <file>
-                    <exists>${heroku-deployment-backend-enabled.file}</exists>
+                    <exists>heroku-deployment-backend-enabled</exists>
                 </file>
-                <activeByDefault>false</activeByDefault>
             </activation>
         </profile>
         <!--
