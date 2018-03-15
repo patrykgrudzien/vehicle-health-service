@@ -13,6 +13,7 @@
 target/
 
 backend/target
+backend/src/main/resources/public
 frontend/target
 frontend/dist/
 frontend/node/

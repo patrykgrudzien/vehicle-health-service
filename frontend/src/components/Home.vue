@@ -10,20 +10,6 @@
           return {
             homeMessage: 'Welcome to the Home Page!'
           }
-        },
-        methods: {
-          callHomeController() {
-            this.axios.get(`/`)
-              .then(response => {
-                this.homeMessage = response.data;
-              })
-              .catch(error => {
-                console.log(error.response.data);
-              })
-          }
-        },
-        created() {
-          this.callHomeController();
         }
     }
 </script>

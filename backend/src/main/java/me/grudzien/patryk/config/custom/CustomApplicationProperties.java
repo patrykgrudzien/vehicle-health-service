@@ -17,16 +17,9 @@ public class CustomApplicationProperties {
 	@Setter
 	public static class Endpoints {
 
-		private Home home = new Home();
 		private Server server = new Server();
 		private Registration registration = new Registration();
 		private Logout logout = new Logout();
-
-		@Getter
-		@Setter
-		public static class Home {
-			private String root;
-		}
 
 		@Getter
 		@Setter

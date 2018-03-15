@@ -31,7 +31,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(final HttpSecurity http) throws Exception {
 
-		http
+		http.cors().and()
 			// disabling CSRF for now (testing purposes), later it'll be replaced by OAuth2 and JWT
 			.csrf().disable()
 		    .authorizeRequests()
