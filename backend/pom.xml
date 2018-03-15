@@ -153,7 +153,7 @@
                         <executions>
                             <!-- (2) Deploy .jar file to Heroku -->
                             <execution>
-                                <id>HEROKU (Deploy .jar file to Heroku)</id>
+                                <id>HEROKU >>>> Deploy .jar file to Heroku >>>> HEROKU</id>
                                 <phase>install</phase>
                                 <goals>
                                     <goal>deploy</goal>
@@ -178,7 +178,7 @@
                         <executions>
                             <!-- (3) Remove heroku-deployment-enabled file -->
                             <execution>
-                                <id>HEROKU (Remove heroku-deployment-backend-enabled file)</id>
+                                <id>HEROKU >>>> Remove heroku-deployment-backend-enabled file >>>> HEROKU</id>
                                 <phase>clean</phase>
                                 <goals>
                                     <goal>clean</goal>
@@ -196,7 +196,7 @@
                             </execution>
                             <!-- (4) Remove static folder -->
                             <execution>
-                                <id>HEROKU (Remove src/main/resources/static folder)</id>
+                                <id>HEROKU >>>> Remove src/main/resources/static folder >>>> HEROKU</id>
                                 <phase>clean</phase>
                                 <goals>
                                     <goal>clean</goal>

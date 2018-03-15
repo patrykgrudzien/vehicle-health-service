@@ -18,9 +18,12 @@ import java.util.List;
 @Log4j
 public class CreateFileOnActiveHerokuProfile {
 
-	private static final String FRONTEND_MODULE_NAME = "frontend";
-	private static final String BACKEND_MODULE_NAME = "backend";
-	private static final String HEROKU_DEPLOYMENT_PROFILE_NAME = "heroku-deployment";
+	private static final String FRONTEND_MODULE = "frontend";
+	private static final String BACKEND_MODULE = "backend";
+	private static final String HEROKU_DEPLOYMENT = "heroku-deployment";
+	private static final String GO_DIRECTORY_UP = "../";
+	private static final String HOME = "/";
+	private static final String ENABLED = "-enabled";
 
 	public static void main(final String[] args) {
 		try {
@@ -32,10 +35,10 @@ public class CreateFileOnActiveHerokuProfile {
 			     .peek(activeProfileName -> System.out.println("ACTIVE PROFILE >>>> " + activeProfileName))
 			     // taking only active profile name after ": " character
 			     .map(line -> line.substring(line.indexOf(':') + 1).trim())
-			     // create profile only for "heroku-deployment" profile
-			     .filter(profileName -> profileName.equals(HEROKU_DEPLOYMENT_PROFILE_NAME))
+			     // create files only for "heroku-deployment" profile
+			     .filter(profileName -> profileName.equals(HEROKU_DEPLOYMENT))
 			.findFirst()
-			// if present generate file which will fire Heroku Maven Plugin and appropriate profiles
+			// if present generate files which will fire Heroku Maven Plugin and appropriate profiles
 			.ifPresent(CreateFileOnActiveHerokuProfile::createFile);
 		} catch (final IOException exception) {
 			log.error(exception.getMessage());
@@ -44,17 +47,16 @@ public class CreateFileOnActiveHerokuProfile {
 
 	private static String resolveApplicationYmlPath() throws IOException {
 		final FileSystemResource fileSystemResource = new FileSystemResource("src/main/resources/application.yml");
-		final String path = fileSystemResource.getURI().getPath();
+		final String projectPath = fileSystemResource.getURI().getPath();
 
-		if (path.contains(BACKEND_MODULE_NAME)) {
+		if (projectPath.contains(BACKEND_MODULE)) {
 			return "src/main/resources/application.yml";
 		} else {
-			return BACKEND_MODULE_NAME + "/src/main/resources/application.yml";
+			return BACKEND_MODULE + "/src/main/resources/application.yml";
 		}
 	}
 
 	private static List<String> resolveHerokuDeploymentEnabledFilesOutputPaths(final String activeProfileName) {
-
 		String projectPath = "";
 		try {
 			projectPath = new FileSystemResource("").getURI().getPath();
@@ -64,17 +66,17 @@ public class CreateFileOnActiveHerokuProfile {
 		}
 		final List<String> generatedFilesPaths = Lists.newArrayList();
 
-		if (projectPath.contains(FRONTEND_MODULE_NAME)) {
-			generatedFilesPaths.add(activeProfileName + "-" + FRONTEND_MODULE_NAME + "-enabled");
-			generatedFilesPaths.add("../" + BACKEND_MODULE_NAME + "/" + activeProfileName + "-" + BACKEND_MODULE_NAME + "-enabled");
+		if (projectPath.contains(FRONTEND_MODULE)) {
+			generatedFilesPaths.add(activeProfileName + "-" + FRONTEND_MODULE + ENABLED);
+			generatedFilesPaths.add(GO_DIRECTORY_UP + BACKEND_MODULE + HOME + activeProfileName + "-" + BACKEND_MODULE + ENABLED);
 		}
-		if (projectPath.contains(BACKEND_MODULE_NAME)) {
-			generatedFilesPaths.add(activeProfileName + "-" + BACKEND_MODULE_NAME + "-enabled");
-			generatedFilesPaths.add("../" + FRONTEND_MODULE_NAME + "/" + activeProfileName + "-" + FRONTEND_MODULE_NAME + "-enabled");
+		if (projectPath.contains(BACKEND_MODULE)) {
+			generatedFilesPaths.add(activeProfileName + "-" + BACKEND_MODULE + ENABLED);
+			generatedFilesPaths.add(GO_DIRECTORY_UP + FRONTEND_MODULE + HOME + activeProfileName + "-" + FRONTEND_MODULE + ENABLED);
 		}
 		else {
-			generatedFilesPaths.add(FRONTEND_MODULE_NAME + "/" + activeProfileName + "-" + FRONTEND_MODULE_NAME + "-enabled");
-			generatedFilesPaths.add(BACKEND_MODULE_NAME + "/" + activeProfileName + "-" + BACKEND_MODULE_NAME + "-enabled");
+			generatedFilesPaths.add(FRONTEND_MODULE + HOME + activeProfileName + "-" + FRONTEND_MODULE + ENABLED);
+			generatedFilesPaths.add(BACKEND_MODULE + HOME + activeProfileName + "-" + BACKEND_MODULE + ENABLED);
 		}
 		return generatedFilesPaths;
 	}
