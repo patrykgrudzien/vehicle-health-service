@@ -62,7 +62,7 @@
 
         <!--########################### PROJECT's DETAILS ###########################-->
         <!-- Structure -->
-        <resources.static.directory>src/main/resources/static</resources.static.directory>
+        <resources.public.directory>src/main/resources/public</resources.public.directory>
         <frontend.target.dist.directory>frontend/target/dist</frontend.target.dist.directory>
         <!-- JDK -->
         <maven.compiler.source>1.8</maven.compiler.source>

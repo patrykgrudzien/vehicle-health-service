@@ -15,7 +15,11 @@
     <packaging>jar</packaging>
 
     <profiles>
-        <!-- BUILD BACKEND MODULE DEV -->
+        <!--
+        ############################################
+        ########  BUILD BACKEND MODULE DEV #########
+        ############################################
+        -->
         <profile>
             <id>build-backend-module-dev</id>
             <build>
@@ -44,7 +48,7 @@
                                 <configuration>
                                     <filesets>
                                         <fieldset>
-                                            <directory>${resources.static.directory}</directory>
+                                            <directory>${resources.public.directory}</directory>
                                         </fieldset>
                                     </filesets>
                                 </configuration>
@@ -85,7 +89,7 @@
                                 </goals>
                                 <!-- Configuration -->
                                 <configuration>
-                                    <outputDirectory>${resources.static.directory}</outputDirectory>
+                                    <outputDirectory>${resources.public.directory}</outputDirectory>
                                     <overwrite>true</overwrite>
                                     <resources>
                                         <resource>
@@ -124,29 +128,24 @@
                 <file>
                     <missing>${heroku-deployment-backend-enabled.file}</missing>
                 </file>
+                <activeByDefault>true</activeByDefault>
             </activation>
         </profile>
+        <!--
+        ############################################
+        ########  BUILD BACKEND MODULE DEV #########
+        ############################################
+        -->
 
-        <!-- BUILD BACKEND MODULE HEROKU DEPLOYMENT -->
+        <!--
+        ##########################################################
+        ########  BUILD BACKEND MODULE HEROKU DEPLOYMENT #########
+        ##########################################################
+        -->
         <profile>
             <id>build-backend-module-heroku-deployment</id>
             <build>
                 <plugins>
-                    <!-- Maven Spring Boot plugin -->
-                    <plugin>
-                        <!-- (1) Spring boot -->
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-maven-plugin</artifactId>
-                        <version>${spring.boot.version}</version>
-                        <executions>
-                            <execution>
-                                <phase>install</phase>
-                                <goals>
-                                    <goal>repackage</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
                     <!-- Maven Heroku plugin -->
                     <plugin>
                         <groupId>com.heroku.sdk</groupId>
@@ -163,13 +162,9 @@
                                 <!-- Configuration -->
                                 <configuration>
                                     <appName>${heroku.app.name}</appName>
-                                    <includeTarget>false</includeTarget>
-                                    <includes>
-                                        <include>${basedir}/${heroku.final.artifact.path}</include>
-                                    </includes>
                                     <jdkVersion>1.8</jdkVersion>
                                     <processTypes>
-                                        <web>java -Dserver.port=$PORT $JAVA_OPTS -jar ${heroku.final.artifact.path}</web>
+                                        <web>java $JAVA_OPTS -cp target/classes:target/dependency/* ${main.app.class.name}</web>
                                     </processTypes>
                                 </configuration>
                             </execution>
@@ -210,7 +205,7 @@
                                 <configuration>
                                     <filesets>
                                         <fieldset>
-                                            <directory>${resources.static.directory}</directory>
+                                            <directory>${resources.public.directory}</directory>
                                         </fieldset>
                                     </filesets>
                                 </configuration>
@@ -223,8 +218,14 @@
                 <file>
                     <exists>${heroku-deployment-backend-enabled.file}</exists>
                 </file>
+                <activeByDefault>false</activeByDefault>
             </activation>
         </profile>
+        <!--
+        ##########################################################
+        ########  BUILD BACKEND MODULE HEROKU DEPLOYMENT #########
+        ##########################################################
+        -->
     </profiles>
 
     <dependencyManagement>
@@ -321,7 +322,7 @@
     <properties>
         <!-- Property needed for Heroku plugin -->
         <heroku.app.name>heroku-web-app-${project.artifactId}-module</heroku.app.name>
-        <heroku.final.artifact.path>target/${project.artifactId}-${project.version}.jar</heroku.final.artifact.path>
+        <main.app.class.name>me.grudzien.patryk.SpringBootVueJsApplication</main.app.class.name>
     </properties>
 
 </project>

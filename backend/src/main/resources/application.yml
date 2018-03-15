@@ -4,8 +4,6 @@
 custom:
   properties:
     endpoints:
-      home:
-       root: /
       server:
         root: /server
         health-check: /health-check

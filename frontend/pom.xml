@@ -14,7 +14,11 @@
     <artifactId>frontend</artifactId>
 
     <profiles>
-        <!-- BUILD FRONTEND MODULE DEV -->
+        <!--
+        ############################################
+        ########  BUILD FRONTEND MODULE DEV ########
+        ############################################
+        -->
         <profile>
             <id>build-frontend-module-dev</id>
             <build>
@@ -125,10 +129,21 @@
               <file>
                 <missing>${heroku-deployment-frontend-enabled.file}</missing>
               </file>
+              <activeByDefault>true</activeByDefault>
             </activation>
         </profile>
+        <!--
+        ############################################
+        ########  BUILD FRONTEND MODULE DEV ########
+        ############################################
+        -->
 
-        <!-- BUILD FRONTEND MODULE HEROKU DEPLOYMENT -->
+
+        <!--
+        ##########################################################
+        ########  BUILD FRONTEND MODULE HEROKU DEPLOYMENT ########
+        ##########################################################
+        -->
         <profile>
             <id>build-frontend-module-heroku-deployment</id>
             <build>
@@ -199,8 +214,14 @@
                 <file>
                   <exists>${heroku-deployment-frontend-enabled.file}</exists>
                 </file>
+              <activeByDefault>false</activeByDefault>
             </activation>
         </profile>
+        <!--
+        ##########################################################
+        ########  BUILD FRONTEND MODULE HEROKU DEPLOYMENT ########
+        ##########################################################
+        -->
     </profiles>
 
 </project>
