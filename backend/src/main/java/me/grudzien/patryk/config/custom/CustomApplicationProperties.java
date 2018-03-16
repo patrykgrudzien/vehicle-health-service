@@ -20,6 +20,7 @@ public class CustomApplicationProperties {
 		private Server server = new Server();
 		private Registration registration = new Registration();
 		private Logout logout = new Logout();
+		private Heroku heroku = new Heroku();
 
 		@Getter
 		@Setter
@@ -67,6 +68,12 @@ public class CustomApplicationProperties {
 			public String getRootSuccessUrl() {
 				return getRoot() + getSuccessUrl();
 			}
+		}
+
+		@Getter
+		@Setter
+		public static class Heroku {
+			private String appUrl;
 		}
 	}
 

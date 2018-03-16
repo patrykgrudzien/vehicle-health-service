@@ -16,6 +16,8 @@ custom:
       logout:
         root: /logout
         success-url: ?logout
+      heroku:
+        app-url: https://heroku-web-app-backend-module.herokuapp.com
     cors-origins:
       front-end-module: http://localhost:8080
       back-end-module: http://localhost:8088
