@@ -35,6 +35,13 @@
 </script>
 
 <style scoped>
+  @media screen and (max-width: 1080px) {
+    .nav-link {
+      display: inline-block;
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+  }
   .active {
     background-color: #303030;
     color: #303030;
