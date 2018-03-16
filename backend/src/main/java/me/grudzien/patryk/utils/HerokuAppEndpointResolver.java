@@ -1,6 +1,6 @@
 package me.grudzien.patryk.utils;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.log4j.Log4j2;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,7 @@ import java.util.Arrays;
 
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 
-@Log4j
+@Log4j2
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class HerokuAppEndpointResolver implements InitializingBean {
@@ -21,11 +21,14 @@ public class HerokuAppEndpointResolver implements InitializingBean {
 	private static String ACTIVE_SPRING_PROFILE;
 	private static final String HEROKU_PROFILE_NAME = "heroku-deployment";
 
-	@Autowired
-	private Environment environment;
+	private final Environment environment;
+	private final CustomApplicationProperties customApplicationProperties;
 
 	@Autowired
-	private CustomApplicationProperties customApplicationProperties;
+	public HerokuAppEndpointResolver(final Environment environment, final CustomApplicationProperties customApplicationProperties) {
+		this.environment = environment;
+		this.customApplicationProperties = customApplicationProperties;
+	}
 
 	@Override
 	public void afterPropertiesSet() {
@@ -34,7 +37,11 @@ public class HerokuAppEndpointResolver implements InitializingBean {
 		      .ifPresent(activeProfile -> ACTIVE_SPRING_PROFILE = activeProfile);
 	}
 
-	public String resolveBaseAppUrl() {
+	/**
+	 * Method which creates base app URL based on active spring profile.
+	 * @return base app URL.
+	 */
+	public String determineBaseAppUrl() {
 		if (ACTIVE_SPRING_PROFILE.equals(HEROKU_PROFILE_NAME)) {
 			log.info("Created registration confirmation URL for HEROKU env.");
 			return customApplicationProperties.getEndpoints().getHeroku().getAppUrl();

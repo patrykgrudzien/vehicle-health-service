@@ -1,6 +1,6 @@
 package me.grudzien.patryk.service.security;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.log4j.Log4j2;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -19,7 +19,7 @@ import me.grudzien.patryk.domain.entities.CustomUser;
 import me.grudzien.patryk.domain.entities.Role;
 import me.grudzien.patryk.repository.CustomUserRepository;
 
-@Log4j
+@Log4j2
 @Service
 @Transactional
 public class MyUserDetailsService implements UserDetailsService {

@@ -1,6 +1,6 @@
 package me.grudzien.patryk.events.listener;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.log4j.Log4j2;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
@@ -22,7 +22,7 @@ import me.grudzien.patryk.utils.HerokuAppEndpointResolver;
  * That listener is going to handle OnRegistrationCompleteEvent which is published by
  * CustomUser object in CustomUserServiceImpl after saving new user to database.
  */
-@Log4j
+@Log4j2
 @Component
 public class RegistrationCompleteListener implements ApplicationListener<OnRegistrationCompleteEvent> {
 
@@ -68,7 +68,7 @@ public class RegistrationCompleteListener implements ApplicationListener<OnRegis
 				                                              ImmutableMap.<String, Object>
 					                                                 builder()
 					                                                .put("userFirstName", userBeingRegistered.getFirstName())
-			                                                        .put("confirmationUrl", herokuAppEndpointResolver.resolveBaseAppUrl() + confirmationUrl)
+			                                                        .put("confirmationUrl", herokuAppEndpointResolver.determineBaseAppUrl() + confirmationUrl)
 			                                                        .build())
 		                                              .build());
 		log.info(subject + " email has been sent to " + recipientAddress);

@@ -12,15 +12,15 @@ import App from './App';
 
 // noinspection JSUnresolvedFunction
 Vue.use(VueRouter);
-Vue.use(VueAxios, axios);
+// Vue.use(VueAxios, axios);
 
 // --------- CONFIGURATION FOR DEV PERSPECTIVE ---------
-// Vue.use(VueAxios, axios.create({
-//   baseURL: `http://localhost:8088`,
-//   headers: {
-//     'Access-Control-Allow-Origin': 'http://localhost:8080'
-//   }
-// }));
+Vue.use(VueAxios, axios.create({
+  baseURL: `http://localhost:8088`,
+  headers: {
+    'Access-Control-Allow-Origin': 'http://localhost:8080'
+  }
+}));
 
 Vue.use(BootstrapVue);
 Vue.use(VAnimateCss);

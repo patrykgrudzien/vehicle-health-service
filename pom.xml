@@ -45,7 +45,7 @@
 
         <!--########################### DEPENDENCIES' VERSIONS ###########################-->
         <!-- Spring -->
-        <spring.boot.version>1.5.8.RELEASE</spring.boot.version>
+        <spring.boot.version>2.0.0.RELEASE</spring.boot.version>
         <spring.security.version>5.0.1.RELEASE</spring.security.version>
         <!-- Node -->
         <node.js.version>v8.9.4</node.js.version>
@@ -59,6 +59,10 @@
         <postgre.sql.version>42.2.1</postgre.sql.version>
         <!-- Google Guava -->
         <guava.version>24.0-jre</guava.version>
+        <!-- Lombok -->
+        <lombok.version>1.16.20</lombok.version>
+        <!-- Apache Commons BeanUtils -->
+        <apache.commons.bean-utils.version>1.9.3</apache.commons.bean-utils.version>
 
         <!--########################### PROJECT's DETAILS ###########################-->
         <!-- Structure -->

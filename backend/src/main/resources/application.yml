@@ -27,7 +27,7 @@ custom:
 # ===============================
 spring:
   profiles:
-    active: heroku-deployment
+    active: dev-home
   # ===============================
   # = JavaMail Configuration
   # ===============================
@@ -45,9 +45,18 @@ spring:
           starttls:
             enable: true
     test-connection: false
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
 
 ---
 
+# ===============================================================
+# = dev-home PROFILE
+# ===============================================================
 server:
   port: 8088
 spring:
@@ -71,6 +80,9 @@ spring:
 
 ---
 
+# ===============================================================
+# = dev-office PROFILE
+# ===============================================================
 server:
   port: 8088
 spring:
@@ -94,6 +106,9 @@ spring:
 
 ---
 
+# ===============================================================
+# = heroku-deployment PROFILE
+# ===============================================================
 server:
   port: ${PORT:8088}
 spring:

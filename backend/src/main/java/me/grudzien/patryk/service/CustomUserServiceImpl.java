@@ -1,6 +1,6 @@
 package me.grudzien.patryk.service;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.log4j.Log4j2;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -25,10 +25,10 @@ import me.grudzien.patryk.exceptions.exception.CustomUserValidationException;
 import me.grudzien.patryk.exceptions.exception.TokenExpiredException;
 import me.grudzien.patryk.exceptions.exception.TokenNotFoundException;
 import me.grudzien.patryk.exceptions.exception.UserAlreadyExistsException;
-import me.grudzien.patryk.repository.EmailVerificationTokenRepository;
 import me.grudzien.patryk.repository.CustomUserRepository;
+import me.grudzien.patryk.repository.EmailVerificationTokenRepository;
 
-@Log4j
+@Log4j2
 @Service
 @Transactional
 public class CustomUserServiceImpl implements CustomUserService {

@@ -1,6 +1,6 @@
 package me.grudzien.patryk.controller;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.log4j.Log4j2;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,7 +20,7 @@ import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.domain.dto.UserRegistrationDto;
 import me.grudzien.patryk.service.CustomUserService;
 
-@Log4j
+@Log4j2
 @RestController
 @RequestMapping("${custom.properties.endpoints.registration.root}")
 public class UserRegistrationController {
