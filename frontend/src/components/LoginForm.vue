@@ -60,10 +60,8 @@
       <!-- Buttons -->
       <b-form-row>
         <b-col cols="4"></b-col>
-        <b-col cols="2">
-          <b-button type="submit" variant="primary" v-b-modal.modal-1>Submit</b-button>
-          <b-button :disabled="missingInputFields('&&')" type="reset" variant="danger">Reset</b-button>
-        </b-col>
+        <b-button id="login-button" type="submit" variant="secondary">Login</b-button>
+        <b-button :disabled="missingInputFields('&&')" type="reset" variant="danger">Reset</b-button>
       </b-form-row>
       <!-- Buttons -->
 
@@ -71,7 +69,8 @@
       <b-form-row>
         <b-col cols="4"></b-col>
         <b-col cols="4" style="margin-top: 10px">
-          <p>New user?
+          <p>
+            New user?
             <router-link to="/registration-form" exact>Register here</router-link>
           </p>
         </b-col>
@@ -148,9 +147,8 @@
 </script>
 
 <style scoped>
-  #new-user {
-    margin: 6px auto;
-    text-align: center;
-    font-size: 13px;
+  #login-button {
+    margin-right: 10px;
+    margin-left: 5px
   }
 </style>

@@ -1,28 +1,30 @@
 <template>
-  <div id="home-component">
-    <h1>{{ homeMessage }}</h1>
-  </div>
+  <b-container>
+    <b-row>
+      <b-col>
+        <h2 class="text-center" style="margin-top: 50px;">{{ homeMessage }}</h2>
+      </b-col>
+    </b-row>
+  </b-container>
 </template>
 
 <script>
-    export default {
-        data() {
-          return {
-            homeMessage: 'Welcome to the Home Page!'
-          }
-        }
+  import bContainer from 'bootstrap-vue/es/components/layout/container';
+
+  export default {
+    components: {
+      'b-containter': bContainer
+    },
+    data() {
+      return {
+        homeMessage: 'Welcome to the Home Page!'
+      }
     }
+  }
 </script>
 
 <style scoped>
-  #home-component {
-    width: 900px;
-    height: 500px;
-    margin: 50px auto auto auto;
-  }
-
   h1 {
     text-align: center;
-    margin-bottom: 20px;
   }
 </style>

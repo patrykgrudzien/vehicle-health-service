@@ -1,15 +1,23 @@
 <template>
-  <div id="main-component">
-    <h1>{{ message }}</h1>
-    <div id="button-wrapper" class="row align-items-center justify-content-center">
-      <b-btn class="col-4" @click="callRestService">Call Spring Boot REST</b-btn>
+  <b-container>
+    <div class="text-center">
+      <b-button id="call-rest-service" @click="callRestService" variant="secondary">Call Spring Boot REST</b-button>
     </div>
-    <h4 v-if="response.length > 0">{{ response }}</h4>
-  </div>
+    <b-row>
+      <b-col>
+        <h4 v-if="response.length > 0">{{ response }}</h4>
+      </b-col>
+    </b-row>
+  </b-container>
 </template>
 
 <script>
+  import bContainer from 'bootstrap-vue/es/components/layout/container';
+
   export default {
+    components: {
+      'b-containter': bContainer
+    },
     data() {
       return {
         message: 'Server Health Check',
@@ -32,18 +40,12 @@
 </script>
 
 <style scoped>
-  #main-component {
-    width: 900px;
-    height: 500px;
-    margin: 50px auto auto auto;
+  #call-rest-service {
+    margin-top: 50px;
+    margin-bottom: 10px;
   }
-
   h1, h4 {
     text-align: center;
-    margin-bottom: 20px;
-  }
-
-  #button-wrapper {
     margin-bottom: 20px;
   }
 </style>

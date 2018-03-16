@@ -82,7 +82,7 @@
         <!-- Confirmed Email address -->
         <b-col cols="4">
           <b-form-group id="group-4"
-                        label="Confirm Email address:"
+                        label="Confirm:"
                         label-for="group-4">
             <b-form-input id="group-4"
                           type="email"
@@ -125,7 +125,7 @@
         <!-- Confirm Password -->
         <b-col cols="4">
           <b-form-group id="group-6"
-                        label="Confirm your password:"
+                        label="Confirm:"
                         label-for="group-6">
             <b-form-input id="group-6"
                           type="password"
@@ -146,21 +146,18 @@
       <!-- Buttons -->
       <b-form-row>
         <b-col cols="2"></b-col>
-        <b-col cols="2">
-          <b-button type="submit" variant="primary" v-b-modal.modal-1>Register</b-button>
+          <b-button id="register-button" type="submit" variant="secondary">Register</b-button>
           <b-button :disabled="missingInputFields('&&')" type="reset" variant="danger">Reset</b-button>
-        </b-col>
       </b-form-row>
       <!-- Buttons -->
 
       <!-- Login here -->
       <b-form-row>
         <b-col cols="2"></b-col>
-        <b-col cols="4" style="margin-top: 10px">
-          <p>Already registered?
+          <p style="margin-left: 5px; margin-top: 10px;">
+            Already registered?
             <router-link to="/login" exact>Login here</router-link>
           </p>
-        </b-col>
       </b-form-row>
     </b-form>
     <circle-spinner v-if="!showForm" style="margin: 0 auto"/>
@@ -278,5 +275,9 @@
 <style scoped>
   .error {
     margin: 4px auto;
+  }
+  #register-button {
+    margin-left: 5px;
+    margin-right: 10px;
   }
 </style>
