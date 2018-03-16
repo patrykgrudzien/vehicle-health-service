@@ -1,6 +1,6 @@
 package me.grudzien.patryk;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.log4j.Log4j2;
 
 import org.springframework.core.io.FileSystemResource;
 
@@ -15,7 +15,7 @@ import java.util.List;
  * This class is used by exec-maven-plugin which is gonna execute this main() method and create files which are triggers for
  * heroku-maven-plugin to start deployment process on Heroku.
  */
-@Log4j
+@Log4j2
 public class CreateFileOnActiveHerokuProfile {
 
 	private static final String FRONTEND_MODULE = "frontend";

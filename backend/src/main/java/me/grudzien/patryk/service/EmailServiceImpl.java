@@ -1,6 +1,6 @@
 package me.grudzien.patryk.service;
 
-import lombok.extern.log4j.Log4j;
+import lombok.extern.log4j.Log4j2;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,7 +10,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import org.thymeleaf.context.Context;
-import org.thymeleaf.spring4.SpringTemplateEngine;
+import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -19,7 +19,7 @@ import java.nio.charset.StandardCharsets;
 
 import me.grudzien.patryk.domain.dto.EmailDto;
 
-@Log4j
+@Log4j2
 @Service
 public class EmailServiceImpl implements EmailService {
 
