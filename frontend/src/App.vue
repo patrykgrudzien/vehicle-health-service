@@ -1,16 +1,18 @@
 <template>
   <div id="app">
-    <app-header/>
-    <router-view v-animate-css="animationInfinite"/>
+    <div v-cloak>
+      <app-nav-bar/>
+      <router-view v-animate-css="animationInfinite"/>
+    </div>
   </div>
 </template>
 
 <script>
-  import AppHeader from './components/AppHeader';
+  import AppNavBar from './components/AppNavBar';
 
   export default {
     components: {
-      AppHeader
+      AppNavBar
     },
     data() {
       return {
@@ -23,5 +25,12 @@
   };
 </script>
 
-<style scoped>
+<style>
+  [v-cloak] {
+    display: none;
+  }
+  body {
+    background-color: #303030;
+    color: #ffffff;
+  }
 </style>
