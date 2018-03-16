@@ -16,6 +16,7 @@ import me.grudzien.patryk.domain.entities.CustomUser;
 import me.grudzien.patryk.events.event.OnRegistrationCompleteEvent;
 import me.grudzien.patryk.service.CustomUserService;
 import me.grudzien.patryk.service.EmailService;
+import me.grudzien.patryk.utils.HerokuAppEndpointResolver;
 
 /**
  * That listener is going to handle OnRegistrationCompleteEvent which is published by
@@ -28,13 +29,16 @@ public class RegistrationCompleteListener implements ApplicationListener<OnRegis
 	private final CustomUserService customUserService;
 	private final EmailService emailService;
 	private final CustomApplicationProperties customApplicationProperties;
+	private final HerokuAppEndpointResolver herokuAppEndpointResolver;
 
 	@Autowired
 	public RegistrationCompleteListener(final CustomUserService customUserService, final EmailService emailService,
-	                                    final CustomApplicationProperties customApplicationProperties) {
+	                                    final CustomApplicationProperties customApplicationProperties,
+	                                    final HerokuAppEndpointResolver herokuAppEndpointResolver) {
 		this.customUserService = customUserService;
 		this.emailService = emailService;
 		this.customApplicationProperties = customApplicationProperties;
+		this.herokuAppEndpointResolver = herokuAppEndpointResolver;
 	}
 
 	@Override
@@ -48,8 +52,8 @@ public class RegistrationCompleteListener implements ApplicationListener<OnRegis
 		final CustomUser userBeingRegistered = event.getCustomUser();
 
 		final String token = UUID.randomUUID().toString();
-		log.info("Created token: " + token);
 		customUserService.createEmailVerificationToken(event.getCustomUser(), token);
+		log.info("Created token: " + token);
 
 		final String recipientAddress = userBeingRegistered.getEmail();
 		final String subject = "Registration Confirmation";
@@ -64,10 +68,9 @@ public class RegistrationCompleteListener implements ApplicationListener<OnRegis
 				                                              ImmutableMap.<String, Object>
 					                                                 builder()
 					                                                .put("userFirstName", userBeingRegistered.getFirstName())
-			                                                        .put("confirmationUrl", customApplicationProperties.getCorsOrigins().getBackEndModule() + confirmationUrl)
+			                                                        .put("confirmationUrl", herokuAppEndpointResolver.resolveBaseAppUrl() + confirmationUrl)
 			                                                        .build())
 		                                              .build());
-
 		log.info(subject + " email has been sent to " + recipientAddress);
 	}
 }
