@@ -40,6 +40,6 @@
   body {
     background-color: #303030;
     color: #ffffff;
-    overflow: hidden;
+    overflow-y: visible;
   }
 </style>

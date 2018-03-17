@@ -1,10 +1,6 @@
 <template>
   <b-container>
-    <b-row>
-      <b-col>
-        <h2 class="text-center" style="margin-top: 50px;">{{ homeMessage }}</h2>
-      </b-col>
-    </b-row>
+        <h2 class="text-center" style="margin-top: 70px;">{{ homeMessage }}</h2>
   </b-container>
 </template>
 
