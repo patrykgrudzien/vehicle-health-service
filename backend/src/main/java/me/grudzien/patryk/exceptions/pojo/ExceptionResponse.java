@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.util.List;
 
 @Getter
@@ -13,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(builderMethodName = "Builder")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ExceptionResponse {
 
 	private String errorMessage;

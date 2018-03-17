@@ -19,7 +19,6 @@ import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 public class HerokuAppEndpointResolver implements InitializingBean {
 
 	private static String ACTIVE_SPRING_PROFILE;
-	private static final String HEROKU_PROFILE_NAME = "heroku-deployment";
 
 	private final Environment environment;
 	private final CustomApplicationProperties customApplicationProperties;
@@ -38,20 +37,47 @@ public class HerokuAppEndpointResolver implements InitializingBean {
 		log.info(LogMarkers.METHOD_INVOCATION_MARKER, "{} method called.", "afterPropertiesSet()");
 		Arrays.stream(environment.getActiveProfiles())
 		      .findFirst()
+		      // taking active spring profile
 		      .ifPresent(activeProfile -> ACTIVE_SPRING_PROFILE = activeProfile);
 	}
 
 	/**
-	 * Method which creates base app URL based on active spring profile.
-	 * @return base app URL.
+	 * Method which creates base app URL for createVerificationTokenAndSendEmail() method in RegistrationCompleteListener
+	 * based on active spring profile.
+	 *
+	 * @return base app URL which is used in e-mail sent to the user.
 	 */
-	public String determineBaseAppUrl() {
-		if (ACTIVE_SPRING_PROFILE.equals(HEROKU_PROFILE_NAME)) {
-			log.info(LogMarkers.METHOD_INVOCATION_MARKER, "Created registration confirmation URL for HEROKU env.");
-			return customApplicationProperties.getEndpoints().getHeroku().getAppUrl();
+	public String determineBaseAppUrlForVerificationToken() {
+		if (ACTIVE_SPRING_PROFILE.equals(SpringAppProfiles.HEROKU_DEPLOYMENT.getYmlName())) {
+			return getHerokuAppBaseUrl();
 		} else {
 			log.info(LogMarkers.METHOD_INVOCATION_MARKER, "Created registration confirmation URL for LOCAL env.");
 			return customApplicationProperties.getCorsOrigins().getBackEndModule();
 		}
+	}
+
+	/**
+	 * Method which creates base app URL for confirmRegistration() method in UserRegistrationController
+	 * based on active spring profile.
+	 *
+	 * @return base app URL which is used to redirect user to confirmation screen on UI.
+	 */
+	public String determineBaseAppUrlForConfirmRegistration() {
+		if (ACTIVE_SPRING_PROFILE.equals(SpringAppProfiles.HEROKU_DEPLOYMENT.getYmlName())) {
+			return getHerokuAppBaseUrl();
+		} else {
+			log.info(LogMarkers.METHOD_INVOCATION_MARKER, "Created registration confirmation URL for LOCAL env.");
+			return customApplicationProperties.getCorsOrigins().getFrontEndModule();
+		}
+	}
+
+	/**
+	 * Method which creates base app URL to Heroku environment.
+	 *
+	 * @return base app URL (Heroku environment).
+	 */
+	private String getHerokuAppBaseUrl() {
+		log.info(LogMarkers.METHOD_INVOCATION_MARKER, "Created registration confirmation URL for HEROKU env.");
+		return customApplicationProperties.getEndpoints().getHeroku().getAppUrl();
 	}
 }

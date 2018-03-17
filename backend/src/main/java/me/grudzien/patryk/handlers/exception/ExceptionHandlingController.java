@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import me.grudzien.patryk.exceptions.exception.CustomUserValidationException;
+import me.grudzien.patryk.exceptions.exception.RedirectionException;
 import me.grudzien.patryk.exceptions.exception.TokenExpiredException;
 import me.grudzien.patryk.exceptions.exception.TokenNotFoundException;
 import me.grudzien.patryk.exceptions.exception.UserAlreadyExistsException;
@@ -57,6 +58,14 @@ public class ExceptionHandlingController {
 
 	@ExceptionHandler(TokenExpiredException.class)
 	public ResponseEntity<ExceptionResponse> tokenExpiredException(final TokenExpiredException exception) {
+		final ExceptionResponse response = ExceptionResponse.Builder()
+		                                                    .errorMessage(exception.getMessage())
+		                                                    .build();
+		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler(RedirectionException.class)
+	public ResponseEntity<ExceptionResponse> cannotRedirectUser(final RedirectionException exception) {
 		final ExceptionResponse response = ExceptionResponse.Builder()
 		                                                    .errorMessage(exception.getMessage())
 		                                                    .build();

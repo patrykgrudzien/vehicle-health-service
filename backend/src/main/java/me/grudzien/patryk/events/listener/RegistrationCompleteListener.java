@@ -70,7 +70,8 @@ public class RegistrationCompleteListener implements ApplicationListener<OnRegis
 				                                              ImmutableMap.<String, Object>
 					                                                 builder()
 					                                                .put("userFirstName", userBeingRegistered.getFirstName())
-			                                                        .put("confirmationUrl", herokuAppEndpointResolver.determineBaseAppUrl() + confirmationUrl)
+			                                                        .put("confirmationUrl",
+			                                                             herokuAppEndpointResolver.determineBaseAppUrlForVerificationToken() + confirmationUrl)
 			                                                        .build())
 		                                              .build());
 		log.info(subject + " email has been sent to " + recipientAddress);
