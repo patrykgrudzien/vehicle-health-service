@@ -20,7 +20,6 @@ import javax.validation.Valid;
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.domain.dto.UserRegistrationDto;
 import me.grudzien.patryk.service.CustomUserService;
-import me.grudzien.patryk.utils.HerokuAppEndpointResolver;
 
 @Log4j2
 @RestController
@@ -29,14 +28,11 @@ public class UserRegistrationController {
 
 	private final CustomUserService customUserService;
 	private final CustomApplicationProperties customApplicationProperties;
-	private final HerokuAppEndpointResolver herokuAppEndpointResolver;
 
 	@Autowired
-	public UserRegistrationController(final CustomUserService customUserService, final CustomApplicationProperties endpointsProperties,
-	                                  final HerokuAppEndpointResolver herokuAppEndpointResolver) {
+	public UserRegistrationController(final CustomUserService customUserService, final CustomApplicationProperties endpointsProperties) {
 		this.customUserService = customUserService;
 		this.customApplicationProperties = endpointsProperties;
-		this.herokuAppEndpointResolver = herokuAppEndpointResolver;
 	}
 
 	@PostMapping("${custom.properties.endpoints.registration.register-user-account}")
