@@ -26,7 +26,7 @@
                 <plugins>
                     <!-- Maven Spring Boot plugin -->
                     <plugin>
-                        <!-- (1) Spring boot -->
+                        <!-- Spring boot -->
                         <groupId>org.springframework.boot</groupId>
                         <artifactId>spring-boot-maven-plugin</artifactId>
                         <version>${spring.boot.version}</version>
@@ -38,7 +38,7 @@
                         <version>${maven-clean-plugin.version}</version>
                         <!-- EXECUTIONS -->
                         <executions>
-                            <!-- (2a) Remove static folder -->
+                            <!-- Remove static folder -->
                             <execution>
                                 <id>Remove static folder</id>
                                 <phase>clean</phase>
@@ -53,7 +53,7 @@
                                     </filesets>
                                 </configuration>
                             </execution>
-                            <!-- (2b) Remove heroku-deployment-enabled file -->
+                            <!-- Remove heroku-deployment-enabled file -->
                             <execution>
                                 <id>Remove heroku-deployment-backend-enabled file</id>
                                 <phase>clean</phase>
@@ -80,7 +80,7 @@
                         <version>${maven-resources-plugin.version}</version>
                         <!-- EXECUTIONS -->
                         <executions>
-                            <!-- (4) Copy Vue.js frontend content -->
+                            <!-- Copy Vue.js frontend content -->
                             <execution>
                                 <id>copy Vue.js content to backend/public</id>
                                 <phase>generate-resources</phase>
@@ -106,7 +106,6 @@
                     </plugin>
                     <!-- Maven Exec Plugin -->
                     <plugin>
-                        <!-- (5) Exec Maven Plugin -->
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
                         <version>${exec-maven-plugin.version}</version>
@@ -145,30 +144,6 @@
             <id>build-backend-module-heroku-deployment</id>
             <build>
                 <plugins>
-                    <!-- Maven Heroku plugin -->
-                    <plugin>
-                        <groupId>com.heroku.sdk</groupId>
-                        <artifactId>heroku-maven-plugin</artifactId>
-                        <version>${heroku-maven-plugin.version}</version>
-                        <executions>
-                            <!-- (2) Deploy .jar file to Heroku -->
-                            <execution>
-                                <id>HEROKU >>>> Deploy .jar file to Heroku >>>> HEROKU</id>
-                                <phase>install</phase>
-                                <goals>
-                                    <goal>deploy</goal>
-                                </goals>
-                                <!-- Configuration -->
-                                <configuration>
-                                    <appName>${heroku.app.name}</appName>
-                                    <jdkVersion>1.8</jdkVersion>
-                                    <processTypes>
-                                        <web>java $JAVA_OPTS -cp target/classes:target/dependency/* ${main.app.class.name}</web>
-                                    </processTypes>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
                     <!-- Maven Clean Plugin -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
@@ -176,7 +151,7 @@
                         <version>${maven-clean-plugin.version}</version>
                         <!-- EXECUTIONS -->
                         <executions>
-                            <!-- (3) Remove heroku-deployment-enabled file -->
+                            <!-- Remove heroku-deployment-enabled file -->
                             <execution>
                                 <id>HEROKU >>>> Remove heroku-deployment-backend-enabled file >>>> HEROKU</id>
                                 <phase>clean</phase>
@@ -194,7 +169,7 @@
                                     </filesets>
                                 </configuration>
                             </execution>
-                            <!-- (4) Remove static folder -->
+                            <!-- Remove static folder -->
                             <execution>
                                 <id>HEROKU >>>> Remove src/main/resources/static folder >>>> HEROKU</id>
                                 <phase>clean</phase>
@@ -207,6 +182,30 @@
                                             <directory>${resources.public.directory}</directory>
                                         </fieldset>
                                     </filesets>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!-- Maven Heroku plugin -->
+                    <plugin>
+                        <groupId>com.heroku.sdk</groupId>
+                        <artifactId>heroku-maven-plugin</artifactId>
+                        <version>${heroku-maven-plugin.version}</version>
+                        <executions>
+                            <!-- Deploy .jar file to Heroku -->
+                            <execution>
+                                <id>HEROKU >>>> Deploy .jar file to Heroku >>>> HEROKU</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>deploy</goal>
+                                </goals>
+                                <!-- Configuration -->
+                                <configuration>
+                                    <appName>${heroku.app.name}</appName>
+                                    <jdkVersion>1.8</jdkVersion>
+                                    <processTypes>
+                                        <web>java $JAVA_OPTS -cp target/classes:target/dependency/* ${main.app.class.name}</web>
+                                    </processTypes>
                                 </configuration>
                             </execution>
                         </executions>
@@ -318,11 +317,5 @@
             <optional>true</optional>
         </dependency>
     </dependencies>
-
-    <properties>
-        <!-- Property needed for Heroku plugin -->
-        <heroku.app.name>heroku-web-app-${project.artifactId}-module</heroku.app.name>
-        <main.app.class.name>me.grudzien.patryk.SpringBootVueJsApplication</main.app.class.name>
-    </properties>
 
 </project>

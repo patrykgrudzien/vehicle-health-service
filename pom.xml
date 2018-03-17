@@ -74,6 +74,11 @@
         <!-- Encoding -->
         <project.build.source.encoding>UTF-8</project.build.source.encoding>
         <project.reporting.output.encoding>UTF-8</project.reporting.output.encoding>
+
+        <!--########################### HEROKU DETAILS ###########################-->
+        <!-- Property needed for Heroku plugin -->
+        <heroku.app.name>heroku-web-app-${project.artifactId}-module</heroku.app.name>
+        <main.app.class.name>me.grudzien.patryk.SpringBootVueJsApplication</main.app.class.name>
     </properties>
 
 </project>
