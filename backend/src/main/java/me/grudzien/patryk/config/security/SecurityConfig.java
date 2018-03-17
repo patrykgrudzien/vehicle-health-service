@@ -31,11 +31,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(final HttpSecurity http) throws Exception {
 
-		http.cors().and()
+		http
+			// development purpose (no existing on production "Heroku")
+			.cors().and()
 			// disabling CSRF for now (testing purposes), later it'll be replaced by OAuth2 and JWT
 			.csrf().disable()
 		    .authorizeRequests()
+		        // /registration/**
 		        .antMatchers(customApplicationProperties.getEndpoints().getRegistration().getRoot() + "/**").permitAll()
+		        // temporal for now
 		        .anyRequest().permitAll()
 		    .and()
 		        .logout()
