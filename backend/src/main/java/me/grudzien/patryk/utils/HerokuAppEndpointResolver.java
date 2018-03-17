@@ -27,11 +27,15 @@ public class HerokuAppEndpointResolver implements InitializingBean {
 	@Autowired
 	public HerokuAppEndpointResolver(final Environment environment, final CustomApplicationProperties customApplicationProperties) {
 		this.environment = environment;
+		log.info(LogMarkers.FLOW_MARKER, "{} bean injected.", Environment.class);
+
 		this.customApplicationProperties = customApplicationProperties;
+		log.info(LogMarkers.FLOW_MARKER, "{} bean injected.", CustomApplicationProperties.class);
 	}
 
 	@Override
 	public void afterPropertiesSet() {
+		log.info(LogMarkers.METHOD_INVOCATION_MARKER, "{} method called.", "afterPropertiesSet()");
 		Arrays.stream(environment.getActiveProfiles())
 		      .findFirst()
 		      .ifPresent(activeProfile -> ACTIVE_SPRING_PROFILE = activeProfile);
@@ -43,10 +47,10 @@ public class HerokuAppEndpointResolver implements InitializingBean {
 	 */
 	public String determineBaseAppUrl() {
 		if (ACTIVE_SPRING_PROFILE.equals(HEROKU_PROFILE_NAME)) {
-			log.info("Created registration confirmation URL for HEROKU env.");
+			log.info(LogMarkers.METHOD_INVOCATION_MARKER, "Created registration confirmation URL for HEROKU env.");
 			return customApplicationProperties.getEndpoints().getHeroku().getAppUrl();
 		} else {
-			log.info("Created registration confirmation URL for LOCAL env.");
+			log.info(LogMarkers.METHOD_INVOCATION_MARKER, "Created registration confirmation URL for LOCAL env.");
 			return customApplicationProperties.getCorsOrigins().getBackEndModule();
 		}
 	}

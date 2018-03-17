@@ -17,6 +17,7 @@ import me.grudzien.patryk.events.event.OnRegistrationCompleteEvent;
 import me.grudzien.patryk.service.CustomUserService;
 import me.grudzien.patryk.service.EmailService;
 import me.grudzien.patryk.utils.HerokuAppEndpointResolver;
+import me.grudzien.patryk.utils.LogMarkers;
 
 /**
  * That listener is going to handle OnRegistrationCompleteEvent which is published by
@@ -39,6 +40,7 @@ public class RegistrationCompleteListener implements ApplicationListener<OnRegis
 		this.emailService = emailService;
 		this.customApplicationProperties = customApplicationProperties;
 		this.herokuAppEndpointResolver = herokuAppEndpointResolver;
+		log.info(LogMarkers.FLOW_MARKER, "{} bean injected.", HerokuAppEndpointResolver.class);
 	}
 
 	@Override
