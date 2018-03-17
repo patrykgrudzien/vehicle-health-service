@@ -14,11 +14,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.domain.dto.UserRegistrationDto;
 import me.grudzien.patryk.service.CustomUserService;
+import me.grudzien.patryk.utils.HerokuAppEndpointResolver;
 
 @Log4j2
 @RestController
@@ -27,11 +29,14 @@ public class UserRegistrationController {
 
 	private final CustomUserService customUserService;
 	private final CustomApplicationProperties customApplicationProperties;
+	private final HerokuAppEndpointResolver herokuAppEndpointResolver;
 
 	@Autowired
-	public UserRegistrationController(final CustomUserService customUserService, final CustomApplicationProperties endpointsProperties) {
+	public UserRegistrationController(final CustomUserService customUserService, final CustomApplicationProperties endpointsProperties,
+	                                  final HerokuAppEndpointResolver herokuAppEndpointResolver) {
 		this.customUserService = customUserService;
 		this.customApplicationProperties = endpointsProperties;
+		this.herokuAppEndpointResolver = herokuAppEndpointResolver;
 	}
 
 	@PostMapping("${custom.properties.endpoints.registration.register-user-account}")
@@ -42,10 +47,10 @@ public class UserRegistrationController {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
-	@GetMapping("${custom.properties.endpoints.registration.confirm-registration}")
-	public ResponseEntity<Void> confirmRegistration(@RequestParam("token") final String token) {
+	@RequestMapping("${custom.properties.endpoints.registration.confirm-registration}")
+	public ResponseEntity<Void> confirmRegistration(@RequestParam("token") final String token, final HttpServletResponse response) {
 		log.info("Inside: " + customApplicationProperties.getEndpoints().getRegistration().getRootConfirmRegistration());
-		customUserService.confirmRegistration(token);
+		customUserService.confirmRegistration(token, response);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
