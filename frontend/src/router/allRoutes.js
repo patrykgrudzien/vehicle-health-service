@@ -2,6 +2,7 @@ import Home from '../components/Home';
 import ServerCheck from '../components/ServerCheck';
 import AboutMe from '../components/AboutMe';
 import RegistrationForm from '../components/RegistrationForm';
+import ConfirmRegistration from '../components/ConfirmRegistration';
 import LoginForm from '../components/LoginForm';
 
 export default [
@@ -20,6 +21,10 @@ export default [
   {
     path: '/registration-form',
     component: RegistrationForm
+  },
+  {
+    path: "/registration-confirmed",
+    component: ConfirmRegistration
   },
   {
     path: '/login',
