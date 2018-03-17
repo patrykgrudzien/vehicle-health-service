@@ -42,12 +42,14 @@
       padding-right: 10px;
     }
   }
+
   .active {
     background-color: #303030;
     color: #303030;
     text-decoration: none;
     border-radius: 10px;
   }
+
   .dropdown-class {
     background-color: transparent;
   }

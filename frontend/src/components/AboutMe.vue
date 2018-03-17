@@ -32,6 +32,7 @@
     text-align: center;
     margin-bottom: 0;
   }
+
   h6 {
     text-align: center;
   }
