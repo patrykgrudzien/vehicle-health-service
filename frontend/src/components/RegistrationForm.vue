@@ -146,18 +146,18 @@
       <!-- Buttons -->
       <b-form-row>
         <b-col cols="2"></b-col>
-          <b-button id="register-button" type="submit" variant="secondary">Register</b-button>
-          <b-button :disabled="missingInputFields('&&')" type="reset" variant="danger">Reset</b-button>
+        <b-button id="register-button" type="submit" variant="secondary">Register</b-button>
+        <b-button :disabled="missingInputFields('&&')" type="reset" variant="danger">Reset</b-button>
       </b-form-row>
       <!-- Buttons -->
 
       <!-- Login here -->
       <b-form-row>
         <b-col cols="2"></b-col>
-          <p style="margin-left: 5px; margin-top: 10px;">
-            Already registered?
-            <router-link to="/login" exact>Login here</router-link>
-          </p>
+        <p style="margin-left: 5px; margin-top: 10px;">
+          Already registered?
+          <router-link to="/login" exact>Login here</router-link>
+        </p>
       </b-form-row>
     </b-form>
     <circle-spinner v-if="!showForm" style="margin: 0 auto"/>
@@ -165,7 +165,7 @@
 </template>
 
 <script>
-  import bContainer from 'bootstrap-vue/es/components/layout/container';
+  import bContainer    from 'bootstrap-vue/es/components/layout/container';
   import CircleSpinner from 'vue-loading-spinner/src/components/Circle8';
 
   export default {
@@ -205,9 +205,11 @@
         if (operator === '||') {
           return this.missingName || this.missingLastName || this.missingEmail || this.missingConfirmedEmail ||
             this.missingPassword || this.missingConfirmedPassword;
-        } else if (operator === '&&') {
-          return this.missingName && this.missingLastName && this.missingEmail && this.missingConfirmedEmail &&
-            this.missingPassword && this.missingConfirmedPassword;
+        } else {
+          if (operator === '&&') {
+            return this.missingName && this.missingLastName && this.missingEmail && this.missingConfirmedEmail &&
+              this.missingPassword && this.missingConfirmedPassword;
+          }
         }
       },
       submitForm() {
@@ -273,9 +275,14 @@
 </script>
 
 <style scoped>
+  .invalid-feedback {
+    margin-top: 0;
+  }
+
   .error {
     margin: 4px auto;
   }
+
   #register-button {
     margin-left: 5px;
     margin-right: 10px;

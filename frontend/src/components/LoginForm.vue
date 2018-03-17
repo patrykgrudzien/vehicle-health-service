@@ -81,7 +81,7 @@
 </template>
 
 <script>
-  import bContainer from 'bootstrap-vue/es/components/layout/container';
+  import bContainer    from 'bootstrap-vue/es/components/layout/container';
   import CircleSpinner from 'vue-loading-spinner/src/components/Circle8';
 
   export default {
@@ -114,8 +114,10 @@
       missingInputFields(operator) {
         if (operator === '||') {
           return this.missingEmail || this.missingPassword;
-        } else if (operator === '&&') {
-          return this.missingEmail && this.missingPassword;
+        } else {
+          if (operator === '&&') {
+            return this.missingEmail && this.missingPassword;
+          }
         }
       },
       submitForm() {
@@ -147,6 +149,10 @@
 </script>
 
 <style scoped>
+  .invalid-feedback {
+    margin-top: 0;
+  }
+
   #login-button {
     margin-right: 10px;
     margin-left: 5px

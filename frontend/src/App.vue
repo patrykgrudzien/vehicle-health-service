@@ -2,7 +2,9 @@
   <div id="app">
     <div v-cloak>
       <app-nav-bar/>
-      <router-view v-animate-css="animationInfinite"/>
+      <transition name="fade">
+        <router-view/>
+      </transition>
     </div>
   </div>
 </template>
@@ -13,24 +15,31 @@
   export default {
     components: {
       AppNavBar
-    },
-    data() {
-      return {
-        animationInfinite: {
-          classes: 'fadeIn',
-          duration: 1000,
-        }
-      }
     }
   };
 </script>
 
 <style>
+  .fade-enter-active, .fade-leave-active {
+    transition-property: opacity;
+    transition-duration: .25s;
+  }
+
+  .fade-enter-active {
+    transition-delay: .25s;
+  }
+
+  .fade-enter, .fade-leave-active {
+    opacity: 0
+  }
+
   [v-cloak] {
     display: none;
   }
+
   body {
     background-color: #303030;
     color: #ffffff;
+    overflow: hidden;
   }
 </style>
