@@ -39,8 +39,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		    .authorizeRequests()
 		        // /registration/**
 		        .antMatchers(customApplicationProperties.getEndpoints().getRegistration().getRoot() + "/**").permitAll()
-		        // temporal for now
-		        .anyRequest().permitAll()
+				// server/health-check
+				.antMatchers("/server/**").authenticated()
+				// home page
+				.antMatchers("/").permitAll()
+			.and()
+				.formLogin()
+				.loginPage("/login").permitAll()
 		    .and()
 		        .logout()
 		        .invalidateHttpSession(Boolean.TRUE)

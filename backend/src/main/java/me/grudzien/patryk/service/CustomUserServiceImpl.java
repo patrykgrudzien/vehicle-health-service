@@ -11,9 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.context.request.WebRequest;
 
-import javax.servlet.http.HttpServletResponse;
-
-import java.io.IOException;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.UUID;
@@ -25,14 +22,11 @@ import me.grudzien.patryk.domain.entities.EmailVerificationToken;
 import me.grudzien.patryk.domain.entities.Role;
 import me.grudzien.patryk.events.event.OnRegistrationCompleteEvent;
 import me.grudzien.patryk.exceptions.exception.CustomUserValidationException;
-import me.grudzien.patryk.exceptions.exception.RedirectionException;
 import me.grudzien.patryk.exceptions.exception.TokenExpiredException;
 import me.grudzien.patryk.exceptions.exception.TokenNotFoundException;
 import me.grudzien.patryk.exceptions.exception.UserAlreadyExistsException;
 import me.grudzien.patryk.repository.CustomUserRepository;
 import me.grudzien.patryk.repository.EmailVerificationTokenRepository;
-import me.grudzien.patryk.utils.HerokuAppEndpointResolver;
-import me.grudzien.patryk.utils.LogMarkers;
 
 @Log4j2
 @Service
@@ -43,19 +37,16 @@ public class CustomUserServiceImpl implements CustomUserService {
 	private final BCryptPasswordEncoder passwordEncoder;
 	private final ApplicationEventPublisher eventPublisher;
 	private final EmailVerificationTokenRepository emailVerificationTokenRepository;
-	private final HerokuAppEndpointResolver herokuAppEndpointResolver;
 
 	@Autowired
 	public CustomUserServiceImpl(final CustomUserRepository customUserRepository, final BCryptPasswordEncoder passwordEncoder,
 	                             final ApplicationEventPublisher eventPublisher,
-	                             final EmailVerificationTokenRepository emailVerificationTokenRepository,
-	                             final HerokuAppEndpointResolver herokuAppEndpointResolver) {
+	                             final EmailVerificationTokenRepository emailVerificationTokenRepository) {
 
 		this.customUserRepository = customUserRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.eventPublisher = eventPublisher;
 		this.emailVerificationTokenRepository = emailVerificationTokenRepository;
-		this.herokuAppEndpointResolver = herokuAppEndpointResolver;
 	}
 
 	@Override
@@ -94,7 +85,7 @@ public class CustomUserServiceImpl implements CustomUserService {
 	}
 
 	@Override
-	public void confirmRegistration(final String emailVerificationToken, final HttpServletResponse response) {
+	public void confirmRegistration(final String emailVerificationToken) {
 		final EmailVerificationToken token = getEmailVerificationToken(emailVerificationToken);
 		if (token == null) {
 			log.error("No verification token found.");
@@ -112,14 +103,6 @@ public class CustomUserServiceImpl implements CustomUserService {
 
 		emailVerificationTokenRepository.delete(token);
 		log.info("Token confirmed and deleted from database.");
-
-		try {
-			response.sendRedirect(herokuAppEndpointResolver.determineBaseAppUrlForConfirmRegistration() + "/registration-confirmed");
-			log.info("User successfully redirected to confirm registration screen.");
-		} catch (final IOException exception) {
-			log.error(LogMarkers.EXCEPTION_MARKER, "Cannot redirect user to confirm registration screen.");
-			throw new RedirectionException("Cannot redirect user to confirm registration screen.");
-		}
 	}
 
 	@Override
