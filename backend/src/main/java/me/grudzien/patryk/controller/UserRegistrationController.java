@@ -19,6 +19,7 @@ import javax.validation.Valid;
 
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.domain.dto.UserRegistrationDto;
+import me.grudzien.patryk.handlers.web.ResponseHandler;
 import me.grudzien.patryk.service.CustomUserService;
 
 @Log4j2
@@ -28,11 +29,14 @@ public class UserRegistrationController {
 
 	private final CustomUserService customUserService;
 	private final CustomApplicationProperties customApplicationProperties;
+	private final ResponseHandler responseHandler;
 
 	@Autowired
-	public UserRegistrationController(final CustomUserService customUserService, final CustomApplicationProperties endpointsProperties) {
+	public UserRegistrationController(final CustomUserService customUserService, final CustomApplicationProperties endpointsProperties,
+	                                  final ResponseHandler responseHandler) {
 		this.customUserService = customUserService;
 		this.customApplicationProperties = endpointsProperties;
+		this.responseHandler = responseHandler;
 	}
 
 	@PostMapping("${custom.properties.endpoints.registration.register-user-account}")
@@ -46,7 +50,8 @@ public class UserRegistrationController {
 	@RequestMapping("${custom.properties.endpoints.registration.confirm-registration}")
 	public ResponseEntity<Void> confirmRegistration(@RequestParam("token") final String token, final HttpServletResponse response) {
 		log.info("Inside: " + customApplicationProperties.getEndpoints().getRegistration().getRootConfirmRegistration());
-		customUserService.confirmRegistration(token, response);
+		customUserService.confirmRegistration(token);
+		responseHandler.redirectUserToConfirmedPage(response, customApplicationProperties.getEndpoints().getRegistration().getConfirmed());
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 

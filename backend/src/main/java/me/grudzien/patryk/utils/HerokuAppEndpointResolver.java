@@ -51,7 +51,7 @@ public class HerokuAppEndpointResolver implements InitializingBean {
 		if (ACTIVE_SPRING_PROFILE.equals(SpringAppProfiles.HEROKU_DEPLOYMENT.getYmlName())) {
 			return getHerokuAppBaseUrl();
 		} else {
-			log.info(LogMarkers.METHOD_INVOCATION_MARKER, "Created registration confirmation URL for LOCAL env.");
+			log.info(LogMarkers.METHOD_INVOCATION_MARKER, "Created verification token URL for LOCAL env.");
 			return customApplicationProperties.getCorsOrigins().getBackEndModule();
 		}
 	}
@@ -72,12 +72,27 @@ public class HerokuAppEndpointResolver implements InitializingBean {
 	}
 
 	/**
+	 * Method which creates base app URL for redirectUserToLoginPage() method in LoginController
+	 * based on active spring profile.
+	 *
+	 * @return base app URL which is used to redirect user to the login page (look into SecurityConfig).
+	 */
+	public String determineBaseAppUrlForLoginPage() {
+		if (ACTIVE_SPRING_PROFILE.equals(SpringAppProfiles.HEROKU_DEPLOYMENT.getYmlName())) {
+			return getHerokuAppBaseUrl();
+		} else {
+			log.info(LogMarkers.METHOD_INVOCATION_MARKER, "Created login page URL for LOCAL env.");
+			return customApplicationProperties.getCorsOrigins().getFrontEndModule();
+		}
+	}
+
+	/**
 	 * Method which creates base app URL to Heroku environment.
 	 *
 	 * @return base app URL (Heroku environment).
 	 */
 	private String getHerokuAppBaseUrl() {
-		log.info(LogMarkers.METHOD_INVOCATION_MARKER, "Created registration confirmation URL for HEROKU env.");
+		log.info(LogMarkers.METHOD_INVOCATION_MARKER, "Created base app URL for HEROKU env.");
 		return customApplicationProperties.getEndpoints().getHeroku().getAppUrl();
 	}
 }
