@@ -19,6 +19,7 @@ public class CustomApplicationProperties {
 
 		private Server server = new Server();
 		private Registration registration = new Registration();
+		private Login login = new Login();
 		private Logout logout = new Logout();
 		private Heroku heroku = new Heroku();
 
@@ -41,6 +42,7 @@ public class CustomApplicationProperties {
 			private String confirmRegistration;
 			private String confirmationUrl;
 			private String resendEmailVerificationToken;
+			private String confirmed;
 
 			public String getRootRegisterUserAccount() {
 				return getRoot() + getRegisterUserAccount();
@@ -57,6 +59,12 @@ public class CustomApplicationProperties {
 			public String getRootResendEmailVerificationToken() {
 				return getRoot() + getResendEmailVerificationToken();
 			}
+		}
+
+		@Getter
+		@Setter
+		public static class Login {
+			private String root;
 		}
 
 		@Getter

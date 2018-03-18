@@ -12,7 +12,10 @@ custom:
         register-user-account: /register-user-account
         confirm-registration: /confirm
         confirmation-url: /confirm?token=
+        confirmed: /registration-confirmed
         resend-email-verification-token: /resend-verification-token?token=
+      login:
+        root: /login
       logout:
         root: /logout
         success-url: ?logout
