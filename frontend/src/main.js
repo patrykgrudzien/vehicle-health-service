@@ -1,20 +1,23 @@
-import Vue from 'vue';
-import VueRouter from 'vue-router';
-import allRoutes from './router/allRoutes';
-import axios from 'axios';
-import VueAxios from 'vue-axios';
+import Vue          from 'vue';
+import VueRouter    from 'vue-router';
+import allRoutes    from './router/allRoutes';
+import axios        from 'axios';
+import VueAxios     from 'vue-axios';
 import BootstrapVue from 'bootstrap-vue';
 // Import the styles directly (they can be added via script tags alternatively)
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
-import VAnimateCss from 'v-animate-css';
-import App from './App';
+import App          from './App';
 
+// --------- ROUTER ---------
 // noinspection JSUnresolvedFunction
 Vue.use(VueRouter);
+
+// --------- AXIOS ---------
+// PRODUCTION
 // Vue.use(VueAxios, axios);
 
-// --------- CONFIGURATION FOR DEV PERSPECTIVE ---------
+// DEVELOPMENT
 Vue.use(VueAxios, axios.create({
   baseURL: `http://localhost:8088`,
   headers: {
@@ -22,8 +25,8 @@ Vue.use(VueAxios, axios.create({
   }
 }));
 
+// --------- BOOTSTRAP ---------
 Vue.use(BootstrapVue);
-Vue.use(VAnimateCss);
 
 const myRouter = new VueRouter({
   routes: allRoutes,
