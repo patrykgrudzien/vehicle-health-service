@@ -6,12 +6,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import me.grudzien.patryk.exceptions.exception.CustomUserValidationException;
-import me.grudzien.patryk.exceptions.exception.RedirectionException;
-import me.grudzien.patryk.exceptions.exception.TokenExpiredException;
-import me.grudzien.patryk.exceptions.exception.TokenNotFoundException;
-import me.grudzien.patryk.exceptions.exception.UserAlreadyExistsException;
-import me.grudzien.patryk.exceptions.pojo.ExceptionResponse;
+import me.grudzien.patryk.exceptions.registration.CustomUserValidationException;
+import me.grudzien.patryk.exceptions.RedirectionException;
+import me.grudzien.patryk.exceptions.registration.TokenExpiredException;
+import me.grudzien.patryk.exceptions.registration.TokenNotFoundException;
+import me.grudzien.patryk.exceptions.registration.UserAlreadyExistsException;
+import me.grudzien.patryk.exceptions.dto.ExceptionResponse;
 
 /**
  * The @ControllerAdvice annotation is a component annotation allowing implementation classes to be auto-detected
