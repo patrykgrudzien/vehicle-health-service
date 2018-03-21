@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 import me.grudzien.patryk.domain.entities.registration.CustomUser;
 import me.grudzien.patryk.domain.entities.registration.Role;
-import me.grudzien.patryk.repository.CustomUserRepository;
+import me.grudzien.patryk.repository.registration.CustomUserRepository;
 
 @Log4j2
 @Service
