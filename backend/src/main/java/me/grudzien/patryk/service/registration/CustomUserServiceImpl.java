@@ -25,7 +25,7 @@ import me.grudzien.patryk.exceptions.registration.CustomUserValidationException;
 import me.grudzien.patryk.exceptions.registration.TokenExpiredException;
 import me.grudzien.patryk.exceptions.registration.TokenNotFoundException;
 import me.grudzien.patryk.exceptions.registration.UserAlreadyExistsException;
-import me.grudzien.patryk.repository.CustomUserRepository;
+import me.grudzien.patryk.repository.registration.CustomUserRepository;
 import me.grudzien.patryk.repository.registration.EmailVerificationTokenRepository;
 
 @Log4j2

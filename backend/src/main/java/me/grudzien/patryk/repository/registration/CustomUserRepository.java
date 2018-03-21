@@ -1,4 +1,4 @@
-package me.grudzien.patryk.repository;
+package me.grudzien.patryk.repository.registration;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
