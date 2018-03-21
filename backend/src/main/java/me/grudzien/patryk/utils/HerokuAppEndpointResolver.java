@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 import java.util.Arrays;
 
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
+import me.grudzien.patryk.utils.log.LogMarkers;
+import me.grudzien.patryk.utils.profiles.SpringAppProfiles;
 
 @Log4j2
 @Component
