@@ -29,7 +29,7 @@ public class CustomApplicationProperties {
 			private String root;
 			private String healthCheck;
 
-			public String getHomeHealthCheck() {
+			public String getRootHealthCheck() {
 				return getRoot() + getHealthCheck();
 			}
 		}

@@ -10,9 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-/**
- * Handler for customization the exception messages coming from "MyUserDetailsService".
- */
 @Component
 public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 

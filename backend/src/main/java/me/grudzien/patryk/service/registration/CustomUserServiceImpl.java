@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.context.request.WebRequest;
 
+import javax.servlet.http.HttpServletResponse;
+
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.UUID;
@@ -25,6 +27,7 @@ import me.grudzien.patryk.exceptions.registration.CustomUserValidationException;
 import me.grudzien.patryk.exceptions.registration.TokenExpiredException;
 import me.grudzien.patryk.exceptions.registration.TokenNotFoundException;
 import me.grudzien.patryk.exceptions.registration.UserAlreadyExistsException;
+import me.grudzien.patryk.handlers.web.HttpResponseHandler;
 import me.grudzien.patryk.repository.registration.CustomUserRepository;
 import me.grudzien.patryk.repository.registration.EmailVerificationTokenRepository;
 
@@ -37,16 +40,19 @@ public class CustomUserServiceImpl implements CustomUserService {
 	private final BCryptPasswordEncoder passwordEncoder;
 	private final ApplicationEventPublisher eventPublisher;
 	private final EmailVerificationTokenRepository emailVerificationTokenRepository;
+	private final HttpResponseHandler httpResponseHandler;
 
 	@Autowired
 	public CustomUserServiceImpl(final CustomUserRepository customUserRepository, final BCryptPasswordEncoder passwordEncoder,
 	                             final ApplicationEventPublisher eventPublisher,
-	                             final EmailVerificationTokenRepository emailVerificationTokenRepository) {
+	                             final EmailVerificationTokenRepository emailVerificationTokenRepository,
+	                             final HttpResponseHandler httpResponseHandler) {
 
 		this.customUserRepository = customUserRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.eventPublisher = eventPublisher;
 		this.emailVerificationTokenRepository = emailVerificationTokenRepository;
+		this.httpResponseHandler = httpResponseHandler;
 	}
 
 	@Override
@@ -85,10 +91,12 @@ public class CustomUserServiceImpl implements CustomUserService {
 	}
 
 	@Override
-	public void confirmRegistration(final String emailVerificationToken) {
+	public void confirmRegistration(final String emailVerificationToken, final HttpServletResponse response) {
 		final EmailVerificationToken token = getEmailVerificationToken(emailVerificationToken);
 		if (token == null) {
+			// TODO: check additional case if user is already enabled
 			log.error("No verification token found.");
+			httpResponseHandler.redirectUserToConfirmedPage(response, "/registration-confirmed?error=tokenNotFound");
 			throw new TokenNotFoundException("No verification token found.");
 		}
 		final Calendar calendar = Calendar.getInstance();
