@@ -121,7 +121,13 @@
         }
       },
       submitForm() {
-
+        this.axios.post(`/login`, this.form)
+          .then(response => {
+            console.log(response);
+          })
+          .catch(error => {
+            console.log(error);
+          })
       },
       clearFormFields() {
         // Reset our form values

@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import me.grudzien.patryk.domain.entities.registration.CustomUser;
 import me.grudzien.patryk.domain.entities.registration.Role;
 import me.grudzien.patryk.repository.registration.CustomUserRepository;
+import me.grudzien.patryk.utils.log.LogMarkers;
 
 @Log4j2
 @Service
@@ -33,6 +34,8 @@ public class MyUserDetailsService implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException {
+		log.info(LogMarkers.FLOW_MARKER, "loadUserByUsername() inside >>>> MyUserDetailsService >>>> Spring Security");
+
 		final CustomUser customUser = customUserRepository.findByEmail(email);
 		final boolean accountNonExpired = true;
 		final boolean credentialsNonExpired = true;

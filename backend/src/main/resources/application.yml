@@ -16,6 +16,7 @@ custom:
         resend-email-verification-token: /resend-verification-token?token=
       login:
         root: /login
+        failure-url: /login?error=true
       logout:
         root: /logout
         success-url: ?logout
@@ -30,7 +31,7 @@ custom:
 # ===============================
 spring:
   profiles:
-    active: dev-home
+    active: dev-office
   # ===============================
   # = JavaMail Configuration
   # ===============================
