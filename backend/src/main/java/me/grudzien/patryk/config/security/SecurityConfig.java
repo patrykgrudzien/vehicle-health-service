@@ -13,6 +13,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.handlers.security.CustomAuthenticationEntryPoint;
+import me.grudzien.patryk.handlers.security.CustomAuthenticationFailureHandler;
 import me.grudzien.patryk.service.security.MyUserDetailsService;
 
 @EnableWebSecurity
@@ -22,14 +23,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private final MyUserDetailsService myUserDetailsService;
 	private final CustomApplicationProperties customApplicationProperties;
 	private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+	private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
 	@Autowired
 	public SecurityConfig(final MyUserDetailsService myUserDetailsService,
 	                      final CustomApplicationProperties customApplicationProperties,
-	                      final CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
+	                      final CustomAuthenticationEntryPoint customAuthenticationEntryPoint,
+	                      final CustomAuthenticationFailureHandler customAuthenticationFailureHandler) {
 		this.myUserDetailsService = myUserDetailsService;
 		this.customApplicationProperties = customApplicationProperties;
 		this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
+		this.customAuthenticationFailureHandler = customAuthenticationFailureHandler;
 	}
 
 	@Override
@@ -48,7 +52,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				// home page
 				.antMatchers("/").permitAll()
 					.and()
-			.formLogin().permitAll()
+			.formLogin()
+				.failureHandler(customAuthenticationFailureHandler)
 		            .and()
 			.logout()
 		        .invalidateHttpSession(Boolean.TRUE)
@@ -73,8 +78,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		return authenticationProvider;
 	}
 
-	@Override
-	protected void configure(final AuthenticationManagerBuilder auth) {
+	@Autowired
+	protected void configureGlobal(final AuthenticationManagerBuilder auth) {
 		auth.authenticationProvider(authenticationProvider());
 	}
 }

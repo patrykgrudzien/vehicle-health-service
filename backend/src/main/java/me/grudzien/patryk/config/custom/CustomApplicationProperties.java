@@ -65,6 +65,7 @@ public class CustomApplicationProperties {
 		@Setter
 		public static class Login {
 			private String root;
+			private String failureUrl;
 		}
 
 		@Getter
