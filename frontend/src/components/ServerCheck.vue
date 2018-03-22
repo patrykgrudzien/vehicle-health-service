@@ -1,5 +1,12 @@
 <template>
   <b-container>
+    <b-row class="text-center">
+      <b-col cols="3"></b-col>
+      <b-col>
+        <b-alert :show="dangerAlert.show" variant="danger">{{ this.dangerAlert.message }}</b-alert>
+      </b-col>
+      <b-col cols="3"></b-col>
+    </b-row>
     <div class="text-center">
       <b-button id="call-rest-service" @click="callRestService" variant="secondary">Call Spring Boot REST</b-button>
     </div>
@@ -22,14 +29,23 @@
       return {
         message: 'Server Health Check',
         response: [],
-        errors: []
+        errors: [],
+        dangerAlert: {
+          show: false,
+          message: ''
+        }
       }
     },
     methods: {
       callRestService() {
         this.axios.get(`/server/health-check`)
           .then(response => {
-            this.response = response.data;
+            if (response.data.authenticationRequiredCode) {
+              this.dangerAlert.show = true;
+              this.dangerAlert.message = response.data.authenticationRequiredMessage;
+            } else {
+              this.response = response.data;
+            }
           })
           .catch(error => {
             this.errors.push(error);
@@ -44,6 +60,7 @@
     margin-top: 50px;
     margin-bottom: 10px;
   }
+
   h1, h4 {
     text-align: center;
     margin-bottom: 20px;

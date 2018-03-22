@@ -23,7 +23,8 @@ export default [
     component: RegistrationForm
   },
   {
-    path: "/registration-confirmed",
+    // added wildcard to handle query params sent by server (they are used to display appropriate error message)
+    path: "/registration-confirmed**",
     component: ConfirmRegistration
   },
   {

@@ -12,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
+import me.grudzien.patryk.handlers.security.CustomAuthenticationEntryPoint;
 import me.grudzien.patryk.service.security.MyUserDetailsService;
 
 @EnableWebSecurity
@@ -20,12 +21,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	private final MyUserDetailsService myUserDetailsService;
 	private final CustomApplicationProperties customApplicationProperties;
+	private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
 	@Autowired
 	public SecurityConfig(final MyUserDetailsService myUserDetailsService,
-	                      final CustomApplicationProperties customApplicationProperties) {
+	                      final CustomApplicationProperties customApplicationProperties,
+	                      final CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
 		this.myUserDetailsService = myUserDetailsService;
 		this.customApplicationProperties = customApplicationProperties;
+		this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
 	}
 
 	@Override
@@ -39,20 +43,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		    .authorizeRequests()
 		        // /registration/**
 		        .antMatchers(customApplicationProperties.getEndpoints().getRegistration().getRoot() + "/**").permitAll()
-				// server/health-check
-				.antMatchers("/server/**").authenticated()
+				// /server/health-check
+				.antMatchers(customApplicationProperties.getEndpoints().getServer().getRootHealthCheck()).authenticated()
 				// home page
 				.antMatchers("/").permitAll()
-			.and()
-				.formLogin()
-				.loginPage("/login").permitAll()
-		    .and()
-		        .logout()
+					.and()
+			.formLogin().permitAll()
+		            .and()
+			.logout()
 		        .invalidateHttpSession(Boolean.TRUE)
 		        .clearAuthentication(Boolean.TRUE)
 		        .logoutRequestMatcher(new AntPathRequestMatcher(customApplicationProperties.getEndpoints().getLogout().getRoot()))
 		        .logoutSuccessUrl(customApplicationProperties.getEndpoints().getLogout().getRootSuccessUrl())
-		        .permitAll();
+					.and()
+			.exceptionHandling()
+				.authenticationEntryPoint(customAuthenticationEntryPoint);
 	}
 
 	@Bean
