@@ -60,7 +60,7 @@ public class CreateFileOnActiveHerokuProfile {
 		String projectPath = "";
 		try {
 			projectPath = new FileSystemResource("").getURI().getPath();
-			log.info("Project path found: " + projectPath);
+			log.debug("Project path found: " + projectPath);
 		} catch (final IOException exception) {
 			log.error("Cannot find project path !!!");
 		}
@@ -86,13 +86,13 @@ public class CreateFileOnActiveHerokuProfile {
 			resolveHerokuDeploymentEnabledFilesOutputPaths(activeProfileName).forEach(path -> {
 				try {
 					Files.touch(new FileSystemResource(path).getFile());
-					log.info("File >>>> " + path + " <<<< has been created!");
+					log.debug("File >>>> " + path + " <<<< has been created!");
 				} catch (final IOException exception) {
 					log.error(exception.getMessage());
 				}
 			});
 		} finally {
-			log.info("Files(s) created. TASK COMPLETED.");
+			log.debug("Files(s) created. TASK COMPLETED.");
 		}
 		return "createFile() method executed.";
 	}

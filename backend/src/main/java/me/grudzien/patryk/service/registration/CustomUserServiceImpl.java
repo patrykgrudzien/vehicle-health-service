@@ -64,7 +64,7 @@ public class CustomUserServiceImpl implements CustomUserService {
 			throw new UserAlreadyExistsException("User with specified email " + userRegistrationDto.getEmail() + " already exists.");
 		}
 		if (!bindingResult.hasErrors()) {
-			log.info("No validation errors during user registration.");
+			log.debug("No validation errors during user registration.");
 			final CustomUser customUser = CustomUser.Builder()
 			                                        .firstName(userRegistrationDto.getFirstName())
 			                                        .lastName(userRegistrationDto.getLastName())
@@ -75,7 +75,7 @@ public class CustomUserServiceImpl implements CustomUserService {
 			customUserRepository.save(customUser);
 
 			// we use Spring Event to create the token and send verification email (it should not be performed by controller directly)
-			log.info("Publisher published event for verification token generation.");
+			log.debug("Publisher published event for verification token generation.");
 			eventPublisher.publishEvent(new OnRegistrationCompleteEvent(customUser, webRequest.getContextPath()));
 		} else {
 			log.error("Validation errors present during user registration.");
@@ -107,10 +107,10 @@ public class CustomUserServiceImpl implements CustomUserService {
 		final CustomUser user = token.getCustomUser();
 		user.setEnabled(Boolean.TRUE);
 		saveRegisteredCustomUser(user);
-		log.info("User account has been activated.");
+		log.debug("User account has been activated.");
 
 		emailVerificationTokenRepository.delete(token);
-		log.info("Token confirmed and deleted from database.");
+		log.debug("Token confirmed and deleted from database.");
 	}
 
 	@Override
@@ -137,9 +137,9 @@ public class CustomUserServiceImpl implements CustomUserService {
 	@Override
 	public EmailVerificationToken generateNewEmailVerificationToken(final String existingEmailVerificationToken) {
 		final EmailVerificationToken existingToken = emailVerificationTokenRepository.findByToken(existingEmailVerificationToken);
-		log.info("Found expired token for user: " + existingToken.getCustomUser().getEmail());
+		log.debug("Found expired token for user: " + existingToken.getCustomUser().getEmail());
 		existingToken.updateToken(UUID.randomUUID().toString());
-		log.info("New token: " + existingToken.getToken() + " generated successfully.");
+		log.debug("New token: " + existingToken.getToken() + " generated successfully.");
 		return emailVerificationTokenRepository.save(existingToken);
 	}
 

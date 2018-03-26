@@ -28,15 +28,15 @@ public class HerokuAppEndpointResolver implements InitializingBean {
 	@Autowired
 	public HerokuAppEndpointResolver(final Environment environment, final CustomApplicationProperties customApplicationProperties) {
 		this.environment = environment;
-		log.info(LogMarkers.FLOW_MARKER, "{} bean injected.", Environment.class);
+		log.debug(LogMarkers.FLOW_MARKER, "{} bean injected.", Environment.class);
 
 		this.customApplicationProperties = customApplicationProperties;
-		log.info(LogMarkers.FLOW_MARKER, "{} bean injected.", CustomApplicationProperties.class);
+		log.debug(LogMarkers.FLOW_MARKER, "{} bean injected.", CustomApplicationProperties.class);
 	}
 
 	@Override
 	public void afterPropertiesSet() {
-		log.info(LogMarkers.METHOD_INVOCATION_MARKER, "{} method called.", "afterPropertiesSet()");
+		log.debug(LogMarkers.METHOD_INVOCATION_MARKER, "{} method called.", "afterPropertiesSet()");
 		Arrays.stream(environment.getActiveProfiles())
 		      .findFirst()
 		      // taking active spring profile
@@ -53,7 +53,7 @@ public class HerokuAppEndpointResolver implements InitializingBean {
 		if (ACTIVE_SPRING_PROFILE.equals(SpringAppProfiles.HEROKU_DEPLOYMENT.getYmlName())) {
 			return getHerokuAppBaseUrl();
 		} else {
-			log.info(LogMarkers.METHOD_INVOCATION_MARKER, "Created verification token URL for LOCAL env.");
+			log.debug(LogMarkers.METHOD_INVOCATION_MARKER, "Created verification token URL for LOCAL env.");
 			return customApplicationProperties.getCorsOrigins().getBackEndModule();
 		}
 	}
@@ -68,7 +68,7 @@ public class HerokuAppEndpointResolver implements InitializingBean {
 		if (ACTIVE_SPRING_PROFILE.equals(SpringAppProfiles.HEROKU_DEPLOYMENT.getYmlName())) {
 			return getHerokuAppBaseUrl();
 		} else {
-			log.info(LogMarkers.METHOD_INVOCATION_MARKER, "Created registration confirmation URL for LOCAL env.");
+			log.debug(LogMarkers.METHOD_INVOCATION_MARKER, "Created registration confirmation URL for LOCAL env.");
 			return customApplicationProperties.getCorsOrigins().getFrontEndModule();
 		}
 	}
@@ -83,7 +83,7 @@ public class HerokuAppEndpointResolver implements InitializingBean {
 		if (ACTIVE_SPRING_PROFILE.equals(SpringAppProfiles.HEROKU_DEPLOYMENT.getYmlName())) {
 			return getHerokuAppBaseUrl();
 		} else {
-			log.info(LogMarkers.METHOD_INVOCATION_MARKER, "Created login page URL for LOCAL env.");
+			log.debug(LogMarkers.METHOD_INVOCATION_MARKER, "Created login page URL for LOCAL env.");
 			return customApplicationProperties.getCorsOrigins().getFrontEndModule();
 		}
 	}
@@ -94,7 +94,7 @@ public class HerokuAppEndpointResolver implements InitializingBean {
 	 * @return base app URL (Heroku environment).
 	 */
 	private String getHerokuAppBaseUrl() {
-		log.info(LogMarkers.METHOD_INVOCATION_MARKER, "Created base app URL for HEROKU env.");
+		log.debug(LogMarkers.METHOD_INVOCATION_MARKER, "Created base app URL for HEROKU env.");
 		return customApplicationProperties.getEndpoints().getHeroku().getAppUrl();
 	}
 }

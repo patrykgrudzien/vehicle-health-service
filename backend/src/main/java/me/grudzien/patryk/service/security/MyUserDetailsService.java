@@ -34,7 +34,7 @@ public class MyUserDetailsService implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException {
-		log.info(LogMarkers.FLOW_MARKER, "loadUserByUsername() inside >>>> MyUserDetailsService >>>> Spring Security");
+		log.debug(LogMarkers.FLOW_MARKER, "loadUserByUsername() inside >>>> MyUserDetailsService >>>> Spring Security");
 
 		final CustomUser customUser = customUserRepository.findByEmail(email);
 		final boolean accountNonExpired = true;
@@ -44,7 +44,7 @@ public class MyUserDetailsService implements UserDetailsService {
 			log.error("No user found for specified email: " + email);
 			throw new UsernameNotFoundException("No user found for specified email: " + email);
 		}
-		log.info("User with " + email + " found");
+		log.debug("User with " + email + " found");
 		return new User(customUser.getEmail(), customUser.getPassword(), customUser.isEnabled(), accountNonExpired, credentialsNonExpired,
 		                accountNonLocked, mapRolesToAuthorities(customUser.getRoles()));
 	}

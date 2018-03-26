@@ -35,12 +35,12 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
 	public Authentication attemptAuthentication(final HttpServletRequest request, final HttpServletResponse response)
 			throws AuthenticationException {
 
-		log.info(LogMarkers.FLOW_MARKER, "attemptAuthentication() inside >>>> CustomUsernamePasswordAuthenticationFilter");
+		log.debug(LogMarkers.FLOW_MARKER, "attemptAuthentication() inside >>>> CustomUsernamePasswordAuthenticationFilter");
 
 		try {
 
 			final LoginRequest loginRequest = objectMapper.readValue(request.getReader(), LoginRequest.class);
-			log.info(LogMarkers.FLOW_MARKER, "User's email who attempts authentication: {}", loginRequest.getEmail());
+			log.debug(LogMarkers.FLOW_MARKER, "User's email who attempts authentication: {}", loginRequest.getEmail());
 
 			final UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
 					loginRequest.getEmail(), loginRequest.getPassword());

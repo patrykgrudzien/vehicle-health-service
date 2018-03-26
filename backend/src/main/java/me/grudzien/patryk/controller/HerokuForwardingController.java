@@ -26,7 +26,7 @@ public class HerokuForwardingController {
             "/server-health", "/about-me", "/registration-form", "/registration-confirmed", "/login"
 	})
 	public String forwardHerokuRequests() {
-		log.info(LogMarkers.CONTROLLER_MARKER, "Request forwarded to index.html.");
+		log.debug(LogMarkers.CONTROLLER_MARKER, "Request forwarded to index.html.");
 		return "forward:/index.html";
 	}
 }

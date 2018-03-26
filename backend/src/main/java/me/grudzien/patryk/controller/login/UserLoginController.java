@@ -23,7 +23,7 @@ public class UserLoginController {
 
 	@RequestMapping("${custom.properties.endpoints.login.root}")
 	public ResponseEntity<Void> login() {
-		log.info("Inside: " + customApplicationProperties.getEndpoints().getLogin().getRoot());
+		log.debug("Inside: " + customApplicationProperties.getEndpoints().getLogin().getRoot());
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 }
