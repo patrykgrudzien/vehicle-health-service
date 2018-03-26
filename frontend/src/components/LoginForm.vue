@@ -1,7 +1,7 @@
 <template>
   <b-containter>
     <!-- novalidate (disables the browser default feedback tooltips) -->
-    <b-form @submit.prevent="validateForm" @reset.prevent="clearFormFields" v-if="showForm" novalidate>
+    <b-form @submit.prevent="validateForm" @reset.prevent="clearFormFields" v-if="form.show" novalidate>
       <b-form-row>
         <b-col cols="4"></b-col>
         <b-col cols="4">
@@ -20,7 +20,7 @@
                         label-for="group-3">
             <b-form-input id="group-3"
                           type="email"
-                          v-model.trim="form.email"
+                          v-model.trim="credentials.email"
                           placeholder="Enter email"
                           :class="{'is-invalid': missingEmail && form.attemptSubmit}">
             </b-form-input>
@@ -43,7 +43,7 @@
                         label-for="group-5">
             <b-form-input id="group-5"
                           type="password"
-                          v-model.trim="form.password"
+                          v-model.trim="credentials.password"
                           placeholder="Enter your password"
                           :class="{'is-invalid': missingPassword && form.attemptSubmit}">
             </b-form-input>
@@ -76,7 +76,7 @@
         </b-col>
       </b-form-row>
     </b-form>
-    <circle-spinner v-if="!showForm" style="margin: 0 auto"/>
+    <circle-spinner v-if="!form.show" style="margin: 0 auto"/>
   </b-containter>
 </template>
 
@@ -92,11 +92,13 @@
     data() {
       return {
         form: {
-          email: '',
-          password: '',
-          attemptSubmit: false
+          attemptSubmit: false,
+          show: true
         },
-        showForm: true,
+        credentials: {
+          email: '',
+          password: ''
+        },
         serverResponse: null,
         showSuccessAlert: false,
         showDangerAlert: false
@@ -121,12 +123,10 @@
         }
       },
       submitForm() {
-        this.axios.post(`/login`, {
-            'email': this.form.email,
-            'password': this.form.password
-        })
+        this.axios.post(`/auth`, this.credentials)
           .then(response => {
-            console.log(response);
+            localStorage.setItem('token', response.data.token);
+            this.$router.push('/server-health');
           })
           .catch(error => {
             console.log(error);
@@ -134,24 +134,24 @@
       },
       clearFormFields() {
         // Reset our form values
-        this.form.email = '';
-        this.form.password = '';
+        this.credentials.email = '';
+        this.credentials.password = '';
         this.form.attemptSubmit = false;
         this.showSuccessAlert = false;
         this.showDangerAlert = false;
         // Trick to reset/clear native browser form validation state
-        this.showForm = false;
+        this.form.show = false;
         this.$nextTick(() => {
-          this.showForm = true
+          this.form.show = true
         });
       }
     },
     computed: {
       missingEmail() {
-        return this.form.email === '';
+        return this.credentials.email === '';
       },
       missingPassword() {
-        return this.form.password === '';
+        return this.credentials.password === '';
       }
     }
   };

@@ -29,8 +29,8 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
 	}
 
 	/*
-	 * Now (UserDetailsService.java) uses the "enabled" flag of the user - and so it'll only allow enabled user to authenticate.
-	 * This handler is gonna customize the exception messages coming from (UserDetailsService.java).
+	 * Now (MyUserDetailsService.java) uses the "enabled" flag of the user - and so it'll only allow enabled user to authenticate.
+	 * This handler is gonna customize the exception messages coming from (MyUserDetailsService.java).
 	 */
 	@Override
 	public void onAuthenticationFailure(final HttpServletRequest request, final HttpServletResponse response,
