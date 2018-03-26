@@ -47,7 +47,7 @@ public class HerokuAppEndpointResolver implements InitializingBean {
 	 * Method which creates base app URL for createVerificationTokenAndSendEmail() method in RegistrationCompleteListener
 	 * based on active spring profile.
 	 *
-	 * @return base app URL which is used in e-mail sent to the user.
+	 * @return base app URL which is used in exception-mail sent to the user.
 	 */
 	public String determineBaseAppUrlForVerificationToken() {
 		if (ACTIVE_SPRING_PROFILE.equals(SpringAppProfiles.HEROKU_DEPLOYMENT.getYmlName())) {

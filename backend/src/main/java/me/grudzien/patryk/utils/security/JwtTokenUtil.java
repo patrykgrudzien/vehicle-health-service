@@ -81,7 +81,7 @@ public class JwtTokenUtil implements Serializable {
 
 	public static class Retriever {
 
-		public static String getSubjectFromToken(final String token) {
+		public static String getUserEmailFromToken(final String token) {
 			return getClaimFromToken(token, Claims::getSubject);
 		}
 
@@ -109,18 +109,18 @@ public class JwtTokenUtil implements Serializable {
 
 	public static class Creator {
 
-		public static String generateToken(final UserDetails userDetails, final Device device) {
+		public static String generateToken(final JwtUser jwtUser, final Device device) {
 			final Map<String, Object> claims = new HashMap<>();
-			return doGenerateToken(claims, userDetails.getUsername(), generateAudience(device));
+			return doGenerateToken(claims, jwtUser.getEmail(), generateAudience(device));
 		}
 
-		private static String doGenerateToken(final Map<String, Object> claims, final String subject, final String audience) {
+		private static String doGenerateToken(final Map<String, Object> claims, final String userEmail, final String audience) {
 			final Date createdDate = CALENDAR.getTime();
 			final Date expirationDate = calculateExpirationDate(createdDate);
 
 			System.out.println("doGenerateToken " + createdDate);
 
-			return Jwts.builder().setClaims(claims).setSubject(subject).setAudience(audience).setIssuedAt(createdDate)
+			return Jwts.builder().setClaims(claims).setSubject(userEmail).setAudience(audience).setIssuedAt(createdDate)
 			           .setExpiration(expirationDate).signWith(SignatureAlgorithm.HS512, secret).compact();
 		}
 
@@ -175,10 +175,9 @@ public class JwtTokenUtil implements Serializable {
 
 		public static Boolean validateToken(final String token, final UserDetails userDetails) {
 			final JwtUser user = (JwtUser) userDetails;
-			final String username = Retriever.getSubjectFromToken(token);
+			final String userEmail = Retriever.getUserEmailFromToken(token);
 			final Date created = Retriever.getIssuedAtDateFromToken(token);
-			//final Date expiration = getExpirationDateFromToken(token);
-			return (username.equals(user.getUsername()) && !isTokenExpired(token) &&
+			return (userEmail.equals(user.getEmail()) && !isTokenExpired(token) &&
 			        !isCreatedBeforeLastPasswordReset(created, user.getLastPasswordResetDate()));
 		}
 	}

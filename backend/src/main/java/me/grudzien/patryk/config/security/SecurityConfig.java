@@ -5,20 +5,22 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.handlers.security.CustomAuthenticationEntryPoint;
+import me.grudzien.patryk.service.security.MyUserDetailsService;
 import me.grudzien.patryk.utils.log.LogMarkers;
 
 @Log4j2
@@ -27,20 +29,48 @@ import me.grudzien.patryk.utils.log.LogMarkers;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-	private final UserDetailsService userDetailsService;
+	private final MyUserDetailsService myUserDetailsService;
 	private final CustomApplicationProperties customApplicationProperties;
 	private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
-//	private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
 	@Autowired
-	public SecurityConfig(final UserDetailsService userDetailsService,
+	public SecurityConfig(final MyUserDetailsService myUserDetailsService,
 	                      final CustomApplicationProperties customApplicationProperties,
 	                      final CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
 
-		this.userDetailsService = userDetailsService;
+		this.myUserDetailsService = myUserDetailsService;
 		this.customApplicationProperties = customApplicationProperties;
 		this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
-//		this.customAuthenticationFailureHandler = customAuthenticationFailureHandler;
+	}
+
+	@Bean
+	public BCryptPasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
+
+	@Bean
+	public DaoAuthenticationProvider authenticationProvider() {
+		final DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+		authenticationProvider.setUserDetailsService(myUserDetailsService);
+		authenticationProvider.setPasswordEncoder(passwordEncoder());
+		return authenticationProvider;
+	}
+
+	@Autowired
+	protected void configureGlobal(final AuthenticationManagerBuilder auth) {
+		auth.authenticationProvider(authenticationProvider());
+		log.info(LogMarkers.FLOW_MARKER, "Authentication Provider configured globally.");
+	}
+
+	@Bean
+	@Override
+	public AuthenticationManager authenticationManagerBean() throws Exception {
+		return super.authenticationManagerBean();
+	}
+
+	@Bean
+	public JwtAuthorizationTokenFilter authenticationTokenFilterBean() {
+		return new JwtAuthorizationTokenFilter(myUserDetailsService, customApplicationProperties);
 	}
 
 	@Override
@@ -68,40 +98,26 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			        .antMatchers(customApplicationProperties.getEndpoints().getLogin().getRoot() + "/**").permitAll()
 					// /server/health-check
 					.antMatchers(customApplicationProperties.getEndpoints().getServer().getRootHealthCheck()).authenticated()
-					// home page
-					.antMatchers("/").permitAll()
                         .and()
                 // JWT filter
 				.addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);
 	}
 
-	@Bean
-	public JwtAuthenticationTokenFilter authenticationTokenFilterBean() {
-		return new JwtAuthenticationTokenFilter();
-	}
-
-	@Bean
-	public BCryptPasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
-
-	@Bean
-	public DaoAuthenticationProvider authenticationProvider() {
-		final DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-		authenticationProvider.setUserDetailsService(userDetailsService);
-		authenticationProvider.setPasswordEncoder(passwordEncoder());
-		return authenticationProvider;
-	}
-
-	@Autowired
-	protected void configureGlobal(final AuthenticationManagerBuilder auth) throws Exception {
-		auth.authenticationProvider(authenticationProvider());
-		log.info(LogMarkers.FLOW_MARKER, "Authentication Provider configured globally.");
-	}
-
-	@Bean
 	@Override
-	public AuthenticationManager authenticationManagerBean() throws Exception {
-		return super.authenticationManagerBean();
+	public void configure(final WebSecurity web) {
+		// AuthenticationTokenFilter will ignore the below paths
+		web.ignoring()
+		        .antMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getLogin().getRoot())
+					.and()
+		   .ignoring()
+		        .antMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getRegistration().getRootRegisterUserAccount())
+		            .and()
+           .ignoring()
+		        .antMatchers(HttpMethod.GET,
+		                     "/",
+		                     "/*.html",
+		                     "/favicon.ico",
+		                     "/css/**",
+		                     "/js/**");
 	}
 }

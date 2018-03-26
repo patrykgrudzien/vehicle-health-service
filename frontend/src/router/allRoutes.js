@@ -28,7 +28,7 @@ export default [
     component: ConfirmRegistration
   },
   {
-    path: '/login**',
+    path: '/login',
     component: LoginForm
   }
 ];

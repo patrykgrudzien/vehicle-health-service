@@ -25,6 +25,16 @@ Vue.use(VueAxios, axios.create({
   }
 }));
 
+// Interceptor for HTTP requests (adding Authorization header with JWT token to each request)
+Vue.axios.interceptors.request.use(config => {
+  if (localStorage.getItem('token')) {
+    config.headers.Authorization = 'Bearer ' + localStorage.getItem("token");
+  }
+  return config;
+}, function (error) {
+  return Promise.reject(error);
+});
+
 // --------- BOOTSTRAP ---------
 Vue.use(BootstrapVue);
 

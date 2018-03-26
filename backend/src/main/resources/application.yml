@@ -16,7 +16,7 @@ custom:
         confirmed-token-not-found: /registration-confirmed?error=tokenNotFound
         resend-email-verification-token: /resend-verification-token?token=
       login:
-        root: /login
+        root: /auth
         failure-url: /login?error=true
       logout:
         root: /logout
@@ -36,7 +36,7 @@ custom:
 # ===============================
 spring:
   profiles:
-    active: dev-office
+    active: dev-home
   # ===============================
   # = JavaMail Configuration
   # ===============================

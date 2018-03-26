@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 @Getter
 @RequiredArgsConstructor
-public class JwtAuthenticationResponse implements Serializable{
+public class JwtAuthenticationResponse implements Serializable {
 
 	private static final long serialVersionUID = 6971598280333003305L;
 
