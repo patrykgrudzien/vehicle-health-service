@@ -12,6 +12,15 @@ public class CustomApplicationProperties {
 
 	private Endpoints endpoints = new Endpoints();
 	private CorsOrigins corsOrigins = new CorsOrigins();
+	private Jwt jwt = new Jwt();
+
+	@Getter
+	@Setter
+	public static class Jwt {
+		private String header;
+		private String secret;
+		private Long expiration;
+	}
 
 	@Getter
 	@Setter
@@ -43,6 +52,7 @@ public class CustomApplicationProperties {
 			private String confirmationUrl;
 			private String resendEmailVerificationToken;
 			private String confirmed;
+			private String confirmedTokenNotFound;
 
 			public String getRootRegisterUserAccount() {
 				return getRoot() + getRegisterUserAccount();

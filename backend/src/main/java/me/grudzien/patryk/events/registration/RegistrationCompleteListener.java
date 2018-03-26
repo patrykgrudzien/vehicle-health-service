@@ -39,7 +39,7 @@ public class RegistrationCompleteListener implements ApplicationListener<OnRegis
 		this.emailService = emailService;
 		this.customApplicationProperties = customApplicationProperties;
 		this.herokuAppEndpointResolver = herokuAppEndpointResolver;
-		log.debug(LogMarkers.FLOW_MARKER, "{} bean injected.", HerokuAppEndpointResolver.class);
+		log.info(LogMarkers.FLOW_MARKER, "{} bean injected.", HerokuAppEndpointResolver.class);
 	}
 
 	@Override
@@ -48,13 +48,13 @@ public class RegistrationCompleteListener implements ApplicationListener<OnRegis
 	}
 
 	private void createVerificationTokenAndSendEmail(final OnRegistrationCompleteEvent event) {
-		log.debug(String.format("Listener received event: %1s with user email: %2s", event.getEventName(), event.getCustomUser().getEmail()));
+		log.info(String.format("Listener received event: %1s with user email: %2s", event.getEventName(), event.getCustomUser().getEmail()));
 
 		final CustomUser userBeingRegistered = event.getCustomUser();
 
 		final String token = UUID.randomUUID().toString();
 		customUserService.createEmailVerificationToken(event.getCustomUser(), token);
-		log.debug("Created token: " + token);
+		log.info("Created token: " + token);
 
 		final String recipientAddress = userBeingRegistered.getEmail();
 		final String subject = "Registration Confirmation";
@@ -73,6 +73,6 @@ public class RegistrationCompleteListener implements ApplicationListener<OnRegis
 			                                                             herokuAppEndpointResolver.determineBaseAppUrlForVerificationToken() + confirmationUrl)
 			                                                        .build())
 		                                              .build());
-		log.debug(subject + " email has been sent to " + recipientAddress);
+		log.info(subject + " email has been sent to " + recipientAddress);
 	}
 }

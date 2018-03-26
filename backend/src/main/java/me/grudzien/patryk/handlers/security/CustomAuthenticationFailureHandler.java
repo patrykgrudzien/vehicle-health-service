@@ -29,13 +29,13 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
 	}
 
 	/*
-	 * Now (MyUserDetailsService.java) uses the "enabled" flag of the user - and so it'll only allow enabled user to authenticate.
-	 * This handler is gonna customize the exception messages coming from (MyUserDetailsService.java).
+	 * Now (UserDetailsService.java) uses the "enabled" flag of the user - and so it'll only allow enabled user to authenticate.
+	 * This handler is gonna customize the exception messages coming from (UserDetailsService.java).
 	 */
 	@Override
 	public void onAuthenticationFailure(final HttpServletRequest request, final HttpServletResponse response,
 	                                    final AuthenticationException exception) throws IOException, ServletException {
-		log.debug(LogMarkers.FLOW_MARKER, "User was trying to login but it doesn't exist or is NOT enabled by verification token");
+		log.info(LogMarkers.FLOW_MARKER, "User was trying to login but it doesn't exist or is NOT enabled by verification token");
 
 		//  /login?error=true
 		setDefaultFailureUrl(customApplicationProperties.getEndpoints().getLogin().getFailureUrl());

@@ -31,7 +31,7 @@ public class HttpResponseHandler {
 	public void redirectUserToConfirmedPage(final HttpServletResponse response, final String redirectionEndpoint) {
 		try {
 			response.sendRedirect(herokuAppEndpointResolver.determineBaseAppUrlForConfirmRegistration() + redirectionEndpoint);
-			log.debug("User successfully redirected to confirm registration screen.");
+			log.info("User successfully redirected to confirm registration screen.");
 		} catch (final IOException exception) {
 			log.error(LogMarkers.EXCEPTION_MARKER, "Cannot redirect user to confirm registration screen.");
 			throw new RedirectionException("Cannot redirect user to confirm registration screen.");

@@ -1,68 +1,83 @@
 package me.grudzien.patryk.config.security;
 
+import lombok.extern.log4j.Log4j2;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.handlers.security.CustomAuthenticationEntryPoint;
-import me.grudzien.patryk.handlers.security.CustomAuthenticationFailureHandler;
-import me.grudzien.patryk.service.security.MyUserDetailsService;
+import me.grudzien.patryk.utils.log.LogMarkers;
 
-@EnableWebSecurity
+@Log4j2
 @Configuration
+@EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-	private final MyUserDetailsService myUserDetailsService;
+	private final UserDetailsService userDetailsService;
 	private final CustomApplicationProperties customApplicationProperties;
 	private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
-	private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
+//	private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
 	@Autowired
-	public SecurityConfig(final MyUserDetailsService myUserDetailsService,
+	public SecurityConfig(final UserDetailsService userDetailsService,
 	                      final CustomApplicationProperties customApplicationProperties,
-	                      final CustomAuthenticationEntryPoint customAuthenticationEntryPoint,
-	                      final CustomAuthenticationFailureHandler customAuthenticationFailureHandler) {
-		this.myUserDetailsService = myUserDetailsService;
+	                      final CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
+
+		this.userDetailsService = userDetailsService;
 		this.customApplicationProperties = customApplicationProperties;
 		this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
-		this.customAuthenticationFailureHandler = customAuthenticationFailureHandler;
+//		this.customAuthenticationFailureHandler = customAuthenticationFailureHandler;
 	}
 
 	@Override
-	protected void configure(final HttpSecurity http) throws Exception {
+	protected void configure(final HttpSecurity httpSecurity) throws Exception {
+		log.info(LogMarkers.FLOW_MARKER, "Inside Spring Security >>>> HttpSecurity configuration.");
 
-		http
-			// development purpose (no existing on production "Heroku")
-			.cors().and()
-			// disabling CSRF for now (testing purposes), later it'll be replaced by OAuth2 and JWT
-			.csrf().disable()
-		    .authorizeRequests()
-		        // /registration/**
-		        .antMatchers(customApplicationProperties.getEndpoints().getRegistration().getRoot() + "/**").permitAll()
-				// /server/health-check
-				.antMatchers(customApplicationProperties.getEndpoints().getServer().getRootHealthCheck()).authenticated()
-				// home page
-				.antMatchers("/").permitAll()
-					.and()
-			.formLogin()
-				.failureHandler(customAuthenticationFailureHandler)
-		            .and()
-			.logout()
-		        .invalidateHttpSession(Boolean.TRUE)
-		        .clearAuthentication(Boolean.TRUE)
-		        .logoutRequestMatcher(new AntPathRequestMatcher(customApplicationProperties.getEndpoints().getLogout().getRoot()))
-		        .logoutSuccessUrl(customApplicationProperties.getEndpoints().getLogout().getRootSuccessUrl())
-					.and()
-			.exceptionHandling()
-				.authenticationEntryPoint(customAuthenticationEntryPoint);
+		httpSecurity
+				// development purpose (no existing on production "Heroku")
+				.cors().and()
+				// don't need CSRF because JWT token is invulnerable
+				.csrf().disable()
+				// show message to the user that some resource requires authentication
+				.exceptionHandling()
+					.authenticationEntryPoint(customAuthenticationEntryPoint)
+                        .and()
+                // don't create session
+                .sessionManagement()
+					.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                        .and()
+                // filters
+		        .authorizeRequests()
+			        // /registration/**
+			        .antMatchers(customApplicationProperties.getEndpoints().getRegistration().getRoot() + "/**").permitAll()
+			        // /login/**
+			        .antMatchers(customApplicationProperties.getEndpoints().getLogin().getRoot() + "/**").permitAll()
+					// /server/health-check
+					.antMatchers(customApplicationProperties.getEndpoints().getServer().getRootHealthCheck()).authenticated()
+					// home page
+					.antMatchers("/").permitAll()
+                        .and()
+                // JWT filter
+				.addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);
+	}
+
+	@Bean
+	public JwtAuthenticationTokenFilter authenticationTokenFilterBean() {
+		return new JwtAuthenticationTokenFilter();
 	}
 
 	@Bean
@@ -73,13 +88,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Bean
 	public DaoAuthenticationProvider authenticationProvider() {
 		final DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-		authenticationProvider.setUserDetailsService(myUserDetailsService);
+		authenticationProvider.setUserDetailsService(userDetailsService);
 		authenticationProvider.setPasswordEncoder(passwordEncoder());
 		return authenticationProvider;
 	}
 
 	@Autowired
-	protected void configureGlobal(final AuthenticationManagerBuilder auth) {
+	protected void configureGlobal(final AuthenticationManagerBuilder auth) throws Exception {
 		auth.authenticationProvider(authenticationProvider());
+		log.info(LogMarkers.FLOW_MARKER, "Authentication Provider configured globally.");
+	}
+
+	@Bean
+	@Override
+	public AuthenticationManager authenticationManagerBean() throws Exception {
+		return super.authenticationManagerBean();
 	}
 }
