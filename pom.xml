@@ -63,6 +63,10 @@
         <lombok.version>1.16.20</lombok.version>
         <!-- Apache Commons BeanUtils -->
         <apache.commons.bean-utils.version>1.9.3</apache.commons.bean-utils.version>
+        <!-- JSON Web Token Support For The JVM -->
+        <jjwt.version>0.9.0</jjwt.version>
+        <!-- Spring Boot Starter Mobile -->
+        <spring-boot-starter-mobile.version>1.5.10.RELEASE</spring-boot-starter-mobile.version>
 
         <!--########################### PROJECT's DETAILS ###########################-->
         <!-- Structure -->

@@ -1,10 +1,8 @@
 package me.grudzien.patryk.domain.entities.registration;
 
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -30,9 +28,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "EMAIL_VERIFICATION_TOKEN")
-@Getter
-@Setter
-@EqualsAndHashCode
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class EmailVerificationToken {

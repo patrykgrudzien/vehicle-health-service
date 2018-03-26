@@ -13,6 +13,7 @@ custom:
         confirm-registration: /confirm
         confirmation-url: /confirm?token=
         confirmed: /registration-confirmed
+        confirmed-token-not-found: /registration-confirmed?error=tokenNotFound
         resend-email-verification-token: /resend-verification-token?token=
       login:
         root: /login
@@ -25,6 +26,10 @@ custom:
     cors-origins:
       front-end-module: http://localhost:8080
       back-end-module: http://localhost:8088
+    jwt:
+      header: Authorization
+      secret: super-secret
+      expiration: 604800
 
 # ===============================
 # = SPRING

@@ -14,6 +14,13 @@
     <artifactId>backend</artifactId>
     <packaging>jar</packaging>
 
+    <developers>
+        <developer>
+            <name>Patryk Grudzień</name>
+            <email>patryk.grudzien.91@gmail.com</email>
+        </developer>
+    </developers>
+
     <profiles>
         <!--
         ############################################
@@ -276,6 +283,7 @@
             <artifactId>spring-boot-devtools</artifactId>
             <optional>true</optional>
         </dependency>
+        <!-- MAIL -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
@@ -315,6 +323,18 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
+        </dependency>
+        <!-- JSON Web Token Support For The JVM -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>${jjwt.version}</version>
+        </dependency>
+        <!-- Spring Mobile (used in JwtTokenUtil class to create Audience in JWT) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mobile</artifactId>
+            <version>${spring-boot-starter-mobile.version}</version>
         </dependency>
     </dependencies>
 

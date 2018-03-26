@@ -121,7 +121,10 @@
         }
       },
       submitForm() {
-        this.axios.post(`/login`, this.form)
+        this.axios.post(`/login`, {
+            'email': this.form.email,
+            'password': this.form.password
+        })
           .then(response => {
             console.log(response);
           })

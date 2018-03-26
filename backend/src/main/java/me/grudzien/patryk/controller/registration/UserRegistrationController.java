@@ -42,14 +42,14 @@ public class UserRegistrationController {
 	@PostMapping("${custom.properties.endpoints.registration.register-user-account}")
 	public ResponseEntity<Void> registerUserAccount(@RequestBody @Valid final UserRegistrationDto userRegistrationDto,
 	                                                final BindingResult bindingResult, final WebRequest webRequest) {
-		log.debug("Inside: " + customApplicationProperties.getEndpoints().getRegistration().getRootRegisterUserAccount());
+		log.info("Inside: " + customApplicationProperties.getEndpoints().getRegistration().getRootRegisterUserAccount());
 		customUserService.registerNewCustomUserAccount(userRegistrationDto, bindingResult, webRequest);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	@RequestMapping("${custom.properties.endpoints.registration.confirm-registration}")
 	public ResponseEntity<Void> confirmRegistration(@RequestParam("token") final String token, final HttpServletResponse response) {
-		log.debug("Inside: " + customApplicationProperties.getEndpoints().getRegistration().getRootConfirmRegistration());
+		log.info("Inside: " + customApplicationProperties.getEndpoints().getRegistration().getRootConfirmRegistration());
 		customUserService.confirmRegistration(token, response);
 		httpResponseHandler.redirectUserToConfirmedPage(response, customApplicationProperties.getEndpoints().getRegistration().getConfirmed());
 		return new ResponseEntity<>(HttpStatus.OK);
@@ -57,7 +57,7 @@ public class UserRegistrationController {
 
 	@GetMapping("${custom.properties.endpoints.registration.resend-email-verification-token}")
 	public ResponseEntity<Void> resendEmailVerificationToken(@RequestParam("token") final String token) {
-		log.debug("Inside: " + customApplicationProperties.getEndpoints().getRegistration().getRootResendEmailVerificationToken());
+		log.info("Inside: " + customApplicationProperties.getEndpoints().getRegistration().getRootResendEmailVerificationToken());
 		customUserService.resendEmailVerificationToken(token);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}

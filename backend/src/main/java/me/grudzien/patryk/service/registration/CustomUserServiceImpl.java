@@ -15,13 +15,16 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.domain.dto.registration.UserRegistrationDto;
 import me.grudzien.patryk.domain.entities.registration.CustomUser;
 import me.grudzien.patryk.domain.entities.registration.EmailVerificationToken;
 import me.grudzien.patryk.domain.entities.registration.Role;
+import me.grudzien.patryk.domain.enums.RoleName;
 import me.grudzien.patryk.events.registration.OnRegistrationCompleteEvent;
 import me.grudzien.patryk.exceptions.registration.CustomUserValidationException;
 import me.grudzien.patryk.exceptions.registration.TokenExpiredException;
@@ -41,18 +44,21 @@ public class CustomUserServiceImpl implements CustomUserService {
 	private final ApplicationEventPublisher eventPublisher;
 	private final EmailVerificationTokenRepository emailVerificationTokenRepository;
 	private final HttpResponseHandler httpResponseHandler;
+	private final CustomApplicationProperties customApplicationProperties;
 
 	@Autowired
 	public CustomUserServiceImpl(final CustomUserRepository customUserRepository, final BCryptPasswordEncoder passwordEncoder,
 	                             final ApplicationEventPublisher eventPublisher,
 	                             final EmailVerificationTokenRepository emailVerificationTokenRepository,
-	                             final HttpResponseHandler httpResponseHandler) {
+	                             final HttpResponseHandler httpResponseHandler,
+	                             final CustomApplicationProperties customApplicationProperties) {
 
 		this.customUserRepository = customUserRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.eventPublisher = eventPublisher;
 		this.emailVerificationTokenRepository = emailVerificationTokenRepository;
 		this.httpResponseHandler = httpResponseHandler;
+		this.customApplicationProperties = customApplicationProperties;
 	}
 
 	@Override
@@ -64,18 +70,20 @@ public class CustomUserServiceImpl implements CustomUserService {
 			throw new UserAlreadyExistsException("User with specified email " + userRegistrationDto.getEmail() + " already exists.");
 		}
 		if (!bindingResult.hasErrors()) {
-			log.debug("No validation errors during user registration.");
+			log.info("No validation errors during user registration.");
 			final CustomUser customUser = CustomUser.Builder()
+			                                        .username(userRegistrationDto.getFirstName() + userRegistrationDto.getLastName())
 			                                        .firstName(userRegistrationDto.getFirstName())
 			                                        .lastName(userRegistrationDto.getLastName())
 			                                        .email(userRegistrationDto.getEmail())
 			                                        .password(passwordEncoder.encode(userRegistrationDto.getPassword()))
-			                                        .roles(Collections.singleton(new Role("ROLE_USER")))
+			                                        .roles(Collections.singleton(new Role(RoleName.ROLE_USER)))
+			                                        .createdDate(new Date())
 			                                        .build();
 			customUserRepository.save(customUser);
 
 			// we use Spring Event to create the token and send verification email (it should not be performed by controller directly)
-			log.debug("Publisher published event for verification token generation.");
+			log.info("Publisher published event for verification token generation.");
 			eventPublisher.publishEvent(new OnRegistrationCompleteEvent(customUser, webRequest.getContextPath()));
 		} else {
 			log.error("Validation errors present during user registration.");
@@ -96,7 +104,9 @@ public class CustomUserServiceImpl implements CustomUserService {
 		if (token == null) {
 			// TODO: check additional case if user is already enabled
 			log.error("No verification token found.");
-			httpResponseHandler.redirectUserToConfirmedPage(response, "/registration-confirmed?error=tokenNotFound");
+			httpResponseHandler.redirectUserToConfirmedPage(response, customApplicationProperties.getEndpoints()
+			                                                                                     .getRegistration()
+			                                                                                     .getConfirmedTokenNotFound());
 			throw new TokenNotFoundException("No verification token found.");
 		}
 		final Calendar calendar = Calendar.getInstance();
@@ -107,10 +117,10 @@ public class CustomUserServiceImpl implements CustomUserService {
 		final CustomUser user = token.getCustomUser();
 		user.setEnabled(Boolean.TRUE);
 		saveRegisteredCustomUser(user);
-		log.debug("User account has been activated.");
+		log.info("User account has been activated.");
 
 		emailVerificationTokenRepository.delete(token);
-		log.debug("Token confirmed and deleted from database.");
+		log.info("Token confirmed and deleted from database.");
 	}
 
 	@Override
@@ -137,9 +147,9 @@ public class CustomUserServiceImpl implements CustomUserService {
 	@Override
 	public EmailVerificationToken generateNewEmailVerificationToken(final String existingEmailVerificationToken) {
 		final EmailVerificationToken existingToken = emailVerificationTokenRepository.findByToken(existingEmailVerificationToken);
-		log.debug("Found expired token for user: " + existingToken.getCustomUser().getEmail());
+		log.info("Found expired token for user: " + existingToken.getCustomUser().getEmail());
 		existingToken.updateToken(UUID.randomUUID().toString());
-		log.debug("New token: " + existingToken.getToken() + " generated successfully.");
+		log.info("New token: " + existingToken.getToken() + " generated successfully.");
 		return emailVerificationTokenRepository.save(existingToken);
 	}
 

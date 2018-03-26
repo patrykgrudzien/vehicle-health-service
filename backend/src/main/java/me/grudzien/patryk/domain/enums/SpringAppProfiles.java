@@ -1,4 +1,4 @@
-package me.grudzien.patryk.utils.profiles;
+package me.grudzien.patryk.domain.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
