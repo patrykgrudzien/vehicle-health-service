@@ -24,7 +24,7 @@ public class ServerHealthCheckController {
 
 	@GetMapping("${custom.properties.endpoints.server.health-check}")
 	public @ResponseBody String healthCheck() {
-		log.info("Inside: " + customApplicationProperties.getEndpoints().getServer().getRootHealthCheck());
+		log.debug("Inside: " + customApplicationProperties.getEndpoints().getServer().getRootHealthCheck());
 		return "Server works! Hello there!";
 	}
 }

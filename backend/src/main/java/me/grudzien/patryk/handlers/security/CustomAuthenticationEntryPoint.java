@@ -36,7 +36,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 	public void commence(final HttpServletRequest request, final HttpServletResponse response,
 	                     final AuthenticationException authException) throws IOException, ServletException {
 
-		log.info(LogMarkers.FLOW_MARKER, "User wanted to get secured resource but needs to be authenticated.");
+		log.debug(LogMarkers.FLOW_MARKER, "User wanted to get secured resource but needs to be authenticated.");
 
 		// notify client of response body content type
 		response.addHeader(HttpResponseHandler.CONTENT_TYPE_KEY, HttpResponseHandler.CONTENT_TYPE_VALUE);

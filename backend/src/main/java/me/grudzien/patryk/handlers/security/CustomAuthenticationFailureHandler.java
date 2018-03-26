@@ -35,7 +35,7 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
 	@Override
 	public void onAuthenticationFailure(final HttpServletRequest request, final HttpServletResponse response,
 	                                    final AuthenticationException exception) throws IOException, ServletException {
-		log.info(LogMarkers.FLOW_MARKER, "User was trying to login but it doesn't exist or is NOT enabled by verification token");
+		log.debug(LogMarkers.FLOW_MARKER, "User was trying to login but it doesn't exist or is NOT enabled by verification token");
 
 		//  /login?error=true
 		setDefaultFailureUrl(customApplicationProperties.getEndpoints().getLogin().getFailureUrl());
