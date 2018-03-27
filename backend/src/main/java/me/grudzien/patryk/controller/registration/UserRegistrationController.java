@@ -47,7 +47,7 @@ public class UserRegistrationController {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
-	@RequestMapping("${custom.properties.endpoints.registration.confirm-registration}")
+	@GetMapping("${custom.properties.endpoints.registration.confirm-registration}")
 	public ResponseEntity<Void> confirmRegistration(@RequestParam("token") final String token, final HttpServletResponse response) {
 		log.info("Inside: " + customApplicationProperties.getEndpoints().getRegistration().getRootConfirmRegistration());
 		customUserService.confirmRegistration(token, response);

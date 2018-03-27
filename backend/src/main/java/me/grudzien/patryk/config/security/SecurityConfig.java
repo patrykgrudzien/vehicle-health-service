@@ -99,12 +99,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 		// AuthenticationTokenFilter will ignore the below paths
 		web.ignoring()
+		        // /auth
 		        .antMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getAuthentication().getRoot())
 					.and()
 			.ignoring()
+		        // /registration/**  (/register-user-account)
 				.antMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getRegistration().getRoot() + "/**")
 					.and()
 			.ignoring()
+		        // /registration/**  (/confirm)
 				.antMatchers(HttpMethod.GET, customApplicationProperties.getEndpoints().getRegistration().getRoot() + "/**")
 					.and()
 			.ignoring()
