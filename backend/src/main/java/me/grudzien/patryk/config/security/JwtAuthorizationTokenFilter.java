@@ -6,10 +6,10 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -18,27 +18,23 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
-import me.grudzien.patryk.service.security.MyUserDetailsService;
 import me.grudzien.patryk.utils.log.LogMarkers;
 import me.grudzien.patryk.utils.security.JwtTokenUtil;
 
 @Log4j2
 public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
 
-	private String tokenHeader;
-
-	private final MyUserDetailsService myUserDetailsService;
+	private final String tokenHeader;
+	private final UserDetailsService userDetailsService;
 	private final CustomApplicationProperties customApplicationProperties;
 
-	public JwtAuthorizationTokenFilter(final MyUserDetailsService myUserDetailsService,
+	public JwtAuthorizationTokenFilter(final UserDetailsService userDetailsService,
 	                                   final CustomApplicationProperties customApplicationProperties) {
-		this.myUserDetailsService = myUserDetailsService;
-		this.customApplicationProperties = customApplicationProperties;
-	}
 
-	@PostConstruct
-	public void initializeTokenHeader() {
-		log.info(LogMarkers.FLOW_MARKER, "initializeTokenHeader() inside >>>> JwtAuthenticationTokenFilter");
+		this.userDetailsService = userDetailsService;
+		this.customApplicationProperties = customApplicationProperties;
+
+		log.info(LogMarkers.FLOW_MARKER, "Inside >>>> JwtAuthorizationTokenFilter()");
 		this.tokenHeader = customApplicationProperties.getJwt().getHeader();
 		log.info(LogMarkers.FLOW_MARKER, "Token Header >>>> " + tokenHeader);
 	}
@@ -72,7 +68,7 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
 
 			// It is not compelling necessary to load the use details from the database. You could also store the information
 			// in the token and read it from it. It's up to you ;)
-			final UserDetails userDetails = this.myUserDetailsService.loadUserByUsername(email);
+			final UserDetails userDetails = this.userDetailsService.loadUserByUsername(email);
 
 			// For simple validation it is completely sufficient to just check the token integrity. You don't have to call
 			// the database compellingly. Again it's up to you ;)
