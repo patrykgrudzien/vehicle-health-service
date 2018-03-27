@@ -15,7 +15,7 @@ custom:
         confirmed: /registration-confirmed
         confirmed-token-not-found: /registration-confirmed?error=tokenNotFound
         resend-email-verification-token: /resend-verification-token?token=
-      login:
+      authentication:
         root: /auth
         failure-url: /login?error=true
       logout:

@@ -6,6 +6,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import me.grudzien.patryk.domain.dto.login.JwtUser;
 import me.grudzien.patryk.domain.entities.registration.CustomUser;
 import me.grudzien.patryk.domain.entities.registration.Role;
 

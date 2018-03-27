@@ -1,4 +1,4 @@
-package me.grudzien.patryk.config;
+package me.grudzien.patryk.config.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,18 +10,21 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 
+/**
+ * This configuration needs to be present for AUDIENCE claim in JWT generation.
+ * Take a look into:
+ * {@link me.grudzien.patryk.utils.security.JwtTokenUtil.Creator#generateAudience(org.springframework.mobile.device.Device)}
+ */
 @Configuration
-public class DeviceDetector implements WebMvcConfigurer {
+public class JwtAudienceDeviceResolver implements WebMvcConfigurer {
 
 	@Bean
-	public DeviceResolverHandlerInterceptor
-	deviceResolverHandlerInterceptor() {
+	public DeviceResolverHandlerInterceptor deviceResolverHandlerInterceptor() {
 		return new DeviceResolverHandlerInterceptor();
 	}
 
 	@Bean
-	public DeviceHandlerMethodArgumentResolver
-	deviceHandlerMethodArgumentResolver() {
+	public DeviceHandlerMethodArgumentResolver deviceHandlerMethodArgumentResolver() {
 		return new DeviceHandlerMethodArgumentResolver();
 	}
 

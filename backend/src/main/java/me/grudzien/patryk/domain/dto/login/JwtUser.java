@@ -1,4 +1,4 @@
-package me.grudzien.patryk.utils.security;
+package me.grudzien.patryk.domain.dto.login;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

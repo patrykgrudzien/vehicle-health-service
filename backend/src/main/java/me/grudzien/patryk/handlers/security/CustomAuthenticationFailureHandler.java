@@ -38,7 +38,7 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
 		log.info(LogMarkers.FLOW_MARKER, "User was trying to login but it doesn't exist or is NOT enabled by verification token");
 
 		//  /login?error=true
-		setDefaultFailureUrl(customApplicationProperties.getEndpoints().getLogin().getFailureUrl());
+		setDefaultFailureUrl(customApplicationProperties.getEndpoints().getAuthentication().getFailureUrl());
 		// process with authentication failure
 		super.onAuthenticationFailure(request, response, exception);
 		// send custom message to UI

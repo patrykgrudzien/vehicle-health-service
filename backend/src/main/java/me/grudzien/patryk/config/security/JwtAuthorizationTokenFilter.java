@@ -36,7 +36,6 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
 		this.customApplicationProperties = customApplicationProperties;
 	}
 
-
 	@PostConstruct
 	public void initializeTokenHeader() {
 		log.info(LogMarkers.FLOW_MARKER, "initializeTokenHeader() inside >>>> JwtAuthenticationTokenFilter");
