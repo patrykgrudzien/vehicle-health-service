@@ -3,6 +3,7 @@ package me.grudzien.patryk.config.security;
 import lombok.extern.log4j.Log4j2;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -20,6 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.handlers.security.CustomAuthenticationEntryPoint;
+import me.grudzien.patryk.service.security.MyUserDetailsService;
 import me.grudzien.patryk.utils.log.LogMarkers;
 
 @Log4j2
@@ -33,7 +35,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
 	@Autowired
-	public SecurityConfig(final UserDetailsService userDetailsService,
+	public SecurityConfig(@Qualifier(MyUserDetailsService.BEAN_NAME) final UserDetailsService userDetailsService,
 	                      final CustomApplicationProperties customApplicationProperties,
 	                      final CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
 
@@ -86,9 +88,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.anyRequest().authenticated();
 
 		// JWT filter
-		final JwtAuthorizationTokenFilter authorizationTokenFilter = new JwtAuthorizationTokenFilter(
-				userDetailsService(), customApplicationProperties);
-
+		final JwtAuthorizationTokenFilter authorizationTokenFilter = new JwtAuthorizationTokenFilter(userDetailsService(), customApplicationProperties);
 		// JWT filter
 		httpSecurity.addFilterBefore(authorizationTokenFilter, UsernamePasswordAuthenticationFilter.class);
 	}

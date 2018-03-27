@@ -77,7 +77,7 @@ public class CustomUserServiceImpl implements CustomUserService {
 			                                        .lastName(userRegistrationDto.getLastName())
 			                                        .email(userRegistrationDto.getEmail())
 			                                        .password(passwordEncoder.encode(userRegistrationDto.getPassword()))
-			                                        .roles(Collections.singleton(new Role(RoleName.ROLE_USER)))
+			                                        .roles(Collections.singleton(new Role(RoleName.ROLE_ADMIN)))
 			                                        .createdDate(new Date())
 			                                        .build();
 			customUserRepository.save(customUser);

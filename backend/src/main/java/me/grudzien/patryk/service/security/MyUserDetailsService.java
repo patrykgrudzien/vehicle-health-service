@@ -19,6 +19,7 @@ import me.grudzien.patryk.utils.security.JwtUserFactory;
 @Transactional
 public class MyUserDetailsService implements UserDetailsService {
 
+	public static final String BEAN_NAME = "myUserDetailsService";
 	private final CustomUserRepository customUserRepository;
 
 	@Autowired

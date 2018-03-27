@@ -3,6 +3,7 @@ package me.grudzien.patryk.controller.login;
 import lombok.extern.log4j.Log4j2;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mobile.device.Device;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,6 +22,7 @@ import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationResponse;
 import me.grudzien.patryk.domain.dto.login.JwtUser;
 import me.grudzien.patryk.exceptions.login.AuthenticationException;
+import me.grudzien.patryk.service.security.MyUserDetailsService;
 import me.grudzien.patryk.utils.security.JwtTokenUtil;
 
 @Log4j2
@@ -34,7 +36,7 @@ public class UserAuthenticationController {
 	@Autowired
 	public UserAuthenticationController(final CustomApplicationProperties customApplicationProperties,
 	                                    final AuthenticationManager authenticationManager,
-	                                    final UserDetailsService userDetailsService) {
+	                                    @Qualifier(MyUserDetailsService.BEAN_NAME) final UserDetailsService userDetailsService) {
 
 		this.customApplicationProperties = customApplicationProperties;
 		this.authenticationManager = authenticationManager;
