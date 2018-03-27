@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,12 +14,12 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.handlers.security.CustomAuthenticationEntryPoint;
-import me.grudzien.patryk.service.security.MyUserDetailsService;
 import me.grudzien.patryk.utils.log.LogMarkers;
 
 @Log4j2
@@ -29,16 +28,16 @@ import me.grudzien.patryk.utils.log.LogMarkers;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-	private final MyUserDetailsService myUserDetailsService;
+	private final UserDetailsService userDetailsService;
 	private final CustomApplicationProperties customApplicationProperties;
 	private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
 	@Autowired
-	public SecurityConfig(final MyUserDetailsService myUserDetailsService,
+	public SecurityConfig(final UserDetailsService userDetailsService,
 	                      final CustomApplicationProperties customApplicationProperties,
 	                      final CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
 
-		this.myUserDetailsService = myUserDetailsService;
+		this.userDetailsService = userDetailsService;
 		this.customApplicationProperties = customApplicationProperties;
 		this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
 	}
@@ -48,17 +47,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		return new BCryptPasswordEncoder();
 	}
 
-	@Bean
-	public DaoAuthenticationProvider authenticationProvider() {
-		final DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-		authenticationProvider.setUserDetailsService(myUserDetailsService);
-		authenticationProvider.setPasswordEncoder(passwordEncoder());
-		return authenticationProvider;
-	}
-
 	@Autowired
-	protected void configureGlobal(final AuthenticationManagerBuilder auth) {
-		auth.authenticationProvider(authenticationProvider());
+	protected void configureGlobal(final AuthenticationManagerBuilder auth) throws Exception {
+		auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
 		log.info(LogMarkers.FLOW_MARKER, "Authentication Provider configured globally.");
 	}
 
@@ -66,11 +57,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	public AuthenticationManager authenticationManagerBean() throws Exception {
 		return super.authenticationManagerBean();
-	}
-
-	@Bean
-	public JwtAuthorizationTokenFilter authenticationTokenFilterBean() {
-		return new JwtAuthorizationTokenFilter(myUserDetailsService, customApplicationProperties);
 	}
 
 	@Override
@@ -92,15 +78,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         .and()
                 // filters
 		        .authorizeRequests()
-			        // /registration**
-			        .antMatchers(customApplicationProperties.getEndpoints().getRegistration().getRoot() + "**").permitAll()
-			        // /auth**
-			        .antMatchers(customApplicationProperties.getEndpoints().getAuthentication().getRoot() + "**").permitAll()
-					// /server/health-check
-					.antMatchers(customApplicationProperties.getEndpoints().getServer().getRootHealthCheck()).authenticated()
-                        .and()
-                // JWT filter
-				.addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);
+			        // /registration/**
+			        .antMatchers(customApplicationProperties.getEndpoints().getRegistration().getRoot() + "/**").permitAll()
+			        // /auth/**
+			        .antMatchers(customApplicationProperties.getEndpoints().getAuthentication().getRoot() + "/**").permitAll()
+			        // require authentication via JWT
+					.anyRequest().authenticated();
+
+		// JWT filter
+		final JwtAuthorizationTokenFilter authorizationTokenFilter = new JwtAuthorizationTokenFilter(
+				userDetailsService(), customApplicationProperties);
+
+		// JWT filter
+		httpSecurity.addFilterBefore(authorizationTokenFilter, UsernamePasswordAuthenticationFilter.class);
 	}
 
 	@Override
@@ -109,18 +99,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 		// AuthenticationTokenFilter will ignore the below paths
 		web.ignoring()
-		        .antMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getAuthentication().getRoot() + "**")
+		        .antMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getAuthentication().getRoot())
 					.and()
-		   .ignoring()
-		        .antMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getRegistration()
-		                                                                 .getRootRegisterUserAccount() + "**")
-		            .and()
-           .ignoring()
-		        .antMatchers(HttpMethod.GET,
-		                     "/",
-		                     "/*.html",
-		                     "/favicon.ico",
-		                     "/css/**",
-		                     "/js/**");
+			.ignoring()
+				.antMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getRegistration().getRoot() + "/**")
+					.and()
+			.ignoring()
+				.antMatchers(HttpMethod.GET, customApplicationProperties.getEndpoints().getRegistration().getRoot() + "/**")
+					.and()
+			.ignoring()
+                .antMatchers(HttpMethod.GET,
+                             "/",
+                             "/*.html",
+                             "/favicon.ico",
+                             "/css/**",
+                             "/js/**");
 	}
 }

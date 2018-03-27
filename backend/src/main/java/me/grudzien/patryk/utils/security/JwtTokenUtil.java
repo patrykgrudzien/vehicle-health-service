@@ -118,7 +118,7 @@ public class JwtTokenUtil implements Serializable {
 			final Date createdDate = CALENDAR.getTime();
 			final Date expirationDate = calculateExpirationDate(createdDate);
 
-			System.out.println("doGenerateToken " + createdDate);
+			log.info(LogMarkers.METHOD_INVOCATION_MARKER, "JWT token generated inside >>>> doGenerateToken() >>>> JwtTokenUtil");
 
 			return Jwts.builder().setClaims(claims).setSubject(userEmail).setAudience(audience).setIssuedAt(createdDate)
 			           .setExpiration(expirationDate).signWith(SignatureAlgorithm.HS512, secret).compact();

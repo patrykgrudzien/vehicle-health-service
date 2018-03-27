@@ -9,6 +9,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,10 +19,9 @@ import java.util.Objects;
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationResponse;
-import me.grudzien.patryk.exceptions.login.AuthenticationException;
-import me.grudzien.patryk.service.security.MyUserDetailsService;
-import me.grudzien.patryk.utils.security.JwtTokenUtil;
 import me.grudzien.patryk.domain.dto.login.JwtUser;
+import me.grudzien.patryk.exceptions.login.AuthenticationException;
+import me.grudzien.patryk.utils.security.JwtTokenUtil;
 
 @Log4j2
 @RestController
@@ -29,16 +29,16 @@ public class UserAuthenticationController {
 
 	private final CustomApplicationProperties customApplicationProperties;
 	private final AuthenticationManager authenticationManager;
-	private final MyUserDetailsService myUserDetailsService;
+	private final UserDetailsService userDetailsService;
 
 	@Autowired
 	public UserAuthenticationController(final CustomApplicationProperties customApplicationProperties,
 	                                    final AuthenticationManager authenticationManager,
-	                                    final MyUserDetailsService myUserDetailsService) {
+	                                    final UserDetailsService userDetailsService) {
 
 		this.customApplicationProperties = customApplicationProperties;
 		this.authenticationManager = authenticationManager;
-		this.myUserDetailsService = myUserDetailsService;
+		this.userDetailsService = userDetailsService;
 	}
 
 	@PostMapping("${custom.properties.endpoints.authentication.root}")
@@ -49,7 +49,7 @@ public class UserAuthenticationController {
 		authenticate(authenticationRequest.getEmail(), authenticationRequest.getPassword());
 
 		// Reload password post-security so we can generate the token
-		final JwtUser jwtUser = (JwtUser) myUserDetailsService.loadUserByUsername(authenticationRequest.getEmail());
+		final JwtUser jwtUser = (JwtUser) userDetailsService.loadUserByUsername(authenticationRequest.getEmail());
 		final String token = JwtTokenUtil.Creator.generateToken(jwtUser, device);
 
 		return ResponseEntity.ok(new JwtAuthenticationResponse(token));
