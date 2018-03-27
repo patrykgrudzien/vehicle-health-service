@@ -26,17 +26,14 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
 
 	private final String tokenHeader;
 	private final UserDetailsService userDetailsService;
-	private final CustomApplicationProperties customApplicationProperties;
 
 	public JwtAuthorizationTokenFilter(final UserDetailsService userDetailsService,
 	                                   final CustomApplicationProperties customApplicationProperties) {
-
 		this.userDetailsService = userDetailsService;
-		this.customApplicationProperties = customApplicationProperties;
 
-		log.info(LogMarkers.FLOW_MARKER, "Inside >>>> JwtAuthorizationTokenFilter()");
 		this.tokenHeader = customApplicationProperties.getJwt().getHeader();
-		log.info(LogMarkers.FLOW_MARKER, "Token Header >>>> " + tokenHeader);
+		log.info(LogMarkers.FLOW_MARKER, "Inside >>>> JwtAuthorizationTokenFilter()");
+		log.info(LogMarkers.FLOW_MARKER, "Token Header >>>> {}", tokenHeader);
 	}
 
 	@Override
@@ -66,12 +63,16 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
 		if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 			log.debug(LogMarkers.FLOW_MARKER, "Security context was null, so authorizating user");
 
-			// It is not compelling necessary to load the use details from the database. You could also store the information
-			// in the token and read it from it. It's up to you ;)
+			/*
+			 * It is not compelling necessary to load the use details from the database. You could also store the information
+			 * in the token and read it from it.
+			 */
 			final UserDetails userDetails = this.userDetailsService.loadUserByUsername(email);
 
-			// For simple validation it is completely sufficient to just check the token integrity. You don't have to call
-			// the database compellingly. Again it's up to you ;)
+			/*
+			 * For simple validation it is completely sufficient to just check the token integrity. You don't have to call
+			 * the database compellingly.
+			 */
 			if (JwtTokenUtil.Validator.validateToken(authToken, userDetails)) {
 				final UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null,
 				                                                                                                   userDetails.getAuthorities());
