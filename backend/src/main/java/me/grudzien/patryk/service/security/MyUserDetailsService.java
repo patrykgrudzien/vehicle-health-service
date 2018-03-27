@@ -34,8 +34,9 @@ public class MyUserDetailsService implements UserDetailsService {
 		if (customUser == null) {
 			log.error("No user found for specified email: " + email);
 			throw new UsernameNotFoundException("No user found for specified email: " + email);
+		} else {
+			log.info("User with " + email + " found");
+			return JwtUserFactory.create(customUser);
 		}
-		log.info("User with " + email + " found");
-		return JwtUserFactory.create(customUser);
 	}
 }

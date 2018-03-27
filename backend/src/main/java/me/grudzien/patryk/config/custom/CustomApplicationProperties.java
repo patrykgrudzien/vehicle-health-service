@@ -28,7 +28,7 @@ public class CustomApplicationProperties {
 
 		private Server server = new Server();
 		private Registration registration = new Registration();
-		private Login login = new Login();
+		private Authentication authentication = new Authentication();
 		private Logout logout = new Logout();
 		private Heroku heroku = new Heroku();
 
@@ -73,7 +73,7 @@ public class CustomApplicationProperties {
 
 		@Getter
 		@Setter
-		public static class Login {
+		public static class Authentication {
 			private String root;
 			private String failureUrl;
 		}

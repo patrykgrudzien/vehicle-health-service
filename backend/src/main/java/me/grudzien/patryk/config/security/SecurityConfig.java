@@ -92,10 +92,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         .and()
                 // filters
 		        .authorizeRequests()
-			        // /registration/**
-			        .antMatchers(customApplicationProperties.getEndpoints().getRegistration().getRoot() + "/**").permitAll()
-			        // /login/**
-			        .antMatchers(customApplicationProperties.getEndpoints().getLogin().getRoot() + "/**").permitAll()
+			        // /registration**
+			        .antMatchers(customApplicationProperties.getEndpoints().getRegistration().getRoot() + "**").permitAll()
+			        // /auth**
+			        .antMatchers(customApplicationProperties.getEndpoints().getAuthentication().getRoot() + "**").permitAll()
 					// /server/health-check
 					.antMatchers(customApplicationProperties.getEndpoints().getServer().getRootHealthCheck()).authenticated()
                         .and()
@@ -105,12 +105,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	public void configure(final WebSecurity web) {
+		log.info(LogMarkers.FLOW_MARKER, "Inside Spring Security >>>> WebSecurity ignoring() configuration.");
+
 		// AuthenticationTokenFilter will ignore the below paths
 		web.ignoring()
-		        .antMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getLogin().getRoot())
+		        .antMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getAuthentication().getRoot() + "**")
 					.and()
 		   .ignoring()
-		        .antMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getRegistration().getRootRegisterUserAccount())
+		        .antMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getRegistration()
+		                                                                 .getRootRegisterUserAccount() + "**")
 		            .and()
            .ignoring()
 		        .antMatchers(HttpMethod.GET,

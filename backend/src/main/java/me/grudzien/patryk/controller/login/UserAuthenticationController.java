@@ -21,30 +21,30 @@ import me.grudzien.patryk.domain.dto.login.JwtAuthenticationResponse;
 import me.grudzien.patryk.exceptions.login.AuthenticationException;
 import me.grudzien.patryk.service.security.MyUserDetailsService;
 import me.grudzien.patryk.utils.security.JwtTokenUtil;
-import me.grudzien.patryk.utils.security.JwtUser;
+import me.grudzien.patryk.domain.dto.login.JwtUser;
 
 @Log4j2
 @RestController
-public class UserLoginController {
+public class UserAuthenticationController {
 
 	private final CustomApplicationProperties customApplicationProperties;
 	private final AuthenticationManager authenticationManager;
 	private final MyUserDetailsService myUserDetailsService;
 
 	@Autowired
-	public UserLoginController(final CustomApplicationProperties customApplicationProperties,
-	                           final AuthenticationManager authenticationManager,
-	                           final MyUserDetailsService myUserDetailsService) {
+	public UserAuthenticationController(final CustomApplicationProperties customApplicationProperties,
+	                                    final AuthenticationManager authenticationManager,
+	                                    final MyUserDetailsService myUserDetailsService) {
 
 		this.customApplicationProperties = customApplicationProperties;
 		this.authenticationManager = authenticationManager;
 		this.myUserDetailsService = myUserDetailsService;
 	}
 
-	@PostMapping("${custom.properties.endpoints.login.root}")
+	@PostMapping("${custom.properties.endpoints.authentication.root}")
 	public ResponseEntity<?> createAuthenticationToken(@RequestBody final JwtAuthenticationRequest authenticationRequest,
 	                                                   final Device device) {
-		log.info("Inside: " + customApplicationProperties.getEndpoints().getLogin().getRoot());
+		log.info("Inside: " + customApplicationProperties.getEndpoints().getAuthentication().getRoot());
 
 		authenticate(authenticationRequest.getEmail(), authenticationRequest.getPassword());
 

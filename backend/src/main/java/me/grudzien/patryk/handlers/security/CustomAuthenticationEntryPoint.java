@@ -1,8 +1,5 @@
 package me.grudzien.patryk.handlers.security;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
+import me.grudzien.patryk.domain.dto.login.AuthenticationEntryPointResponse;
 import me.grudzien.patryk.handlers.web.HttpResponseHandler;
 import me.grudzien.patryk.utils.log.LogMarkers;
 
@@ -44,19 +42,12 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 		// goal is to redirect user to login page (no error codes) in case of secured resource (redirection done on Vue.js)
 		response.setStatus(HttpServletResponse.SC_OK);
 		// set up the custom response body
-		final CustomResponse customResponseBody = new CustomResponse(HttpResponseHandler.SECURED_RESOURCE_CODE,
-		                                                             "You need to be login the check server response.");
+		final AuthenticationEntryPointResponse customResponseBody = new AuthenticationEntryPointResponse(
+				HttpResponseHandler.SECURED_RESOURCE_CODE,
+				"You need to be login the check server response.");
 		// write the custom response body
 		objectMapper.writeValue(response.getOutputStream(), customResponseBody);
 		// commit the response
 		response.flushBuffer();
-	}
-
-	@Getter
-	@Setter
-	@AllArgsConstructor
-	private static class CustomResponse {
-		private String authenticationRequiredCode;
-		private String authenticationRequiredMessage;
 	}
 }
