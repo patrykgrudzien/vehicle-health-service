@@ -40,9 +40,9 @@
       callRestService() {
         this.axios.get(`/server/health-check`)
           .then(response => {
-            if (response.data.authenticationRequiredCode) {
+            if (response.data.code) {
               this.dangerAlert.show = true;
-              this.dangerAlert.message = response.data.authenticationRequiredMessage;
+              this.dangerAlert.message = response.data.message;
             } else {
               this.response = response.data;
             }
