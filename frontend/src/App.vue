@@ -11,20 +11,10 @@
 
 <script>
   import AppNavBar from './components/AppNavBar';
-  import { mapGetters } from 'vuex';
 
   export default {
     components: {
       AppNavBar
-    },
-    computed: mapGetters([
-      'isLogged'
-    ]),
-    methods: {
-      logout() {
-        // TODO: to be implemented
-        this.$store.dispatch('logout');
-      }
     }
   };
 </script>

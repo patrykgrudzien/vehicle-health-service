@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import { myRouter } from '../main';
 
 Vue.use(Vuex);
 
@@ -21,26 +22,27 @@ const actions = {
   login({commit}, credentials) {
     Vue.axios.post(`/auth`, credentials)
       .then(response => {
+        console.log('dispatched to >>>> store >>>> login action');
         localStorage.setItem('token', response.data.token);
-      })
-      .catch(error => {
-        console.log(error);
+        commit(types.LOGIN);
+        myRouter.push({path: '/server-health'});
       })
   },
 
   logout({commit}) {
-    // TODO: implement server side /logout endpoint
+    console.log('logout button >>>> clicked');
     localStorage.removeItem('token');
     commit(types.LOGOUT);
+    myRouter.push({path: '/login'});
   }
 };
 
 const mutations = {
-  [types.LOGIN] (state) {
+  [types.LOGIN](state) {
     state.logged = 1;
   },
 
-  [types.LOGOUT] (state) {
+  [types.LOGOUT](state) {
     state.logged = 0;
   }
 };
