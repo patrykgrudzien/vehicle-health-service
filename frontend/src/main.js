@@ -39,7 +39,7 @@ Vue.axios.interceptors.request.use(config => {
 // --------- BOOTSTRAP ---------
 Vue.use(BootstrapVue);
 
-const myRouter = new VueRouter({
+export const myRouter = new VueRouter({
   routes: allRoutes,
   mode: 'history'
 });
