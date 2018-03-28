@@ -6,6 +6,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import me.grudzien.patryk.exceptions.login.BadCredentialsAuthenticationException;
+import me.grudzien.patryk.exceptions.login.UserDisabledAuthenticationException;
 import me.grudzien.patryk.exceptions.registration.CustomUserValidationException;
 import me.grudzien.patryk.exceptions.RedirectionException;
 import me.grudzien.patryk.exceptions.registration.TokenExpiredException;
@@ -70,5 +72,21 @@ public class ExceptionHandlingController {
 		                                                    .errorMessage(exception.getMessage())
 		                                                    .build();
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler(UserDisabledAuthenticationException.class)
+	public ResponseEntity<ExceptionResponse> userIsDisabled(final UserDisabledAuthenticationException exception) {
+		final ExceptionResponse response = ExceptionResponse.Builder()
+		                                                    .errorMessage(exception.getMessage())
+		                                                    .build();
+		return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+	}
+
+	@ExceptionHandler(BadCredentialsAuthenticationException.class)
+	public ResponseEntity<ExceptionResponse> badCredentials(final BadCredentialsAuthenticationException exception) {
+		final ExceptionResponse response = ExceptionResponse.Builder()
+		                                                    .errorMessage(exception.getMessage())
+		                                                    .build();
+		return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
 	}
 }
