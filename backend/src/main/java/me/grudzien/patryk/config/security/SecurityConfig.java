@@ -55,6 +55,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		log.info(LogMarkers.FLOW_MARKER, "Authentication Provider configured globally.");
 	}
 
+	// This method is overriden to expose the (AuthenticationManager) BEAN from "configure(AuthenticationManagerBuilder)"
 	@Bean
 	@Override
 	public AuthenticationManager authenticationManagerBean() throws Exception {

@@ -21,8 +21,10 @@ import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationResponse;
 import me.grudzien.patryk.domain.dto.login.JwtUser;
-import me.grudzien.patryk.exceptions.login.AuthenticationException;
+import me.grudzien.patryk.exceptions.login.BadCredentialsAuthenticationException;
+import me.grudzien.patryk.exceptions.login.UserDisabledAuthenticationException;
 import me.grudzien.patryk.service.security.MyUserDetailsService;
+import me.grudzien.patryk.utils.log.LogMarkers;
 import me.grudzien.patryk.utils.security.JwtTokenUtil;
 
 @Log4j2
@@ -58,20 +60,27 @@ public class UserAuthenticationController {
 	}
 
 	/**
-	 * Authenticates the user. If something is wrong, an {@link me.grudzien.patryk.exceptions.login.AuthenticationException} will be thrown
+	 * Authenticates the user. If something is wrong, an
+	 * {@link me.grudzien.patryk.exceptions.login.BadCredentialsAuthenticationException} or
+	 * {@link me.grudzien.patryk.exceptions.login.UserDisabledAuthenticationException} will be thrown
 	 */
 	private void authenticate(final String email, final String password) {
 		Objects.requireNonNull(email);
 		Objects.requireNonNull(password);
 
 		try {
+			/*
+			 * (AuthenticationManager) in authenticate() method will use (DaoAuthenticationProvider).
+			 * (DaoAuthenticationProvider) is an (AuthenticationProvider interface) implementation that receives user details
+			 * from a (MyUserDetailsService).
+			 */
 			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
 		} catch (final DisabledException exception) {
-			// TODO: add exceptionHandler for this exception
-			throw new AuthenticationException("User is disabled!");
+			log.error(LogMarkers.EXCEPTION_MARKER, "User with {} is disabled! Error message -> {}", email, exception.getMessage());
+			throw new UserDisabledAuthenticationException("User is disabled!");
 		} catch (final BadCredentialsException exception) {
-			// TODO: add exceptionHandler for this exception
-			throw new AuthenticationException("Bad credentials!");
+			log.error(LogMarkers.EXCEPTION_MARKER, "Bad credentials! Error message -> {}", exception.getMessage());
+			throw new BadCredentialsAuthenticationException("Bad credentials!");
 		}
 	}
 }
