@@ -300,6 +300,12 @@
             <artifactId>postgresql</artifactId>
             <version>${postgre.sql.version}</version>
         </dependency>
+        <!-- H2 (for now until Postgres will be configured on Heroku) -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>${h2database.version}</version>
+        </dependency>
         <!-- BEAN UTILS -->
         <dependency>
             <groupId>commons-beanutils</groupId>
