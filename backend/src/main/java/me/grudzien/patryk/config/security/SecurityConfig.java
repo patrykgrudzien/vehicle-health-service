@@ -114,9 +114,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.ignoring()
                 .antMatchers(HttpMethod.GET,
                              "/",
-                             "/*.html",
                              "/favicon.ico",
-                             "/css/**",
-                             "/js/**");
+                             "/static/**",
+                             "/static/*.html",
+                             "/static/favicon.ico",
+                             "/static/css/**",
+                             "/static/js/**")
+					.and()
+			.ignoring()
+				.antMatchers(HttpMethod.GET,
+				             "/about-me",
+				             "/registration-form",
+				             "/registration-confirmed",
+				             "/login");
 	}
 }
