@@ -8,6 +8,7 @@ import BootstrapVue from 'bootstrap-vue';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 import App          from './App';
+import store        from './store/store';
 
 // --------- ROUTER ---------
 // noinspection JSUnresolvedFunction
@@ -46,6 +47,7 @@ const myRouter = new VueRouter({
 new Vue({
   el: '#app',
   router: myRouter,
+  store,
   components: {App},
   template: '<App/>'
 });
