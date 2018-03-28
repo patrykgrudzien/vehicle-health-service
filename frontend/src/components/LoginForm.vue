@@ -123,14 +123,7 @@
         }
       },
       submitForm() {
-        this.axios.post(`/auth`, this.credentials)
-          .then(response => {
-            localStorage.setItem('token', response.data.token);
-            this.$router.push('/server-health');
-          })
-          .catch(error => {
-            console.log(error);
-          })
+        this.$store.dispatch('login', this.credentials);
       },
       clearFormFields() {
         // Reset our form values
