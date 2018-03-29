@@ -20,21 +20,23 @@ import javax.validation.Valid;
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.domain.dto.registration.UserRegistrationDto;
 import me.grudzien.patryk.handlers.web.HttpResponseHandler;
-import me.grudzien.patryk.service.registration.CustomUserService;
+import me.grudzien.patryk.service.registration.UserRegistrationService;
 
 @Log4j2
 @RestController
 @RequestMapping("${custom.properties.endpoints.registration.root}")
 public class UserRegistrationController {
 
-	private final CustomUserService customUserService;
+	private final UserRegistrationService userRegistrationService;
 	private final CustomApplicationProperties customApplicationProperties;
 	private final HttpResponseHandler httpResponseHandler;
 
 	@Autowired
-	public UserRegistrationController(final CustomUserService customUserService, final CustomApplicationProperties endpointsProperties,
+	public UserRegistrationController(final UserRegistrationService userRegistrationService,
+	                                  final CustomApplicationProperties endpointsProperties,
 	                                  final HttpResponseHandler httpResponseHandler) {
-		this.customUserService = customUserService;
+
+		this.userRegistrationService = userRegistrationService;
 		this.customApplicationProperties = endpointsProperties;
 		this.httpResponseHandler = httpResponseHandler;
 	}
@@ -43,14 +45,14 @@ public class UserRegistrationController {
 	public ResponseEntity<Void> registerUserAccount(@RequestBody @Valid final UserRegistrationDto userRegistrationDto,
 	                                                final BindingResult bindingResult, final WebRequest webRequest) {
 		log.info("Inside: " + customApplicationProperties.getEndpoints().getRegistration().getRootRegisterUserAccount());
-		customUserService.registerNewCustomUserAccount(userRegistrationDto, bindingResult, webRequest);
+		userRegistrationService.registerNewCustomUserAccount(userRegistrationDto, bindingResult, webRequest);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	@GetMapping("${custom.properties.endpoints.registration.confirm-registration}")
 	public ResponseEntity<Void> confirmRegistration(@RequestParam("token") final String token, final HttpServletResponse response) {
 		log.info("Inside: " + customApplicationProperties.getEndpoints().getRegistration().getRootConfirmRegistration());
-		customUserService.confirmRegistration(token, response);
+		userRegistrationService.confirmRegistration(token, response);
 		httpResponseHandler.redirectUserToConfirmedPage(response, customApplicationProperties.getEndpoints().getRegistration().getConfirmed());
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
@@ -58,7 +60,7 @@ public class UserRegistrationController {
 	@GetMapping("${custom.properties.endpoints.registration.resend-email-verification-token}")
 	public ResponseEntity<Void> resendEmailVerificationToken(@RequestParam("token") final String token) {
 		log.info("Inside: " + customApplicationProperties.getEndpoints().getRegistration().getRootResendEmailVerificationToken());
-		customUserService.resendEmailVerificationToken(token);
+		userRegistrationService.resendEmailVerificationToken(token);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 }

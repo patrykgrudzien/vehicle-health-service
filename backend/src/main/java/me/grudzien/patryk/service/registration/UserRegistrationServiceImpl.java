@@ -37,7 +37,7 @@ import me.grudzien.patryk.repository.registration.EmailVerificationTokenReposito
 @Log4j2
 @Service
 @Transactional
-public class CustomUserServiceImpl implements CustomUserService {
+public class UserRegistrationServiceImpl implements UserRegistrationService {
 
 	private final CustomUserRepository customUserRepository;
 	private final BCryptPasswordEncoder passwordEncoder;
@@ -47,11 +47,11 @@ public class CustomUserServiceImpl implements CustomUserService {
 	private final CustomApplicationProperties customApplicationProperties;
 
 	@Autowired
-	public CustomUserServiceImpl(final CustomUserRepository customUserRepository, final BCryptPasswordEncoder passwordEncoder,
-	                             final ApplicationEventPublisher eventPublisher,
-	                             final EmailVerificationTokenRepository emailVerificationTokenRepository,
-	                             final HttpResponseHandler httpResponseHandler,
-	                             final CustomApplicationProperties customApplicationProperties) {
+	public UserRegistrationServiceImpl(final CustomUserRepository customUserRepository, final BCryptPasswordEncoder passwordEncoder,
+	                                   final ApplicationEventPublisher eventPublisher,
+	                                   final EmailVerificationTokenRepository emailVerificationTokenRepository,
+	                                   final HttpResponseHandler httpResponseHandler,
+	                                   final CustomApplicationProperties customApplicationProperties) {
 
 		this.customUserRepository = customUserRepository;
 		this.passwordEncoder = passwordEncoder;
