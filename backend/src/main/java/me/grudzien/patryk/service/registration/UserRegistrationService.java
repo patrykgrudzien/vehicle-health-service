@@ -9,7 +9,7 @@ import me.grudzien.patryk.domain.dto.registration.UserRegistrationDto;
 import me.grudzien.patryk.domain.entities.registration.CustomUser;
 import me.grudzien.patryk.domain.entities.registration.EmailVerificationToken;
 
-public interface CustomUserService {
+public interface UserRegistrationService {
 
 	Boolean doesEmailExist(String email);
 
