@@ -1,6 +1,8 @@
 package me.grudzien.patryk.exceptions.login;
 
-public class BadCredentialsAuthenticationException extends RuntimeException {
+import org.springframework.security.authentication.BadCredentialsException;
+
+public class BadCredentialsAuthenticationException extends BadCredentialsException {
 
 	private static final long serialVersionUID = 2699728387301596587L;
 
