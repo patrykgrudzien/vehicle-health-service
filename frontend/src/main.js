@@ -4,15 +4,12 @@ import allRoutes    from './router/allRoutes';
 import axios        from 'axios';
 import VueAxios     from 'vue-axios';
 import BootstrapVue from 'bootstrap-vue';
-// Import the styles directly (they can be added via script tags alternatively)
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 import App          from './App';
 import store        from './store/store';
-
-// --------- ROUTER ---------
-// noinspection JSUnresolvedFunction
-Vue.use(VueRouter);
+import Vuetify      from 'vuetify';
+import 'vuetify/dist/vuetify.min.css';
 
 // --------- AXIOS ---------
 // PRODUCTION
@@ -39,11 +36,18 @@ Vue.axios.interceptors.request.use(config => {
 // --------- BOOTSTRAP ---------
 Vue.use(BootstrapVue);
 
+// --------- ROUTER ---------
+Vue.use(VueRouter);
+
 export const myRouter = new VueRouter({
   routes: allRoutes,
   mode: 'history'
 });
 
+// --------- VUETIFY ---------
+Vue.use(Vuetify);
+
+// --------- APP ---------
 new Vue({
   el: '#app',
   router: myRouter,
