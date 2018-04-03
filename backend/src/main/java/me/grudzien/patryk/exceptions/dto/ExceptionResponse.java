@@ -20,5 +20,11 @@ public class ExceptionResponse {
 
 	private String errorMessage;
 	private List<String> errors;
+
+	public static <T extends RuntimeException> ExceptionResponse buildGenericResponse(final T exception) {
+		return ExceptionResponse.Builder()
+		                        .errorMessage(exception.getMessage())
+		                        .build();
+	}
 }
 
