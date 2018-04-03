@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 
 import java.io.Serializable;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -57,7 +56,7 @@ public class JwtTokenUtil implements Serializable {
 	private static final String AUDIENCE_MOBILE = "mobile";
 	private static final String AUDIENCE_TABLET = "tablet";
 
-	private static final Calendar CALENDAR = Calendar.getInstance();
+	private static final Date NOW = new Date();
 
 	private static String secret;
 	private static Long expiration;
@@ -115,28 +114,27 @@ public class JwtTokenUtil implements Serializable {
 		}
 
 		private static String doGenerateToken(final Map<String, Object> claims, final String userEmail, final String audience) {
-			final Date createdDate = CALENDAR.getTime();
-			final Date expirationDate = calculateExpirationDate(createdDate);
+			final Date expirationDate = calculateExpirationDate(NOW);
 
 			log.info(LogMarkers.METHOD_INVOCATION_MARKER, "JWT token generated inside >>>> doGenerateToken() >>>> JwtTokenUtil");
 
-			return Jwts.builder().setClaims(claims).setSubject(userEmail).setAudience(audience).setIssuedAt(createdDate)
+			return Jwts.builder().setClaims(claims).setSubject(userEmail).setAudience(audience).setIssuedAt(NOW)
 			           .setExpiration(expirationDate).signWith(SignatureAlgorithm.HS512, secret).compact();
 		}
 
 		public String refreshToken(final String token) {
-			final Date createdDate = CALENDAR.getTime();
-			final Date expirationDate = calculateExpirationDate(createdDate);
+			final Date expirationDate = calculateExpirationDate(NOW);
 
 			final Claims claims = Retriever.getAllClaimsFromToken(token);
-			claims.setIssuedAt(createdDate);
+			claims.setIssuedAt(NOW);
 			claims.setExpiration(expirationDate);
 
 			return Jwts.builder().setClaims(claims).signWith(SignatureAlgorithm.HS512, secret).compact();
 		}
 
 		public static Date calculateExpirationDate(final Date createdDate) {
-			return new Date(createdDate.getTime() + expiration * 1000);
+			// token will be valid for 15 minutes (900 000 milliseconds)
+			return new Date(createdDate.getTime() + expiration);
 		}
 
 		public static String generateAudience(final Device device) {
@@ -156,7 +154,7 @@ public class JwtTokenUtil implements Serializable {
 
 		public static Boolean isTokenExpired(final String token) {
 			final Date expiration = Retriever.getExpirationDateFromToken(token);
-			return expiration.before(CALENDAR.getTime());
+			return expiration.before(NOW);
 		}
 
 		public static Boolean ignoreTokenExpiration(final String token) {
