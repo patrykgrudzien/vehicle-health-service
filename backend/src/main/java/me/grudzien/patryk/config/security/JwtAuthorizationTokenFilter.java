@@ -30,7 +30,6 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
 	public JwtAuthorizationTokenFilter(final UserDetailsService userDetailsService,
 	                                   final CustomApplicationProperties customApplicationProperties) {
 		this.userDetailsService = userDetailsService;
-
 		this.tokenHeader = customApplicationProperties.getJwt().getHeader();
 		log.info(LogMarkers.FLOW_MARKER, "Inside >>>> JwtAuthorizationTokenFilter()");
 		log.info(LogMarkers.FLOW_MARKER, "Token Header >>>> {}", tokenHeader);
@@ -74,8 +73,27 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
 			 * the database compellingly.
 			 */
 			if (JwtTokenUtil.Validator.validateToken(authToken, userDetails)) {
+				/*
+				 * UsernamePasswordAuthenticationToken- an {@link org.springframework.security.core.Authentication} implementation that is
+				 * designed for simple presentation of a username and password.
+				 *
+				 * Authentication - represents the token for an authentication request or for an authentication principal once the
+				 * request has been processed by "AuthenticationManager.authenticate()" method.
+				 * Once the request has been authenticated, the "Authentication" will usually be stored in a thread-local
+				 * (SecurityContext) managed by the (SecurityContextHolder) by the authentication mechanism which is being used.
+				 *
+				 * Credentials - they prove that principal is correct. This is usually a password, but could be anything relevant to the
+				 * AuthenticationManager. Callers are expected to populate the credentials.
+				 */
 				final UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null,
 				                                                                                                   userDetails.getAuthorities());
+				/*
+				 * Details - store additional details about the authentication request. These might be an IP address, certificate serial
+				 * number etc.
+				 *
+				 * WebAuthenticationDetailsSource - implementation of (AuthenticationDetailsSource) which builds the details object from
+				 * an "HttpServletRequest" object.
+				 */
 				authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 				log.info(LogMarkers.FLOW_MARKER, "Authorized user '{}', setting security context.", email);
 				SecurityContextHolder.getContext().setAuthentication(authentication);
