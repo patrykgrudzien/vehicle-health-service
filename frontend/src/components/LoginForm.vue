@@ -96,6 +96,10 @@
       'b-containter': bContainer,
       'circle-spinner': CircleSpinner
     },
+    beforeCreate() {
+      this.$store.commit('setErrorMessageFromServerExistence', false);
+      this.$store.commit('setErrorMessageFromServer', null);
+    },
     data() {
       return {
         form: {

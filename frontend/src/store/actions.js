@@ -13,6 +13,9 @@ export default {
         } else {
           localStorage.setItem('token', response.data.token);
           commit(types.LOGIN);
+          // reset store -> do not want to store incorrect values (user has been successfully logged in)
+          commit('setErrorMessageFromServerExistence', false);
+          commit('setErrorMessageFromServer', null);
           // /server-health comes from allRoutes.js (router)
           myRouter.push({path: '/server-health'});
         }
