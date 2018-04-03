@@ -10,6 +10,7 @@ export default {
         if (response.data.errorMessage) {
           commit('setErrorMessageFromServerExistence', true);
           commit('setErrorMessageFromServer', response.data.errorMessage);
+          myRouter.push({path: '/login?failed=true'});
         } else {
           localStorage.setItem('token', response.data.token);
           commit(types.LOGIN);

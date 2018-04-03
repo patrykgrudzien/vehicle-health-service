@@ -32,8 +32,12 @@ export default [
     component: LoginForm
   },
   {
-    // logout?successful=true
-    path: '/logout**',
+    path: `/login?failed=true`,
+    component: LoginForm
+  },
+  {
+    // /logout?successful=true
+    path: `/logout**`,
     component: LoginForm
   }
 ];
