@@ -27,66 +27,45 @@ public class ExceptionHandlingController {
 
 	@ExceptionHandler(UsernameNotFoundException.class)
 	public ResponseEntity<ExceptionResponse> userNotFoundForEmail(final UsernameNotFoundException exception) {
-		final ExceptionResponse response = ExceptionResponse.Builder()
-		                                                    .errorMessage(exception.getMessage())
-		                                                    .build();
-		return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(ExceptionResponse.buildGenericResponse(exception), HttpStatus.NOT_FOUND);
 	}
 
 	@ExceptionHandler(UserAlreadyExistsException.class)
 	public ResponseEntity<ExceptionResponse> userAlreadyExists(final UserAlreadyExistsException exception) {
-		final ExceptionResponse response = ExceptionResponse.Builder()
-		                                                    .errorMessage(exception.getMessage())
-		                                                    .build();
-		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(ExceptionResponse.buildGenericResponse(exception), HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(CustomUserValidationException.class)
 	public ResponseEntity<ExceptionResponse> customUserFieldsValidationException(final CustomUserValidationException exception) {
-		final ExceptionResponse response = ExceptionResponse.Builder()
-		                                                    .errorMessage(exception.getMessage())
-		                                                    .errors(exception.getValidationErrors())
-		                                                    .build();
+		final ExceptionResponse response = ExceptionResponse.buildGenericResponse(exception);
+		response.setErrors(exception.getValidationErrors());
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(TokenNotFoundException.class)
 	public ResponseEntity<ExceptionResponse> tokenNotFoundException(final TokenNotFoundException exception) {
-		final ExceptionResponse response = ExceptionResponse.Builder()
-		                                                    .errorMessage(exception.getMessage())
-		                                                    .build();
-		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(ExceptionResponse.buildGenericResponse(exception), HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(TokenExpiredException.class)
 	public ResponseEntity<ExceptionResponse> tokenExpiredException(final TokenExpiredException exception) {
-		final ExceptionResponse response = ExceptionResponse.Builder()
-		                                                    .errorMessage(exception.getMessage())
-		                                                    .build();
-		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(ExceptionResponse.buildGenericResponse(exception), HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(RedirectionException.class)
 	public ResponseEntity<ExceptionResponse> cannotRedirectUser(final RedirectionException exception) {
-		final ExceptionResponse response = ExceptionResponse.Builder()
-		                                                    .errorMessage(exception.getMessage())
-		                                                    .build();
-		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(ExceptionResponse.buildGenericResponse(exception), HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(UserDisabledAuthenticationException.class)
 	public ResponseEntity<ExceptionResponse> userIsDisabled(final UserDisabledAuthenticationException exception) {
-		final ExceptionResponse response = ExceptionResponse.Builder()
-		                                                    .errorMessage(exception.getMessage())
-		                                                    .build();
-		return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+		// returning 200 OK status just to catch error message and display it on UI
+		return new ResponseEntity<>(ExceptionResponse.buildGenericResponse(exception), HttpStatus.OK);
 	}
 
 	@ExceptionHandler(BadCredentialsAuthenticationException.class)
 	public ResponseEntity<ExceptionResponse> badCredentials(final BadCredentialsAuthenticationException exception) {
-		final ExceptionResponse response = ExceptionResponse.Builder()
-		                                                    .errorMessage(exception.getMessage())
-		                                                    .build();
-		return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+		// returning 200 OK status just to catch error message and display it on UI
+		return new ResponseEntity<>(ExceptionResponse.buildGenericResponse(exception), HttpStatus.OK);
 	}
 }

@@ -3,10 +3,16 @@
     <!-- novalidate (disables the browser default feedback tooltips) -->
     <b-form @submit.prevent="validateForm" @reset.prevent="clearFormFields" v-if="form.show" novalidate>
       <b-form-row>
-        <b-col cols="4"></b-col>
-        <b-col cols="4">
-          <b-alert :show="showSuccessAlert" variant="success">Successfully logged in.</b-alert>
-          <b-alert :show="showDangerAlert" variant="danger">Bad credentials.</b-alert>
+        <b-col cols="2"></b-col>
+        <b-col cols="8">
+          <b-alert :show="isErrorMessageFromServerExist" variant="danger">{{ getErrorMessageFromServer }}</b-alert>
+        </b-col>
+        <b-col cols="2"></b-col>
+      </b-form-row>
+      <b-form-row>
+        <b-col cols="2"></b-col>
+        <b-col cols="8">
+          <b-alert :show="successfullyLogout" variant="success">You have been successfully logout.</b-alert>
         </b-col>
         <b-col cols="2"></b-col>
       </b-form-row>
@@ -83,6 +89,7 @@
 <script>
   import bContainer    from 'bootstrap-vue/es/components/layout/container';
   import CircleSpinner from 'vue-loading-spinner/src/components/Circle8';
+  import { mapGetters } from 'vuex';
 
   export default {
     components: {
@@ -98,10 +105,7 @@
         credentials: {
           email: '',
           password: ''
-        },
-        serverResponse: null,
-        showSuccessAlert: false,
-        showDangerAlert: false
+        }
       }
     },
     methods: {
@@ -130,8 +134,6 @@
         this.credentials.email = '';
         this.credentials.password = '';
         this.form.attemptSubmit = false;
-        this.showSuccessAlert = false;
-        this.showDangerAlert = false;
         // Trick to reset/clear native browser form validation state
         this.form.show = false;
         this.$nextTick(() => {
@@ -145,7 +147,14 @@
       },
       missingPassword() {
         return this.credentials.password === '';
-      }
+      },
+      successfullyLogout() {
+        return this.$route.query.successful === 'true';
+      },
+      ...mapGetters([
+        'getErrorMessageFromServer',
+        'isErrorMessageFromServerExist'
+      ])
     }
   };
 </script>
