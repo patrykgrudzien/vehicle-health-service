@@ -49,12 +49,11 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
 			try {
 				email = JwtTokenUtil.Retriever.getUserEmailFromToken(authToken);
 			} catch (final IllegalArgumentException exception) {
-				log.error(LogMarkers.FLOW_MARKER, "An error occurred during getting email from token", exception);
+				log.error(LogMarkers.FLOW_MARKER, "An error occurred during getting email from token, {}", exception);
 			} catch (final ExpiredJwtException exception) {
-				log.warn(LogMarkers.FLOW_MARKER, "The token is expired and not valid anymore", exception);
+				log.warn(LogMarkers.FLOW_MARKER, "The token is expired and not valid anymore, {}", exception);
 			}
-		}
-		else {
+		} else {
 			log.warn(LogMarkers.FLOW_MARKER, "Couldn't find bearer string, will ignore the header");
 		}
 
@@ -67,7 +66,6 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
 			 * in the token and read it from it.
 			 */
 			final UserDetails userDetails = this.userDetailsService.loadUserByUsername(email);
-
 			/*
 			 * For simple validation it is completely sufficient to just check the token integrity. You don't have to call
 			 * the database compellingly.

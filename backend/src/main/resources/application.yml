@@ -29,7 +29,7 @@ custom:
     jwt:
       header: Authorization
       secret: super-secret
-      expiration: 604800
+      expiration: 900000
 
 # ===============================
 # = SPRING
