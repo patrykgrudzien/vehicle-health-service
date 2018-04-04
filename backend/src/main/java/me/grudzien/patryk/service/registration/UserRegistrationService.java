@@ -16,7 +16,7 @@ public interface UserRegistrationService {
 
 	void confirmRegistration(String emailVerificationToken, HttpServletResponse response);
 
-	CustomUser getCustomUser(String emailVerificationToken);
+	CustomUser getCustomUserFromEmailVerificationToken(String emailVerificationToken);
 
 	void saveRegisteredCustomUser(CustomUser customUser);
 

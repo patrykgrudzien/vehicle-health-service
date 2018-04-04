@@ -82,7 +82,7 @@ public class EmailServiceImpl implements EmailService {
 	}
 
 	@Override
-	public void createEmailVerificationToken(final CustomUser customUser, final String token) {
+	public void persistEmailVerificationToken(final CustomUser customUser, final String token) {
 		emailVerificationTokenRepository.save(new EmailVerificationToken(token, customUser));
 	}
 

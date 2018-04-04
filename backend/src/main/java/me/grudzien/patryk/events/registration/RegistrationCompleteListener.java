@@ -49,7 +49,7 @@ public class RegistrationCompleteListener implements ApplicationListener<OnRegis
 		final CustomUser userBeingRegistered = event.getCustomUser();
 
 		final String token = UUID.randomUUID().toString();
-		emailService.createEmailVerificationToken(event.getCustomUser(), token);
+		emailService.persistEmailVerificationToken(event.getCustomUser(), token);
 		log.info("Created token: " + token);
 
 		final String recipientAddress = userBeingRegistered.getEmail();

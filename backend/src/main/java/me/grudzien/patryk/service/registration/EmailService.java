@@ -10,7 +10,7 @@ public interface EmailService {
 
 	void sendMessageUsingTemplate(EmailDto emailDto);
 
-	void createEmailVerificationToken(CustomUser customUser, String token);
+	void persistEmailVerificationToken(CustomUser customUser, String token);
 
 	EmailVerificationToken generateNewEmailVerificationToken(String existingEmailVerificationToken);
 
