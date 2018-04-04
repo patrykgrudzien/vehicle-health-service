@@ -19,7 +19,6 @@ import java.util.Date;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.domain.dto.registration.UserRegistrationDto;
 import me.grudzien.patryk.domain.entities.registration.CustomUser;
 import me.grudzien.patryk.domain.entities.registration.EmailVerificationToken;
@@ -44,21 +43,18 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 	private final ApplicationEventPublisher eventPublisher;
 	private final EmailVerificationTokenRepository emailVerificationTokenRepository;
 	private final HttpResponseHandler httpResponseHandler;
-	private final CustomApplicationProperties customApplicationProperties;
 
 	@Autowired
 	public UserRegistrationServiceImpl(final CustomUserRepository customUserRepository, final BCryptPasswordEncoder passwordEncoder,
 	                                   final ApplicationEventPublisher eventPublisher,
 	                                   final EmailVerificationTokenRepository emailVerificationTokenRepository,
-	                                   final HttpResponseHandler httpResponseHandler,
-	                                   final CustomApplicationProperties customApplicationProperties) {
+	                                   final HttpResponseHandler httpResponseHandler) {
 
 		this.customUserRepository = customUserRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.eventPublisher = eventPublisher;
 		this.emailVerificationTokenRepository = emailVerificationTokenRepository;
 		this.httpResponseHandler = httpResponseHandler;
-		this.customApplicationProperties = customApplicationProperties;
 	}
 
 	@Override
