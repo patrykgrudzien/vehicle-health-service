@@ -124,7 +124,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 	}
 
 	@Override
-	public CustomUser getCustomUser(final String emailVerificationToken) {
+	public CustomUser getCustomUserFromEmailVerificationToken(final String emailVerificationToken) {
 		final EmailVerificationToken token = emailVerificationTokenRepository.findByToken(emailVerificationToken);
 		return token != null ? token.getCustomUser() : null;
 	}
@@ -138,6 +138,6 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 	public void resendEmailVerificationToken(final String existingEmailVerificationToken) {
 		// TODO: finish implementation
 		final EmailVerificationToken newToken = emailService.generateNewEmailVerificationToken(existingEmailVerificationToken);
-		final CustomUser existingUser = getCustomUser(newToken.getToken());
+		final CustomUser existingUser = getCustomUserFromEmailVerificationToken(newToken.getToken());
 	}
 }
