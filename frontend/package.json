@@ -12,8 +12,6 @@
   "dependencies": {
     "axios": "^0.18.0",
     "bootstrap-vue": "^2.0.0-rc.1",
-    "express": "^4.16.2",
-    "v-animate-css": "0.0.2",
     "vue": "^2.5.2",
     "vue-axios": "^2.0.2",
     "vue-loading-spinner": "^1.0.11",
