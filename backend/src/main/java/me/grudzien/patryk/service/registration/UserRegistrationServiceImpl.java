@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import me.grudzien.patryk.domain.dto.registration.UserRegistrationDto;
@@ -43,18 +42,20 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 	private final ApplicationEventPublisher eventPublisher;
 	private final EmailVerificationTokenRepository emailVerificationTokenRepository;
 	private final HttpResponseHandler httpResponseHandler;
+	private final EmailService emailService;
 
 	@Autowired
 	public UserRegistrationServiceImpl(final CustomUserRepository customUserRepository, final BCryptPasswordEncoder passwordEncoder,
 	                                   final ApplicationEventPublisher eventPublisher,
 	                                   final EmailVerificationTokenRepository emailVerificationTokenRepository,
-	                                   final HttpResponseHandler httpResponseHandler) {
+	                                   final HttpResponseHandler httpResponseHandler, final EmailService emailService) {
 
 		this.customUserRepository = customUserRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.eventPublisher = eventPublisher;
 		this.emailVerificationTokenRepository = emailVerificationTokenRepository;
 		this.httpResponseHandler = httpResponseHandler;
+		this.emailService = emailService;
 	}
 
 	@Override
@@ -96,7 +97,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 
 	@Override
 	public void confirmRegistration(final String emailVerificationToken, final HttpServletResponse response) {
-		final EmailVerificationToken token = getEmailVerificationToken(emailVerificationToken);
+		final EmailVerificationToken token = emailService.getEmailVerificationToken(emailVerificationToken);
 		if (token == null) {
 			// TODO: check additional case if user is already enabled
 			log.error("No verification token found.");
@@ -134,28 +135,9 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 	}
 
 	@Override
-	public void createEmailVerificationToken(final CustomUser customUser, final String token) {
-		emailVerificationTokenRepository.save(new EmailVerificationToken(token, customUser));
-	}
-
-	@Override
-	public EmailVerificationToken generateNewEmailVerificationToken(final String existingEmailVerificationToken) {
-		final EmailVerificationToken existingToken = emailVerificationTokenRepository.findByToken(existingEmailVerificationToken);
-		log.info("Found expired token for user: " + existingToken.getCustomUser().getEmail());
-		existingToken.updateToken(UUID.randomUUID().toString());
-		log.info("New token: " + existingToken.getToken() + " generated successfully.");
-		return emailVerificationTokenRepository.save(existingToken);
-	}
-
-	@Override
 	public void resendEmailVerificationToken(final String existingEmailVerificationToken) {
 		// TODO: finish implementation
-		final EmailVerificationToken newToken = generateNewEmailVerificationToken(existingEmailVerificationToken);
+		final EmailVerificationToken newToken = emailService.generateNewEmailVerificationToken(existingEmailVerificationToken);
 		final CustomUser existingUser = getCustomUser(newToken.getToken());
-	}
-
-	@Override
-	public EmailVerificationToken getEmailVerificationToken(final String emailVerificationToken) {
-		return emailVerificationTokenRepository.findByToken(emailVerificationToken);
 	}
 }
