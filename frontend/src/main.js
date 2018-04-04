@@ -45,7 +45,13 @@ export const myRouter = new VueRouter({
 });
 
 // --------- VUETIFY ---------
-Vue.use(Vuetify);
+import colors from 'vuetify/es5/util/colors';
+
+Vue.use(Vuetify, {
+  theme: {
+    primary: colors.cyan.darken2
+  }
+});
 
 // --------- APP ---------
 new Vue({
