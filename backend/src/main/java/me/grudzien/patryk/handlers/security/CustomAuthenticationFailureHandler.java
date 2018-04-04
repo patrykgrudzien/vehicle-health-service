@@ -19,6 +19,7 @@ import me.grudzien.patryk.utils.log.LogMarkers;
 
 @Log4j2
 @Component
+// TODO: CLASS TO BE REMOVED
 public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 
 	private final CustomApplicationProperties customApplicationProperties;
