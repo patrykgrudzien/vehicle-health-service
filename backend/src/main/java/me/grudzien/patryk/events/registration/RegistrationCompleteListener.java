@@ -13,7 +13,6 @@ import java.util.UUID;
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.domain.dto.registration.EmailDto;
 import me.grudzien.patryk.domain.entities.registration.CustomUser;
-import me.grudzien.patryk.service.registration.UserRegistrationService;
 import me.grudzien.patryk.service.registration.EmailService;
 import me.grudzien.patryk.utils.HerokuAppEndpointResolver;
 import me.grudzien.patryk.utils.log.LogMarkers;
@@ -26,16 +25,13 @@ import me.grudzien.patryk.utils.log.LogMarkers;
 @Component
 public class RegistrationCompleteListener implements ApplicationListener<OnRegistrationCompleteEvent> {
 
-	private final UserRegistrationService userRegistrationService;
 	private final EmailService emailService;
 	private final CustomApplicationProperties customApplicationProperties;
 	private final HerokuAppEndpointResolver herokuAppEndpointResolver;
 
 	@Autowired
-	public RegistrationCompleteListener(final UserRegistrationService userRegistrationService, final EmailService emailService,
-	                                    final CustomApplicationProperties customApplicationProperties,
+	public RegistrationCompleteListener(final EmailService emailService, final CustomApplicationProperties customApplicationProperties,
 	                                    final HerokuAppEndpointResolver herokuAppEndpointResolver) {
-		this.userRegistrationService = userRegistrationService;
 		this.emailService = emailService;
 		this.customApplicationProperties = customApplicationProperties;
 		this.herokuAppEndpointResolver = herokuAppEndpointResolver;
@@ -53,7 +49,7 @@ public class RegistrationCompleteListener implements ApplicationListener<OnRegis
 		final CustomUser userBeingRegistered = event.getCustomUser();
 
 		final String token = UUID.randomUUID().toString();
-		userRegistrationService.createEmailVerificationToken(event.getCustomUser(), token);
+		emailService.createEmailVerificationToken(event.getCustomUser(), token);
 		log.info("Created token: " + token);
 
 		final String recipientAddress = userBeingRegistered.getEmail();

@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import me.grudzien.patryk.domain.dto.registration.UserRegistrationDto;
 import me.grudzien.patryk.domain.entities.registration.CustomUser;
-import me.grudzien.patryk.domain.entities.registration.EmailVerificationToken;
 
 public interface UserRegistrationService {
 
@@ -21,11 +20,5 @@ public interface UserRegistrationService {
 
 	void saveRegisteredCustomUser(CustomUser customUser);
 
-	void createEmailVerificationToken(CustomUser customUser, String token);
-
-	EmailVerificationToken generateNewEmailVerificationToken(String existingEmailVerificationToken);
-
 	void resendEmailVerificationToken(String existingEmailVerificationToken);
-
-	EmailVerificationToken getEmailVerificationToken(String emailVerificationToken);
 }

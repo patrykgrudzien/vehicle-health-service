@@ -16,8 +16,12 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 
 import me.grudzien.patryk.domain.dto.registration.EmailDto;
+import me.grudzien.patryk.domain.entities.registration.CustomUser;
+import me.grudzien.patryk.domain.entities.registration.EmailVerificationToken;
+import me.grudzien.patryk.repository.registration.EmailVerificationTokenRepository;
 
 @Log4j2
 @Service
@@ -28,13 +32,17 @@ public class EmailServiceImpl implements EmailService {
 
 	private final JavaMailSender javaMailSender;
 	private final SpringTemplateEngine templateEngine;
+	private final EmailVerificationTokenRepository emailVerificationTokenRepository;
 
 	// JavaMailSender will be automatically autowired by spring boot if it finds configuration in application.yml file
 	@SuppressWarnings("SpringJavaAutowiringInspection")
 	@Autowired
-	public EmailServiceImpl(final JavaMailSender javaMailSender, final SpringTemplateEngine templateEngine) {
+	public EmailServiceImpl(final JavaMailSender javaMailSender, final SpringTemplateEngine templateEngine,
+	                        final EmailVerificationTokenRepository emailVerificationTokenRepository) {
+
 		this.javaMailSender = javaMailSender;
 		this.templateEngine = templateEngine;
+		this.emailVerificationTokenRepository = emailVerificationTokenRepository;
 	}
 
 	@Override
@@ -71,5 +79,24 @@ public class EmailServiceImpl implements EmailService {
 		} catch (final MessagingException messagingException) {
 			log.error(messagingException);
 		}
+	}
+
+	@Override
+	public void createEmailVerificationToken(final CustomUser customUser, final String token) {
+		emailVerificationTokenRepository.save(new EmailVerificationToken(token, customUser));
+	}
+
+	@Override
+	public EmailVerificationToken generateNewEmailVerificationToken(final String existingEmailVerificationToken) {
+		final EmailVerificationToken existingToken = emailVerificationTokenRepository.findByToken(existingEmailVerificationToken);
+		log.info("Found expired token for user: " + existingToken.getCustomUser().getEmail());
+		existingToken.updateToken(UUID.randomUUID().toString());
+		log.info("New token: " + existingToken.getToken() + " generated successfully.");
+		return emailVerificationTokenRepository.save(existingToken);
+	}
+
+	@Override
+	public EmailVerificationToken getEmailVerificationToken(final String emailVerificationToken) {
+		return emailVerificationTokenRepository.findByToken(emailVerificationToken);
 	}
 }
