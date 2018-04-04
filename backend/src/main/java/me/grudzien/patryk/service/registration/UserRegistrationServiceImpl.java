@@ -104,9 +104,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 		if (token == null) {
 			// TODO: check additional case if user is already enabled
 			log.error("No verification token found.");
-			httpResponseHandler.redirectUserToConfirmedPage(response, customApplicationProperties.getEndpoints()
-			                                                                                     .getRegistration()
-			                                                                                     .getConfirmedTokenNotFound());
+			httpResponseHandler.redirectUserToEmailTokenNotFoundUrl(response);
 			throw new TokenNotFoundException("No verification token found.");
 		}
 		final Calendar calendar = Calendar.getInstance();
