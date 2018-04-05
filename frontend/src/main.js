@@ -50,7 +50,8 @@ import colors from 'vuetify/es5/util/colors';
 Vue.use(Vuetify, {
   theme: {
     primary: colors.cyan.darken2,
-    secondary: colors.deepOrange.darken4
+    secondary: colors.deepOrange.darken4,
+    footer: colors.grey.darken4
   }
 });
 
