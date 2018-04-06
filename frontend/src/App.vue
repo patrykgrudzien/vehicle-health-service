@@ -1,53 +1,55 @@
 <template>
-  <v-app dark>
+  <v-app id="inspire" dark>
 
-    <v-layout row>
-      <v-flex xs12>
-        <!-- NAVIGATION DRAWER -->
-        <v-navigation-drawer temporary absolute v-model="sideNav">
-          <v-list>
-            <v-list-tile v-for="item in menuItems" :key="item.title" router :to="item.link">
-              <v-list-tile-action>
-                <v-icon>{{ item.icon }}</v-icon>
-              </v-list-tile-action>
-              <v-list-tile-content>{{ item.title }}</v-list-tile-content>
-            </v-list-tile>
-          </v-list>
-        </v-navigation-drawer>
+    <!-- NAVIGATION DRAWER -->
+    <v-navigation-drawer clipped fixed temporary v-model="sideNav" app>
+      <v-list dense>
+        <v-list-tile v-for="item in menuItems" :key="item.title" router :to="item.link">
+          <v-list-tile-action>
+            <v-icon>{{ item.icon }}</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+      </v-list>
+    </v-navigation-drawer>
 
-        <v-toolbar dark class="primary">
-          <!-- TOOLBAR -->
-          <v-toolbar-side-icon @click="sideNav = !sideNav" class="hidden-sm-and-up"/>
-          <v-toolbar-title>
-            <router-link to="/" tag="span" style="cursor: pointer; padding: 16px;">Full-Stack Web App</router-link>
-          </v-toolbar-title>
-          <v-spacer/>
-          <v-toolbar-items class="hidden-xs-only">
-            <v-btn flat v-for="item in menuItems" :key="item.title" router :to="item.link">
-              <v-icon left>{{ item.icon }}</v-icon>
-              {{ item.title }}
-            </v-btn>
-          </v-toolbar-items>
-        </v-toolbar>
-      </v-flex>
-    </v-layout>
+    <!-- TOOLBAR -->
+    <v-toolbar app fixed clipped-left class="primary">
+      <v-toolbar-side-icon @click.stop="sideNav = !sideNav" class="hidden-sm-and-up"/>
+      <v-toolbar-title>
+        <router-link to="/" tag="span" style="cursor: pointer;">Full-Stack Web App</router-link>
+      </v-toolbar-title>
+      <v-spacer/>
+      <v-toolbar-items class="hidden-xs-only">
+        <v-btn flat v-for="item in menuItems" :key="item.title" router :to="item.link">
+          <v-icon left>
+            {{ item.icon }}
+          </v-icon>
+          {{ item.title }}
+        </v-btn>
+      </v-toolbar-items>
+    </v-toolbar>
 
-    <!-- MAIN -->
-    <v-layout row>
-      <v-flex xs12>
-        <router-view/>
-      </v-flex>
-    </v-layout>
+    <!-- CONTENT -->
+    <v-content>
+      <v-container fluid fill-height>
+        <v-layout justify-center align-center>
+          <v-flex>
+            <transition name="fade" mode="out-in">
+              <router-view/>
+            </transition>
+          </v-flex>
+        </v-layout>
+      </v-container>
+    </v-content>
 
     <!-- FOOTER -->
-    <v-layout row>
-      <v-flex xs12>
-        <v-footer dark fixed class="pa-3 footer">
-          <v-spacer/>
-          <div>&copy; Made by Patryk Grudzień</div>
-        </v-footer>
-      </v-flex>
-    </v-layout>
+    <v-footer app fixed class="pa-3">
+      <v-spacer/>
+      <span>&copy; Made by Patryk Grudzień</span>
+    </v-footer>
 
   </v-app>
 </template>
@@ -59,11 +61,6 @@
         sideNav: false,
         menuItems: [
           {
-            icon: 'person',
-            title: 'About me',
-            link: '/about-me'
-          },
-          {
             icon: 'face',
             title: 'Sign up',
             link: '/registration-form'
@@ -72,6 +69,11 @@
             icon: 'lock_open',
             title: 'Sign in',
             link: '/login'
+          },
+          {
+            icon: 'person',
+            title: 'About me',
+            link: '/about-me'
           }
         ]
       }
@@ -97,11 +99,11 @@
     box-shadow: 0 -5px 50px 0 black;
   }
 
-  #app {
-    background-color: #303030;
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity .5s;
   }
 
-  html {
-    overflow-y: visible;
+  .fade-enter, .fade-leave-to {
+    opacity: 0;
   }
 </style>
