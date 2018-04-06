@@ -1,7 +1,11 @@
 <template>
-  <v-card>
-    <v-card-media :src="meetup.imageUrl" height="70vh"/>
-  </v-card>
+  <v-layout justify-center align-center>
+    <v-flex>
+      <v-card>
+        <v-card-media :src="meetup.imageUrl" height="70vh"/>
+      </v-card>
+    </v-flex>
+  </v-layout>
 </template>
 
 <script>
