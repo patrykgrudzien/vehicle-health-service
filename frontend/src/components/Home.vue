@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <v-card-media :src="meetup.imageUrl" height="75vh"/>
+    <v-card-media :src="meetup.imageUrl" height="70vh"/>
   </v-card>
 </template>
 
