@@ -2,7 +2,7 @@
   <v-app id="inspire" dark>
 
     <!-- NAVIGATION DRAWER -->
-    <v-navigation-drawer clipped fixed temporary v-model="sideNav" app>
+    <v-navigation-drawer app clipped fixed temporary v-model="sideNav">
       <v-list dense>
         <v-list-tile v-for="item in menuItems" :key="item.title" router :to="item.link">
           <v-list-tile-action>
@@ -33,15 +33,11 @@
     </v-toolbar>
 
     <!-- CONTENT -->
-    <v-content>
-      <v-container fluid fill-height>
-        <v-layout justify-center align-center>
-          <v-flex>
-            <transition name="fade" mode="out-in">
-              <router-view/>
-            </transition>
-          </v-flex>
-        </v-layout>
+    <v-content style="position: static">
+      <v-container fluid fill-height class="pa-0">
+        <transition name="fade" mode="out-in">
+          <router-view/>
+        </transition>
       </v-container>
     </v-content>
 
@@ -97,6 +93,14 @@
 
   footer {
     box-shadow: 0 -5px 50px 0 black;
+  }
+
+  #app, .layout {
+    background-color: #303030;
+  }
+
+  html {
+    overflow: visible;
   }
 
   .fade-enter-active, .fade-leave-active {

@@ -4,6 +4,7 @@ import AboutMe from '../components/AboutMe';
 import RegistrationForm from '../components/RegistrationForm';
 import ConfirmRegistration from '../components/ConfirmRegistration';
 import LoginForm from '../components/LoginForm';
+import LoginFormVuetify from '../components/LoginFormVuetify';
 
 export default [
   {
@@ -29,7 +30,7 @@ export default [
   },
   {
     path: '/login',
-    component: LoginForm
+    component: LoginFormVuetify
   },
   {
     path: `/login?failed=true`,
