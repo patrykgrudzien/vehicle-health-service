@@ -1,6 +1,7 @@
+<!--
 <template>
   <b-containter>
-    <!-- novalidate (disables the browser default feedback tooltips) -->
+    &lt;!&ndash; novalidate (disables the browser default feedback tooltips) &ndash;&gt;
     <b-form @submit.prevent="validateForm" @reset.prevent="clearFormFields" v-if="form.show" novalidate>
       <b-form-row>
         <b-col cols="2"></b-col>
@@ -17,7 +18,7 @@
         <b-col cols="2"></b-col>
       </b-form-row>
 
-      <!-- Email address -->
+      &lt;!&ndash; Email address &ndash;&gt;
       <b-form-row>
         <b-col cols="4"></b-col>
         <b-col cols="4">
@@ -30,7 +31,7 @@
                           placeholder="Enter email"
                           :class="{'is-invalid': missingEmail && form.attemptSubmit}">
             </b-form-input>
-            <!-- Email field validation -->
+            &lt;!&ndash; Email field validation &ndash;&gt;
             <div class="invalid-feedback">
               Please provide your email
             </div>
@@ -38,9 +39,9 @@
         </b-col>
         <b-col cols="2"></b-col>
       </b-form-row>
-      <!-- Email address -->
+      &lt;!&ndash; Email address &ndash;&gt;
 
-      <!-- Your Password -->
+      &lt;!&ndash; Your Password &ndash;&gt;
       <b-form-row>
         <b-col cols="4"></b-col>
         <b-col cols="4">
@@ -53,7 +54,7 @@
                           placeholder="Enter your password"
                           :class="{'is-invalid': missingPassword && form.attemptSubmit}">
             </b-form-input>
-            <!-- Password field validation -->
+            &lt;!&ndash; Password field validation &ndash;&gt;
             <div class="invalid-feedback">
               Please provide your password
             </div>
@@ -61,17 +62,17 @@
         </b-col>
         <b-col cols="2"></b-col>
       </b-form-row>
-      <!-- Your Password -->
+      &lt;!&ndash; Your Password &ndash;&gt;
 
-      <!-- Buttons -->
+      &lt;!&ndash; Buttons &ndash;&gt;
       <b-form-row>
         <b-col cols="4"></b-col>
         <b-button id="login-button" type="submit" variant="secondary">Login</b-button>
         <b-button :disabled="missingInputFields('&&')" type="reset" variant="danger">Reset</b-button>
       </b-form-row>
-      <!-- Buttons -->
+      &lt;!&ndash; Buttons &ndash;&gt;
 
-      <!-- Register here -->
+      &lt;!&ndash; Register here &ndash;&gt;
       <b-form-row>
         <b-col cols="4"></b-col>
         <b-col cols="4" style="margin-top: 10px">
@@ -173,3 +174,4 @@
     margin-left: 5px
   }
 </style>
+-->

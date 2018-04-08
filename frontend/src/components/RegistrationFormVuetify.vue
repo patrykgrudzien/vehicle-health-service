@@ -4,18 +4,19 @@
       <v-flex xs12 sm8 md8>
         <v-card class="elevation-12">
           <v-card-text>
-            <v-form>
+            <v-form v-model="form.valid" ref="registrationForm" lazy-validation v-if="form.show">
               <v-container grid-list-xs>
-                <v-layout v-bind="binding">
+                <v-layout v-bind="rowColumnDeterminer">
                   <!-- YOUR NAME -->
                   <v-flex xs6 :class="{'mr-2': this.$vuetify.breakpoint.lgAndUp}">
                     <v-text-field
                       prepend-icon="person"
                       name="yourName"
-                      label="Your Name"
+                      label="Your First Name"
                       type="text"
                       v-model="form.firstName"
-                      :rules="[(v) => v.length <= 50 || 'Max 50 characters']"
+                      required
+                      :rules="firstNameRules"
                       :counter="50"/>
                   </v-flex>
                   <!-- YOUR NAME -->
@@ -28,7 +29,8 @@
                       label="Your Last Name"
                       type="text"
                       v-model="form.lastName"
-                      :rules="[(v) => v.length <= 50 || 'Max 50 characters']"
+                      required
+                      :rules="lastNameRules"
                       :counter="50"/>
                   </v-flex>
                   <!-- YOUR LAST NAME -->
@@ -36,7 +38,7 @@
               </v-container>
 
               <v-container grid-list-xs>
-                <v-layout v-bind="binding">
+                <v-layout v-bind="rowColumnDeterminer">
                   <!-- YOUR EMAIL -->
                   <v-flex xs6 :class="{'mr-2': this.$vuetify.breakpoint.lgAndUp}">
                     <v-text-field
@@ -45,7 +47,8 @@
                       label="Your Email"
                       type="email"
                       v-model="form.email"
-                      :rules="[(v) => v.length <= 50 || 'Max 50 characters']"
+                      required
+                      :rules="emailRules"
                       :counter="50"/>
                   </v-flex>
                   <!-- YOUR EMAIL -->
@@ -58,7 +61,8 @@
                       label="Confirm Email"
                       type="email"
                       v-model="form.confirmedEmail"
-                      :rules="[(v) => v.length <= 50 || 'Max 50 characters']"
+                      required
+                      :rules="confirmEmailRules"
                       :counter="50"/>
                   </v-flex>
                   <!-- CONFIRM EMAIL -->
@@ -66,7 +70,7 @@
               </v-container>
 
               <v-container grid-list-xs>
-                <v-layout v-bind="binding">
+                <v-layout v-bind="rowColumnDeterminer">
                   <!-- PASSWORD -->
                   <v-flex xs6 :class="{'mr-2': this.$vuetify.breakpoint.lgAndUp}">
                     <v-text-field
@@ -76,7 +80,8 @@
                       id="password"
                       type="password"
                       v-model="form.password"
-                      :rules="[(v) => v.length <= 50 || 'Max 50 characters']"
+                      required
+                      :rules="passwordRules"
                       :counter="50"
                       :append-icon="showPassword ? 'visibility' : 'visibility_off'"
                       :append-icon-cb="() => (showPassword = !showPassword)"
@@ -93,7 +98,8 @@
                       id="confirmPassword"
                       type="password"
                       v-model="form.confirmedPassword"
-                      :rules="[(v) => v.length <= 50 || 'Max 50 characters']"
+                      required
+                      :rules="confirmPasswordRules"
                       :counter="50"
                       :append-icon="showPassword ? 'visibility' : 'visibility_off'"
                       :append-icon-cb="() => (showPassword = !showPassword)"
@@ -105,8 +111,8 @@
             </v-form>
           </v-card-text>
           <v-card-actions class="pl-3">
-            <v-btn color="primary" @click="validateForm">Register</v-btn>
-            <v-btn color="error" @click="clearFormFields" left>Reset</v-btn>
+            <v-btn color="primary" @click="validateForm" :disabled="registerButtonDisabled">Register</v-btn>
+            <v-btn color="error" @click="clearFormFields" :disabled="resetButtonDisabled" left>Reset</v-btn>
             <v-spacer/>
           </v-card-actions>
           <v-card-text class="pl-3 ml-1">
@@ -134,9 +140,38 @@
           email: '',
           confirmedEmail: '',
           password: '',
-          confirmedPassword: ''
+          confirmedPassword: '',
+          valid: true,
+          show: true
         },
-        showPassword: true
+        showForm: true,
+        showPassword: true,
+        firstNameRules: [
+          v => !!v || 'First Name is required',
+          v => (v && v.length <= 50) || 'Max 50 characters'
+        ],
+        lastNameRules: [
+          v => !!v || 'Last Name is required',
+          v => (v && v.length <= 50) || 'Max 50 characters'
+        ],
+        emailRules: [
+          v => !!v || 'Email address is required',
+          v => (v && v.length <= 50) || 'Max 50 characters',
+          v => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'E-mail must be valid'
+        ],
+        confirmEmailRules: [
+          v => !!v || 'Confirm Email is required',
+          v => (v && v.length <= 50) || 'Max 50 characters',
+          v => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'E-mail must be valid'
+        ],
+        passwordRules: [
+          v => !!v || 'Password is required',
+          v => (v && v.length <= 50) || 'Max 50 characters',
+        ],
+        confirmPasswordRules: [
+          v => !!v || 'Confirm password is required',
+          v => (v && v.length <= 50) || 'Max 50 characters'
+        ]
       }
     },
     methods: {
@@ -150,10 +185,15 @@
         this.form.confirmedEmail = '';
         this.form.password = '';
         this.form.confirmedPassword = '';
+        this.form.valid = true;
+        this.form.show = false;
+        this.$nextTick(() => {
+          this.form.show = true
+        });
       }
     },
     computed: {
-      binding() {
+      rowColumnDeterminer() {
         const binding = {};
         if (this.$vuetify.breakpoint.mdAndDown) {
           binding.column = true;
@@ -161,7 +201,23 @@
           binding.row = true;
         }
         return binding;
+      },
+      registerButtonDisabled() {
+        return this.form.firstName === '' || this.form.lastName === '' || this.form.email === '' ||
+          this.form.confirmedEmail === '' || this.form.password === '' || this.form.confirmedPassword === '' ||
+          this.form.valid === false;
+      },
+      resetButtonDisabled() {
+        return this.form.firstName === '' && this.form.lastName === '' && this.form.email === '' &&
+          this.form.confirmedEmail === '' && this.form.password === '' && this.form.confirmedPassword === '' &&
+          this.form.valid === true;
       }
     }
   };
 </script>
+
+<style scoped>
+  button {
+    border: none;
+  }
+</style>
