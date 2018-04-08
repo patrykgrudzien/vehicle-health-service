@@ -33,8 +33,8 @@
             </v-form>
           </v-card-text>
           <v-card-actions class="pl-3">
-            <v-btn color="primary" @click="validateForm">Login</v-btn>
-            <v-btn color="error" @click="clearFormFields" left>Reset</v-btn>
+            <v-btn color="primary" @click="validateForm" :disabled="loginButtonDisabled">Login</v-btn>
+            <v-btn color="error" @click="clearFormFields" :disabled="resetButtonDisabled" left>Reset</v-btn>
             <v-spacer/>
           </v-card-actions>
           <v-card-text class="pl-3 ml-1">
@@ -70,9 +70,19 @@
         this.password = '';
       }
     },
-    computed: {}
+    computed: {
+      resetButtonDisabled() {
+        return this.email === '' && this.password === '';
+      },
+      loginButtonDisabled() {
+        return this.email === '' || this.password === '';
+      }
+    }
   };
 </script>
 
 <style scoped>
+  button {
+    border: none;
+  }
 </style>

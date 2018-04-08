@@ -1,8 +1,9 @@
+<!--
 <template>
   <v-container fluid fill-height>
     <v-layout row align-center justify-center>
       <v-flex>
-        <!-- novalidate (disables the browser default feedback tooltips) -->
+        &lt;!&ndash; novalidate (disables the browser default feedback tooltips) &ndash;&gt;
         <b-form @submit.prevent="validateForm" @reset.prevent="clearFormFields" v-if="showForm" novalidate>
           <b-form-row>
             <b-col cols="2"></b-col>
@@ -26,7 +27,7 @@
           </b-form-row>
           <b-form-row>
             <b-col cols="2"></b-col>
-            <!-- Your Name -->
+            &lt;!&ndash; Your Name &ndash;&gt;
             <b-col cols="4">
               <b-form-group id="group-1"
                             label="Your Name:"
@@ -37,15 +38,15 @@
                               placeholder="Enter first name"
                               :class="{'is-invalid': missingName && form.attemptSubmit}">
                 </b-form-input>
-                <!-- Name field validation -->
+                &lt;!&ndash; Name field validation &ndash;&gt;
                 <div class="invalid-feedback">
                   Please provide your first name
                 </div>
               </b-form-group>
             </b-col>
-            <!-- Your Name -->
+            &lt;!&ndash; Your Name &ndash;&gt;
 
-            <!-- Your Last Name -->
+            &lt;!&ndash; Your Last Name &ndash;&gt;
             <b-col cols="4">
               <b-form-group id="group-2"
                             label="Your Last Name:"
@@ -56,17 +57,17 @@
                               placeholder="Enter last name"
                               :class="{'is-invalid': missingLastName && form.attemptSubmit}">
                 </b-form-input>
-                <!-- Last name field validation -->
+                &lt;!&ndash; Last name field validation &ndash;&gt;
                 <div class="invalid-feedback">
                   Please provide your last name
                 </div>
               </b-form-group>
             </b-col>
-            <!-- Your Last Name -->
+            &lt;!&ndash; Your Last Name &ndash;&gt;
             <b-col cols="2"></b-col>
           </b-form-row>
 
-          <!-- Email address -->
+          &lt;!&ndash; Email address &ndash;&gt;
           <b-form-row>
             <b-col cols="2"></b-col>
             <b-col cols="4">
@@ -79,15 +80,15 @@
                               placeholder="Enter email"
                               :class="{'is-invalid': missingEmail && form.attemptSubmit}">
                 </b-form-input>
-                <!-- Email field validation -->
+                &lt;!&ndash; Email field validation &ndash;&gt;
                 <div class="invalid-feedback">
                   Please provide your email
                 </div>
               </b-form-group>
             </b-col>
-            <!-- Email address -->
+            &lt;!&ndash; Email address &ndash;&gt;
 
-            <!-- Confirmed Email address -->
+            &lt;!&ndash; Confirmed Email address &ndash;&gt;
             <b-col cols="4">
               <b-form-group id="group-4"
                             label="Confirm:"
@@ -98,18 +99,18 @@
                               placeholder="Confirm your email"
                               :class="{'is-invalid': missingConfirmedEmail && form.attemptSubmit}">
                 </b-form-input>
-                <!-- Email field validation -->
+                &lt;!&ndash; Email field validation &ndash;&gt;
                 <div class="invalid-feedback">
                   Please confirm your email
                 </div>
               </b-form-group>
             </b-col>
-            <!-- Confirmed Email address -->
+            &lt;!&ndash; Confirmed Email address &ndash;&gt;
             <b-col cols="2"></b-col>
           </b-form-row>
-          <!-- Email address -->
+          &lt;!&ndash; Email address &ndash;&gt;
 
-          <!-- Your Password -->
+          &lt;!&ndash; Your Password &ndash;&gt;
           <b-form-row>
             <b-col cols="2"></b-col>
             <b-col cols="4">
@@ -122,15 +123,15 @@
                               placeholder="Enter your password"
                               :class="{'is-invalid': missingPassword && form.attemptSubmit}">
                 </b-form-input>
-                <!-- Password field validation -->
+                &lt;!&ndash; Password field validation &ndash;&gt;
                 <div class="invalid-feedback">
                   Please create a password
                 </div>
               </b-form-group>
             </b-col>
-            <!-- Your Password -->
+            &lt;!&ndash; Your Password &ndash;&gt;
 
-            <!-- Confirm Password -->
+            &lt;!&ndash; Confirm Password &ndash;&gt;
             <b-col cols="4">
               <b-form-group id="group-6"
                             label="Confirm:"
@@ -141,7 +142,7 @@
                               placeholder="Confirm your password"
                               :class="{'is-invalid': missingConfirmedPassword && form.attemptSubmit}">
                 </b-form-input>
-                <!-- Confirm password field validation -->
+                &lt;!&ndash; Confirm password field validation &ndash;&gt;
                 <div class="invalid-feedback">
                   Please confirm your password
                 </div>
@@ -149,17 +150,17 @@
             </b-col>
             <b-col cols="2"></b-col>
           </b-form-row>
-          <!-- Confirm Password -->
+          &lt;!&ndash; Confirm Password &ndash;&gt;
 
-          <!-- Buttons -->
+          &lt;!&ndash; Buttons &ndash;&gt;
           <b-form-row>
             <b-col cols="2"></b-col>
             <b-button id="register-button" type="submit" variant="secondary">Register</b-button>
             <b-button :disabled="missingInputFields('&&')" type="reset" variant="danger">Reset</b-button>
           </b-form-row>
-          <!-- Buttons -->
+          &lt;!&ndash; Buttons &ndash;&gt;
 
-          <!-- Login here -->
+          &lt;!&ndash; Login here &ndash;&gt;
           <b-form-row>
             <b-col cols="2"></b-col>
             <p style="margin-left: 5px; margin-top: 10px;">
@@ -296,3 +297,4 @@
     margin-right: 10px;
   }
 </style>
+-->

@@ -1,14 +1,11 @@
-import Vue          from 'vue';
-import VueRouter    from 'vue-router';
-import allRoutes    from './router/allRoutes';
-import axios        from 'axios';
-import VueAxios     from 'vue-axios';
-import BootstrapVue from 'bootstrap-vue';
-import 'bootstrap/dist/css/bootstrap.css';
-import 'bootstrap-vue/dist/bootstrap-vue.css';
-import App          from './App';
-import store        from './store/store';
-import Vuetify      from 'vuetify';
+import Vue       from 'vue';
+import VueRouter from 'vue-router';
+import allRoutes from './router/allRoutes';
+import axios     from 'axios';
+import VueAxios  from 'vue-axios';
+import App       from './App';
+import store     from './store/store';
+import Vuetify   from 'vuetify';
 import 'vuetify/dist/vuetify.min.css';
 
 // --------- AXIOS ---------
@@ -33,9 +30,6 @@ Vue.axios.interceptors.request.use(config => {
   return Promise.reject(error);
 });
 
-// --------- BOOTSTRAP ---------
-Vue.use(BootstrapVue);
-
 // --------- ROUTER ---------
 Vue.use(VueRouter);
 
@@ -51,7 +45,8 @@ Vue.use(Vuetify, {
   theme: {
     primary: colors.cyan.darken2,
     secondary: colors.deepOrange.darken4,
-    footer: colors.grey.darken4
+    footer: colors.grey.darken4,
+    background: '#303030'
   }
 });
 
