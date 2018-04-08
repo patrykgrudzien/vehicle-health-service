@@ -2,7 +2,7 @@
   <v-app id="inspire" dark>
 
     <!-- NAVIGATION DRAWER -->
-    <v-navigation-drawer app clipped fixed temporary v-model="sideNav">
+    <v-navigation-drawer app clipped absolute temporary v-model="sideNav">
       <v-list dense>
         <v-list-tile v-for="item in menuItems" :key="item.title" router :to="item.link">
           <v-list-tile-action>
@@ -34,17 +34,15 @@
 
     <!-- CONTENT -->
     <v-content style="position: static">
-      <v-container fluid fill-height class="pa-0">
-        <transition name="fade" mode="out-in">
-          <router-view/>
-        </transition>
-      </v-container>
+      <transition name="fade" mode="out-in">
+        <router-view/>
+      </transition>
     </v-content>
 
     <!-- FOOTER -->
     <v-footer app fixed class="pa-3">
       <v-spacer/>
-      <span>&copy; Made by Patryk Grudzień</span>
+      <span>&copy; Made by Patryk Grudzień 2018</span>
     </v-footer>
 
   </v-app>
@@ -95,7 +93,7 @@
     box-shadow: 0 -5px 50px 0 black;
   }
 
-  #app, .layout {
+  #app {
     background-color: #303030;
   }
 

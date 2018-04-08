@@ -1,25 +1,48 @@
 <template>
-  <v-layout justify-center align-center>
-    <v-flex>
-      <v-card>
-        <v-card-media :src="meetup.imageUrl" height="70vh"/>
-      </v-card>
-    </v-flex>
-  </v-layout>
+  <v-container id="home-background" fluid fill-height>
+    <!-- full size home-background -->
+  </v-container>
 </template>
 
-<script>
-  export default {
-    data() {
-      return {
-        meetup:
-          {
-            imageUrl: 'http://www.marathon-travel.pl/wp-content/uploads/2013/08/New_york_times_square-terabass.jpg',
-            id: 'asdfsadfsadfsad',
-            title: 'Meetup in New York',
-            location: 'New York'
-          }
-      }
+<style scoped>
+  #home-background {
+    background: url('../../static/home-background.jpg') no-repeat center center fixed;
+    background-size: contain;
+  }
+
+  @media screen and (max-width: 768px) and (max-height: 1024px) {
+    #home-background {
+      width: 768px;
+      height: 100%;
+      background-size: cover;
+      box-shadow: inset 0 0 0 2000px rgba(48, 48, 48, 0.4);
     }
   }
-</script>
+
+  @media screen and (max-width: 1024px) and (max-height: 1366px) {
+    #home-background {
+      width: 1024px;
+      height: 100%;
+      background-size: cover;
+      box-shadow: inset 0 0 0 2000px rgba(48, 48, 48, 0.4);
+    }
+  }
+
+  @media screen and (max-width: 1366px) and (max-height: 1024px) {
+    #home-background {
+      width: 1366px;
+      height: 100%;
+      background-size: cover;
+      box-shadow: inset 0 0 0 2000px rgba(48, 48, 48, 0.4);
+    }
+  }
+
+  @media screen and (max-width: 1366px) and (max-height: 768px) {
+    #home-background {
+      width: 1366px;
+      height: 100%;
+      background-size: cover;
+      box-shadow: inset 0 0 0 2000px rgba(48, 48, 48, 0.4);
+    }
+  }
+</style>
