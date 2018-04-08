@@ -1,21 +1,22 @@
 <template>
-  <b-containter>
-    <div id="about-me">
-      <p>My name is: </p><h6>{{ name }}</h6>
-      <p>My last name is:</p><h6>{{ lastName}}</h6>
-      <p>I'm: </p><h6>{{ age }}</h6>
-      <p>My Profession is:</p><h6>{{ profession }}</h6>
-    </div>
-  </b-containter>
+  <v-container fluid fill-height>
+    <v-layout row align-center justify-center>
+      <v-flex xs12 sm8 md6>
+        <v-card>
+          <v-card-text class="headline">
+            <p>My name is:<br>{{ name }}</p><br>
+            <p>My last name is:<br>{{ lastName}}</p><br>
+            <p>I'm:<br>{{ age }}</p><br>
+            <p>My Profession is:<br>{{ profession }}</p>
+          </v-card-text>
+        </v-card>
+      </v-flex>
+    </v-layout>
+  </v-container>
 </template>
 
 <script>
-  import bContainer from 'bootstrap-vue/es/components/layout/container';
-
   export default {
-    components: {
-      'b-containter': bContainer
-    },
     data() {
       return {
         name: 'Patryk',

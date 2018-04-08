@@ -1,30 +1,29 @@
 <template>
-  <b-container>
-    <b-row class="text-center">
-      <b-col cols="3"></b-col>
-      <b-col>
-        <b-alert :show="dangerAlert.show" variant="danger">{{ this.dangerAlert.message }}</b-alert>
-      </b-col>
-      <b-col cols="3"></b-col>
-    </b-row>
-    <div class="text-center">
-      <b-button id="call-rest-service" @click="callRestService" variant="secondary">Call Spring Boot REST</b-button>
-    </div>
-    <b-row>
-      <b-col>
-        <h4 v-if="response.length > 0">{{ response }}</h4>
-      </b-col>
-    </b-row>
-  </b-container>
+  <v-container fluid fill-height>
+    <v-layout row align-center justify-center>
+      <v-flex>
+        <b-row class="text-center">
+          <b-col cols="3"></b-col>
+          <b-col>
+            <b-alert :show="dangerAlert.show" variant="danger">{{ this.dangerAlert.message }}</b-alert>
+          </b-col>
+          <b-col cols="3"></b-col>
+        </b-row>
+        <div class="text-center">
+          <b-button id="call-rest-service" @click="callRestService" variant="secondary">Call Spring Boot REST</b-button>
+        </div>
+        <b-row>
+          <b-col>
+            <h4 v-if="response.length > 0">{{ response }}</h4>
+          </b-col>
+        </b-row>
+      </v-flex>
+    </v-layout>
+  </v-container>
 </template>
 
 <script>
-  import bContainer from 'bootstrap-vue/es/components/layout/container';
-
   export default {
-    components: {
-      'b-containter': bContainer
-    },
     data() {
       return {
         message: 'Server Health Check',

@@ -2,6 +2,7 @@ import Home from '../components/Home';
 import ServerCheck from '../components/ServerCheck';
 import AboutMe from '../components/AboutMe';
 import RegistrationForm from '../components/RegistrationForm';
+import RegistrationFormVuetify from '../components/RegistrationFormVuetify';
 import ConfirmRegistration from '../components/ConfirmRegistration';
 import LoginForm from '../components/LoginForm';
 import LoginFormVuetify from '../components/LoginFormVuetify';
@@ -21,7 +22,7 @@ export default [
   },
   {
     path: '/registration-form',
-    component: RegistrationForm
+    component: RegistrationFormVuetify
   },
   {
     // added wildcard to handle query params sent by server (they are used to display appropriate error message)

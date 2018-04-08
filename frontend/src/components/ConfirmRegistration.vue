@@ -1,30 +1,29 @@
 <template>
-  <b-container>
-    <b-row class="text-center">
-      <b-col cols="3"></b-col>
-      <b-col>
-        <b-alert :show="confirmationFailed" variant="danger">{{ this.confirmationError.message }}</b-alert>
-      </b-col>
-      <b-col cols="3"></b-col>
-    </b-row>
-    <b-row v-if="!confirmationFailed">
-      <b-col>
-        <h2 class="text-center" style="margin-top: 50px;">{{ confirmationMessage }}</h2>
-        <div class="text-center">
-          <b-link to="/login" router-tag="b-button">Login there!</b-link>
-        </div>
-      </b-col>
-    </b-row>
-  </b-container>
+  <v-container fluid fill-height>
+    <v-layout row align-center justify-center>
+      <v-flex>
+        <b-row class="text-center">
+          <b-col cols="3"></b-col>
+          <b-col>
+            <b-alert :show="confirmationFailed" variant="danger">{{ this.confirmationError.message }}</b-alert>
+          </b-col>
+          <b-col cols="3"></b-col>
+        </b-row>
+        <b-row v-if="!confirmationFailed">
+          <b-col>
+            <h2 class="text-center" style="margin-top: 50px;">{{ confirmationMessage }}</h2>
+            <div class="text-center">
+              <b-link to="/login" router-tag="b-button">Login there!</b-link>
+            </div>
+          </b-col>
+        </b-row>
+      </v-flex>
+    </v-layout>
+  </v-container>
 </template>
 
 <script>
-  import bContainer from 'bootstrap-vue/es/components/layout/container';
-
   export default {
-    components: {
-      bContainer
-    },
     data() {
       return {
         confirmationMessage: 'Your account has been confirmed and created!',
