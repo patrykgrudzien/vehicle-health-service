@@ -55,10 +55,10 @@
                       type="email"
                       v-model="form.email"
                       :hint="emailsMatcherErrorMessage"
-                      :persistent-hint="emailsMatcher"
+                      :persistent-hint="emailsDoNotMatch"
                       required
                       :rules="emailRules"
-                      :error="emailsMatcher"
+                      :error="emailsDoNotMatch"
                       :counter="50"/>
                   </v-flex>
                   <!-- YOUR EMAIL -->
@@ -72,10 +72,10 @@
                       type="email"
                       v-model="form.confirmedEmail"
                       :hint="emailsMatcherErrorMessage"
-                      :persistent-hint="emailsMatcher"
+                      :persistent-hint="emailsDoNotMatch"
                       required
                       :rules="confirmEmailRules"
-                      :error="emailsMatcher"
+                      :error="emailsDoNotMatch"
                       :counter="50"/>
                   </v-flex>
                   <!-- CONFIRM EMAIL -->
@@ -94,10 +94,10 @@
                       type="password"
                       v-model="form.password"
                       :hint="passwordsMatcherErrorMessage"
-                      :persistent-hint="passwordsMatcher"
+                      :persistent-hint="passwordsDoNotMatch"
                       required
                       :rules="passwordRules"
-                      :error="passwordsMatcher"
+                      :error="passwordsDoNotMatch"
                       :counter="50"
                       :append-icon="hidePasswords ? 'visibility' : 'visibility_off'"
                       :append-icon-cb="() => (hidePasswords = !hidePasswords)"
@@ -115,10 +115,10 @@
                       type="password"
                       v-model="form.confirmedPassword"
                       :hint="passwordsMatcherErrorMessage"
-                      :persistent-hint="passwordsMatcher"
+                      :persistent-hint="passwordsDoNotMatch"
                       required
                       :rules="confirmPasswordRules"
-                      :error="passwordsMatcher"
+                      :error="passwordsDoNotMatch"
                       :counter="50"
                       :append-icon="hidePasswords ? 'visibility' : 'visibility_off'"
                       :append-icon-cb="() => (hidePasswords = !hidePasswords)"
@@ -238,19 +238,19 @@
       registerButtonDisabled() {
         return this.form.firstName === '' || this.form.lastName === '' || this.form.email === '' ||
           this.form.confirmedEmail === '' || this.form.password === '' || this.form.confirmedPassword === '' ||
-          this.form.valid === false;
+          this.form.valid === false || this.emailsDoNotMatch === true || this.passwordsDoNotMatch === true;
       },
       resetButtonDisabled() {
         return this.form.firstName === '' && this.form.lastName === '' && this.form.email === '' &&
           this.form.confirmedEmail === '' && this.form.password === '' && this.form.confirmedPassword === '' &&
           this.form.valid === true;
       },
-      emailsMatcher() {
+      emailsDoNotMatch() {
         if (this.form.email !== '' && this.form.confirmedEmail !== '' && this.form.email !== this.form.confirmedEmail) {
           return true;
         }
       },
-      passwordsMatcher() {
+      passwordsDoNotMatch() {
         if (this.form.password !== '' && this.form.confirmedPassword !== '' && this.form.password !== this.form.confirmedPassword) {
           return true;
         }
