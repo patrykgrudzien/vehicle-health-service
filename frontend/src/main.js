@@ -7,6 +7,7 @@ import App       from './App';
 import store     from './store/store';
 import Vuetify   from 'vuetify';
 import 'vuetify/dist/vuetify.min.css';
+import MyAlert   from './shared/MyAlert';
 
 // --------- AXIOS ---------
 // PRODUCTION
@@ -49,6 +50,9 @@ Vue.use(Vuetify, {
     background: '#303030'
   }
 });
+
+// --------- REGISTER GLOBAL "MyAlert" component ---------
+Vue.component('my-alert', MyAlert);
 
 // --------- APP ---------
 new Vue({
