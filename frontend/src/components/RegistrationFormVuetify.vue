@@ -4,7 +4,7 @@
       <v-flex xs12 sm8 md8>
         <v-card class="elevation-12">
           <v-card-text>
-            <v-form v-model="form.valid" ref="registrationForm" lazy-validation v-if="form.show">
+            <v-form v-model="form.valid" lazy-validation v-if="form.show">
               <v-container grid-list-xs>
                 <v-layout v-bind="rowColumnDeterminer">
                   <!-- YOUR NAME -->
@@ -15,6 +15,7 @@
                       label="Your First Name"
                       type="text"
                       v-model="form.firstName"
+                      hint="At least 4 characters"
                       required
                       :rules="firstNameRules"
                       :counter="50"/>
@@ -29,6 +30,7 @@
                       label="Your Last Name"
                       type="text"
                       v-model="form.lastName"
+                      hint="At least 4 characters"
                       required
                       :rules="lastNameRules"
                       :counter="50"/>
@@ -47,8 +49,11 @@
                       label="Your Email"
                       type="email"
                       v-model="form.email"
+                      :hint="emailsMatcherErrorMessage"
+                      :persistent-hint="emailsMatcher"
                       required
                       :rules="emailRules"
+                      :error="emailsMatcher"
                       :counter="50"/>
                   </v-flex>
                   <!-- YOUR EMAIL -->
@@ -61,8 +66,11 @@
                       label="Confirm Email"
                       type="email"
                       v-model="form.confirmedEmail"
+                      :hint="emailsMatcherErrorMessage"
+                      :persistent-hint="emailsMatcher"
                       required
                       :rules="confirmEmailRules"
+                      :error="emailsMatcher"
                       :counter="50"/>
                   </v-flex>
                   <!-- CONFIRM EMAIL -->
@@ -80,12 +88,15 @@
                       id="password"
                       type="password"
                       v-model="form.password"
+                      :hint="passwordsMatcherErrorMessage"
+                      :persistent-hint="passwordsMatcher"
                       required
                       :rules="passwordRules"
+                      :error="passwordsMatcher"
                       :counter="50"
-                      :append-icon="showPassword ? 'visibility' : 'visibility_off'"
-                      :append-icon-cb="() => (showPassword = !showPassword)"
-                      :type="showPassword ? 'password' : 'text'"/>
+                      :append-icon="hidePassword ? 'visibility' : 'visibility_off'"
+                      :append-icon-cb="() => (hidePassword = !hidePassword)"
+                      :type="hidePassword ? 'password' : 'text'"/>
                   </v-flex>
                   <!-- PASSWORD -->
 
@@ -98,12 +109,15 @@
                       id="confirmPassword"
                       type="password"
                       v-model="form.confirmedPassword"
+                      :hint="passwordsMatcherErrorMessage"
+                      :persistent-hint="passwordsMatcher"
                       required
                       :rules="confirmPasswordRules"
+                      :error="passwordsMatcher"
                       :counter="50"
-                      :append-icon="showPassword ? 'visibility' : 'visibility_off'"
-                      :append-icon-cb="() => (showPassword = !showPassword)"
-                      :type="showPassword ? 'password' : 'text'"/>
+                      :append-icon="hidePassword ? 'visibility' : 'visibility_off'"
+                      :append-icon-cb="() => (hidePassword = !hidePassword)"
+                      :type="hidePassword ? 'password' : 'text'"/>
                   </v-flex>
                   <!-- CONFIRM PASSWORD -->
                 </v-layout>
@@ -144,32 +158,37 @@
           valid: true,
           show: true
         },
-        showForm: true,
-        showPassword: true,
+        hidePassword: true,
         firstNameRules: [
           v => !!v || 'First Name is required',
+          v => (v && v.length >= 4) || 'Min 4 characters',
           v => (v && v.length <= 50) || 'Max 50 characters'
         ],
         lastNameRules: [
           v => !!v || 'Last Name is required',
+          v => (v && v.length >= 4) || 'Min 4 characters',
           v => (v && v.length <= 50) || 'Max 50 characters'
         ],
         emailRules: [
           v => !!v || 'Email address is required',
+          v => (v && v.length >= 4) || 'Min 4 characters',
           v => (v && v.length <= 50) || 'Max 50 characters',
           v => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'E-mail must be valid'
         ],
         confirmEmailRules: [
           v => !!v || 'Confirm Email is required',
+          v => (v && v.length >= 4) || 'Min 4 characters',
           v => (v && v.length <= 50) || 'Max 50 characters',
           v => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'E-mail must be valid'
         ],
         passwordRules: [
           v => !!v || 'Password is required',
+          v => (v && v.length >= 4) || 'Min 4 characters',
           v => (v && v.length <= 50) || 'Max 50 characters',
         ],
         confirmPasswordRules: [
           v => !!v || 'Confirm password is required',
+          v => (v && v.length >= 4) || 'Min 4 characters',
           v => (v && v.length <= 50) || 'Max 50 characters'
         ]
       }
@@ -211,6 +230,30 @@
         return this.form.firstName === '' && this.form.lastName === '' && this.form.email === '' &&
           this.form.confirmedEmail === '' && this.form.password === '' && this.form.confirmedPassword === '' &&
           this.form.valid === true;
+      },
+      emailsMatcher() {
+        if (this.form.email !== '' && this.form.confirmedEmail !== '' && this.form.email !== this.form.confirmedEmail) {
+          return true;
+        }
+      },
+      passwordsMatcher() {
+        if (this.form.password !== '' && this.form.confirmedPassword !== '' && this.form.password !== this.form.confirmedPassword) {
+          return true;
+        }
+      },
+      emailsMatcherErrorMessage() {
+        if (this.form.email !== '' && this.form.confirmedEmail !== '' && this.form.email !== this.form.confirmedEmail) {
+          return 'Emails do not match!';
+        } else {
+          return 'At least 4 characters';
+        }
+      },
+      passwordsMatcherErrorMessage() {
+        if (this.form.password !== '' && this.form.confirmedPassword !== '' && this.form.password !== this.form.confirmedPassword) {
+          return 'Passwords do not match!';
+        } else {
+          return 'At least 4 characters';
+        }
       }
     }
   };
