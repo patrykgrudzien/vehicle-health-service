@@ -35,11 +35,11 @@ export default [
   },
   {
     path: `/login?failed=true`,
-    component: LoginForm
+    component: LoginFormVuetify
   },
   {
     // /logout?successful=true
     path: `/logout**`,
-    component: LoginForm
+    component: LoginFormVuetify
   }
 ];

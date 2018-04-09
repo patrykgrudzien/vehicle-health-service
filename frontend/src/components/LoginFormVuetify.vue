@@ -2,9 +2,14 @@
   <v-container fluid fill-height>
     <v-layout row align-center justify-center>
       <v-flex xs12 sm8 md6>
+        <!-- ALERT -->
+        <my-alert @dismissed="onDismissed" v-if="serverError" :errorMessage="serverError"/>
+        <!-- ALERT -->
+
+        <!-- FORM -->
         <v-card class="elevation-12">
           <v-card-text>
-            <v-form v-model="form.valid" lazy-validation v-if="form.show">
+            <v-form v-model="form.valid" lazy-validation v-if="form.show" ref="myLoginForm">
               <!-- EMAIL -->
               <v-text-field
                 prepend-icon="email"
@@ -29,14 +34,14 @@
                 required
                 :rules="passwordRules"
                 :counter="50"
-                :append-icon="hidePassword ? 'visibility' : 'visibility_off'"
-                :append-icon-cb="() => (hidePassword = !hidePassword)"
-                :type="hidePassword ? 'password' : 'text'"/>
+                :append-icon="hidePasswords ? 'visibility' : 'visibility_off'"
+                :append-icon-cb="() => (hidePasswords = !hidePasswords)"
+                :type="hidePasswords ? 'password' : 'text'"/>
               <!-- PASSWORD -->
             </v-form>
           </v-card-text>
           <v-card-actions class="pl-3">
-            <v-btn color="primary" @click="validateForm" :disabled="loginButtonDisabled">Login</v-btn>
+            <v-btn color="primary" @click="submit" :disabled="loginButtonDisabled">Login</v-btn>
             <v-btn color="error" @click="clearFormFields" :disabled="resetButtonDisabled" left>Reset</v-btn>
             <v-spacer/>
           </v-card-actions>
@@ -45,6 +50,8 @@
             <router-link to="/registration-form" exact>Register here</router-link>
           </v-card-text>
         </v-card>
+        <!-- FORM -->
+
       </v-flex>
     </v-layout>
   </v-container>
@@ -65,7 +72,7 @@
           valid: true,
           show: true
         },
-        hidePassword: true,
+        hidePasswords: true,
         passwordRules: [
           v => !!v || 'Password is required',
           v => (v && v.length >= 4) || 'Min 4 characters',
@@ -80,8 +87,12 @@
       }
     },
     methods: {
-      validateForm() {
-        alert('Trying to validate form.');
+      submit() {
+        if (this.$refs.myLoginForm.validate()) {
+          this.$store.dispatch('login', this.form);
+        } else {
+          this.$store.commit('setServerError', 'Form filled incorrectly!');
+        }
       },
       clearFormFields() {
         this.form.email = '';
@@ -90,6 +101,9 @@
         this.$nextTick(() => {
           this.form.show = true
         });
+      },
+      onDismissed() {
+        this.$store.dispatch('clearServerError');
       }
     },
     computed: {
@@ -98,6 +112,9 @@
       },
       resetButtonDisabled() {
         return this.form.email === '' && this.form.password === '' && this.form.valid === true;
+      },
+      serverError() {
+        return this.$store.getters.getServerError;
       }
     }
   };

@@ -2,9 +2,14 @@
   <v-container fluid fill-height>
     <v-layout row align-center justify-center>
       <v-flex xs12 sm8 md8>
+        <!-- ALERT -->
+        <my-alert @dismissed="onDismissed" v-if="serverError" :errorMessage="serverError"/>
+        <!-- ALERT -->
+
+        <!-- FORM -->
         <v-card class="elevation-12">
           <v-card-text>
-            <v-form v-model="form.valid" lazy-validation v-if="form.show">
+            <v-form v-model="form.valid" lazy-validation v-if="form.show" ref="myRegistrationForm">
               <v-container grid-list-xs>
                 <v-layout v-bind="rowColumnDeterminer">
                   <!-- YOUR NAME -->
@@ -94,9 +99,9 @@
                       :rules="passwordRules"
                       :error="passwordsMatcher"
                       :counter="50"
-                      :append-icon="hidePassword ? 'visibility' : 'visibility_off'"
-                      :append-icon-cb="() => (hidePassword = !hidePassword)"
-                      :type="hidePassword ? 'password' : 'text'"/>
+                      :append-icon="hidePasswords ? 'visibility' : 'visibility_off'"
+                      :append-icon-cb="() => (hidePasswords = !hidePasswords)"
+                      :type="hidePasswords ? 'password' : 'text'"/>
                   </v-flex>
                   <!-- PASSWORD -->
 
@@ -115,9 +120,9 @@
                       :rules="confirmPasswordRules"
                       :error="passwordsMatcher"
                       :counter="50"
-                      :append-icon="hidePassword ? 'visibility' : 'visibility_off'"
-                      :append-icon-cb="() => (hidePassword = !hidePassword)"
-                      :type="hidePassword ? 'password' : 'text'"/>
+                      :append-icon="hidePasswords ? 'visibility' : 'visibility_off'"
+                      :append-icon-cb="() => (hidePasswords = !hidePasswords)"
+                      :type="hidePasswords ? 'password' : 'text'"/>
                   </v-flex>
                   <!-- CONFIRM PASSWORD -->
                 </v-layout>
@@ -125,7 +130,7 @@
             </v-form>
           </v-card-text>
           <v-card-actions class="pl-3">
-            <v-btn color="primary" @click="validateForm" :disabled="registerButtonDisabled">Register</v-btn>
+            <v-btn color="primary" @click="submit" :disabled="registerButtonDisabled">Register</v-btn>
             <v-btn color="error" @click="clearFormFields" :disabled="resetButtonDisabled" left>Reset</v-btn>
             <v-spacer/>
           </v-card-actions>
@@ -134,6 +139,8 @@
             <router-link to="/login" exact>Login here</router-link>
           </v-card-text>
         </v-card>
+        <!-- FORM -->
+
       </v-flex>
     </v-layout>
   </v-container>
@@ -158,7 +165,7 @@
           valid: true,
           show: true
         },
-        hidePassword: true,
+        hidePasswords: true,
         firstNameRules: [
           v => !!v || 'First Name is required',
           v => (v && v.length >= 4) || 'Min 4 characters',
@@ -194,8 +201,12 @@
       }
     },
     methods: {
-      validateForm() {
-        alert('Trying to validate form.');
+      submit() {
+        if (this.$refs.myRegistrationForm.validate()) {
+          this.$store.dispatch('registerUserAccount', this.form);
+        } else {
+          this.$store.commit('setServerError', 'Form filled incorrectly!');
+        }
       },
       clearFormFields() {
         this.form.firstName = '';
@@ -209,6 +220,9 @@
         this.$nextTick(() => {
           this.form.show = true
         });
+      },
+      onDismissed() {
+        this.$store.dispatch('clearServerError');
       }
     },
     computed: {
@@ -254,6 +268,9 @@
         } else {
           return 'At least 4 characters';
         }
+      },
+      serverError() {
+        return this.$store.getters.getServerError;
       }
     }
   };

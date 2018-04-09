@@ -9,11 +9,15 @@ export default {
     state.logged = 0;
   },
 
-  setErrorMessageFromServer: (state, errorMessage) => {
-    state.errorMessageFromServer = errorMessage;
+  setLoading: (state, payload) => {
+    state.loading = payload;
   },
 
-  setErrorMessageFromServerExistence: (state, isErrorMessageExist) => {
-    state.errorMessageFromServerExist = isErrorMessageExist;
+  setServerError: (state, payload) => {
+    state.serverError = payload;
+  },
+
+  clearServerError: state => {
+    state.serverError = null;
   }
 }
