@@ -10,6 +10,7 @@
         <v-card class="elevation-12">
           <v-card-text>
             <v-form v-model="form.valid" lazy-validation v-if="form.show" ref="myLoginForm">
+
               <!-- EMAIL -->
               <v-text-field
                 prepend-icon="email"
@@ -17,6 +18,7 @@
                 label="Email"
                 type="email"
                 v-model="form.email"
+                :hint="$t('email-input-hint')"
                 required
                 :rules="emailRules"
                 :counter="50"/>
@@ -30,7 +32,7 @@
                 id="password"
                 type="password"
                 v-model="form.password"
-                hint="At least 4 characters"
+                :hint="$t('password-input-hint')"
                 required
                 :rules="passwordRules"
                 :counter="50"
@@ -38,16 +40,21 @@
                 :append-icon-cb="() => (hidePasswords = !hidePasswords)"
                 :type="hidePasswords ? 'password' : 'text'"/>
               <!-- PASSWORD -->
+
             </v-form>
+            <!-- FORM -->
+
           </v-card-text>
           <v-card-actions class="pl-3">
-            <v-btn color="primary" @click="submit" :disabled="loginButtonDisabled">Login</v-btn>
-            <v-btn color="error" @click="clearFormFields" :disabled="resetButtonDisabled" left>Reset</v-btn>
+            <v-btn color="primary" @click="submit" :disabled="loginButtonDisabled">{{ $t('login-button') }}</v-btn>
+            <v-btn color="error" @click="clearFormFields" :disabled="clearButtonDisabled" left>
+              {{ $t('clear-button') }}
+            </v-btn>
             <v-spacer/>
           </v-card-actions>
           <v-card-text class="pl-3 ml-1">
-            New user?
-            <router-link to="/registration-form" exact>Register here</router-link>
+            {{ $t('new-user') }}
+            <router-link to="/registration-form" exact>{{ $t('register-here') }}</router-link>
           </v-card-text>
         </v-card>
         <!-- FORM -->
@@ -97,6 +104,7 @@
       clearFormFields() {
         this.form.email = '';
         this.form.password = '';
+        this.form.valid = true;
         this.form.show = false;
         this.$nextTick(() => {
           this.form.show = true
@@ -110,7 +118,7 @@
       loginButtonDisabled() {
         return this.form.email === '' || this.form.password === '' || this.form.valid === false;
       },
-      resetButtonDisabled() {
+      clearButtonDisabled() {
         return this.form.email === '' && this.form.password === '' && this.form.valid === true;
       },
       serverError() {

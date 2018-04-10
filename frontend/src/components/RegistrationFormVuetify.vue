@@ -131,7 +131,7 @@
           </v-card-text>
           <v-card-actions class="pl-3">
             <v-btn color="primary" @click="submit" :disabled="registerButtonDisabled">Register</v-btn>
-            <v-btn color="error" @click="clearFormFields" :disabled="resetButtonDisabled" left>Reset</v-btn>
+            <v-btn color="error" @click="clearFormFields" :disabled="clearButtonDisabled" left>Clear</v-btn>
             <v-spacer/>
           </v-card-actions>
           <v-card-text class="pl-3 ml-1">
@@ -240,7 +240,7 @@
           this.form.confirmedEmail === '' || this.form.password === '' || this.form.confirmedPassword === '' ||
           this.form.valid === false || this.emailsDoNotMatch === true || this.passwordsDoNotMatch === true;
       },
-      resetButtonDisabled() {
+      clearButtonDisabled() {
         return this.form.firstName === '' && this.form.lastName === '' && this.form.email === '' &&
           this.form.confirmedEmail === '' && this.form.password === '' && this.form.confirmedPassword === '' &&
           this.form.valid === true;
