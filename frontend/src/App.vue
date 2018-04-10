@@ -12,6 +12,36 @@
             <v-list-tile-title>{{ item.title }}</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
+        <!-- LANGUAGES -->
+        <v-list-group
+          v-for="language in languagesNavDrawer"
+          v-model="language.active"
+          :key="language.title"
+          :prepend-icon="language.icon">
+
+          <!-- HEADER -->
+          <v-list-tile slot="activator">
+            <v-list-tile-content>
+              <v-list-tile-title>{{ language.title }}</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+          <!-- HEADER -->
+
+          <!-- ITEMS -->
+          <v-list-tile v-for="subItem in language.items" :key="subItem.title" @click="showAlert(`${subItem.title}`)">
+            <v-list-tile-action>
+              <v-icon>
+                <!-- for now there is no icon here (added for alignment purpose) -->
+              </v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>{{ subItem.title }}</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+          <!-- ITEMS -->
+
+        </v-list-group>
+        <!-- LANGUAGES -->
       </v-list>
     </v-navigation-drawer>
 
@@ -29,6 +59,21 @@
           </v-icon>
           {{ item.title }}
         </v-btn>
+
+        <!-- LANGUAGES -->
+        <v-menu open-on-hover offset-y>
+          <v-btn flat slot="activator">
+            <v-icon left>language</v-icon>
+            Language
+          </v-btn>
+          <v-list>
+            <v-list-tile v-for="language in languages" :key="language.title" @click="showAlert(`${language.title}`)">
+              <v-list-tile-title>{{ language.title }}</v-list-tile-title>
+            </v-list-tile>
+          </v-list>
+        </v-menu>
+        <!-- LANGUAGES -->
+
       </v-toolbar-items>
     </v-toolbar>
 
@@ -53,6 +98,21 @@
     data() {
       return {
         sideNav: false,
+        languages: [
+          {title: 'Polish'},
+          {title: 'English'},
+        ],
+        languagesNavDrawer: [
+          {
+            icon: 'language',
+            title: 'Language',
+            active: false,
+            items: [
+              {title: 'Polish'},
+              {title: 'English'},
+            ]
+          },
+        ],
         menuItems: [
           {
             icon: 'face',
@@ -70,6 +130,11 @@
             link: '/about-me'
           }
         ]
+      }
+    },
+    methods: {
+      showAlert(buttonContent) {
+        alert(buttonContent);
       }
     }
   };

@@ -63,4 +63,13 @@
       box-shadow: inset 0 0 0 2000px rgba(48, 48, 48, 0.4);
     }
   }
+
+  @media all and (min-width: 1920px) {
+    #home-background {
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      box-shadow: inset 0 0 0 2000px rgba(48, 48, 48, 0.4);
+    }
+  }
 </style>
