@@ -3,5 +3,16 @@
   "sign-in-menu-button": "Logowanie",
   "about-me-menu-button": "O mnie",
   "language-menu-button": "Język",
-  "password-label": "Hasło"
+  "password-label": "Hasło",
+  "email-input-hint": "Przynajmniej 4 znaki",
+  "password-input-hint": "Przynajmniej 4 znaki",
+  "login-button": "Zaloguj",
+  "clear-button": "Wyczyść",
+  "new-user": "Jesteś nowy?",
+  "register-here": "Zarejestruj się",
+  "min-chars-length": "Minimum 4 znaki",
+  "max-chars-length": "Maksimum 50 znaków",
+  "password-required": "Hasło jest wymagane",
+  "email-required": "Email jest wymagany",
+  "email-must-be-valid": "E-mail musi mieć odpowiedni format"
 }

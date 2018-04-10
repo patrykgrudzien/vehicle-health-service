@@ -55,6 +55,20 @@ Vue.use(Vuetify, {
 // --------- REGISTER GLOBAL "MyAlert" component ---------
 Vue.component('my-alert', MyAlert);
 
+// --------- DEFINE THIS METHOD GLOBALLY FOR FUTURE USE ---------
+export function getMessageFromLocale(key) {
+  let messages = i18n.getLocaleMessage(i18n.locale);
+  // noinspection LoopStatementThatDoesntLoopJS
+  for (let messageKey in messages) {
+    if (messageKey === key) {
+      console.log(messages[messageKey]);
+      return messages[messageKey];
+    } else {
+      return;
+    }
+  }
+}
+
 // --------- APP ---------
 export const app = new Vue({
   el: '#app',

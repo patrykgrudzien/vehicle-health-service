@@ -132,7 +132,7 @@
         menuItems: [
           {
             icon: 'face',
-            title: `${this.getMessageFromLocale('sign-up-menu-button')}`,
+            title: 'Sign up',
             link: '/registration-form'
           },
           {
@@ -158,18 +158,6 @@
           alert(`Locale: ${this.$i18n.locale}`);
         } else {
           alert('Locale you want to set does NOT exist in i18n provider!');
-        }
-      },
-      getMessageFromLocale(key) {
-        let messages = this.$i18n.getLocaleMessage(this.$i18n.locale);
-        // noinspection LoopStatementThatDoesntLoopJS
-        for (let messageKey in messages) {
-          if (messageKey === key) {
-            console.log(messages[messageKey]);
-            return messages[messageKey];
-          } else {
-            return;
-          }
         }
       }
     }

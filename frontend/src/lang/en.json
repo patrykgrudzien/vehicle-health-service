@@ -3,5 +3,16 @@
   "sign-in-menu-button": "Sign in",
   "about-me-menu-button": "About me",
   "language-menu-button": "Language",
-  "password-label": "Password"
+  "password-label": "Password",
+  "email-input-hint": "At least 4 characters",
+  "password-input-hint": "At least 4 characters",
+  "login-button": "Login",
+  "clear-button": "Clear",
+  "new-user": "New user?",
+  "register-here": "Register here",
+  "min-chars-length": "Min 4 characters",
+  "max-chars-length": "Max 50 characters",
+  "password-required": "Password is required",
+  "email-required": "Email is required",
+  "email-must-be-valid": "E-mail must be valid"
 }
