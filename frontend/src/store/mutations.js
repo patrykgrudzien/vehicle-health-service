@@ -1,4 +1,5 @@
 import types from './types';
+import {app} from '../main';
 
 export default {
   [types.LOGIN](state) {
@@ -19,5 +20,10 @@ export default {
 
   clearServerError: state => {
     state.serverError = null;
+  },
+
+  [types.SET_LANG](state, payload) {
+    app.$i18n.locale = payload;
+    state.lang = payload;
   }
 }
