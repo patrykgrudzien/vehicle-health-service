@@ -26,7 +26,7 @@
               <v-text-field
                 prepend-icon="lock"
                 name="password"
-                label="Password"
+                :label="$t('password-label')"
                 id="password"
                 type="password"
                 v-model="form.password"
