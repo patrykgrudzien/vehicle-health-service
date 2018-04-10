@@ -2,5 +2,6 @@
   "sign-up-menu-button": "Sign up",
   "sign-in-menu-button": "Sign in",
   "about-me-menu-button": "About me",
-  "language-menu-button": "Language"
+  "language-menu-button": "Language",
+  "password-label": "Password"
 }
