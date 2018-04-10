@@ -28,7 +28,9 @@
           <!-- HEADER -->
 
           <!-- ITEMS -->
-          <v-list-tile v-for="subItem in language.items" :key="subItem.title" @click="showAlert(`${subItem.title}`)">
+          <v-list-tile v-for="subItem in language.items"
+                       :key="subItem.title"
+                       @click="switchLanguage(`${subItem.langCode}`)">
             <v-list-tile-action>
               <v-icon>
                 <!-- for now there is no icon here (added for alignment purpose) -->
@@ -67,7 +69,9 @@
             Language
           </v-btn>
           <v-list>
-            <v-list-tile v-for="language in languages" :key="language.title" @click="showAlert(`${language.title}`)">
+            <v-list-tile v-for="language in languages"
+                         :key="language.title"
+                         @click="setLang(`${language.langCode}`)">
               <v-list-tile-title>{{ language.title }}</v-list-tile-title>
             </v-list-tile>
           </v-list>
@@ -99,8 +103,14 @@
       return {
         sideNav: false,
         languages: [
-          {title: 'Polish'},
-          {title: 'English'},
+          {
+            title: 'Polish',
+            langCode: 'pl'
+          },
+          {
+            title: 'English',
+            langCode: 'en'
+          },
         ],
         languagesNavDrawer: [
           {
@@ -108,15 +118,21 @@
             title: 'Language',
             active: false,
             items: [
-              {title: 'Polish'},
-              {title: 'English'},
+              {
+                title: 'Polish',
+                langCode: 'pl'
+              },
+              {
+                title: 'English',
+                langCode: 'en'
+              },
             ]
           },
         ],
         menuItems: [
           {
             icon: 'face',
-            title: 'Sign up',
+            title: `${this.getMessageFromLocale('sign-up-menu-button')}`,
             link: '/registration-form'
           },
           {
@@ -133,8 +149,28 @@
       }
     },
     methods: {
-      showAlert(buttonContent) {
-        alert(buttonContent);
+      setLang: function(lang){
+        this.$store.dispatch('setLang', lang)
+      },
+      switchLanguage(lang) {
+        if (lang in this.$i18n.messages) {
+          this.$i18n.locale = lang;
+          alert(`Locale: ${this.$i18n.locale}`);
+        } else {
+          alert('Locale you want to set does NOT exist in i18n provider!');
+        }
+      },
+      getMessageFromLocale(key) {
+        let messages = this.$i18n.getLocaleMessage(this.$i18n.locale);
+        // noinspection LoopStatementThatDoesntLoopJS
+        for (let messageKey in messages) {
+          if (messageKey === key) {
+            console.log(messages[messageKey]);
+            return messages[messageKey];
+          } else {
+            return;
+          }
+        }
       }
     }
   };

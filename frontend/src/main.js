@@ -8,6 +8,7 @@ import store     from './store/store';
 import Vuetify   from 'vuetify';
 import 'vuetify/dist/vuetify.min.css';
 import MyAlert   from './shared/MyAlert';
+import i18n      from './lang/i18n';
 
 // --------- AXIOS ---------
 // PRODUCTION
@@ -55,10 +56,11 @@ Vue.use(Vuetify, {
 Vue.component('my-alert', MyAlert);
 
 // --------- APP ---------
-new Vue({
+export const app = new Vue({
   el: '#app',
   router: myRouter,
   store,
+  i18n,
   components: {App},
   template: '<App/>'
 });

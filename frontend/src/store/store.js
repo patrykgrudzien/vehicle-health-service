@@ -9,7 +9,8 @@ import mutations from './mutations';
 const state = {
   logged: localStorage.getItem('token'),
   loading: false,
-  serverError: null
+  serverError: null,
+  lang: 'en'
 };
 
 export default new Vuex.Store({

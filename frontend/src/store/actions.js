@@ -49,5 +49,9 @@ export default {
 
   clearServerError({commit}) {
     commit('clearServerError');
+  },
+
+  setLang({commit}, payload) {
+    commit(types.SET_LANG, payload);
   }
 }
