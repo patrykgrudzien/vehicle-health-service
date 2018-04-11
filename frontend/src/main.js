@@ -55,6 +55,10 @@ Vue.use(Vuetify, {
 // --------- REGISTER GLOBAL "MyAlert" component ---------
 Vue.component('my-alert', MyAlert);
 
+export function getMessageFromLocale(key) {
+  return `${i18n.getLocaleMessage(i18n.locale)[key]}`
+}
+
 // --------- APP ---------
 export const app = new Vue({
   el: '#app',

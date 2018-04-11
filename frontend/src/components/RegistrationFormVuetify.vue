@@ -17,10 +17,10 @@
                     <v-text-field
                       prepend-icon="person"
                       name="yourName"
-                      label="Your First Name"
+                      :label="$t('first-name-label')"
                       type="text"
                       v-model="form.firstName"
-                      hint="At least 4 characters"
+                      :hint="$t('first-name-input-hint')"
                       required
                       :rules="firstNameRules"
                       :counter="50"/>
@@ -32,10 +32,10 @@
                     <v-text-field
                       prepend-icon="person"
                       name="yourLastName"
-                      label="Your Last Name"
+                      :label="$t('last-name-label')"
                       type="text"
                       v-model="form.lastName"
-                      hint="At least 4 characters"
+                      :hint="$t('last-name-input-hint')"
                       required
                       :rules="lastNameRules"
                       :counter="50"/>
@@ -51,7 +51,7 @@
                     <v-text-field
                       prepend-icon="email"
                       name="yourEmail"
-                      label="Your Email"
+                      :label="$t('email-label')"
                       type="email"
                       v-model="form.email"
                       :hint="emailsMatcherErrorMessage"
@@ -68,7 +68,7 @@
                     <v-text-field
                       prepend-icon="email"
                       name="confirmEmail"
-                      label="Confirm Email"
+                      :label="$t('confirm-email-label')"
                       type="email"
                       v-model="form.confirmedEmail"
                       :hint="emailsMatcherErrorMessage"
@@ -89,7 +89,7 @@
                     <v-text-field
                       prepend-icon="lock"
                       name="password"
-                      label="Password"
+                      :label="$t('password-label')"
                       id="password"
                       type="password"
                       v-model="form.password"
@@ -110,7 +110,7 @@
                     <v-text-field
                       prepend-icon="lock"
                       name="confirmPassword"
-                      label="Confirm Password"
+                      :label="$t('confirm-password-label')"
                       id="confirmPassword"
                       type="password"
                       v-model="form.confirmedPassword"
@@ -130,13 +130,17 @@
             </v-form>
           </v-card-text>
           <v-card-actions class="pl-3">
-            <v-btn color="primary" @click="submit" :disabled="registerButtonDisabled">Register</v-btn>
-            <v-btn color="error" @click="clearFormFields" :disabled="clearButtonDisabled" left>Clear</v-btn>
+            <v-btn color="primary" @click="submit" :disabled="registerButtonDisabled">
+              {{ $t('register-button') }}
+            </v-btn>
+            <v-btn color="error" @click="clearFormFields" :disabled="clearButtonDisabled" left>
+              {{ $t('clear-button') }}
+            </v-btn>
             <v-spacer/>
           </v-card-actions>
           <v-card-text class="pl-3 ml-1">
-            Already registered?
-            <router-link to="/login" exact>Login here</router-link>
+            {{ $t('already-registered') }}
+            <router-link to="/login" exact>{{ $t('login-here') }}</router-link>
           </v-card-text>
         </v-card>
         <!-- FORM -->
@@ -147,7 +151,8 @@
 </template>
 
 <script>
-  import CircleSpinner from 'vue-loading-spinner/src/components/Circle8';
+  import CircleSpinner          from 'vue-loading-spinner/src/components/Circle8';
+  import {getMessageFromLocale} from "../main";
 
   export default {
     components: {
@@ -167,36 +172,36 @@
         },
         hidePasswords: true,
         firstNameRules: [
-          v => !!v || 'First Name is required',
-          v => (v && v.length >= 4) || 'Min 4 characters',
-          v => (v && v.length <= 50) || 'Max 50 characters'
+          v => !!v || `${getMessageFromLocale('first-name-required')}`,
+          v => (v && v.length >= 4) || `${getMessageFromLocale('min-chars-length')}`,
+          v => (v && v.length <= 50) || `${getMessageFromLocale('max-chars-length')}`
         ],
         lastNameRules: [
-          v => !!v || 'Last Name is required',
-          v => (v && v.length >= 4) || 'Min 4 characters',
-          v => (v && v.length <= 50) || 'Max 50 characters'
+          v => !!v || `${getMessageFromLocale('last-name-required')}`,
+          v => (v && v.length >= 4) || `${getMessageFromLocale('min-chars-length')}`,
+          v => (v && v.length <= 50) || `${getMessageFromLocale('max-chars-length')}`
         ],
         emailRules: [
-          v => !!v || 'Email address is required',
-          v => (v && v.length >= 4) || 'Min 4 characters',
-          v => (v && v.length <= 50) || 'Max 50 characters',
-          v => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'E-mail must be valid'
+          v => !!v || `${getMessageFromLocale('email-required')}`,
+          v => (v && v.length >= 4) || `${getMessageFromLocale('min-chars-length')}`,
+          v => (v && v.length <= 50) || `${getMessageFromLocale('max-chars-length')}`,
+          v => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || `${getMessageFromLocale('email-must-be-valid')}`
         ],
         confirmEmailRules: [
-          v => !!v || 'Confirm Email is required',
-          v => (v && v.length >= 4) || 'Min 4 characters',
-          v => (v && v.length <= 50) || 'Max 50 characters',
-          v => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'E-mail must be valid'
+          v => !!v || `${getMessageFromLocale('confirm-email-required')}`,
+          v => (v && v.length >= 4) || `${getMessageFromLocale('min-chars-length')}`,
+          v => (v && v.length <= 50) || `${getMessageFromLocale('max-chars-length')}`,
+          v => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || `${getMessageFromLocale('email-must-be-valid')}`
         ],
         passwordRules: [
-          v => !!v || 'Password is required',
-          v => (v && v.length >= 4) || 'Min 4 characters',
-          v => (v && v.length <= 50) || 'Max 50 characters',
+          v => !!v || `${getMessageFromLocale('password-required')}`,
+          v => (v && v.length >= 4) || `${getMessageFromLocale('min-chars-length')}`,
+          v => (v && v.length <= 50) || `${getMessageFromLocale('max-chars-length')}`,
         ],
         confirmPasswordRules: [
-          v => !!v || 'Confirm password is required',
-          v => (v && v.length >= 4) || 'Min 4 characters',
-          v => (v && v.length <= 50) || 'Max 50 characters'
+          v => !!v || `${getMessageFromLocale('confirm-password-required')}`,
+          v => (v && v.length >= 4) || `${getMessageFromLocale('min-chars-length')}`,
+          v => (v && v.length <= 50) || `${getMessageFromLocale('max-chars-length')}`
         ]
       }
     },
@@ -257,16 +262,16 @@
       },
       emailsMatcherErrorMessage() {
         if (this.form.email !== '' && this.form.confirmedEmail !== '' && this.form.email !== this.form.confirmedEmail) {
-          return 'Emails do not match!';
+          return `${getMessageFromLocale('emails-do-not-match')}`;
         } else {
-          return 'At least 4 characters';
+          return `${getMessageFromLocale('email-input-hint')}`;
         }
       },
       passwordsMatcherErrorMessage() {
         if (this.form.password !== '' && this.form.confirmedPassword !== '' && this.form.password !== this.form.confirmedPassword) {
-          return 'Passwords do not match!';
+          return `${getMessageFromLocale('passwords-do-not-match')}`;
         } else {
-          return 'At least 4 characters';
+          return `${getMessageFromLocale('password-input-hint')}`;
         }
       },
       serverError() {
