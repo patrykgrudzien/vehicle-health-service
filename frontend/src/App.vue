@@ -149,16 +149,9 @@
       }
     },
     methods: {
+      // TODO: this should also clear form fields (if not old language messages will be displayed)
       setLang: function(lang){
         this.$store.dispatch('setLang', lang)
-      },
-      switchLanguage(lang) {
-        if (lang in this.$i18n.messages) {
-          this.$i18n.locale = lang;
-          alert(`Locale: ${this.$i18n.locale}`);
-        } else {
-          alert('Locale you want to set does NOT exist in i18n provider!');
-        }
       }
     },
     created() {
