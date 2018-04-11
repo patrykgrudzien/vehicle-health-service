@@ -81,15 +81,15 @@
         },
         hidePasswords: true,
         passwordRules: [
-          v => !!v || 'Password is required',
-          v => (v && v.length >= 4) || 'Min 4 characters',
-          v => (v && v.length <= 50) || 'Max 50 characters',
+          v => !!v || `${this.$i18n.getLocaleMessage(this.$i18n.locale)['password-required']}`,
+          v => (v && v.length >= 4) || `${this.$i18n.getLocaleMessage(this.$i18n.locale)['min-chars-length']}`,
+          v => (v && v.length <= 50) || `${this.$i18n.getLocaleMessage(this.$i18n.locale)['max-chars-length']}`,
         ],
         emailRules: [
-          v => !!v || 'Email address is required',
-          v => (v && v.length >= 4) || 'Min 4 characters',
-          v => (v && v.length <= 50) || 'Max 50 characters',
-          v => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'E-mail must be valid'
+          v => !!v || `${this.$i18n.getLocaleMessage(this.$i18n.locale)['email-required']}`,
+          v => (v && v.length >= 4) || `${this.$i18n.getLocaleMessage(this.$i18n.locale)['min-chars-length']}`,
+          v => (v && v.length <= 50) || `${this.$i18n.getLocaleMessage(this.$i18n.locale)['max-chars-length']}`,
+          v => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || `${this.$i18n.getLocaleMessage(this.$i18n.locale)['max-chars-length']}`
         ]
       }
     },
