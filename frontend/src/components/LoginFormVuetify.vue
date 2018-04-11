@@ -15,7 +15,7 @@
               <v-text-field
                 prepend-icon="email"
                 name="email"
-                label="Email"
+                :label="$t('email-label')"
                 type="email"
                 v-model="form.email"
                 :hint="$t('email-input-hint')"
@@ -65,7 +65,8 @@
 </template>
 
 <script>
-  import CircleSpinner from 'vue-loading-spinner/src/components/Circle8';
+  import CircleSpinner          from 'vue-loading-spinner/src/components/Circle8';
+  import {getMessageFromLocale} from "../main";
 
   export default {
     components: {
@@ -81,15 +82,15 @@
         },
         hidePasswords: true,
         passwordRules: [
-          v => !!v || `${this.$i18n.getLocaleMessage(this.$i18n.locale)['password-required']}`,
-          v => (v && v.length >= 4) || `${this.$i18n.getLocaleMessage(this.$i18n.locale)['min-chars-length']}`,
-          v => (v && v.length <= 50) || `${this.$i18n.getLocaleMessage(this.$i18n.locale)['max-chars-length']}`,
+          v => !!v || `${getMessageFromLocale('password-required')}`,
+          v => (v && v.length >= 4) || `${getMessageFromLocale('min-chars-length')}`,
+          v => (v && v.length <= 50) || `${getMessageFromLocale('max-chars-length')}`,
         ],
         emailRules: [
-          v => !!v || `${this.$i18n.getLocaleMessage(this.$i18n.locale)['email-required']}`,
-          v => (v && v.length >= 4) || `${this.$i18n.getLocaleMessage(this.$i18n.locale)['min-chars-length']}`,
-          v => (v && v.length <= 50) || `${this.$i18n.getLocaleMessage(this.$i18n.locale)['max-chars-length']}`,
-          v => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || `${this.$i18n.getLocaleMessage(this.$i18n.locale)['max-chars-length']}`
+          v => !!v || `${getMessageFromLocale('email-required')}`,
+          v => (v && v.length >= 4) || `${getMessageFromLocale('min-chars-length')}`,
+          v => (v && v.length <= 50) || `${getMessageFromLocale('max-chars-length')}`,
+          v => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || `${getMessageFromLocale('email-must-be-valid')}`
         ]
       }
     },
