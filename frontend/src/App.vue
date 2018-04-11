@@ -160,6 +160,9 @@
           alert('Locale you want to set does NOT exist in i18n provider!');
         }
       }
+    },
+    created() {
+      this.$i18n.locale = this.$store.getters.getLang;
     }
   };
 </script>
