@@ -30,7 +30,7 @@
           <!-- ITEMS -->
           <v-list-tile v-for="subItem in language.items"
                        :key="subItem.title"
-                       @click="switchLanguage(`${subItem.langCode}`)">
+                       @click="setLang(`${language.langCode}`)">
             <v-list-tile-action>
               <v-icon>
                 <!-- for now there is no icon here (added for alignment purpose) -->
@@ -63,7 +63,7 @@
         </v-btn>
 
         <!-- LANGUAGES -->
-        <v-menu open-on-hover offset-y>
+        <v-menu offset-y>
           <v-btn flat slot="activator">
             <v-icon left>language</v-icon>
             Language
