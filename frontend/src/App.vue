@@ -80,6 +80,7 @@
 
       </v-toolbar-items>
     </v-toolbar>
+    <!-- TOOLBAR -->
 
     <!-- CONTENT -->
     <v-content style="position: static">

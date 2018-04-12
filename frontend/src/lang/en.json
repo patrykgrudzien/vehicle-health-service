@@ -34,5 +34,9 @@
   "confirm-email-required": "Confirm Email is required",
   "emails-do-not-match": "Emails do not match!",
   "email-must-be-valid": "E-mail must be valid",
-  "footer-text": "Made by - Patryk Grudzień 2018"
+  "footer-text": "Made by - Patryk Grudzień 2018",
+  "my-name": "My name is:",
+  "my-last-name": "My last name is:",
+  "my-age": "I'm:",
+  "my-profession": "My Profession is:"
 }

@@ -34,5 +34,9 @@
   "confirm-email-required": "Email potwierdzający jest wymagany",
   "emails-do-not-match": "Adresy email nie są takie same!",
   "email-must-be-valid": "E-mail musi mieć odpowiedni format",
-  "footer-text": "Autor - Patryk Grudzień 2018"
+  "footer-text": "Autor - Patryk Grudzień 2018",
+  "my-name": "Nazywam się:",
+  "my-last-name": "Moje nazwisko:",
+  "my-age": "Wiek:",
+  "my-profession": "Specjalizuje się jako:"
 }
