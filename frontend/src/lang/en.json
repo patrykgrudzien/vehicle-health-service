@@ -3,6 +3,9 @@
   "sign-in-menu-button": "Sign in",
   "about-me-menu-button": "About me",
   "language-menu-button": "Language",
+  "language-title-polish": "Polish",
+  "language-title-english": "English",
+  "place-for-app-title": "Place For App Title",
   "first-name-label": "Your First Name",
   "last-name-label": "Your Last Name",
   "email-label": "Your email",
@@ -30,5 +33,6 @@
   "email-required": "Email address is required",
   "confirm-email-required": "Confirm Email is required",
   "emails-do-not-match": "Emails do not match!",
-  "email-must-be-valid": "E-mail must be valid"
+  "email-must-be-valid": "E-mail must be valid",
+  "footer-text": "Made by - Patryk Grudzień 2018"
 }
