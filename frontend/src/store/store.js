@@ -13,6 +13,7 @@ const state = {
   logged: localStorage.getItem('token'),
   loading: false,
   serverError: null,
+  serverResponse: null,
   lang: 'en'
 };
 

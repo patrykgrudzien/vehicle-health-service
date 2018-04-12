@@ -58,9 +58,9 @@ public class CustomUser {
 	@Size(min = 4, max = 50)
 	private String email;
 
-	@Column(name = "PASSWORD", length = 50)
+	@Column(name = "PASSWORD")
 	@NotNull
-	@Size(min = 4, max = 50)
+	@Size(min = 4)
 	private String password;
 
 	@Column(name = "ENABLED")

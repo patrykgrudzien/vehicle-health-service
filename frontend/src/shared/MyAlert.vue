@@ -1,5 +1,5 @@
 <template>
-  <v-alert type="error"
+  <v-alert :type="type"
            dismissible
            @input="onClose"
            :value="true"
@@ -11,7 +11,8 @@
 <script>
   export default {
     props: [
-      'errorMessage'
+      'errorMessage',
+      'type'
     ],
     methods: {
       onClose() {

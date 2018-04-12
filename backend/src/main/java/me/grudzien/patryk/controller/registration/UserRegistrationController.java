@@ -42,11 +42,12 @@ public class UserRegistrationController {
 	}
 
 	@PostMapping("${custom.properties.endpoints.registration.register-user-account}")
-	public ResponseEntity<Void> registerUserAccount(@RequestBody @Valid final UserRegistrationDto userRegistrationDto,
+	public ResponseEntity<String> registerUserAccount(@RequestBody @Valid final UserRegistrationDto userRegistrationDto,
 	                                                final BindingResult bindingResult, final WebRequest webRequest) {
 		log.info("Inside: " + customApplicationProperties.getEndpoints().getRegistration().getRootRegisterUserAccount());
 		userRegistrationService.registerNewCustomUserAccount(userRegistrationDto, bindingResult, webRequest);
-		return new ResponseEntity<>(HttpStatus.OK);
+		return new ResponseEntity<>("Thank you for registration! Check " + userRegistrationDto.getEmail() + " to confirm newly created account.",
+		                            HttpStatus.OK);
 	}
 
 	@GetMapping("${custom.properties.endpoints.registration.confirm-registration}")

@@ -2,9 +2,19 @@
   <v-container fluid fill-height>
     <v-layout row align-center justify-center>
       <v-flex xs12 sm8 md6>
-        <!-- ALERT -->
-        <my-alert @dismissed="onDismissed" v-if="serverError" :errorMessage="serverError"/>
-        <!-- ALERT -->
+        <!-- ERROR ALERT -->
+        <my-alert @dismissed="closeErrorAlert"
+                  type="error"
+                  v-if="serverError"
+                  :errorMessage="serverError"/>
+        <!-- ERROR ALERT -->
+
+        <!-- SUCCESS ALERT -->
+        <my-alert @dismissed="closeSuccessAlert"
+                  type="success"
+                  v-if="serverResponse"
+                  :errorMessage="serverResponse"/>
+        <!-- SUCCESS ALERT -->
 
         <!-- FORM -->
         <v-card class="elevation-12">
@@ -111,8 +121,11 @@
           this.form.show = true
         });
       },
-      onDismissed() {
+      closeErrorAlert() {
         this.$store.dispatch('clearServerError');
+      },
+      closeSuccessAlert() {
+        this.$store.dispatch('clearServerResponse');
       }
     },
     computed: {
@@ -124,6 +137,9 @@
       },
       serverError() {
         return this.$store.getters.getServerError;
+      },
+      serverResponse() {
+        return this.$store.getters.getServerResponse;
       }
     }
   };

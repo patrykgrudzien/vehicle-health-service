@@ -18,8 +18,16 @@ export default {
     state.serverError = payload;
   },
 
+  setServerResponse: (state, payload) => {
+    state.serverResponse = payload;
+  },
+
   clearServerError: state => {
     state.serverError = null;
+  },
+
+  clearServerResponse: state => {
+    state.serverResponse = null;
   },
 
   [types.SET_LANG](state, payload) {
