@@ -30,7 +30,7 @@
           <!-- ITEMS -->
           <v-list-tile v-for="subItem in language.items"
                        :key="subItem.title"
-                       @click="setLang(`${language.langCode}`)">
+                       @click="setLang(`${subItem.langCode}`)">
             <v-list-tile-action>
               <v-icon>
                 <!-- for now there is no icon here (added for alignment purpose) -->
@@ -152,6 +152,9 @@
       // TODO: this should also clear form fields (if not old language messages will be displayed)
       setLang: function(lang){
         this.$store.dispatch('setLang', lang)
+          .then(() => {
+            this.sideNav = false;
+          });
       }
     },
     created() {
