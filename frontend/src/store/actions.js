@@ -8,15 +8,16 @@ export default {
   registerUserAccount({commit}, form) {
     commit('setLoading', true);
     commit('clearServerError');
+    commit('clearServerResponse');
     Vue.axios.post(serverEndpoints.registration.registerUserAccount, form)
       .then(response => {
         commit('setLoading', false);
-        console.log(response.data);
+        commit('setServerResponse', response.data);
       })
       .catch(error => {
         commit('setLoading', false);
-        commit('setServerError', error.data);
-        console.log(error.data);
+        commit('setServerError', error.response.data);
+        commit('setServerResponse', null);
       })
   },
 
@@ -49,6 +50,10 @@ export default {
 
   clearServerError({commit}) {
     commit('clearServerError');
+  },
+
+  clearServerResponse({commit}) {
+    commit('clearServerResponse');
   },
 
   setLang({commit}, payload) {
