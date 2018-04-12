@@ -2,14 +2,14 @@
   <v-app id="inspire" dark>
 
     <!-- NAVIGATION DRAWER -->
-    <v-navigation-drawer app clipped absolute temporary v-model="sideNav">
+    <v-navigation-drawer app clipped temporary v-model="sideNav">
       <v-list dense>
         <v-list-tile v-for="item in menuItems" :key="item.title" router :to="item.link">
           <v-list-tile-action>
             <v-icon>{{ item.icon }}</v-icon>
           </v-list-tile-action>
           <v-list-tile-content>
-            <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+            <v-list-tile-title>{{ $t(`${item.title}`) }}</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
         <!-- LANGUAGES -->
@@ -22,7 +22,7 @@
           <!-- HEADER -->
           <v-list-tile slot="activator">
             <v-list-tile-content>
-              <v-list-tile-title>{{ language.title }}</v-list-tile-title>
+              <v-list-tile-title>{{ $t(`${language.title}`) }}</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
           <!-- HEADER -->
@@ -37,7 +37,7 @@
               </v-icon>
             </v-list-tile-action>
             <v-list-tile-content>
-              <v-list-tile-title>{{ subItem.title }}</v-list-tile-title>
+              <v-list-tile-title>{{ $t(`${subItem.title}`) }}</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
           <!-- ITEMS -->
@@ -51,7 +51,7 @@
     <v-toolbar app fixed clipped-left class="primary">
       <v-toolbar-side-icon @click.stop="sideNav = !sideNav" class="hidden-sm-and-up"/>
       <v-toolbar-title>
-        <router-link to="/" tag="span" style="cursor: pointer;">Full-Stack Web App</router-link>
+        <router-link to="/" tag="span" style="cursor: pointer;">{{ $t('place-for-app-title') }}</router-link>
       </v-toolbar-title>
       <v-spacer/>
       <v-toolbar-items class="hidden-xs-only">
@@ -59,20 +59,20 @@
           <v-icon left>
             {{ item.icon }}
           </v-icon>
-          {{ item.title }}
+          {{ $t(`${item.title}`) }}
         </v-btn>
 
         <!-- LANGUAGES -->
         <v-menu offset-y>
           <v-btn flat slot="activator">
             <v-icon left>language</v-icon>
-            Language
+            {{ $t('language-menu-button') }}
           </v-btn>
           <v-list>
             <v-list-tile v-for="language in languages"
                          :key="language.title"
                          @click="setLang(`${language.langCode}`)">
-              <v-list-tile-title>{{ language.title }}</v-list-tile-title>
+              <v-list-tile-title>{{ $t(`${language.title}`) }}</v-list-tile-title>
             </v-list-tile>
           </v-list>
         </v-menu>
@@ -91,7 +91,7 @@
     <!-- FOOTER -->
     <v-footer app fixed class="pa-3">
       <v-spacer/>
-      <span>&copy; Made by Patryk Grudzień 2018</span>
+      <span>&copy; {{ $t('footer-text') }}</span>
     </v-footer>
 
   </v-app>
@@ -104,26 +104,26 @@
         sideNav: false,
         languages: [
           {
-            title: 'Polish',
+            title: 'language-title-polish',
             langCode: 'pl'
           },
           {
-            title: 'English',
+            title: 'language-title-english',
             langCode: 'en'
           },
         ],
         languagesNavDrawer: [
           {
             icon: 'language',
-            title: 'Language',
+            title: 'language-menu-button',
             active: false,
             items: [
               {
-                title: 'Polish',
+                title: 'language-title-polish',
                 langCode: 'pl'
               },
               {
-                title: 'English',
+                title: 'language-title-english',
                 langCode: 'en'
               },
             ]
@@ -132,17 +132,17 @@
         menuItems: [
           {
             icon: 'face',
-            title: 'Sign up',
+            title: 'sign-up-menu-button',
             link: '/registration-form'
           },
           {
             icon: 'lock_open',
-            title: 'Sign in',
+            title: 'sign-in-menu-button',
             link: '/login'
           },
           {
             icon: 'person',
-            title: 'About me',
+            title: 'about-me-menu-button',
             link: '/about-me'
           }
         ]
@@ -154,6 +154,7 @@
         this.$store.dispatch('setLang', lang)
           .then(() => {
             this.sideNav = false;
+            this.languagesNavDrawer.active = false;
           });
       }
     },
