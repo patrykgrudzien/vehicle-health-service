@@ -4,10 +4,10 @@
       <v-flex xs12 sm8 md6>
         <v-card color="background" style="box-shadow: none">
           <v-card-text>
-            <h3><p>My name is:<br>{{ name }}</p><br></h3>
-            <h3><p>My last name is:<br>{{ lastName}}</p><br></h3>
-            <h3><p>I'm:<br>{{ age }}</p><br></h3>
-            <h3><p>My Profession is:<br>{{ profession }}</p></h3>
+            <h3><p>{{ $t('my-name') }}<br>{{ name }}</p><br></h3>
+            <h3><p>{{ $t('my-last-name') }}<br>{{ lastName}}</p><br></h3>
+            <h3><p>{{ $t('my-age') }}<br>{{ age }}</p><br></h3>
+            <h3><p>{{ $t('my-profession') }}<br>{{ profession }}</p></h3>
           </v-card-text>
         </v-card>
       </v-flex>
