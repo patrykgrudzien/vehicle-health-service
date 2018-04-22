@@ -3,23 +3,23 @@
     <v-layout row align-center justify-center>
       <v-flex xs12 sm8 md6>
         <!-- ERROR ALERT -->
-        <my-alert @dismissed="closeErrorAlert"
+        <my-alert @dismissed="clearServerError"
                   type="error"
-                  v-if="serverError"
-                  :errorMessage="serverError"/>
+                  v-if="getServerError"
+                  :errorMessage="getServerError"/>
         <!-- ERROR ALERT -->
 
         <!-- SUCCESS ALERT -->
-        <my-alert @dismissed="closeSuccessAlert"
+        <my-alert @dismissed="clearServerResponse"
                   type="success"
-                  v-if="serverResponse"
-                  :errorMessage="serverResponse"/>
+                  v-if="getServerResponse"
+                  :errorMessage="getServerResponse"/>
         <!-- SUCCESS ALERT -->
 
         <!-- FORM -->
         <v-card class="elevation-12">
           <v-card-text>
-            <v-form v-model="form.valid" lazy-validation v-if="form.show" ref="myLoginForm">
+            <v-form v-model="valid" lazy-validation v-if="show" ref="myLoginForm">
 
               <!-- EMAIL -->
               <v-text-field
@@ -27,7 +27,7 @@
                 name="email"
                 :label="$t('email-label')"
                 type="email"
-                v-model="form.email"
+                v-model="email"
                 :hint="$t('email-input-hint')"
                 required
                 :rules="emailRules"
@@ -41,7 +41,7 @@
                 :label="$t('password-label')"
                 id="password"
                 type="password"
-                v-model="form.password"
+                v-model="password"
                 :hint="$t('password-input-hint')"
                 required
                 :rules="passwordRules"
@@ -70,13 +70,27 @@
         <!-- FORM -->
 
       </v-flex>
+
+      <v-dialog v-model="dialogWindowActive" persistent max-width="450">
+        <v-card>
+          <v-card-title class="headline">{{ $t('dialog-title') }}</v-card-title>
+          <v-card-text>{{ $t('dialog-text') }}</v-card-text>
+          <v-card-actions>
+            <v-btn color="primary" flat @click.native="changeLanguageAndHideDialog">{{ $t('agree-button') }}</v-btn>
+            <v-btn color="primary" flat @click.native="hideDialogWindow">{{ $t('disagree-button') }}</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
     </v-layout>
   </v-container>
 </template>
 
 <script>
   import CircleSpinner          from 'vue-loading-spinner/src/components/Circle8';
-  import {getMessageFromLocale} from "../main";
+  import { getMessageFromLocale } from "../main";
+  import { mapGetters } from 'vuex';
+  import { mapActions } from 'vuex';
 
   export default {
     components: {
@@ -84,12 +98,8 @@
     },
     data() {
       return {
-        form: {
-          email: '',
-          password: '',
-          valid: true,
-          show: true
-        },
+        language: null,
+        dialogWindowActive: false,
         hidePasswords: true,
         passwordRules: [
           v => !!v || `${getMessageFromLocale('password-required')}`,
@@ -105,42 +115,79 @@
       }
     },
     methods: {
+      ...mapActions([
+        'clearServerError',
+        'clearServerResponse',
+        ''
+      ]),
       submit() {
         if (this.$refs.myLoginForm.validate()) {
-          this.$store.dispatch('login', this.form);
+          this.$store.dispatch('login', this.getLoginForm);
         } else {
           this.$store.commit('setServerError', 'Form filled incorrectly!');
         }
       },
       clearFormFields() {
-        this.form.email = '';
-        this.form.password = '';
-        this.form.valid = true;
-        this.form.show = false;
+        this.$store.commit('setLoginFormEmail', '');
+        this.$store.commit('setLoginFormPassword', '');
+        this.$store.commit('setLoginFormValid', true);
+        this.$store.commit('setLoginFormShow', false);
         this.$nextTick(() => {
-          this.form.show = true
+          this.$store.commit('setLoginFormShow', true);
         });
       },
-      closeErrorAlert() {
-        this.$store.dispatch('clearServerError');
+      hideDialogWindow() {
+        this.dialogWindowActive = false;
       },
-      closeSuccessAlert() {
-        this.$store.dispatch('clearServerResponse');
+      changeLanguageAndHideDialog() {
+        this.dialogWindowActive = false;
+        setTimeout(() => {
+          this.$store.dispatch('setLang', this.language)
+            .then(() => {
+              this.clearFormFields();
+              this.$store.commit('setSideNavigation', false);
+            });
+        }, 250);
       }
     },
+    created() {
+      this.$router.app.$on('open-dialog-and-send-lang', (payload) => {
+        this.dialogWindowActive = payload.showDialog;
+        this.language = payload.lang;
+      })
+    },
     computed: {
+      ...mapGetters([
+        'getLoginForm',
+        'getServerError',
+        'getServerResponse'
+      ]),
+      email: {
+        get() {return this.$store.getters.getLoginForm.email;},
+        set(value) {this.$store.commit('setLoginFormEmail', value);}
+      },
+      password: {
+        get() {return this.$store.getters.getLoginForm.password;},
+        set(value) {this.$store.commit('setLoginFormPassword', value);}
+      },
+      valid: {
+        get() {return this.$store.getters.getLoginForm.valid;},
+        set(value) {this.$store.commit('setLoginFormValid', value);}
+      },
+      show: {
+        get() {return this.$store.getters.getLoginForm.show;},
+        set(value) {this.$store.commit('setLoginFormShow', value);}
+      },
+      /*dialogWindowActive: {
+        get() {return this.$store.getters.isDialogWindowActive;},
+        set(value) {this.$store.commit('setDialogWindowActive', value);}
+      },*/
       loginButtonDisabled() {
-        return this.form.email === '' || this.form.password === '' || this.form.valid === false;
+        return this.email === '' || this.password === '' || this.valid === false;
       },
       clearButtonDisabled() {
-        return this.form.email === '' && this.form.password === '' && this.form.valid === true;
+        return this.email === '' && this.password === '' && this.valid === true;
       },
-      serverError() {
-        return this.$store.getters.getServerError;
-      },
-      serverResponse() {
-        return this.$store.getters.getServerResponse;
-      }
     }
   };
 </script>

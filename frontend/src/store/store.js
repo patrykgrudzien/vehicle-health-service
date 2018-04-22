@@ -14,7 +14,15 @@ const state = {
   loading: false,
   serverError: null,
   serverResponse: null,
-  lang: 'en'
+  lang: 'en',
+  dialogWindowActive: false,
+  loginForm: {
+    email: '',
+    password: '',
+    valid: true,
+    show: true
+  },
+  sideNavigation: false
 };
 
 export default new Vuex.Store({

@@ -38,5 +38,9 @@
   "my-name": "My name is:",
   "my-last-name": "My last name is:",
   "my-age": "I'm:",
-  "my-profession": "My Profession is:"
+  "my-profession": "My Profession is:",
+  "dialog-title": "Do you want to change app language?",
+  "dialog-text": "Changing application language will cause your form will be cleared. Are you sure?",
+  "agree-button": "Agree",
+  "disagree-button": "Disagree"
 }

@@ -2,7 +2,7 @@
   <v-app id="inspire" dark>
 
     <!-- NAVIGATION DRAWER -->
-    <v-navigation-drawer app clipped temporary v-model="sideNav">
+    <v-navigation-drawer app clipped temporary v-model="sideNavigation">
       <v-list dense>
         <v-list-tile v-for="item in menuItems" :key="item.title" router :to="item.link">
           <v-list-tile-action>
@@ -30,7 +30,7 @@
           <!-- ITEMS -->
           <v-list-tile v-for="subItem in language.items"
                        :key="subItem.title"
-                       @click="setLang(`${subItem.langCode}`)">
+                       @click="showModalAndSendLang(`${subItem.langCode}`)">
             <v-list-tile-action>
               <v-icon>
                 <!-- for now there is no icon here (added for alignment purpose) -->
@@ -49,7 +49,7 @@
 
     <!-- TOOLBAR -->
     <v-toolbar app fixed clipped-left class="primary">
-      <v-toolbar-side-icon @click.stop="sideNav = !sideNav" class="hidden-sm-and-up"/>
+      <v-toolbar-side-icon @click.stop="switchSideNavigation(!sideNavigation)" class="hidden-sm-and-up"/>
       <v-toolbar-title>
         <router-link to="/" tag="span" style="cursor: pointer;">{{ $t('place-for-app-title') }}</router-link>
       </v-toolbar-title>
@@ -71,7 +71,7 @@
           <v-list>
             <v-list-tile v-for="language in languages"
                          :key="language.title"
-                         @click="setLang(`${language.langCode}`)">
+                         @click="showModalAndSendLang(`${language.langCode}`)">
               <v-list-tile-title>{{ $t(`${language.title}`) }}</v-list-tile-title>
             </v-list-tile>
           </v-list>
@@ -99,10 +99,11 @@
 </template>
 
 <script>
+  import { mapGetters } from 'vuex';
+
   export default {
     data() {
       return {
-        sideNav: false,
         languages: [
           {
             title: 'language-title-polish',
@@ -117,7 +118,6 @@
           {
             icon: 'language',
             title: 'language-menu-button',
-            active: false,
             items: [
               {
                 title: 'language-title-polish',
@@ -150,13 +150,24 @@
       }
     },
     methods: {
-      // TODO: this should also clear form fields (if not old language messages will be displayed)
-      setLang: function(lang){
-        this.$store.dispatch('setLang', lang)
-          .then(() => {
-            this.sideNav = false;
-            this.languagesNavDrawer.active = false;
-          });
+      showModalAndSendLang: function(lang){
+        console.log(this.$route.path);
+
+        if (this.$route.path)
+
+        this.$router.app.$emit('open-dialog-and-send-lang', {showDialog: true, lang: lang});
+      },
+      switchSideNavigation(value) {
+        this.$store.commit('setSideNavigation', value);
+      }
+    },
+    computed: {
+      ...mapGetters([
+        'getSideNavigation'
+      ]),
+      sideNavigation: {
+        get() {return this.$store.getters.getSideNavigation;},
+        set(value) {this.$store.commit('setSideNavigation', value);}
       }
     },
     created() {

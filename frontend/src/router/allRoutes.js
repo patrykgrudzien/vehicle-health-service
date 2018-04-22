@@ -1,45 +1,42 @@
 import Home from '../components/Home';
 import ServerCheck from '../components/ServerCheck';
 import AboutMe from '../components/AboutMe';
-import RegistrationForm from '../components/RegistrationForm';
 import RegistrationFormVuetify from '../components/RegistrationFormVuetify';
 import ConfirmRegistration from '../components/ConfirmRegistration';
-import LoginForm from '../components/LoginForm';
 import LoginFormVuetify from '../components/LoginFormVuetify';
+import componentsPaths from '../componentsPaths';
 
 export default [
   {
-    path: '/',
+    path: componentsPaths.home,
     component: Home
   },
   {
-    path: '/server-health',
+    path: componentsPaths.serverCheck,
     component: ServerCheck
   },
   {
-    path: '/about-me',
+    path: componentsPaths.aboutMe,
     component: AboutMe
   },
   {
-    path: '/registration-form',
+    path: componentsPaths.registrationForm,
     component: RegistrationFormVuetify
   },
   {
-    // added wildcard to handle query params sent by server (they are used to display appropriate error message)
-    path: "/registration-confirmed**",
+    path: componentsPaths.confirmRegistration,
     component: ConfirmRegistration
   },
   {
-    path: '/login',
+    path: componentsPaths.loginForm,
     component: LoginFormVuetify
   },
   {
-    path: `/login?failed=true`,
+    path: componentsPaths.loginFailed,
     component: LoginFormVuetify
   },
   {
-    // /logout?successful=true
-    path: `/logout**`,
+    path: componentsPaths.logoutSuccessfulWildcard,
     component: LoginFormVuetify
   }
 ];

@@ -38,5 +38,9 @@
   "my-name": "Nazywam się:",
   "my-last-name": "Moje nazwisko:",
   "my-age": "Wiek:",
-  "my-profession": "Specjalizuje się jako:"
+  "my-profession": "Specjalizuje się jako:",
+  "dialog-title": "Chcesz zmienić język aplikacji?",
+  "dialog-text": "Zmiana języka spowoduje, że twój formularz zostanie wyczyszczony. Jesteś pewien?",
+  "agree-button": "Potwierdź",
+  "disagree-button": "Anuluj"
 }
