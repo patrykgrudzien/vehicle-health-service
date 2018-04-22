@@ -30,10 +30,6 @@ export default {
     state.serverResponse = null;
   },
 
-  setDialogWindowActive: (state, payload) => {
-    state.dialogWindowActive = payload;
-  },
-
   [types.SET_LANG](state, payload) {
     app.$i18n.locale = payload;
     state.lang = payload;

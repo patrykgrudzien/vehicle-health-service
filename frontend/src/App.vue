@@ -28,16 +28,16 @@
           <!-- HEADER -->
 
           <!-- ITEMS -->
-          <v-list-tile v-for="subItem in language.items"
-                       :key="subItem.title"
-                       @click="showModalAndSendLang(`${subItem.langCode}`)">
+          <v-list-tile v-for="language in languages"
+                       :key="language.title"
+                       @click="showModalAndSendLang(`${language.langCode}`)">
             <v-list-tile-action>
               <v-icon>
                 <!-- for now there is no icon here (added for alignment purpose) -->
               </v-icon>
             </v-list-tile-action>
             <v-list-tile-content>
-              <v-list-tile-title>{{ $t(`${subItem.title}`) }}</v-list-tile-title>
+              <v-list-tile-title>{{ $t(`${language.title}`) }}</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
           <!-- ITEMS -->
@@ -99,63 +99,52 @@
 </template>
 
 <script>
-  import { mapGetters } from 'vuex';
+  import {mapGetters}    from 'vuex';
+  import componentsPaths from './componentsPaths';
 
   export default {
     data() {
       return {
-        languages: [
-          {
-            title: 'language-title-polish',
-            langCode: 'pl'
-          },
-          {
-            title: 'language-title-english',
-            langCode: 'en'
-          },
-        ],
         languagesNavDrawer: [
           {
             icon: 'language',
-            title: 'language-menu-button',
-            items: [
-              {
-                title: 'language-title-polish',
-                langCode: 'pl'
-              },
-              {
-                title: 'language-title-english',
-                langCode: 'en'
-              },
-            ]
+            title: 'language-menu-button'
           },
         ],
         menuItems: [
           {
             icon: 'face',
             title: 'sign-up-menu-button',
-            link: '/registration-form'
+            link: componentsPaths.registrationForm
           },
           {
             icon: 'lock_open',
             title: 'sign-in-menu-button',
-            link: '/login'
+            link: componentsPaths.loginForm
           },
           {
             icon: 'person',
             title: 'about-me-menu-button',
-            link: '/about-me'
+            link: componentsPaths.aboutMe
           }
         ]
       }
     },
     methods: {
-      showModalAndSendLang: function(lang){
-        console.log(this.$route.path);
-
-        if (this.$route.path)
-
-        this.$router.app.$emit('open-dialog-and-send-lang', {showDialog: true, lang: lang});
+      showModalAndSendLang: function (lang) {
+        if (this.$route.path.includes(componentsPaths.loginForm)) {
+          this.$router.app.$emit('open-dialog-and-send-lang',
+            {
+              showDialog: true,
+              lang: lang
+            }
+          );
+        } else {
+          this.$store.dispatch('setLang', lang)
+            .then(() => {
+              this.$store.commit('setSideNavigation', false);
+            });
+        }
       },
       switchSideNavigation(value) {
         this.$store.commit('setSideNavigation', value);
@@ -168,6 +157,25 @@
       sideNavigation: {
         get() {return this.$store.getters.getSideNavigation;},
         set(value) {this.$store.commit('setSideNavigation', value);}
+      },
+      languages() {
+        if (this.$store.getters.getLang === 'pl') {
+          return [
+            {
+              title: 'language-title-english',
+              langCode: 'en'
+            }
+          ]
+        } else {
+          if (this.$store.getters.getLang === 'en') {
+            return [
+              {
+                title: 'language-title-polish',
+                langCode: 'pl'
+              }
+            ]
+          }
+        }
       }
     },
     created() {

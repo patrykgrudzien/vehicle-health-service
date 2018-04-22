@@ -69,18 +69,20 @@
         </v-card>
         <!-- FORM -->
 
-      </v-flex>
+        <!-- DIALOG WINDOW -->
+        <v-dialog v-model="dialogWindowActive" persistent max-width="450">
+          <v-card class="text-xs-center">
+            <v-card-title id="dialog-title" class="headline">{{ $t('dialog-title') }}</v-card-title>
+            <v-card-text class="pt-0 pb-0">{{ $t('dialog-text') }}</v-card-text>
+            <v-card-actions id="button-container">
+              <v-btn color="primary" flat @click.native="changeLanguageAndHideDialog">{{ $t('agree-button') }}</v-btn>
+              <v-btn color="primary" flat @click.native="hideDialogWindow">{{ $t('disagree-button') }}</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+        <!-- DIALOG WINDOW -->
 
-      <v-dialog v-model="dialogWindowActive" persistent max-width="450">
-        <v-card>
-          <v-card-title class="headline">{{ $t('dialog-title') }}</v-card-title>
-          <v-card-text>{{ $t('dialog-text') }}</v-card-text>
-          <v-card-actions>
-            <v-btn color="primary" flat @click.native="changeLanguageAndHideDialog">{{ $t('agree-button') }}</v-btn>
-            <v-btn color="primary" flat @click.native="hideDialogWindow">{{ $t('disagree-button') }}</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+      </v-flex>
 
     </v-layout>
   </v-container>
@@ -88,9 +90,9 @@
 
 <script>
   import CircleSpinner          from 'vue-loading-spinner/src/components/Circle8';
-  import { getMessageFromLocale } from "../main";
-  import { mapGetters } from 'vuex';
-  import { mapActions } from 'vuex';
+  import {getMessageFromLocale} from "../main";
+  import {mapGetters}           from 'vuex';
+  import {mapActions}           from 'vuex';
 
   export default {
     components: {
@@ -146,6 +148,8 @@
             .then(() => {
               this.clearFormFields();
               this.$store.commit('setSideNavigation', false);
+              this.$store.commit('clearServerError');
+              this.$store.commit('clearServerResponse');
             });
         }, 250);
       }
@@ -178,10 +182,6 @@
         get() {return this.$store.getters.getLoginForm.show;},
         set(value) {this.$store.commit('setLoginFormShow', value);}
       },
-      /*dialogWindowActive: {
-        get() {return this.$store.getters.isDialogWindowActive;},
-        set(value) {this.$store.commit('setDialogWindowActive', value);}
-      },*/
       loginButtonDisabled() {
         return this.email === '' || this.password === '' || this.valid === false;
       },
@@ -195,5 +195,17 @@
 <style scoped>
   button {
     border: none;
+  }
+
+  #dialog-title {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #button-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 </style>
