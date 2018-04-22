@@ -2,6 +2,8 @@ import Vue from 'vue';
 import {myRouter} from '../main';
 import types from './types';
 import serverEndpoints from '../serverEndpoints';
+import componentsPaths from '../componentsPaths';
+import {app} from '../main';
 
 export default {
 
@@ -30,14 +32,12 @@ export default {
         if (response.data.errorMessage) {
           console.log(response.data.errorMessage);
           commit('setServerError', response.data.errorMessage);
-          myRouter.push({path: '/login?failed=true'});
+          myRouter.push({path: componentsPaths.loginFailed});
         } else {
           localStorage.setItem('token', response.data.token);
           commit(types.LOGIN);
-          // reset store -> do not want to store incorrect values (user has been successfully logged in)
           commit('clearServerError');
-          // /server-health comes from allRoutes.js (router)
-          myRouter.push({path: '/server-health'});
+          myRouter.push({path: componentsPaths.serverCheck});
         }
       })
   },
@@ -45,7 +45,7 @@ export default {
   logout({commit}) {
     localStorage.removeItem('token');
     commit(types.LOGOUT);
-    myRouter.push({path: '/logout?successful=true'});
+    myRouter.push({path: componentsPaths.logoutSuccessful});
   },
 
   clearServerError({commit}) {
@@ -54,6 +54,10 @@ export default {
 
   clearServerResponse({commit}) {
     commit('clearServerResponse');
+  },
+
+  setDialogWindowActiveAction({commit}, payload) {
+    commit('setDialogWindowActive', payload.showDialog);
   },
 
   setLang({commit}, payload) {

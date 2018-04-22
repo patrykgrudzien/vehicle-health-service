@@ -30,8 +30,32 @@ export default {
     state.serverResponse = null;
   },
 
+  setDialogWindowActive: (state, payload) => {
+    state.dialogWindowActive = payload;
+  },
+
   [types.SET_LANG](state, payload) {
     app.$i18n.locale = payload;
     state.lang = payload;
+  },
+
+  setLoginFormEmail(state, payload) {
+    state.loginForm.email = payload;
+  },
+
+  setLoginFormPassword(state, payload) {
+    state.loginForm.password = payload;
+  },
+
+  setLoginFormValid(state, payload) {
+    state.loginForm.valid = payload;
+  },
+
+  setLoginFormShow(state, payload) {
+    state.loginForm.show = payload;
+  },
+
+  setSideNavigation(state, payload) {
+    state.sideNavigation = payload;
   }
 }

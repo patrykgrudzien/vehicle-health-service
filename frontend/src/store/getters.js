@@ -4,5 +4,8 @@ export default {
   isLoading: state => state.loading,
   getServerError: state => state.serverError,
   getServerResponse: state => state.serverResponse,
-  getLang: state => state.lang
+  getLang: state => state.lang,
+  isDialogWindowActive: state => state.dialogWindowActive,
+  getLoginForm: state => state.loginForm,
+  getSideNavigation: state => state.sideNavigation
 };
