@@ -56,10 +56,6 @@ export default {
     commit('clearServerResponse');
   },
 
-  setDialogWindowActiveAction({commit}, payload) {
-    commit('setDialogWindowActive', payload.showDialog);
-  },
-
   setLang({commit}, payload) {
     commit(types.SET_LANG, payload);
   }

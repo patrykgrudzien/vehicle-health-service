@@ -6,7 +6,7 @@
         <my-alert @dismissed="closeErrorAlert"
                   type="error"
                   v-if="serverError"
-                  :errorMessage="serverError"/>
+                  :errorMessage="serverError.errorMessage"/>
         <!-- ERROR ALERT -->
 
         <!-- SUCCESS ALERT -->
@@ -19,7 +19,7 @@
         <!-- FORM -->
         <v-card class="elevation-12">
           <v-card-text>
-            <v-form v-model="form.valid" lazy-validation v-if="form.show" ref="myRegistrationForm">
+            <v-form v-model="form.valid" lazy-validation ref="myRegistrationForm">
               <v-container grid-list-xs>
                 <v-layout v-bind="rowColumnDeterminer">
                   <!-- YOUR NAME -->
@@ -140,8 +140,11 @@
             </v-form>
           </v-card-text>
           <v-card-actions class="pl-3">
-            <v-btn color="primary" @click="submit" :disabled="registerButtonDisabled">
+            <v-btn color="primary" @click="submit" :disabled="registerButtonDisabled" :loading="isLoading">
               {{ $t('register-button') }}
+              <span slot="loader" class="custom-loader">
+                <v-icon light>cached</v-icon>
+              </span>
             </v-btn>
             <v-btn color="error" @click="clearFormFields" :disabled="clearButtonDisabled" left>
               {{ $t('clear-button') }}
@@ -161,15 +164,13 @@
 </template>
 
 <script>
-  import CircleSpinner          from 'vue-loading-spinner/src/components/Circle8';
-  import {getMessageFromLocale} from "../main";
+  import {getMessageFromLocale} from '../main';
+  import {mapGetters}           from 'vuex';
 
   export default {
-    components: {
-      'circle-spinner': CircleSpinner
-    },
     data() {
       return {
+        dialogWindowActive: true,
         form: {
           firstName: '',
           lastName: '',
@@ -178,7 +179,6 @@
           password: '',
           confirmedPassword: '',
           valid: true,
-          show: true
         },
         hidePasswords: true,
         firstNameRules: [
@@ -231,10 +231,6 @@
         this.form.password = '';
         this.form.confirmedPassword = '';
         this.form.valid = true;
-        this.form.show = false;
-        this.$nextTick(() => {
-          this.form.show = true
-        });
       },
       closeErrorAlert() {
         this.$store.dispatch('clearServerError');
@@ -244,6 +240,9 @@
       }
     },
     computed: {
+      ...mapGetters([
+        'isLoading'
+      ]),
       rowColumnDeterminer() {
         const binding = {};
         if (this.$vuetify.breakpoint.mdAndDown) {
@@ -256,7 +255,8 @@
       registerButtonDisabled() {
         return this.form.firstName === '' || this.form.lastName === '' || this.form.email === '' ||
           this.form.confirmedEmail === '' || this.form.password === '' || this.form.confirmedPassword === '' ||
-          this.form.valid === false || this.emailsDoNotMatch === true || this.passwordsDoNotMatch === true;
+          this.form.valid === false || this.emailsDoNotMatch === true || this.passwordsDoNotMatch === true ||
+          this.isLoading;
       },
       clearButtonDisabled() {
         return this.form.firstName === '' && this.form.lastName === '' && this.form.email === '' &&
@@ -301,4 +301,43 @@
   button {
     border: none;
   }
+
+  /* For register button spinning */
+  .custom-loader {
+    animation: loader 1s infinite;
+    display: flex;
+  }
+  @-moz-keyframes loader {
+    from {
+      transform: rotate(0);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @-webkit-keyframes loader {
+    from {
+      transform: rotate(0);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @-o-keyframes loader {
+    from {
+      transform: rotate(0);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes loader {
+    from {
+      transform: rotate(0);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  /* For register button spinning */
 </style>

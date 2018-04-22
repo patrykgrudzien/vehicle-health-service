@@ -15,7 +15,6 @@ const state = {
   serverError: null,
   serverResponse: null,
   lang: 'en',
-  dialogWindowActive: false,
   loginForm: {
     email: '',
     password: '',
