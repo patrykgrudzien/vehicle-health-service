@@ -46,7 +46,7 @@ public class UserRegistrationController {
 	                                                final BindingResult bindingResult, final WebRequest webRequest) {
 		log.info("Inside: " + customApplicationProperties.getEndpoints().getRegistration().getRootRegisterUserAccount());
 		userRegistrationService.registerNewCustomUserAccount(userRegistrationDto, bindingResult, webRequest);
-		return new ResponseEntity<>("Thank you for registration! Check " + userRegistrationDto.getEmail() + " to confirm newly created account.",
+		return new ResponseEntity<>("Thank you for registration! Check (" + userRegistrationDto.getEmail() + ") to confirm newly created account.",
 		                            HttpStatus.OK);
 	}
 

@@ -64,7 +64,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 
 		if (doesEmailExist(userRegistrationDto.getEmail())) {
 			log.error("User with specified email " + userRegistrationDto.getEmail() + " already exists.");
-			throw new UserAlreadyExistsException("User with specified email " + userRegistrationDto.getEmail() + " already exists.");
+			throw new UserAlreadyExistsException("User with specified email (" + userRegistrationDto.getEmail() + ") already exists.");
 		}
 		if (!bindingResult.hasErrors()) {
 			log.info("No validation errors during user registration.");
