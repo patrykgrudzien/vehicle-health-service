@@ -1,9 +1,9 @@
 import Home from '../components/Home';
 import ServerCheck from '../components/ServerCheck';
 import AboutMe from '../components/AboutMe';
-import RegistrationFormVuetify from '../components/RegistrationFormVuetify';
+import RegistrationForm from '../components/RegistrationForm';
 import ConfirmRegistration from '../components/ConfirmRegistration';
-import LoginFormVuetify from '../components/LoginFormVuetify';
+import LoginForm from '../components/LoginForm';
 import componentsPaths from '../componentsPaths';
 
 export default [
@@ -21,7 +21,7 @@ export default [
   },
   {
     path: componentsPaths.registrationForm,
-    component: RegistrationFormVuetify
+    component: RegistrationForm
   },
   {
     path: componentsPaths.confirmRegistration,
@@ -29,14 +29,14 @@ export default [
   },
   {
     path: componentsPaths.loginForm,
-    component: LoginFormVuetify
+    component: LoginForm
   },
   {
     path: componentsPaths.loginFailed,
-    component: LoginFormVuetify
+    component: LoginForm
   },
   {
     path: componentsPaths.logoutSuccessfulWildcard,
-    component: LoginFormVuetify
+    component: LoginForm
   }
 ];

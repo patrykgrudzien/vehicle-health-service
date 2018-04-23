@@ -12,8 +12,9 @@ Vue.use(Vuex);
 const state = {
   logged: localStorage.getItem('token'),
   loading: false,
-  serverError: null,
-  serverResponse: null,
+  serverRunning: true,
+  serverExceptionResponse: null,
+  serverSuccessResponse: null,
   lang: 'en',
   loginForm: {
     email: '',
