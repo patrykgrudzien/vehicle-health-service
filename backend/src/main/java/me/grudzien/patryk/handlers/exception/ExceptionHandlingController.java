@@ -13,7 +13,7 @@ import me.grudzien.patryk.exceptions.RedirectionException;
 import me.grudzien.patryk.exceptions.registration.TokenExpiredException;
 import me.grudzien.patryk.exceptions.registration.TokenNotFoundException;
 import me.grudzien.patryk.exceptions.registration.UserAlreadyExistsException;
-import me.grudzien.patryk.exceptions.dto.ExceptionResponse;
+import me.grudzien.patryk.domain.dto.responses.ExceptionResponse;
 
 /**
  * The @ControllerAdvice annotation is a component annotation allowing implementation classes to be auto-detected

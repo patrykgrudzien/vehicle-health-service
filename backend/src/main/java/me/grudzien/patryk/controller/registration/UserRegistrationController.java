@@ -19,6 +19,8 @@ import javax.validation.Valid;
 
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.domain.dto.registration.UserRegistrationDto;
+import me.grudzien.patryk.domain.dto.responses.CustomResponse;
+import me.grudzien.patryk.domain.dto.responses.SuccessResponse;
 import me.grudzien.patryk.handlers.web.HttpResponseHandler;
 import me.grudzien.patryk.service.registration.UserRegistrationService;
 
@@ -42,11 +44,12 @@ public class UserRegistrationController {
 	}
 
 	@PostMapping("${custom.properties.endpoints.registration.register-user-account}")
-	public ResponseEntity<String> registerUserAccount(@RequestBody @Valid final UserRegistrationDto userRegistrationDto,
-	                                                final BindingResult bindingResult, final WebRequest webRequest) {
+	public ResponseEntity<CustomResponse> registerUserAccount(@RequestBody @Valid final UserRegistrationDto userRegistrationDto,
+	                                                          final BindingResult bindingResult, final WebRequest webRequest) {
 		log.info("Inside: " + customApplicationProperties.getEndpoints().getRegistration().getRootRegisterUserAccount());
 		userRegistrationService.registerNewCustomUserAccount(userRegistrationDto, bindingResult, webRequest);
-		return new ResponseEntity<>("Thank you for registration! Check (" + userRegistrationDto.getEmail() + ") to confirm newly created account.",
+		return new ResponseEntity<>(SuccessResponse.buildGenericResponse(
+				"Thank you for registration! Check (" + userRegistrationDto.getEmail() + ") to confirm newly created account."),
 		                            HttpStatus.OK);
 	}
 

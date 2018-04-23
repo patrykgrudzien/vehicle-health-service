@@ -1,4 +1,4 @@
-package me.grudzien.patryk.exceptions.dto;
+package me.grudzien.patryk.domain.dto.responses;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,14 +16,14 @@ import java.util.List;
 @AllArgsConstructor
 @Builder(builderMethodName = "Builder")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ExceptionResponse {
+public class ExceptionResponse extends CustomResponse {
 
-	private String errorMessage;
+	private String message;
 	private List<String> errors;
 
 	public static <T extends RuntimeException> ExceptionResponse buildGenericResponse(final T exception) {
 		return ExceptionResponse.Builder()
-		                        .errorMessage(exception.getMessage())
+		                        .message(exception.getMessage())
 		                        .build();
 	}
 }

@@ -32,6 +32,10 @@ public class HttpResponseHandler {
 		this.customApplicationProperties = customApplicationProperties;
 	}
 
+	public void redirectUserToLoginUrl(final HttpServletResponse response) {
+
+	}
+
 	public void redirectUserToConfirmedUrl(final HttpServletResponse response) {
 		try {
 			response.sendRedirect(herokuAppEndpointResolver.determineBaseAppUrlForConfirmRegistration() +
