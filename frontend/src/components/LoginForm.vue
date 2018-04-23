@@ -135,12 +135,11 @@
         }
       },
       clearFormFields() {
-        this.$store.commit('setLoginFormEmail', '');
-        this.$store.commit('setLoginFormPassword', '');
+        this.$refs.myLoginForm.reset();
         this.$store.commit('setLoginFormValid', true);
-        this.$store.commit('setLoginFormShow', false);
+        // without that code below it does not work
         this.$nextTick(() => {
-          this.$store.commit('setLoginFormShow', true);
+          this.$store.commit('setLoginFormValid', true);
         });
       },
       hideDialogWindow() {
@@ -198,15 +197,13 @@
         get() {return this.$store.getters.getLoginForm.valid;},
         set(value) {this.$store.commit('setLoginFormValid', value);}
       },
-      show: {
-        get() {return this.$store.getters.getLoginForm.show;},
-        set(value) {this.$store.commit('setLoginFormShow', value);}
-      },
       loginButtonDisabled() {
-        return this.email === '' || this.password === '' || this.valid === false || this.isLoading;
+        return this.email === '' || !this.email || this.password === '' || !this.password
+          || this.valid === false || this.isLoading;
       },
       clearButtonDisabled() {
-        return this.email === '' && this.password === '' && this.valid === true;
+        return (this.email === '' || !this.email) && (this.password === '' || !this.password)
+          && this.valid === true;
       },
     }
   };
