@@ -372,4 +372,16 @@
   button {
     border: none;
   }
+
+  #dialog-title {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #button-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 </style>

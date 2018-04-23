@@ -132,7 +132,8 @@
     },
     methods: {
       showModalAndSendLang: function (lang) {
-        if (this.$route.path.includes(componentsPaths.loginForm)) {
+        if (this.$route.path.includes(componentsPaths.loginForm) ||
+          this.$route.path.includes(componentsPaths.registrationForm)) {
           this.$router.app.$emit('open-dialog-and-send-lang',
             {
               showDialog: true,
