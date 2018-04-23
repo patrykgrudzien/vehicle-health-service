@@ -100,7 +100,7 @@
     },
     data() {
       return {
-        language: null,
+        tempLanguage: null,
         dialogWindowActive: false,
         hidePasswords: true,
         passwordRules: [
@@ -144,7 +144,7 @@
       changeLanguageAndHideDialog() {
         this.dialogWindowActive = false;
         setTimeout(() => {
-          this.$store.dispatch('setLang', this.language)
+          this.$store.dispatch('setLang', this.tempLanguage)
             .then(() => {
               this.clearFormFields();
               this.$store.commit('setSideNavigation', false);
@@ -157,7 +157,7 @@
     created() {
       this.$router.app.$on('open-dialog-and-send-lang', (payload) => {
         this.dialogWindowActive = payload.showDialog;
-        this.language = payload.lang;
+        this.tempLanguage = payload.lang;
       })
     },
     computed: {
