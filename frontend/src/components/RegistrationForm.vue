@@ -27,7 +27,7 @@
         <!-- FORM -->
         <v-card class="elevation-12">
           <v-card-text>
-            <v-form v-model="form.valid" lazy-validation ref="myRegistrationForm">
+            <v-form v-model="valid" lazy-validation ref="myRegistrationForm">
               <v-container grid-list-xs>
                 <v-layout v-bind="rowColumnDeterminer">
                   <!-- YOUR NAME -->
@@ -37,7 +37,7 @@
                       name="yourName"
                       :label="$t('first-name-label')"
                       type="text"
-                      v-model="form.firstName"
+                      v-model="firstName"
                       :hint="$t('first-name-input-hint')"
                       required
                       :rules="firstNameRules"
@@ -52,7 +52,7 @@
                       name="yourLastName"
                       :label="$t('last-name-label')"
                       type="text"
-                      v-model="form.lastName"
+                      v-model="lastName"
                       :hint="$t('last-name-input-hint')"
                       required
                       :rules="lastNameRules"
@@ -71,7 +71,7 @@
                       name="yourEmail"
                       :label="$t('email-label')"
                       type="email"
-                      v-model="form.email"
+                      v-model="email"
                       :hint="emailsMatcherErrorMessage"
                       :persistent-hint="emailsDoNotMatch"
                       required
@@ -88,7 +88,7 @@
                       name="confirmEmail"
                       :label="$t('confirm-email-label')"
                       type="email"
-                      v-model="form.confirmedEmail"
+                      v-model="confirmedEmail"
                       :hint="emailsMatcherErrorMessage"
                       :persistent-hint="emailsDoNotMatch"
                       required
@@ -110,14 +110,14 @@
                       :label="$t('password-label')"
                       id="password"
                       type="password"
-                      v-model="form.password"
+                      v-model="password"
                       :hint="passwordsMatcherErrorMessage"
                       :persistent-hint="passwordsDoNotMatch"
                       required
                       :rules="passwordRules"
                       :error="passwordsDoNotMatch"
                       :counter="50"
-                      :append-icon="hidePasswords ? 'visibility' : 'visibility_off'"
+                      :append-icon="hidePasswords ? 'visibility_off' : 'visibility'"
                       :append-icon-cb="() => (hidePasswords = !hidePasswords)"
                       :type="hidePasswords ? 'password' : 'text'"/>
                   </v-flex>
@@ -131,14 +131,14 @@
                       :label="$t('confirm-password-label')"
                       id="confirmPassword"
                       type="password"
-                      v-model="form.confirmedPassword"
+                      v-model="confirmedPassword"
                       :hint="passwordsMatcherErrorMessage"
                       :persistent-hint="passwordsDoNotMatch"
                       required
                       :rules="confirmPasswordRules"
                       :error="passwordsDoNotMatch"
                       :counter="50"
-                      :append-icon="hidePasswords ? 'visibility' : 'visibility_off'"
+                      :append-icon="hidePasswords ? 'visibility_off' : 'visibility'"
                       :append-icon-cb="() => (hidePasswords = !hidePasswords)"
                       :type="hidePasswords ? 'password' : 'text'"/>
                   </v-flex>
@@ -163,6 +163,19 @@
         </v-card>
         <!-- FORM -->
 
+        <!-- DIALOG WINDOW -->
+        <v-dialog v-model="tempDialogWindowActive" persistent max-width="450">
+          <v-card class="text-xs-center">
+            <v-card-title id="dialog-title" class="headline">{{ $t('dialog-title') }}</v-card-title>
+            <v-card-text class="pt-0 pb-0">{{ $t('dialog-text') }}</v-card-text>
+            <v-card-actions id="button-container">
+              <v-btn color="primary" flat @click.native="changeLanguageAndHideDialog">{{ $t('agree-button') }}</v-btn>
+              <v-btn color="primary" flat @click.native="hideDialogWindow">{{ $t('disagree-button') }}</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+        <!-- DIALOG WINDOW -->
+
       </v-flex>
     </v-layout>
   </v-container>
@@ -176,16 +189,8 @@
   export default {
     data() {
       return {
-        dialogWindowActive: true,
-        form: {
-          firstName: '',
-          lastName: '',
-          email: '',
-          confirmedEmail: '',
-          password: '',
-          confirmedPassword: '',
-          valid: true,
-        },
+        tempLanguage: null,
+        tempDialogWindowActive: false,
         hidePasswords: true,
         firstNameRules: [
           v => !!v || `${getMessageFromLocale('first-name-required')}`,
@@ -235,17 +240,38 @@
         }
       },
       clearFormFields() {
-        this.form.firstName = '';
-        this.form.lastName = '';
-        this.form.email = '';
-        this.form.confirmedEmail = '';
-        this.form.password = '';
-        this.form.confirmedPassword = '';
-        this.form.valid = true;
+        this.$refs.myRegistrationForm.reset();
+        this.$store.commit('setRegistrationFormValid', true);
+        // without that code below it does not work
+        this.$nextTick(() => {
+          this.$store.commit('setRegistrationFormValid', true);
+        });
+      },
+      hideDialogWindow() {
+        this.tempDialogWindowActive = false;
+      },
+      changeLanguageAndHideDialog() {
+        this.tempDialogWindowActive = false;
+        setTimeout(() => {
+          this.$store.dispatch('setLang', this.tempLanguage)
+            .then(() => {
+              this.clearFormFields();
+              this.$store.commit('setServerRunning', true);
+              this.$store.commit('setSideNavigation', false);
+              this.$store.commit('clearServerExceptionResponse');
+              this.$store.commit('clearServerSuccessResponse');
+            });
+        }, 200);
       },
       setServerRunning() {
         this.$store.commit('setServerRunning', true);
       }
+    },
+    created() {
+      this.$router.app.$on('open-dialog-and-send-lang', (payload) => {
+        this.tempDialogWindowActive = payload.showDialog;
+        this.tempLanguage = payload.lang;
+      })
     },
     computed: {
       ...mapGetters([
@@ -253,6 +279,7 @@
         'isServerRunning',
         'getServerExceptionResponse',
         'getServerSuccessResponse',
+        'isLoading'
       ]),
       getServerExceptionResponseMessage() {
         return this.getServerExceptionResponse.message;
@@ -272,36 +299,66 @@
         }
         return binding;
       },
+      firstName: {
+        get() {return this.$store.getters.getRegistrationForm.firstName;},
+        set(value) {this.$store.commit('setRegistrationFormFirstName', value);}
+      },
+      lastName: {
+        get() {return this.$store.getters.getRegistrationForm.lastName;},
+        set(value) {this.$store.commit('setRegistrationFormLastName', value);}
+      },
+      email: {
+        get() {return this.$store.getters.getRegistrationForm.email;},
+        set(value) {this.$store.commit('setRegistrationFormEmail', value);}
+      },
+      confirmedEmail: {
+        get() {return this.$store.getters.getRegistrationForm.confirmedEmail;},
+        set(value) {this.$store.commit('setRegistrationFormConfirmedEmail', value);}
+      },
+      password: {
+        get() {return this.$store.getters.getRegistrationForm.password;},
+        set(value) {this.$store.commit('setRegistrationFormPassword', value);}
+      },
+      confirmedPassword: {
+        get() {return this.$store.getters.getRegistrationForm.confirmedPassword;},
+        set(value) {this.$store.commit('setRegistrationFormConfirmedPassword', value);}
+      },
+      valid: {
+        get() {return this.$store.getters.getRegistrationForm.valid;},
+        set(value) {this.$store.commit('setRegistrationFormValid', value);}
+      },
       registerButtonDisabled() {
-        return this.form.firstName === '' || this.form.lastName === '' || this.form.email === '' ||
-          this.form.confirmedEmail === '' || this.form.password === '' || this.form.confirmedPassword === '' ||
-          this.form.valid === false || this.emailsDoNotMatch === true || this.passwordsDoNotMatch === true ||
+        return this.firstName === '' || !this.firstName || this.lastName === '' || !this.lastName ||
+          this.email === '' || !this.email || this.confirmedEmail === '' || !this.confirmedEmail ||
+          this.password === '' || !this.password || this.confirmedPassword === '' || !this.confirmedPassword ||
+          this.valid === false || this.emailsDoNotMatch === true || this.passwordsDoNotMatch === true ||
           this.isLoading;
       },
       clearButtonDisabled() {
-        return this.form.firstName === '' && this.form.lastName === '' && this.form.email === '' &&
-          this.form.confirmedEmail === '' && this.form.password === '' && this.form.confirmedPassword === '' &&
-          this.form.valid === true;
+        return (this.firstName === '' || !this.firstName) && (this.lastName === '' || !this.lastName) &&
+          (this.email === '' || !this.email) && (this.confirmedEmail === '' || !this.confirmedEmail) &&
+          (this.password === '' || !this.password) && (this.confirmedPassword === '' || !this.confirmedPassword) &&
+          this.valid === true;
       },
       emailsDoNotMatch() {
-        if (this.form.email !== '' && this.form.confirmedEmail !== '' && this.form.email !== this.form.confirmedEmail) {
+        if (this.email !== '' && this.confirmedEmail !== '' && this.email !== this.confirmedEmail) {
           return true;
         }
       },
       passwordsDoNotMatch() {
-        if (this.form.password !== '' && this.form.confirmedPassword !== '' && this.form.password !== this.form.confirmedPassword) {
+        if (this.password !== '' && this.confirmedPassword !== '' && this.password !== this.confirmedPassword) {
           return true;
         }
       },
       emailsMatcherErrorMessage() {
-        if (this.form.email !== '' && this.form.confirmedEmail !== '' && this.form.email !== this.form.confirmedEmail) {
+        if (this.email !== '' && this.confirmedEmail !== '' && this.email !== this.confirmedEmail) {
           return `${getMessageFromLocale('emails-do-not-match')}`;
         } else {
           return `${getMessageFromLocale('email-input-hint')}`;
         }
       },
       passwordsMatcherErrorMessage() {
-        if (this.form.password !== '' && this.form.confirmedPassword !== '' && this.form.password !== this.form.confirmedPassword) {
+        if (this.password !== '' && this.confirmedPassword !== '' && this.password !== this.confirmedPassword) {
           return `${getMessageFromLocale('passwords-do-not-match')}`;
         } else {
           return `${getMessageFromLocale('password-input-hint')}`;
