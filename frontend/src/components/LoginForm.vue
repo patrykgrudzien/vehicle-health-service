@@ -54,7 +54,7 @@
                 required
                 :rules="passwordRules"
                 :counter="50"
-                :append-icon="hidePasswords ? 'visibility' : 'visibility_off'"
+                :append-icon="hidePasswords ? 'visibility_off' : 'visibility'"
                 :append-icon-cb="() => (hidePasswords = !hidePasswords)"
                 :type="hidePasswords ? 'password' : 'text'"/>
               <!-- PASSWORD -->

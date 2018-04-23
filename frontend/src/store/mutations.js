@@ -39,6 +39,7 @@ export default {
     state.lang = payload;
   },
 
+  // -------------- LOGIN FORM -------------- //
   setLoginFormEmail(state, payload) {
     state.loginForm.email = payload;
   },
@@ -50,8 +51,33 @@ export default {
   setLoginFormValid(state, payload) {
     state.loginForm.valid = payload;
   },
+  // -------------- LOGIN FORM -------------- //
 
   setSideNavigation(state, payload) {
     state.sideNavigation = payload;
+  },
+
+  // -------------- REGISTRATION FORM -------------- //
+  setRegistrationFormFirstName(state, payload) {
+    state.registrationForm.firstName = payload;
+  },
+  setRegistrationFormLastName(state, payload) {
+    state.registrationForm.lastName = payload;
+  },
+  setRegistrationFormEmail(state, payload) {
+    state.registrationForm.email = payload;
+  },
+  setRegistrationFormConfirmedEmail(state, payload) {
+    state.registrationForm.confirmedEmail = payload;
+  },
+  setRegistrationFormPassword(state, payload) {
+    state.registrationForm.password = payload;
+  },
+  setRegistrationFormConfirmedPassword(state, payload) {
+    state.registrationForm.confirmedPassword = payload;
+  },
+  setRegistrationFormValid(state, payload) {
+    state.registrationForm.valid = payload;
   }
+  // -------------- REGISTRATION FORM -------------- //
 }

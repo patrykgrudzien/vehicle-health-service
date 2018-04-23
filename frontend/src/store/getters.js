@@ -7,5 +7,6 @@ export default {
   getServerSuccessResponse: state => state.serverSuccessResponse,
   getLang: state => state.lang,
   getLoginForm: state => state.loginForm,
+  getRegistrationForm: state => state.registrationForm,
   getSideNavigation: state => state.sideNavigation
 };

@@ -21,6 +21,15 @@ const state = {
     password: '',
     valid: true
   },
+  registrationForm: {
+    firstName: '',
+    lastName: '',
+    email: '',
+    confirmedEmail: '',
+    password: '',
+    confirmedPassword: '',
+    valid: true,
+  },
   sideNavigation: false
 };
 
