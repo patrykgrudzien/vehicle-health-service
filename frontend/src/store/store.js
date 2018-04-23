@@ -19,8 +19,7 @@ const state = {
   loginForm: {
     email: '',
     password: '',
-    valid: true,
-    show: true
+    valid: true
   },
   sideNavigation: false
 };

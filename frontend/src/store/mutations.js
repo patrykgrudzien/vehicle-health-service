@@ -51,10 +51,6 @@ export default {
     state.loginForm.valid = payload;
   },
 
-  setLoginFormShow(state, payload) {
-    state.loginForm.show = payload;
-  },
-
   setSideNavigation(state, payload) {
     state.sideNavigation = payload;
   }
