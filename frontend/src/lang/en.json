@@ -42,5 +42,6 @@
   "dialog-title": "Do you want to change app language?",
   "dialog-text": "Changing application language will cause your form will be cleared. Are you sure?",
   "agree-button": "Agree",
-  "disagree-button": "Disagree"
+  "disagree-button": "Disagree",
+  "server-status-message": "Cannot connect to the server. It's probably not working..."
 }

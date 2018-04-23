@@ -42,5 +42,6 @@
   "dialog-title": "Chcesz zmienić język aplikacji?",
   "dialog-text": "Zmiana języka spowoduje, że twój formularz zostanie wyczyszczony. Jesteś pewien?",
   "agree-button": "Potwierdź",
-  "disagree-button": "Anuluj"
+  "disagree-button": "Anuluj",
+  "server-status-message": "Nie można połączyć się z serwerem. Prawdopodobnie nie działa..."
 }

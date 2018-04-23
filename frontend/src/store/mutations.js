@@ -14,20 +14,24 @@ export default {
     state.loading = payload;
   },
 
-  setServerError: (state, payload) => {
-    state.serverError = payload;
+  setServerRunning: (state, payload) => {
+    state.serverRunning = payload;
   },
 
-  setServerResponse: (state, payload) => {
-    state.serverResponse = payload;
+  setServerExceptionResponse: (state, payload) => {
+    state.serverExceptionResponse = payload;
   },
 
-  clearServerError: state => {
-    state.serverError = null;
+  setServerSuccessResponse: (state, payload) => {
+    state.serverSuccessResponse = payload;
   },
 
-  clearServerResponse: state => {
-    state.serverResponse = null;
+  clearServerExceptionResponse: state => {
+    state.serverExceptionResponse = null;
+  },
+
+  clearServerSuccessResponse: state => {
+    state.serverSuccessResponse = null;
   },
 
   [types.SET_LANG](state, payload) {

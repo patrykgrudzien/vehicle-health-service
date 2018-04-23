@@ -3,43 +3,56 @@ import {myRouter} from '../main';
 import types from './types';
 import serverEndpoints from '../serverEndpoints';
 import componentsPaths from '../componentsPaths';
-import {app} from '../main';
 
 export default {
 
   registerUserAccount({commit}, form) {
     commit('setLoading', true);
-    commit('clearServerError');
-    commit('clearServerResponse');
+    commit('clearServerExceptionResponse');
+    commit('clearServerSuccessResponse');
     Vue.axios.post(serverEndpoints.registration.registerUserAccount, form)
       .then(response => {
         commit('setLoading', false);
-        commit('setServerResponse', response.data);
+        commit('setServerSuccessResponse', response.data);
       })
       .catch(error => {
-        commit('setLoading', false);
-        commit('setServerError', error.response.data);
-        commit('setServerResponse', null);
-      })
+        if (!error.response) {
+          commit('setServerRunning', false);
+          commit('setLoading', false);
+        } else {
+          commit('setLoading', false);
+          commit('setServerExceptionResponse', error.response.data);
+          commit('clearServerSuccessResponse');
+        }
+      });
   },
 
   login({commit}, credentials) {
     commit('setLoading', true);
-    commit('clearServerError');
+    commit('clearServerExceptionResponse');
     Vue.axios.post(serverEndpoints.authentication.root, credentials)
       .then(response => {
         commit('setLoading', false);
-        if (response.data.errorMessage) {
-          console.log(response.data.errorMessage);
-          commit('setServerError', response.data.errorMessage);
+        if (response.data.message) {
+          commit('setServerExceptionResponse', response.data);
           myRouter.push({path: componentsPaths.loginFailed});
         } else {
           localStorage.setItem('token', response.data.token);
           commit(types.LOGIN);
-          commit('clearServerError');
+          commit('clearServerExceptionResponse');
           myRouter.push({path: componentsPaths.serverCheck});
         }
       })
+      .catch(error => {
+        if (!error.response) {
+          commit('setServerRunning', false);
+          commit('setLoading', false);
+        } else {
+          commit('setLoading', false);
+          commit('setServerExceptionResponse', error.response.data);
+          commit('clearServerSuccessResponse');
+        }
+      });
   },
 
   logout({commit}) {
@@ -48,12 +61,16 @@ export default {
     myRouter.push({path: componentsPaths.logoutSuccessful});
   },
 
-  clearServerError({commit}) {
-    commit('clearServerError');
+  setServerRunning({commit}, payload) {
+    commit('setServerRunning', payload);
   },
 
-  clearServerResponse({commit}) {
-    commit('clearServerResponse');
+  clearServerExceptionResponse({commit}) {
+    commit('clearServerExceptionResponse');
+  },
+
+  clearServerSuccessResponse({commit}) {
+    commit('clearServerSuccessResponse');
   },
 
   setLang({commit}, payload) {

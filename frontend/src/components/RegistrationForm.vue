@@ -1,189 +1,182 @@
-<!--
 <template>
   <v-container fluid fill-height>
     <v-layout row align-center justify-center>
-      <v-flex>
-        &lt;!&ndash; novalidate (disables the browser default feedback tooltips) &ndash;&gt;
-        <b-form @submit.prevent="validateForm" @reset.prevent="clearFormFields" v-if="showForm" novalidate>
-          <b-form-row>
-            <b-col cols="2"></b-col>
-            <b-col cols="8">
-              <b-alert :show="showSuccessAlert" variant="success">
-                Thank you for registration! Check your <b>{{ form.email }}</b> email address to confirm newly created
-                account.
-              </b-alert>
-              <b-alert :show="showDangerAlert && errorMessage === null" variant="danger">Cannot connect to the server to
-                                                                                         finish registration.
-              </b-alert>
-              <b-alert :show="showDangerAlert && errorMessage !== null && errors === null" variant="danger">{{
-                                                                                                            errorMessage
-                                                                                                            }}
-              </b-alert>
-              <b-alert :show="showDangerAlert && errorMessage !== null && errors !== null" variant="danger">
-                <p class="error" v-for="error in errors">{{ error }}</p>
-              </b-alert>
-            </b-col>
-            <b-col cols="2"></b-col>
-          </b-form-row>
-          <b-form-row>
-            <b-col cols="2"></b-col>
-            &lt;!&ndash; Your Name &ndash;&gt;
-            <b-col cols="4">
-              <b-form-group id="group-1"
-                            label="Your Name:"
-                            label-for="group-1">
-                <b-form-input id="group-1"
-                              type="text"
-                              v-model.trim="form.firstName"
-                              placeholder="Enter first name"
-                              :class="{'is-invalid': missingName && form.attemptSubmit}">
-                </b-form-input>
-                &lt;!&ndash; Name field validation &ndash;&gt;
-                <div class="invalid-feedback">
-                  Please provide your first name
-                </div>
-              </b-form-group>
-            </b-col>
-            &lt;!&ndash; Your Name &ndash;&gt;
+      <v-flex xs12 sm8 md8>
+        <!-- SERVER NOT RUNNING -->
+        <my-alert @dismissed="setServerRunning"
+                  type="error"
+                  v-if="!isServerRunning"
+                  :message="$t('server-status-message')"/>
+        <!-- SERVER NOT RUNNING -->
 
-            &lt;!&ndash; Your Last Name &ndash;&gt;
-            <b-col cols="4">
-              <b-form-group id="group-2"
-                            label="Your Last Name:"
-                            label-for="group-2">
-                <b-form-input id="group-2"
-                              type="text"
-                              v-model.trim="form.lastName"
-                              placeholder="Enter last name"
-                              :class="{'is-invalid': missingLastName && form.attemptSubmit}">
-                </b-form-input>
-                &lt;!&ndash; Last name field validation &ndash;&gt;
-                <div class="invalid-feedback">
-                  Please provide your last name
-                </div>
-              </b-form-group>
-            </b-col>
-            &lt;!&ndash; Your Last Name &ndash;&gt;
-            <b-col cols="2"></b-col>
-          </b-form-row>
+        <!-- ERROR ALERT -->
+        <my-alert @dismissed="clearServerExceptionResponse"
+                  type="error"
+                  v-if="getServerExceptionResponse"
+                  :message="getServerExceptionResponseMessage"
+                  :errors="getServerExceptionResponseErrors"/>
+        <!-- ERROR ALERT -->
 
-          &lt;!&ndash; Email address &ndash;&gt;
-          <b-form-row>
-            <b-col cols="2"></b-col>
-            <b-col cols="4">
-              <b-form-group id="group-3"
-                            label="Email address:"
-                            label-for="group-3">
-                <b-form-input id="group-3"
-                              type="email"
-                              v-model.trim="form.email"
-                              placeholder="Enter email"
-                              :class="{'is-invalid': missingEmail && form.attemptSubmit}">
-                </b-form-input>
-                &lt;!&ndash; Email field validation &ndash;&gt;
-                <div class="invalid-feedback">
-                  Please provide your email
-                </div>
-              </b-form-group>
-            </b-col>
-            &lt;!&ndash; Email address &ndash;&gt;
+        <!-- SUCCESS ALERT -->
+        <my-alert @dismissed="clearServerSuccessResponse"
+                  type="success"
+                  v-if="getServerSuccessResponse"
+                  :message="getServerSuccessResponseMessage"/>
+        <!-- SUCCESS ALERT -->
 
-            &lt;!&ndash; Confirmed Email address &ndash;&gt;
-            <b-col cols="4">
-              <b-form-group id="group-4"
-                            label="Confirm:"
-                            label-for="group-4">
-                <b-form-input id="group-4"
-                              type="email"
-                              v-model.trim="form.confirmedEmail"
-                              placeholder="Confirm your email"
-                              :class="{'is-invalid': missingConfirmedEmail && form.attemptSubmit}">
-                </b-form-input>
-                &lt;!&ndash; Email field validation &ndash;&gt;
-                <div class="invalid-feedback">
-                  Please confirm your email
-                </div>
-              </b-form-group>
-            </b-col>
-            &lt;!&ndash; Confirmed Email address &ndash;&gt;
-            <b-col cols="2"></b-col>
-          </b-form-row>
-          &lt;!&ndash; Email address &ndash;&gt;
+        <!-- FORM -->
+        <v-card class="elevation-12">
+          <v-card-text>
+            <v-form v-model="form.valid" lazy-validation ref="myRegistrationForm">
+              <v-container grid-list-xs>
+                <v-layout v-bind="rowColumnDeterminer">
+                  <!-- YOUR NAME -->
+                  <v-flex xs6 :class="{'mr-2': this.$vuetify.breakpoint.lgAndUp}">
+                    <v-text-field
+                      prepend-icon="person"
+                      name="yourName"
+                      :label="$t('first-name-label')"
+                      type="text"
+                      v-model="form.firstName"
+                      :hint="$t('first-name-input-hint')"
+                      required
+                      :rules="firstNameRules"
+                      :counter="50"/>
+                  </v-flex>
+                  <!-- YOUR NAME -->
 
-          &lt;!&ndash; Your Password &ndash;&gt;
-          <b-form-row>
-            <b-col cols="2"></b-col>
-            <b-col cols="4">
-              <b-form-group id="group-5"
-                            label="Your Password:"
-                            label-for="group-5">
-                <b-form-input id="group-5"
-                              type="password"
-                              v-model.trim="form.password"
-                              placeholder="Enter your password"
-                              :class="{'is-invalid': missingPassword && form.attemptSubmit}">
-                </b-form-input>
-                &lt;!&ndash; Password field validation &ndash;&gt;
-                <div class="invalid-feedback">
-                  Please create a password
-                </div>
-              </b-form-group>
-            </b-col>
-            &lt;!&ndash; Your Password &ndash;&gt;
+                  <!-- YOUR LAST NAME -->
+                  <v-flex xs6 :class="{'ml-2': this.$vuetify.breakpoint.lgAndUp}">
+                    <v-text-field
+                      prepend-icon="person"
+                      name="yourLastName"
+                      :label="$t('last-name-label')"
+                      type="text"
+                      v-model="form.lastName"
+                      :hint="$t('last-name-input-hint')"
+                      required
+                      :rules="lastNameRules"
+                      :counter="50"/>
+                  </v-flex>
+                  <!-- YOUR LAST NAME -->
+                </v-layout>
+              </v-container>
 
-            &lt;!&ndash; Confirm Password &ndash;&gt;
-            <b-col cols="4">
-              <b-form-group id="group-6"
-                            label="Confirm:"
-                            label-for="group-6">
-                <b-form-input id="group-6"
-                              type="password"
-                              v-model.trim="form.confirmedPassword"
-                              placeholder="Confirm your password"
-                              :class="{'is-invalid': missingConfirmedPassword && form.attemptSubmit}">
-                </b-form-input>
-                &lt;!&ndash; Confirm password field validation &ndash;&gt;
-                <div class="invalid-feedback">
-                  Please confirm your password
-                </div>
-              </b-form-group>
-            </b-col>
-            <b-col cols="2"></b-col>
-          </b-form-row>
-          &lt;!&ndash; Confirm Password &ndash;&gt;
+              <v-container grid-list-xs>
+                <v-layout v-bind="rowColumnDeterminer">
+                  <!-- YOUR EMAIL -->
+                  <v-flex xs6 :class="{'mr-2': this.$vuetify.breakpoint.lgAndUp}">
+                    <v-text-field
+                      prepend-icon="email"
+                      name="yourEmail"
+                      :label="$t('email-label')"
+                      type="email"
+                      v-model="form.email"
+                      :hint="emailsMatcherErrorMessage"
+                      :persistent-hint="emailsDoNotMatch"
+                      required
+                      :rules="emailRules"
+                      :error="emailsDoNotMatch"
+                      :counter="50"/>
+                  </v-flex>
+                  <!-- YOUR EMAIL -->
 
-          &lt;!&ndash; Buttons &ndash;&gt;
-          <b-form-row>
-            <b-col cols="2"></b-col>
-            <b-button id="register-button" type="submit" variant="secondary">Register</b-button>
-            <b-button :disabled="missingInputFields('&&')" type="reset" variant="danger">Reset</b-button>
-          </b-form-row>
-          &lt;!&ndash; Buttons &ndash;&gt;
+                  <!-- CONFIRM EMAIL -->
+                  <v-flex xs6 :class="{'ml-2': this.$vuetify.breakpoint.lgAndUp}">
+                    <v-text-field
+                      prepend-icon="email"
+                      name="confirmEmail"
+                      :label="$t('confirm-email-label')"
+                      type="email"
+                      v-model="form.confirmedEmail"
+                      :hint="emailsMatcherErrorMessage"
+                      :persistent-hint="emailsDoNotMatch"
+                      required
+                      :rules="confirmEmailRules"
+                      :error="emailsDoNotMatch"
+                      :counter="50"/>
+                  </v-flex>
+                  <!-- CONFIRM EMAIL -->
+                </v-layout>
+              </v-container>
 
-          &lt;!&ndash; Login here &ndash;&gt;
-          <b-form-row>
-            <b-col cols="2"></b-col>
-            <p style="margin-left: 5px; margin-top: 10px;">
-              Already registered?
-              <router-link to="/login" exact>Login here</router-link>
-            </p>
-          </b-form-row>
-        </b-form>
-        <circle-spinner v-if="!showForm" style="margin: 0 auto"/>
+              <v-container grid-list-xs>
+                <v-layout v-bind="rowColumnDeterminer">
+                  <!-- PASSWORD -->
+                  <v-flex xs6 :class="{'mr-2': this.$vuetify.breakpoint.lgAndUp}">
+                    <v-text-field
+                      prepend-icon="lock"
+                      name="password"
+                      :label="$t('password-label')"
+                      id="password"
+                      type="password"
+                      v-model="form.password"
+                      :hint="passwordsMatcherErrorMessage"
+                      :persistent-hint="passwordsDoNotMatch"
+                      required
+                      :rules="passwordRules"
+                      :error="passwordsDoNotMatch"
+                      :counter="50"
+                      :append-icon="hidePasswords ? 'visibility' : 'visibility_off'"
+                      :append-icon-cb="() => (hidePasswords = !hidePasswords)"
+                      :type="hidePasswords ? 'password' : 'text'"/>
+                  </v-flex>
+                  <!-- PASSWORD -->
+
+                  <!-- CONFIRM PASSWORD -->
+                  <v-flex xs6 :class="{'ml-2': this.$vuetify.breakpoint.lgAndUp}">
+                    <v-text-field
+                      prepend-icon="lock"
+                      name="confirmPassword"
+                      :label="$t('confirm-password-label')"
+                      id="confirmPassword"
+                      type="password"
+                      v-model="form.confirmedPassword"
+                      :hint="passwordsMatcherErrorMessage"
+                      :persistent-hint="passwordsDoNotMatch"
+                      required
+                      :rules="confirmPasswordRules"
+                      :error="passwordsDoNotMatch"
+                      :counter="50"
+                      :append-icon="hidePasswords ? 'visibility' : 'visibility_off'"
+                      :append-icon-cb="() => (hidePasswords = !hidePasswords)"
+                      :type="hidePasswords ? 'password' : 'text'"/>
+                  </v-flex>
+                  <!-- CONFIRM PASSWORD -->
+                </v-layout>
+              </v-container>
+            </v-form>
+          </v-card-text>
+          <v-card-actions class="pl-3">
+            <v-btn color="primary" @click="submit" :disabled="registerButtonDisabled" :loading="isLoading">
+              {{ $t('register-button') }}
+            </v-btn>
+            <v-btn color="error" @click="clearFormFields" :disabled="clearButtonDisabled" left>
+              {{ $t('clear-button') }}
+            </v-btn>
+            <v-spacer/>
+          </v-card-actions>
+          <v-card-text class="pl-3 ml-1">
+            {{ $t('already-registered') }}
+            <router-link to="/login" exact>{{ $t('login-here') }}</router-link>
+          </v-card-text>
+        </v-card>
+        <!-- FORM -->
+
       </v-flex>
     </v-layout>
   </v-container>
 </template>
 
 <script>
-  import CircleSpinner from 'vue-loading-spinner/src/components/Circle8';
+  import {getMessageFromLocale} from '../main';
+  import {mapGetters}           from 'vuex';
+  import {mapActions}           from 'vuex';
 
   export default {
-    components: {
-      'circle-spinner': CircleSpinner
-    },
     data() {
       return {
+        dialogWindowActive: true,
         form: {
           firstName: '',
           lastName: '',
@@ -191,110 +184,135 @@
           confirmedEmail: '',
           password: '',
           confirmedPassword: '',
-          attemptSubmit: false
+          valid: true,
         },
-        showForm: true,
-        successfulResponse: null,
-        errorMessage: '',
-        errors: [],
-        showSuccessAlert: false,
-        showDangerAlert: false
+        hidePasswords: true,
+        firstNameRules: [
+          v => !!v || `${getMessageFromLocale('first-name-required')}`,
+          v => (v && v.length >= 4) || `${getMessageFromLocale('min-chars-length')}`,
+          v => (v && v.length <= 50) || `${getMessageFromLocale('max-chars-length')}`
+        ],
+        lastNameRules: [
+          v => !!v || `${getMessageFromLocale('last-name-required')}`,
+          v => (v && v.length >= 4) || `${getMessageFromLocale('min-chars-length')}`,
+          v => (v && v.length <= 50) || `${getMessageFromLocale('max-chars-length')}`
+        ],
+        emailRules: [
+          v => !!v || `${getMessageFromLocale('email-required')}`,
+          v => (v && v.length >= 4) || `${getMessageFromLocale('min-chars-length')}`,
+          v => (v && v.length <= 50) || `${getMessageFromLocale('max-chars-length')}`,
+          v => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || `${getMessageFromLocale('email-must-be-valid')}`
+        ],
+        confirmEmailRules: [
+          v => !!v || `${getMessageFromLocale('confirm-email-required')}`,
+          v => (v && v.length >= 4) || `${getMessageFromLocale('min-chars-length')}`,
+          v => (v && v.length <= 50) || `${getMessageFromLocale('max-chars-length')}`,
+          v => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || `${getMessageFromLocale('email-must-be-valid')}`
+        ],
+        passwordRules: [
+          v => !!v || `${getMessageFromLocale('password-required')}`,
+          v => (v && v.length >= 4) || `${getMessageFromLocale('min-chars-length')}`,
+          v => (v && v.length <= 50) || `${getMessageFromLocale('max-chars-length')}`,
+        ],
+        confirmPasswordRules: [
+          v => !!v || `${getMessageFromLocale('confirm-password-required')}`,
+          v => (v && v.length >= 4) || `${getMessageFromLocale('min-chars-length')}`,
+          v => (v && v.length <= 50) || `${getMessageFromLocale('max-chars-length')}`
+        ]
       }
     },
     methods: {
-      validateForm() {
-        this.form.attemptSubmit = true;
-        if (this.missingInputFields('||')) {
-          console.log('Form filled incorrectly.')
+      ...mapActions([
+        'clearServerExceptionResponse',
+        'clearServerSuccessResponse',
+        ''
+      ]),
+      submit() {
+        if (this.$refs.myRegistrationForm.validate()) {
+          this.$store.dispatch('registerUserAccount', this.form);
         } else {
-          this.submitForm();
+          this.$store.commit('setServerExceptionResponse', 'Form filled incorrectly!');
         }
-      },
-      missingInputFields(operator) {
-        if (operator === '||') {
-          return this.missingName || this.missingLastName || this.missingEmail || this.missingConfirmedEmail ||
-            this.missingPassword || this.missingConfirmedPassword;
-        } else {
-          if (operator === '&&') {
-            return this.missingName && this.missingLastName && this.missingEmail && this.missingConfirmedEmail &&
-              this.missingPassword && this.missingConfirmedPassword;
-          }
-        }
-      },
-      submitForm() {
-        this.showForm = false;
-        this.axios.post(`/registration/register-user-account`, this.form)
-          .then(response => {
-            this.showDangerAlert = false;
-            this.showForm = true;
-            this.showSuccessAlert = true;
-            this.successfulResponse = response.data;
-          })
-          .catch(error => {
-            this.showSuccessAlert = false;
-            this.showForm = true;
-            this.showDangerAlert = true;
-            if (!error.response) {
-              this.errorMessage = null;
-            } else {
-              this.errorMessage = error.response.data.errorMessage;
-              this.errors = error.response.data.errors;
-            }
-          })
       },
       clearFormFields() {
-        // Reset our form values
         this.form.firstName = '';
         this.form.lastName = '';
         this.form.email = '';
         this.form.confirmedEmail = '';
         this.form.password = '';
         this.form.confirmedPassword = '';
-        this.form.attemptSubmit = false;
-        this.showSuccessAlert = false;
-        this.showDangerAlert = false;
-        // Trick to reset/clear native browser form validation state
-        this.showForm = false;
-        this.$nextTick(() => {
-          this.showForm = true
-        });
+        this.form.valid = true;
+      },
+      setServerRunning() {
+        this.$store.commit('setServerRunning', true);
       }
     },
     computed: {
-      missingName() {
-        return this.form.firstName === '';
+      ...mapGetters([
+        'isLoading',
+        'isServerRunning',
+        'getServerExceptionResponse',
+        'getServerSuccessResponse',
+      ]),
+      getServerExceptionResponseMessage() {
+        return this.getServerExceptionResponse.message;
       },
-      missingLastName() {
-        return this.form.lastName === '';
+      getServerExceptionResponseErrors() {
+        return this.getServerExceptionResponse.errors;
       },
-      missingEmail() {
-        return this.form.email === '';
+      getServerSuccessResponseMessage() {
+        return this.getServerSuccessResponse.message;
       },
-      missingConfirmedEmail() {
-        return this.form.confirmedEmail === '';
+      rowColumnDeterminer() {
+        const binding = {};
+        if (this.$vuetify.breakpoint.mdAndDown) {
+          binding.column = true;
+        } else {
+          binding.row = true;
+        }
+        return binding;
       },
-      missingPassword() {
-        return this.form.password === '';
+      registerButtonDisabled() {
+        return this.form.firstName === '' || this.form.lastName === '' || this.form.email === '' ||
+          this.form.confirmedEmail === '' || this.form.password === '' || this.form.confirmedPassword === '' ||
+          this.form.valid === false || this.emailsDoNotMatch === true || this.passwordsDoNotMatch === true ||
+          this.isLoading;
       },
-      missingConfirmedPassword() {
-        return this.form.confirmedPassword === '';
+      clearButtonDisabled() {
+        return this.form.firstName === '' && this.form.lastName === '' && this.form.email === '' &&
+          this.form.confirmedEmail === '' && this.form.password === '' && this.form.confirmedPassword === '' &&
+          this.form.valid === true;
+      },
+      emailsDoNotMatch() {
+        if (this.form.email !== '' && this.form.confirmedEmail !== '' && this.form.email !== this.form.confirmedEmail) {
+          return true;
+        }
+      },
+      passwordsDoNotMatch() {
+        if (this.form.password !== '' && this.form.confirmedPassword !== '' && this.form.password !== this.form.confirmedPassword) {
+          return true;
+        }
+      },
+      emailsMatcherErrorMessage() {
+        if (this.form.email !== '' && this.form.confirmedEmail !== '' && this.form.email !== this.form.confirmedEmail) {
+          return `${getMessageFromLocale('emails-do-not-match')}`;
+        } else {
+          return `${getMessageFromLocale('email-input-hint')}`;
+        }
+      },
+      passwordsMatcherErrorMessage() {
+        if (this.form.password !== '' && this.form.confirmedPassword !== '' && this.form.password !== this.form.confirmedPassword) {
+          return `${getMessageFromLocale('passwords-do-not-match')}`;
+        } else {
+          return `${getMessageFromLocale('password-input-hint')}`;
+        }
       }
     }
   };
 </script>
 
 <style scoped>
-  .invalid-feedback {
-    margin-top: 0;
-  }
-
-  .error {
-    margin: 4px auto;
-  }
-
-  #register-button {
-    margin-left: 5px;
-    margin-right: 10px;
+  button {
+    border: none;
   }
 </style>
--->
