@@ -2,6 +2,13 @@
   <v-container fluid fill-height>
     <v-layout row align-center justify-center>
       <v-flex xs12 sm8 md6>
+        <!-- CONFIRMATION REGISTRATION ALERT -->
+        <my-alert @dismissed="dismissDialog()"
+                  type="success"
+                  v-if="showDialog"
+                  :message="confirmationMessage()"/>
+        <!-- CONFIRMATION REGISTRATION ALERT -->
+
         <!-- SERVER NOT RUNNING -->
         <my-alert @dismissed="setServerRunning"
                   type="error"
@@ -104,6 +111,7 @@
   import {mapActions}           from 'vuex';
 
   export default {
+    props: ['confirmationMessage', 'dismissDialog', 'showDialog', 'type'],
     data() {
       return {
         tempLanguage: null,
