@@ -8,7 +8,7 @@
         </v-btn>
       </v-flex>
 
-      <v-flex id="message-container">
+      <v-flex class="text-xs-center" id="message-container">
         <h1>{{ responseMessage }}</h1>
       </v-flex>
 
