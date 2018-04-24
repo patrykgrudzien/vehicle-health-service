@@ -55,7 +55,7 @@
       </v-toolbar-title>
       <v-spacer/>
       <v-toolbar-items class="hidden-xs-only">
-        <v-btn flat v-for="item in menuItems" :key="item.title" router :to="item.link">
+        <v-btn flat v-for="item in menuItems" :key="item.title" router :to="item.link" @click="item.onClickEvent()">
           <v-icon left>
             {{ item.icon }}
           </v-icon>
@@ -110,30 +110,16 @@
             icon: 'language',
             title: 'language-menu-button'
           },
-        ],
-        menuItems: [
-          {
-            icon: 'face',
-            title: 'sign-up-menu-button',
-            link: componentsPaths.registrationForm
-          },
-          {
-            icon: 'lock_open',
-            title: 'sign-in-menu-button',
-            link: componentsPaths.loginForm
-          },
-          {
-            icon: 'person',
-            title: 'about-me-menu-button',
-            link: componentsPaths.aboutMe
-          }
         ]
       }
     },
     methods: {
       showModalAndSendLang: function (lang) {
+
         if (this.$route.path.includes(componentsPaths.loginForm) ||
-          this.$route.path.includes(componentsPaths.registrationForm)) {
+          this.$route.path.includes(componentsPaths.registrationForm) ||
+          this.$route.path.includes(componentsPaths.confirmRegistration)) {
+
           this.$router.app.$emit('open-dialog-and-send-lang',
             {
               showDialog: true,
@@ -153,8 +139,45 @@
     },
     computed: {
       ...mapGetters([
-        'getSideNavigation'
+        'getSideNavigation',
+        'isLogged'
       ]),
+      menuItems() {
+        if (this.isLogged) {
+          return [
+            {
+              icon: 'person',
+              title: 'about-me-menu-button',
+              link: componentsPaths.aboutMe
+            },
+            {
+              icon: 'lock_outline',
+              title: 'logout-menu-button',
+              onClickEvent: () => {
+                this.$store.dispatch('logout');
+              }
+            }
+          ]
+        } else {
+          return [
+            {
+              icon: 'face',
+              title: 'sign-up-menu-button',
+              link: componentsPaths.registrationForm
+            },
+            {
+              icon: 'lock_open',
+              title: 'sign-in-menu-button',
+              link: componentsPaths.loginForm
+            },
+            {
+              icon: 'person',
+              title: 'about-me-menu-button',
+              link: componentsPaths.aboutMe
+            }
+          ]
+        }
+      },
       sideNavigation: {
         get() {return this.$store.getters.getSideNavigation;},
         set(value) {this.$store.commit('setSideNavigation', value);}

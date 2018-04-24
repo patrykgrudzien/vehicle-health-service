@@ -2,6 +2,7 @@
   "sign-up-menu-button": "Sign up",
   "sign-in-menu-button": "Sign in",
   "about-me-menu-button": "About me",
+  "logout-menu-button": "Logout",
   "language-menu-button": "Language",
   "language-title-polish": "Polish",
   "language-title-english": "English",
@@ -43,5 +44,6 @@
   "dialog-text": "Changing application language will cause your form will be cleared. Are you sure?",
   "agree-button": "Agree",
   "disagree-button": "Disagree",
-  "server-status-message": "Cannot connect to the server. It's probably not working..."
+  "server-status-message": "Cannot connect to the server. It's probably not working...",
+  "server-check-button": "Check server health"
 }

@@ -2,6 +2,7 @@
   "sign-up-menu-button": "Rejestracja",
   "sign-in-menu-button": "Logowanie",
   "about-me-menu-button": "O mnie",
+  "logout-menu-button": "Wyloguj",
   "language-menu-button": "Język",
   "language-title-polish": "Polski",
   "language-title-english": "Angielski",
@@ -43,5 +44,6 @@
   "dialog-text": "Zmiana języka spowoduje, że twój formularz zostanie wyczyszczony. Jesteś pewien?",
   "agree-button": "Potwierdź",
   "disagree-button": "Anuluj",
-  "server-status-message": "Nie można połączyć się z serwerem. Prawdopodobnie nie działa..."
+  "server-status-message": "Nie można połączyć się z serwerem. Prawdopodobnie nie działa...",
+  "server-check-button": "Sprawdź stan serwera"
 }

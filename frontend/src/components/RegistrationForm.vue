@@ -234,7 +234,7 @@
       ]),
       submit() {
         if (this.$refs.myRegistrationForm.validate()) {
-          this.$store.dispatch('registerUserAccount', this.form);
+          this.$store.dispatch('registerUserAccount', this.getRegistrationForm);
         } else {
           this.$store.commit('setServerExceptionResponse', 'Form filled incorrectly!');
         }
@@ -275,6 +275,7 @@
     },
     computed: {
       ...mapGetters([
+        'getRegistrationForm',
         'isLoading',
         'isServerRunning',
         'getServerExceptionResponse',
