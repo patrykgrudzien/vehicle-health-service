@@ -48,17 +48,16 @@ public class UserRegistrationController {
 	                                                          final BindingResult bindingResult, final WebRequest webRequest) {
 		log.info("Inside: " + customApplicationProperties.getEndpoints().getRegistration().getRootRegisterUserAccount());
 		userRegistrationService.registerNewCustomUserAccount(userRegistrationDto, bindingResult, webRequest);
-		return new ResponseEntity<>(SuccessResponse.buildGenericResponse(
-				"Thank you for registration! Check (" + userRegistrationDto.getEmail() + ") to confirm newly created account."),
-		                            HttpStatus.OK);
+		return new ResponseEntity<>(new SuccessResponse("Thank you for registration! Check (" + userRegistrationDto.getEmail() +
+		                                                ") to confirm newly created account."), HttpStatus.OK);
 	}
 
 	@GetMapping("${custom.properties.endpoints.registration.confirm-registration}")
-	public ResponseEntity<Void> confirmRegistration(@RequestParam("token") final String token, final HttpServletResponse response) {
+	public ResponseEntity<CustomResponse> confirmRegistration(@RequestParam("token") final String token, final HttpServletResponse response) {
 		log.info("Inside: " + customApplicationProperties.getEndpoints().getRegistration().getRootConfirmRegistration());
 		userRegistrationService.confirmRegistration(token, response);
 		httpResponseHandler.redirectUserToConfirmedUrl(response);
-		return new ResponseEntity<>(HttpStatus.OK);
+		return new ResponseEntity<>(SuccessResponse.buildGenericResponse("Your account has been confirmed and created!"), HttpStatus.OK);
 	}
 
 	@GetMapping("${custom.properties.endpoints.registration.resend-email-verification-token}")

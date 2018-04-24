@@ -53,6 +53,7 @@ public class CustomApplicationProperties {
 			private String resendEmailVerificationToken;
 			private String confirmed;
 			private String confirmedTokenNotFound;
+			private String confirmedTokenExpired;
 
 			public String getRootRegisterUserAccount() {
 				return getRoot() + getRegisterUserAccount();

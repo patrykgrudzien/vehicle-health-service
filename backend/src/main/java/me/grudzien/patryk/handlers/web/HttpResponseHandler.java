@@ -32,8 +32,15 @@ public class HttpResponseHandler {
 		this.customApplicationProperties = customApplicationProperties;
 	}
 
-	public void redirectUserToLoginUrl(final HttpServletResponse response) {
-
+	public void redirectUserToEmailTokenExpiredUrl(final HttpServletResponse response) {
+		try {
+			response.sendRedirect(herokuAppEndpointResolver.determineBaseAppUrlForConfirmRegistration() +
+			                      customApplicationProperties.getEndpoints().getRegistration().getConfirmedTokenExpired());
+			log.info("User successfully redirected to registration confirmed token expired url.");
+		} catch (final IOException exception) {
+			log.error(LogMarkers.EXCEPTION_MARKER, "Cannot redirect user to registration confirmed token expired url.");
+			throw new RedirectionException("Cannot redirect user to registration confirmed token expired url.");
+		}
 	}
 
 	public void redirectUserToConfirmedUrl(final HttpServletResponse response) {
