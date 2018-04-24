@@ -14,7 +14,7 @@
         </v-list-tile>
 
         <!-- LOGOUT -->
-        <v-list-tile @click="logout">
+        <v-list-tile v-if="isLogged === 1" @click="logout">
           <v-list-tile-action>
             <v-icon left>lock_outline</v-icon>
           </v-list-tile-action>
