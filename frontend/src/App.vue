@@ -4,7 +4,7 @@
     <!-- NAVIGATION DRAWER -->
     <v-navigation-drawer app clipped temporary v-model="sideNavigation">
       <v-list dense>
-        <v-list-tile v-for="item in menuItems" :key="item.title" router :to="item.link">
+        <v-list-tile v-for="item in menuItems" :key="item.title" router :to="item.link" @click="item.onClickEvent()">
           <v-list-tile-action>
             <v-icon>{{ item.icon }}</v-icon>
           </v-list-tile-action>
