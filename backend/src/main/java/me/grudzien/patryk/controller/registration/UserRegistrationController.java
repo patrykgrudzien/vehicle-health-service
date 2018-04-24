@@ -47,6 +47,7 @@ public class UserRegistrationController {
 	public ResponseEntity<CustomResponse> registerUserAccount(@RequestBody @Valid final UserRegistrationDto userRegistrationDto,
 	                                                          final BindingResult bindingResult, final WebRequest webRequest) {
 		log.info("Inside: " + customApplicationProperties.getEndpoints().getRegistration().getRootRegisterUserAccount());
+		// TODO: catch "PSQLException" in case of DB ConstraintViolationExceptions
 		userRegistrationService.registerNewCustomUserAccount(userRegistrationDto, bindingResult, webRequest);
 		return new ResponseEntity<>(new SuccessResponse("Thank you for registration! Check (" + userRegistrationDto.getEmail() +
 		                                                ") to confirm newly created account."), HttpStatus.OK);

@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
+import me.grudzien.patryk.exceptions.registration.TokenExpiredException;
 import me.grudzien.patryk.utils.log.LogMarkers;
 import me.grudzien.patryk.utils.security.JwtTokenUtil;
 
@@ -51,7 +52,8 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
 			} catch (final IllegalArgumentException exception) {
 				log.error(LogMarkers.FLOW_MARKER, "An error occurred during getting email from token, {}", exception);
 			} catch (final ExpiredJwtException exception) {
-				log.warn(LogMarkers.FLOW_MARKER, "The token is expired and not valid anymore, {}", exception);
+				log.warn(LogMarkers.FLOW_MARKER, "The JWT token is expired and not valid anymore, {}", exception);
+				throw new TokenExpiredException("The JWT token is expired and not valid anymore");
 			}
 		} else {
 			log.warn(LogMarkers.FLOW_MARKER, "Couldn't find bearer string, will ignore the header");

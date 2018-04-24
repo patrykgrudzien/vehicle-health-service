@@ -126,6 +126,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				             "/about-me",
 				             "/registration-form",
 				             "/registration-confirmed",
+				             "/server-health",
 				             "/login");
 	}
 }
