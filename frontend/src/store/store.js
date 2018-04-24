@@ -10,7 +10,7 @@ import * as Cookies from 'js-cookie';
 Vue.use(Vuex);
 
 const state = {
-  logged: localStorage.getItem('token'),
+  logged: null,
   loading: false,
   serverRunning: true,
   serverExceptionResponse: null,

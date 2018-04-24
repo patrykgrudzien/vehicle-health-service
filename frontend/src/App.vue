@@ -4,7 +4,7 @@
     <!-- NAVIGATION DRAWER -->
     <v-navigation-drawer app clipped temporary v-model="sideNavigation">
       <v-list dense>
-        <v-list-tile v-for="item in menuItems" :key="item.title" router :to="item.link" @click="item.onClickEvent()">
+        <v-list-tile v-for="item in menuItems" :key="item.title" router :to="item.link">
           <v-list-tile-action>
             <v-icon>{{ item.icon }}</v-icon>
           </v-list-tile-action>
@@ -12,6 +12,18 @@
             <v-list-tile-title>{{ $t(`${item.title}`) }}</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
+
+        <!-- LOGOUT -->
+        <v-list-tile @click="logout">
+          <v-list-tile-action>
+            <v-icon left>lock_outline</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>{{ $t(`${'logout-menu-button'}`) }}</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+        <!-- LOGOUT -->
+
         <!-- LANGUAGES -->
         <v-list-group
           v-for="language in languagesNavDrawer"
@@ -55,12 +67,19 @@
       </v-toolbar-title>
       <v-spacer/>
       <v-toolbar-items class="hidden-xs-only">
-        <v-btn flat v-for="item in menuItems" :key="item.title" router :to="item.link" @click="item.onClickEvent()">
+        <v-btn flat v-for="item in menuItems" :key="item.title" router :to="item.link">
           <v-icon left>
             {{ item.icon }}
           </v-icon>
           {{ $t(`${item.title}`) }}
         </v-btn>
+
+        <!-- LOGOUT -->
+        <v-btn flat v-if="isLogged === 1" @click="logout">
+          <v-icon left>lock_outline</v-icon>
+          {{ $t(`${'logout-menu-button'}`) }}
+        </v-btn>
+        <!-- LOGOUT -->
 
         <!-- LANGUAGES -->
         <v-menu offset-y>
@@ -100,6 +119,7 @@
 
 <script>
   import {mapGetters}    from 'vuex';
+  import {mapActions}    from 'vuex';
   import componentsPaths from './componentsPaths';
 
   export default {
@@ -114,11 +134,15 @@
       }
     },
     methods: {
+      ...mapActions([
+        'logout'
+      ]),
       showModalAndSendLang: function (lang) {
 
         if (this.$route.path.includes(componentsPaths.loginForm) ||
           this.$route.path.includes(componentsPaths.registrationForm) ||
-          this.$route.path.includes(componentsPaths.confirmRegistration)) {
+          this.$route.path.includes(componentsPaths.confirmRegistration) ||
+          this.$route.path.includes('/logout')) {
 
           this.$router.app.$emit('open-dialog-and-send-lang',
             {
@@ -149,13 +173,6 @@
               icon: 'person',
               title: 'about-me-menu-button',
               link: componentsPaths.aboutMe
-            },
-            {
-              icon: 'lock_outline',
-              title: 'logout-menu-button',
-              onClickEvent: () => {
-                this.$store.dispatch('logout');
-              }
             }
           ]
         } else {
