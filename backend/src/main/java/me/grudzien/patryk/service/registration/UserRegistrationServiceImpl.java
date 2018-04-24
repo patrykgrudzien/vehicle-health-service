@@ -99,7 +99,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 	public void confirmRegistration(final String emailVerificationToken, final HttpServletResponse response) {
 		final EmailVerificationToken token = emailService.getEmailVerificationToken(emailVerificationToken);
 		if (token == null) {
-			// TODO: check additional case if user is already enabled
+			// TODO: check additional case if user is already enabled when token is still VALID
 			log.error("No verification token found.");
 			httpResponseHandler.redirectUserToEmailTokenNotFoundUrl(response);
 			throw new TokenNotFoundException("No verification token found.");
@@ -107,6 +107,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 		final Calendar calendar = Calendar.getInstance();
 		if (token.getExpiryDate().compareTo(calendar.getTime()) < 0) {
 			log.error("Verification token has expired.");
+			httpResponseHandler.redirectUserToEmailTokenExpiredUrl(response);
 			throw new TokenExpiredException("Verification token has expired.");
 		}
 		final CustomUser user = token.getCustomUser();
