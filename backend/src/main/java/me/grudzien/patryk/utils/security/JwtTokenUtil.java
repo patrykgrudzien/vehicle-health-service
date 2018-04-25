@@ -56,8 +56,6 @@ public class JwtTokenUtil implements Serializable {
 	private static final String AUDIENCE_MOBILE = "mobile";
 	private static final String AUDIENCE_TABLET = "tablet";
 
-	private static final Date NOW = new Date();
-
 	private static String secret;
 	private static Long expiration;
 
@@ -116,19 +114,19 @@ public class JwtTokenUtil implements Serializable {
 		}
 
 		private static String doGenerateToken(final Map<String, Object> claims, final String userEmail, final String audience) {
-			final Date expirationDate = calculateExpirationDate(NOW);
+			final Date expirationDate = calculateExpirationDate(new Date());
 
 			log.info(LogMarkers.METHOD_INVOCATION_MARKER, "JWT token generated inside >>>> doGenerateToken() >>>> JwtTokenUtil");
 
-			return Jwts.builder().setClaims(claims).setSubject(userEmail).setAudience(audience).setIssuedAt(NOW)
+			return Jwts.builder().setClaims(claims).setSubject(userEmail).setAudience(audience).setIssuedAt(new Date())
 			           .setExpiration(expirationDate).signWith(SignatureAlgorithm.HS512, secret).compact();
 		}
 
 		public String refreshToken(final String token) {
-			final Date expirationDate = calculateExpirationDate(NOW);
+			final Date expirationDate = calculateExpirationDate(new Date());
 
 			final Claims claims = Retriever.getAllClaimsFromToken(token);
-			claims.setIssuedAt(NOW);
+			claims.setIssuedAt(new Date());
 			claims.setExpiration(expirationDate);
 
 			return Jwts.builder().setClaims(claims).signWith(SignatureAlgorithm.HS512, secret).compact();
@@ -156,7 +154,7 @@ public class JwtTokenUtil implements Serializable {
 
 		public static Boolean isTokenExpired(final String token) {
 			final Date expiration = Retriever.getExpirationDateFromToken(token);
-			return expiration.before(NOW);
+			return expiration.before(new Date());
 		}
 
 		public static Boolean ignoreTokenExpiration(final String token) {
