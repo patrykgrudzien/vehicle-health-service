@@ -44,7 +44,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 		// set up the custom response body
 		final AuthenticationEntryPointResponse customResponseBody = new AuthenticationEntryPointResponse(
 				HttpResponseHandler.SECURED_RESOURCE_CODE,
-				"You need to be login the check server response.");
+				"You are NOT allowed to check secured resource!");
 		// write the custom response body
 		objectMapper.writeValue(response.getOutputStream(), customResponseBody);
 		// commit the response

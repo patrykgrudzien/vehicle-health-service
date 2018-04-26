@@ -4,7 +4,7 @@
 
       <v-flex id="button-container">
         <v-btn color="primary" @click="callRestService">
-          {{ $t('server-check-button') }}
+          {{ $t('secured-resource-button') }}
         </v-btn>
       </v-flex>
 

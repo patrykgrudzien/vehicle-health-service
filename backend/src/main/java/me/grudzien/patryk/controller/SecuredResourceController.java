@@ -17,12 +17,12 @@ import me.grudzien.patryk.domain.dto.responses.SuccessResponse;
 @Log4j2
 @RestController
 @RequestMapping("${custom.properties.endpoints.server.root}")
-public class ServerHealthCheckController {
+public class SecuredResourceController {
 
 	private final CustomApplicationProperties customApplicationProperties;
 
 	@Autowired
-	public ServerHealthCheckController(final CustomApplicationProperties customApplicationProperties) {
+	public SecuredResourceController(final CustomApplicationProperties customApplicationProperties) {
 		this.customApplicationProperties = customApplicationProperties;
 	}
 
@@ -30,6 +30,6 @@ public class ServerHealthCheckController {
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<CustomResponse> healthCheck() {
 		log.info("Inside: " + customApplicationProperties.getEndpoints().getServer().getRootHealthCheck());
-		return new ResponseEntity<>(new SuccessResponse("Server works! Hello there!"), HttpStatus.OK);
+		return new ResponseEntity<>(new SuccessResponse("Access allowed :)"), HttpStatus.OK);
 	}
 }
