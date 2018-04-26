@@ -45,5 +45,5 @@
   "agree-button": "Potwierdź",
   "disagree-button": "Anuluj",
   "server-status-message": "Nie można połączyć się z serwerem. Prawdopodobnie nie działa...",
-  "server-check-button": "Sprawdź stan serwera"
+  "secured-resource-button": "Sprawdź zabezpieczony zasób"
 }
