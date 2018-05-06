@@ -5,7 +5,7 @@ import pl from './pl';
 
 Vue.use(VueI18n);
 
-const locale = 'en';
+const locale = 'pl';
 const messages = {en, pl};
 
 const i18n = new VueI18n({

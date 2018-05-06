@@ -44,7 +44,7 @@ export default new Vuex.Store({
         if (Cookies.getJSON('lang')) {
           state.lang = Cookies.getJSON('lang');
         } else {
-          state.lang = 'en';
+          state.lang = 'pl';
         }
         if (localStorage.getItem('token')) {
           state.logged = 1;

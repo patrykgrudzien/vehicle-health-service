@@ -1,15 +1,16 @@
-import Home from '../components/Home';
-import ServerCheck from '../components/ServerCheck';
-import AboutMe from '../components/AboutMe';
-import RegistrationForm from '../components/RegistrationForm';
+import Home                from '../components/Home';
+import FullScreenBackgroun from '../components/FullScreenBackground';
+import ServerCheck         from '../components/ServerCheck';
+import AboutMe             from '../components/AboutMe';
+import RegistrationForm    from '../components/RegistrationForm';
 import ConfirmRegistration from '../components/ConfirmRegistration';
-import LoginForm from '../components/LoginForm';
-import componentsPaths from '../componentsPaths';
+import LoginForm           from '../components/LoginForm';
+import componentsPaths     from '../componentsPaths';
 
 export default [
   {
     path: componentsPaths.home,
-    component: Home
+    component: FullScreenBackgroun
   },
   {
     path: componentsPaths.serverCheck,
