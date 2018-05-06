@@ -45,5 +45,10 @@
   "agree-button": "Agree",
   "disagree-button": "Disagree",
   "server-status-message": "Cannot connect to the server. It's probably not working...",
-  "secured-resource-button": "Check secured resource"
+  "secured-resource-button": "Check secured resource",
+  "background-text-1": "Car's condition in one place?",
+  "background-text-2": "Services",
+  "background-text-3": "Parts condition",
+  "background-text-4": "Repairs",
+  "background-text-5": "Maintenance costs"
 }

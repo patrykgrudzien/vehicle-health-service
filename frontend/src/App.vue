@@ -60,7 +60,7 @@
     </v-navigation-drawer>
 
     <!-- TOOLBAR -->
-    <v-toolbar app fixed clipped-left class="primary">
+    <v-toolbar app fixed clipped-left class="primary" dense>
       <v-toolbar-side-icon @click.stop="switchSideNavigation(!sideNavigation)" class="hidden-sm-and-up"/>
       <v-toolbar-title>
         <router-link to="/" tag="span" style="cursor: pointer;">{{ $t('place-for-app-title') }}</router-link>

@@ -6,7 +6,7 @@
 
 <style scoped>
   #home-background {
-    background: url('../../static/home-background.jpg') no-repeat center center fixed;
+    background: url('../../static/engine-1.jpg') no-repeat center center fixed;
     background-size: contain;
   }
 

@@ -45,5 +45,10 @@
   "agree-button": "Potwierdź",
   "disagree-button": "Anuluj",
   "server-status-message": "Nie można połączyć się z serwerem. Prawdopodobnie nie działa...",
-  "secured-resource-button": "Sprawdź zabezpieczony zasób"
+  "secured-resource-button": "Sprawdź zabezpieczony zasób",
+  "background-text-1": "Stan samochodu w jednym miejscu?",
+  "background-text-2": "Przeglądy",
+  "background-text-3": "Stan części",
+  "background-text-4": "Naprawy",
+  "background-text-5": "Koszty utrzymania"
 }
