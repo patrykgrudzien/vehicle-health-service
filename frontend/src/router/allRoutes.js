@@ -1,5 +1,4 @@
 import Home                from '../components/Home';
-import FullScreenBackgroun from '../components/FullScreenBackground';
 import ServerCheck         from '../components/ServerCheck';
 import AboutMe             from '../components/AboutMe';
 import RegistrationForm    from '../components/RegistrationForm';
@@ -10,7 +9,7 @@ import componentsPaths     from '../componentsPaths';
 export default [
   {
     path: componentsPaths.home,
-    component: FullScreenBackgroun
+    component: Home
   },
   {
     path: componentsPaths.serverCheck,
