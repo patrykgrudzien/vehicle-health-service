@@ -36,10 +36,6 @@
   "emails-do-not-match": "Adresy email nie są takie same!",
   "email-must-be-valid": "E-mail musi mieć odpowiedni format",
   "footer-text": "Autor - Patryk Grudzień 2018",
-  "my-name": "Nazywam się:",
-  "my-last-name": "Moje nazwisko:",
-  "my-age": "Wiek:",
-  "my-profession": "Specjalizuje się jako:",
   "dialog-title": "Chcesz zmienić język aplikacji?",
   "dialog-text": "Zmiana języka spowoduje, że twój formularz zostanie wyczyszczony. Jesteś pewien?",
   "agree-button": "Potwierdź",
@@ -50,5 +46,15 @@
   "background-text-2": "Przeglądy",
   "background-text-3": "Naprawy",
   "background-text-4": "Stan części",
-  "background-text-5": "Koszty utrzymania"
+  "background-text-5": "Koszty utrzymania",
+  "details-button": "Szczegóły",
+  "engine-card-header": "SILNIK",
+  "fluids-card-header": "PŁYNY",
+  "tires-card-header": "OPONY",
+  "intervals-card-header": "INTERWAŁY WYMIAN",
+  "current-mileage-title": "Aktualny przebieg:",
+  "mileage-tooltip-text": "Kliknij aby uaktualnić przebieg",
+  "verification-token-not-found": "Nie znaleziono tokenu weryfikacyjnego. Zarejestruj się ponownie.",
+  "verification-token-expired": "Token weryfikacyjny stracił ważność. Wygenerować nowy?",
+  "account-confirmed-and-activated": "Twoje konto zostało potwierdzone oraz aktywowane!"
 }
