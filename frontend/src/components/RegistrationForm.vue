@@ -27,7 +27,10 @@
         <!-- FORM -->
         <v-card class="elevation-12">
           <v-card-text>
-            <v-form v-model="valid" lazy-validation ref="myRegistrationForm">
+            <v-form v-model="valid"
+                    ref="myRegistrationForm"
+                    @keyup.native.enter="valid && submit($event)">
+
               <v-container grid-list-xs>
                 <v-layout v-bind="rowColumnDeterminer">
                   <!-- YOUR NAME -->
@@ -41,7 +44,8 @@
                       :hint="$t('first-name-input-hint')"
                       required
                       :rules="firstNameRules"
-                      :counter="50"/>
+                      :counter="50"
+                      autofocus/>
                   </v-flex>
                   <!-- YOUR NAME -->
 
@@ -339,7 +343,7 @@
         return (this.firstName === '' || !this.firstName) && (this.lastName === '' || !this.lastName) &&
           (this.email === '' || !this.email) && (this.confirmedEmail === '' || !this.confirmedEmail) &&
           (this.password === '' || !this.password) && (this.confirmedPassword === '' || !this.confirmedPassword) &&
-          this.valid === true;
+          this.valid === true || this.isLoading;
       },
       emailsDoNotMatch() {
         if (this.email !== '' && this.confirmedEmail !== '' && this.email !== this.confirmedEmail) {
