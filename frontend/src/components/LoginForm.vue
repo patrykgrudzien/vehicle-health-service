@@ -34,7 +34,9 @@
         <!-- FORM -->
         <v-card class="elevation-12">
           <v-card-text>
-            <v-form v-model="valid" lazy-validation ref="myLoginForm">
+            <v-form v-model="valid"
+                    ref="myLoginForm"
+                    @keyup.native.enter="valid && submit($event)">
 
               <!-- EMAIL -->
               <v-text-field
@@ -46,7 +48,8 @@
                 :hint="$t('email-input-hint')"
                 required
                 :rules="emailRules"
-                :counter="50"/>
+                :counter="50"
+                autofocus/>
               <!-- EMAIL -->
 
               <!-- PASSWORD -->
@@ -211,7 +214,7 @@
       },
       clearButtonDisabled() {
         return (this.email === '' || !this.email) && (this.password === '' || !this.password)
-          && this.valid === true;
+          && this.valid === true || this.isLoading;
       },
     }
   };
