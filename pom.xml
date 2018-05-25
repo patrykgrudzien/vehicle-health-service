@@ -6,12 +6,16 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>me.grudzien.patryk</groupId>
-    <artifactId>full-stack-web-app</artifactId>
+    <artifactId>vehicle-health-service</artifactId>
     <packaging>pom</packaging>
     <version>1.0</version>
 
-    <name>full-stack-web-app</name>
-    <description>Summary application using Spring Boot and Vue.js</description>
+    <name>vehicle-health-service</name>
+    <description>
+        Keep your car in perfect shape, have control over parts condition, maintenance costs, insurance validation and much more.
+        All that features in one place!
+        Stay tuned for final version - development in progress!
+    </description>
 
     <modules>
         <module>frontend</module>
