@@ -40,7 +40,7 @@ export default {
           localStorage.setItem('token', response.data.token);
           commit(types.LOGIN);
           commit('clearServerExceptionResponse');
-          myRouter.push({path: componentsPaths.serverCheck});
+          myRouter.push({path: componentsPaths.mainBoard});
         }
       })
       .catch(error => {
