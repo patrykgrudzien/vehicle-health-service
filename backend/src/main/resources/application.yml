@@ -23,13 +23,13 @@ custom:
         root: /logout
         success-url: ?logout
       heroku:
-        app-url: https://heroku-web-app-backend-module.herokuapp.com
+        app-url: https://vehicle-health-service.herokuapp.com
     cors-origins:
       front-end-module: http://localhost:8080
       back-end-module: http://localhost:8088
     jwt:
       header: Authorization
-      secret: super-secret
+      secret: super-secret-authorization-token-password
       expiration: 900000
     messages-language:
       header: Language
@@ -46,8 +46,8 @@ spring:
   mail:
     default-encoding: utf-8
     host: smtp.gmail.com
-    username: full.stack.web.app@gmail.com
-    password: password_qwerty
+    username: vehicle.health.service@gmail.com
+    password: Pg91tmsecretHdvhs
     port: 587
     protocol: smtp
     properties:
