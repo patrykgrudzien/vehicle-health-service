@@ -4,10 +4,13 @@
       <v-flex xs12 sm8 md6>
         <v-card color="background" style="box-shadow: none">
           <v-card-text>
-            <h3><p>{{ $t('my-name') }}<br>{{ name }}</p><br></h3>
-            <h3><p>{{ $t('my-last-name') }}<br>{{ lastName}}</p><br></h3>
-            <h3><p>{{ $t('my-age') }}<br>{{ age }}</p><br></h3>
-            <h3><p>{{ $t('my-profession') }}<br>{{ profession }}</p></h3>
+            <div class="text-xs-center mb-4">
+              <span class="display-1 pr-1">{{ name }}</span>
+              <span class="display-1 pl-1">{{ lastName }}</span>
+            </div>
+            <div class="text-xs-center mt-4">
+              <span class="headline">{{ profession }}</span>
+            </div>
           </v-card-text>
         </v-card>
       </v-flex>
@@ -21,20 +24,8 @@
       return {
         name: 'Patryk',
         lastName: 'Grudzień',
-        age: 27,
         profession: 'Junior Software Engineer'
       }
     }
   }
 </script>
-
-<style scoped>
-  p {
-    text-align: center;
-    margin-bottom: 0;
-  }
-
-  h6 {
-    text-align: center;
-  }
-</style>
