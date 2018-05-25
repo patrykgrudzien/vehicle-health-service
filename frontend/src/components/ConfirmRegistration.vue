@@ -7,6 +7,7 @@
 
 <script>
   import LoginForm from './LoginForm';
+  import {getMessageFromLocale} from "../main";
 
   export default {
     components: {
@@ -27,11 +28,11 @@
     computed: {
       confirmationFailed() {
         if (this.confirmation.code === 'tokenNotFound') {
-          return 'Verification token not found for your account. Register again.';
+          return `${getMessageFromLocale('verification-token-not-found')}`;
         } else if (this.confirmation.code === 'tokenExpired') {
-          return 'Verification token expired. Would you like to resend it again?';
+          return `${getMessageFromLocale('verification-token-expired')}`;
         } else {
-          return 'Your account has been confirmed and created!';
+          return `${getMessageFromLocale('account-confirmed-and-activated')}`;
         }
       }
     }
