@@ -9,6 +9,7 @@ import Vuetify   from 'vuetify';
 import 'vuetify/dist/vuetify.min.css';
 import MyAlert   from './shared/MyAlert';
 import i18n      from './lang/i18n';
+import cookieHelper from './cookieHelper';
 
 // --------- AXIOS ---------
 // PRODUCTION
@@ -27,6 +28,9 @@ Vue.axios.interceptors.request.use(config => {
   if (localStorage.getItem('token')) {
     config.headers.Authorization = 'Bearer ' + localStorage.getItem("token");
   }
+  if (cookieHelper.getCookie('lang') !== '') {
+    config.headers.Language = cookieHelper.getCookie('lang');
+  }
   return config;
 }, function (error) {
   return Promise.reject(error);
@@ -40,8 +44,17 @@ export const myRouter = new VueRouter({
   mode: 'history'
 });
 
+myRouter.beforeEach((to, from, next) => {
+  if (to.path === componentsPaths.mainBoard && to.meta.requiresAuth && store.getters.isLogged === null) {
+    next(componentsPaths.loginForm);
+  } else {
+    next();
+  }
+});
+
 // --------- VUETIFY ---------
 import colors from 'vuetify/es5/util/colors';
+import componentsPaths from "./componentsPaths";
 
 Vue.use(Vuetify, {
   theme: {
