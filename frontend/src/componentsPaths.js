@@ -9,5 +9,6 @@ export default {
   loginFailed: '/login?failed=true',
   // /logout?successful=true
   logoutSuccessfulWildcard: '/logout**',
-  logoutSuccessful: '/logout?successful=true'
+  logoutSuccessful: '/logout?successful=true',
+  mainBoard: '/main-board'
 }
