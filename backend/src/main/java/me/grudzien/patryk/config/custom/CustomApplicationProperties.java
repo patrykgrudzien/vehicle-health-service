@@ -13,6 +13,13 @@ public class CustomApplicationProperties {
 	private Endpoints endpoints = new Endpoints();
 	private CorsOrigins corsOrigins = new CorsOrigins();
 	private Jwt jwt = new Jwt();
+	private MessagesLanguage messagesLanguage = new MessagesLanguage();
+
+	@Getter
+	@Setter
+	public static class MessagesLanguage {
+		private String header;
+	}
 
 	@Getter
 	@Setter
