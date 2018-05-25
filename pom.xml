@@ -85,7 +85,7 @@
 
         <!--########################### HEROKU DETAILS ###########################-->
         <!-- Property needed for Heroku plugin -->
-        <heroku.app.name>heroku-web-app-${project.artifactId}-module</heroku.app.name>
+        <heroku.app.name>vehicle-health-service</heroku.app.name>
         <main.app.class.name>me.grudzien.patryk.SpringBootVueJsApplication</main.app.class.name>
     </properties>
 
