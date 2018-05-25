@@ -60,7 +60,13 @@
     </v-navigation-drawer>
 
     <!-- TOOLBAR -->
-    <v-toolbar app fixed clipped-left class="primary" dense>
+    <v-toolbar app
+               fixed
+               clipped-left
+               class="primary"
+               dense
+               scroll-off-screen
+               :scroll-threshold="75">
       <v-toolbar-side-icon @click.stop="switchSideNavigation(!sideNavigation)" class="hidden-sm-and-up"/>
       <v-toolbar-title>
         <router-link to="/" tag="span" style="cursor: pointer;">{{ $t('place-for-app-title') }}</router-link>
@@ -109,10 +115,14 @@
     </v-content>
 
     <!-- FOOTER -->
-    <v-footer app fixed class="pa-3">
+    <v-footer app
+              fixed
+              class="pa-3"
+              v-show="isLogged === 0 || isLogged === null">
       <v-spacer/>
       <span>&copy; {{ $t('footer-text') }}</span>
     </v-footer>
+    <!-- FOOTER -->
 
   </v-app>
 </template>
