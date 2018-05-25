@@ -23,6 +23,7 @@ import me.grudzien.patryk.domain.dto.responses.CustomResponse;
 import me.grudzien.patryk.domain.dto.responses.SuccessResponse;
 import me.grudzien.patryk.handlers.web.HttpResponseHandler;
 import me.grudzien.patryk.service.registration.UserRegistrationService;
+import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 
 @Log4j2
 @RestController
@@ -32,15 +33,18 @@ public class UserRegistrationController {
 	private final UserRegistrationService userRegistrationService;
 	private final CustomApplicationProperties customApplicationProperties;
 	private final HttpResponseHandler httpResponseHandler;
+	private final LocaleMessagesCreator localeMessagesCreator;
 
 	@Autowired
 	public UserRegistrationController(final UserRegistrationService userRegistrationService,
 	                                  final CustomApplicationProperties endpointsProperties,
-	                                  final HttpResponseHandler httpResponseHandler) {
+	                                  final HttpResponseHandler httpResponseHandler,
+	                                  final LocaleMessagesCreator localeMessagesCreator) {
 
 		this.userRegistrationService = userRegistrationService;
 		this.customApplicationProperties = endpointsProperties;
 		this.httpResponseHandler = httpResponseHandler;
+		this.localeMessagesCreator = localeMessagesCreator;
 	}
 
 	@PostMapping("${custom.properties.endpoints.registration.register-user-account}")
@@ -48,17 +52,20 @@ public class UserRegistrationController {
 	                                                          final BindingResult bindingResult, final WebRequest webRequest) {
 		log.info("Inside: " + customApplicationProperties.getEndpoints().getRegistration().getRootRegisterUserAccount());
 		// TODO: catch "PSQLException" in case of DB ConstraintViolationExceptions
+		final String message = localeMessagesCreator.buildLocaleMessageWithParam("register-user-account-success",
+		                                                                         webRequest, userRegistrationDto.getEmail());
 		userRegistrationService.registerNewCustomUserAccount(userRegistrationDto, bindingResult, webRequest);
-		return new ResponseEntity<>(new SuccessResponse("Thank you for registration! Check (" + userRegistrationDto.getEmail() +
-		                                                ") to confirm newly created account."), HttpStatus.OK);
+		return new ResponseEntity<>(new SuccessResponse(message), HttpStatus.OK);
 	}
 
 	@GetMapping("${custom.properties.endpoints.registration.confirm-registration}")
-	public ResponseEntity<CustomResponse> confirmRegistration(@RequestParam("token") final String token, final HttpServletResponse response) {
+	public ResponseEntity<CustomResponse> confirmRegistration(@RequestParam("token") final String token, final HttpServletResponse response,
+	                                                          final WebRequest webRequest) {
 		log.info("Inside: " + customApplicationProperties.getEndpoints().getRegistration().getRootConfirmRegistration());
-		userRegistrationService.confirmRegistration(token, response);
+		userRegistrationService.confirmRegistration(token, response, webRequest);
 		httpResponseHandler.redirectUserToConfirmedUrl(response);
-		return new ResponseEntity<>(SuccessResponse.buildGenericResponse("Your account has been confirmed and created!"), HttpStatus.OK);
+		final String message = localeMessagesCreator.buildLocaleMessage("confirm-registration", webRequest);
+		return new ResponseEntity<>(new SuccessResponse(message), HttpStatus.OK);
 	}
 
 	@GetMapping("${custom.properties.endpoints.registration.resend-email-verification-token}")

@@ -31,6 +31,8 @@ custom:
       header: Authorization
       secret: super-secret
       expiration: 900000
+    messages-language:
+      header: Language
 
 # ===============================
 # = SPRING

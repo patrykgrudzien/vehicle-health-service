@@ -31,6 +31,7 @@ import me.grudzien.patryk.exceptions.registration.UserAlreadyExistsException;
 import me.grudzien.patryk.handlers.web.HttpResponseHandler;
 import me.grudzien.patryk.repository.registration.CustomUserRepository;
 import me.grudzien.patryk.repository.registration.EmailVerificationTokenRepository;
+import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 
 @Log4j2
 @Service
@@ -43,12 +44,14 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 	private final EmailVerificationTokenRepository emailVerificationTokenRepository;
 	private final HttpResponseHandler httpResponseHandler;
 	private final EmailService emailService;
+	private final LocaleMessagesCreator localeMessagesCreator;
 
 	@Autowired
 	public UserRegistrationServiceImpl(final CustomUserRepository customUserRepository, final BCryptPasswordEncoder passwordEncoder,
 	                                   final ApplicationEventPublisher eventPublisher,
 	                                   final EmailVerificationTokenRepository emailVerificationTokenRepository,
-	                                   final HttpResponseHandler httpResponseHandler, final EmailService emailService) {
+	                                   final HttpResponseHandler httpResponseHandler, final EmailService emailService,
+	                                   final LocaleMessagesCreator localeMessagesCreator) {
 
 		this.customUserRepository = customUserRepository;
 		this.passwordEncoder = passwordEncoder;
@@ -56,6 +59,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 		this.emailVerificationTokenRepository = emailVerificationTokenRepository;
 		this.httpResponseHandler = httpResponseHandler;
 		this.emailService = emailService;
+		this.localeMessagesCreator = localeMessagesCreator;
 	}
 
 	@Override
@@ -64,7 +68,8 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 
 		if (doesEmailExist(userRegistrationDto.getEmail())) {
 			log.error("User with specified email " + userRegistrationDto.getEmail() + " already exists.");
-			throw new UserAlreadyExistsException("User with specified email (" + userRegistrationDto.getEmail() + ") already exists.");
+			throw new UserAlreadyExistsException(localeMessagesCreator.buildLocaleMessageWithParam("user-already-exists",
+			                                                                                       webRequest, userRegistrationDto.getEmail()));
 		}
 		if (!bindingResult.hasErrors()) {
 			log.info("No validation errors during user registration.");
@@ -96,19 +101,20 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 	}
 
 	@Override
-	public void confirmRegistration(final String emailVerificationToken, final HttpServletResponse response) {
+	public void confirmRegistration(final String emailVerificationToken, final HttpServletResponse response,
+	                                final WebRequest webRequest) {
 		final EmailVerificationToken token = emailService.getEmailVerificationToken(emailVerificationToken);
 		if (token == null) {
 			// TODO: check additional case if user is already enabled when token is still VALID
 			log.error("No verification token found.");
 			httpResponseHandler.redirectUserToEmailTokenNotFoundUrl(response);
-			throw new TokenNotFoundException("No verification token found.");
+			throw new TokenNotFoundException(localeMessagesCreator.buildLocaleMessage("verification-token-not-found", webRequest));
 		}
 		final Calendar calendar = Calendar.getInstance();
 		if (token.getExpiryDate().compareTo(calendar.getTime()) < 0) {
 			log.error("Verification token has expired.");
 			httpResponseHandler.redirectUserToEmailTokenExpiredUrl(response);
-			throw new TokenExpiredException("Verification token has expired.");
+			throw new TokenExpiredException(localeMessagesCreator.buildLocaleMessage("verification-token-expired", webRequest));
 		}
 		final CustomUser user = token.getCustomUser();
 		user.setEnabled(Boolean.TRUE);
