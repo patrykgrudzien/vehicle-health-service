@@ -21,7 +21,7 @@ public class ExceptionResponse extends CustomResponse {
 	private String message;
 	private List<String> errors;
 
-	public static <T extends RuntimeException> ExceptionResponse buildGenericResponse(final T exception) {
+	public static <T extends RuntimeException> ExceptionResponse buildMessage(final T exception) {
 		return ExceptionResponse.Builder()
 		                        .message(exception.getMessage())
 		                        .build();

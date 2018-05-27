@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="pl" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Potwierdzenie Rejestracji</title>
+</head>
+<body style="margin: 0; padding: 0;">
+    <table align="center" border="0" cellpadding="0" cellspacing="0" width="600" style="border-collapse: collapse;">
+        <tr>
+            <td bgcolor="#eaeaea" style="padding: 40px 30px 40px 30px;">
+                <p th:inline="text" style="font-size: 14px">Witaj <b>[[${userFirstName}]]</b>,</p>
+                <p>Poniżej możesz znaleźć link, którym potwierdzisz swoją rejestrację. Proszę, kliknij go albo straci ważność po upływie 24h.</p>
+                <p th:inline="text">[[${confirmationUrl}]]</p>
+                <p>Dziękuję Ci za zarejestrowanie się do mojej aplikacji!</p>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

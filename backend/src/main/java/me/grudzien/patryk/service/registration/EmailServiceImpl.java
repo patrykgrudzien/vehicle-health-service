@@ -8,6 +8,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.WebRequest;
 
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
@@ -18,10 +19,13 @@ import javax.mail.internet.MimeMessage;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
+import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
+
 import me.grudzien.patryk.domain.dto.registration.EmailDto;
 import me.grudzien.patryk.domain.entities.registration.CustomUser;
 import me.grudzien.patryk.domain.entities.registration.EmailVerificationToken;
 import me.grudzien.patryk.repository.registration.EmailVerificationTokenRepository;
+import me.grudzien.patryk.utils.i18n.LocaleMessagesHelper;
 
 @Log4j2
 @Service
@@ -33,16 +37,19 @@ public class EmailServiceImpl implements EmailService {
 	private final JavaMailSender javaMailSender;
 	private final SpringTemplateEngine templateEngine;
 	private final EmailVerificationTokenRepository emailVerificationTokenRepository;
+	private final LocaleMessagesHelper localeMessagesHelper;
 
 	// JavaMailSender will be automatically autowired by spring boot if it finds configuration in application.yml file
 	@SuppressWarnings("SpringJavaAutowiringInspection")
 	@Autowired
 	public EmailServiceImpl(final JavaMailSender javaMailSender, final SpringTemplateEngine templateEngine,
-	                        final EmailVerificationTokenRepository emailVerificationTokenRepository) {
+	                        final EmailVerificationTokenRepository emailVerificationTokenRepository,
+	                        final LocaleMessagesHelper localeMessagesHelper) {
 
 		this.javaMailSender = javaMailSender;
 		this.templateEngine = templateEngine;
 		this.emailVerificationTokenRepository = emailVerificationTokenRepository;
+		this.localeMessagesHelper = localeMessagesHelper;
 	}
 
 	@Override
@@ -57,13 +64,13 @@ public class EmailServiceImpl implements EmailService {
 	}
 
 	@Override
-	public void sendMessageUsingTemplate(final EmailDto emailDto) {
+	public void sendMessageUsingTemplate(final EmailDto emailDto, final WebRequest webRequest) {
 		// context object holds all the (key, value) pairs we can use inside the template
 		final Context context = new Context();
 		context.setVariables(emailDto.getTemplatePlaceholders());
 
 		// we process the HTML Thymeleaf Email Template by calling process() method
-		final String htmlTemplate = templateEngine.process("email-template", context);
+		final String htmlTemplate = templateEngine.process("email-template_" + localeMessagesHelper.buildLocale(webRequest), context);
 
 		final MimeMessage message = javaMailSender.createMimeMessage();
 		try {
@@ -89,9 +96,9 @@ public class EmailServiceImpl implements EmailService {
 	@Override
 	public EmailVerificationToken generateNewEmailVerificationToken(final String existingEmailVerificationToken) {
 		final EmailVerificationToken existingToken = emailVerificationTokenRepository.findByToken(existingEmailVerificationToken);
-		log.info("Found expired token for user: " + existingToken.getCustomUser().getEmail());
+		log.info(FLOW_MARKER, "Found expired token for user: {}", existingToken.getCustomUser().getEmail());
 		existingToken.updateToken(UUID.randomUUID().toString());
-		log.info("New token: " + existingToken.getToken() + " generated successfully.");
+		log.info(FLOW_MARKER, "New token: {} generated successfully.", existingToken.getToken());
 		return emailVerificationTokenRepository.save(existingToken);
 	}
 

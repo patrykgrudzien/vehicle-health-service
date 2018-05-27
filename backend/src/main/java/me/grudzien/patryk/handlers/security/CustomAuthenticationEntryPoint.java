@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -17,6 +16,7 @@ import java.io.IOException;
 
 import me.grudzien.patryk.domain.dto.login.AuthenticationEntryPointResponse;
 import me.grudzien.patryk.handlers.web.HttpResponseHandler;
+import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.log.LogMarkers;
 
 @Log4j2
@@ -24,15 +24,17 @@ import me.grudzien.patryk.utils.log.LogMarkers;
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
 	private final ObjectMapper objectMapper;
+	private final LocaleMessagesCreator localeMessagesCreator;
 
 	@Autowired
-	public CustomAuthenticationEntryPoint(final ObjectMapper objectMapper) {
+	public CustomAuthenticationEntryPoint(final ObjectMapper objectMapper, final LocaleMessagesCreator localeMessagesCreator) {
 		this.objectMapper = objectMapper;
+		this.localeMessagesCreator = localeMessagesCreator;
 	}
 
 	@Override
 	public void commence(final HttpServletRequest request, final HttpServletResponse response,
-	                     final AuthenticationException authException) throws IOException, ServletException {
+	                     final AuthenticationException authException) throws IOException {
 
 		log.info(LogMarkers.FLOW_MARKER, "User wanted to get secured resource but needs to be authenticated.");
 
@@ -44,7 +46,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 		// set up the custom response body
 		final AuthenticationEntryPointResponse customResponseBody = new AuthenticationEntryPointResponse(
 				HttpResponseHandler.SECURED_RESOURCE_CODE,
-				"You are NOT allowed to check secured resource!");
+				localeMessagesCreator.buildLocaleMessage("secured-resource-message", request));
 		// write the custom response body
 		objectMapper.writeValue(response.getOutputStream(), customResponseBody);
 		// commit the response

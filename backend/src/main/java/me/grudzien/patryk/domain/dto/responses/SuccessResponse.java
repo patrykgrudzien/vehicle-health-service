@@ -18,7 +18,7 @@ public class SuccessResponse extends CustomResponse {
 
 	private String message;
 
-	public static SuccessResponse buildGenericResponse(final String successMessage) {
+	public static SuccessResponse buildMessage(final String successMessage) {
 		return SuccessResponse.Builder()
 		                      .message(successMessage)
 		                      .build();
