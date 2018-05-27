@@ -18,6 +18,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.stream.Collectors;
 
+import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
+
 import me.grudzien.patryk.domain.dto.registration.UserRegistrationDto;
 import me.grudzien.patryk.domain.entities.registration.CustomUser;
 import me.grudzien.patryk.domain.entities.registration.EmailVerificationToken;
@@ -67,7 +69,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 	                                         final WebRequest webRequest) {
 
 		if (doesEmailExist(userRegistrationDto.getEmail())) {
-			log.error("User with specified email " + userRegistrationDto.getEmail() + " already exists.");
+			log.error(EXCEPTION_MARKER, "User with specified email {} already exists.", userRegistrationDto.getEmail());
 			throw new UserAlreadyExistsException(localeMessagesCreator.buildLocaleMessageWithParam("user-already-exists",
 			                                                                                       webRequest, userRegistrationDto.getEmail()));
 		}
@@ -86,7 +88,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 
 			// we use Spring Event to create the token and send verification email (it should not be performed by controller directly)
 			log.info("Publisher published event for verification token generation.");
-			eventPublisher.publishEvent(new OnRegistrationCompleteEvent(customUser, webRequest.getContextPath()));
+			eventPublisher.publishEvent(new OnRegistrationCompleteEvent(customUser, webRequest.getContextPath(), webRequest));
 		} else {
 			log.error("Validation errors present during user registration.");
 			throw new CustomUserValidationException("Cannot save user. Validation errors.",
@@ -107,13 +109,13 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 		if (token == null) {
 			// TODO: check additional case if user is already enabled when token is still VALID
 			log.error("No verification token found.");
-			httpResponseHandler.redirectUserToEmailTokenNotFoundUrl(response);
+			httpResponseHandler.redirectUserToEmailTokenNotFoundUrl(webRequest, response);
 			throw new TokenNotFoundException(localeMessagesCreator.buildLocaleMessage("verification-token-not-found", webRequest));
 		}
 		final Calendar calendar = Calendar.getInstance();
 		if (token.getExpiryDate().compareTo(calendar.getTime()) < 0) {
 			log.error("Verification token has expired.");
-			httpResponseHandler.redirectUserToEmailTokenExpiredUrl(response);
+			httpResponseHandler.redirectUserToEmailTokenExpiredUrl(webRequest, response);
 			throw new TokenExpiredException(localeMessagesCreator.buildLocaleMessage("verification-token-expired", webRequest));
 		}
 		final CustomUser user = token.getCustomUser();

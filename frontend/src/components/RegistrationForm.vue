@@ -44,8 +44,7 @@
                       :hint="$t('first-name-input-hint')"
                       required
                       :rules="firstNameRules"
-                      :counter="50"
-                      autofocus/>
+                      :counter="50" />
                   </v-flex>
                   <!-- YOUR NAME -->
 

@@ -10,12 +10,14 @@ import com.google.common.collect.ImmutableMap;
 
 import java.util.UUID;
 
+import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
+
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.domain.dto.registration.EmailDto;
 import me.grudzien.patryk.domain.entities.registration.CustomUser;
 import me.grudzien.patryk.service.registration.EmailService;
 import me.grudzien.patryk.utils.HerokuAppEndpointResolver;
-import me.grudzien.patryk.utils.log.LogMarkers;
+import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 
 /**
  * That listener is going to handle OnRegistrationCompleteEvent which is published by
@@ -28,14 +30,17 @@ public class RegistrationCompleteListener implements ApplicationListener<OnRegis
 	private final EmailService emailService;
 	private final CustomApplicationProperties customApplicationProperties;
 	private final HerokuAppEndpointResolver herokuAppEndpointResolver;
+	private final LocaleMessagesCreator localeMessagesCreator;
 
 	@Autowired
 	public RegistrationCompleteListener(final EmailService emailService, final CustomApplicationProperties customApplicationProperties,
-	                                    final HerokuAppEndpointResolver herokuAppEndpointResolver) {
+	                                    final HerokuAppEndpointResolver herokuAppEndpointResolver,
+	                                    final LocaleMessagesCreator localeMessagesCreator) {
 		this.emailService = emailService;
 		this.customApplicationProperties = customApplicationProperties;
 		this.herokuAppEndpointResolver = herokuAppEndpointResolver;
-		log.info(LogMarkers.FLOW_MARKER, "{} bean injected.", HerokuAppEndpointResolver.class);
+		this.localeMessagesCreator = localeMessagesCreator;
+		log.info(FLOW_MARKER, "{} bean injected.", HerokuAppEndpointResolver.class);
 	}
 
 	@Override
@@ -44,16 +49,16 @@ public class RegistrationCompleteListener implements ApplicationListener<OnRegis
 	}
 
 	private void createVerificationTokenAndSendEmail(final OnRegistrationCompleteEvent event) {
-		log.info(String.format("Listener received event: %1s with user email: %2s", event.getEventName(), event.getCustomUser().getEmail()));
+		log.info(FLOW_MARKER, "Listener received event: {} with user email: {}", event.getEventName(), event.getCustomUser().getEmail());
 
 		final CustomUser userBeingRegistered = event.getCustomUser();
 
 		final String token = UUID.randomUUID().toString();
 		emailService.persistEmailVerificationToken(event.getCustomUser(), token);
-		log.info("Created token: " + token);
+		log.info(FLOW_MARKER, "Created token: {}", token);
 
 		final String recipientAddress = userBeingRegistered.getEmail();
-		final String subject = "Registration Confirmation";
+		final String subject = localeMessagesCreator.buildLocaleMessage("registration-email-subject", event.getWebRequest());
 		final String confirmationUrl = event.getApplicationUrl() + customApplicationProperties.getEndpoints()
 		                                                                                      .getRegistration()
 		                                                                                      .getRootConfirmationUrl() + token;
@@ -68,7 +73,8 @@ public class RegistrationCompleteListener implements ApplicationListener<OnRegis
 			                                                        .put("confirmationUrl",
 			                                                             herokuAppEndpointResolver.determineBaseAppUrlForVerificationToken() + confirmationUrl)
 			                                                        .build())
-		                                              .build());
-		log.info(subject + " email has been sent to " + recipientAddress);
+		                                              .build(),
+		                                      event.getWebRequest());
+		log.info(FLOW_MARKER, "{} email has been sent to {}", subject, recipientAddress);
 	}
 }

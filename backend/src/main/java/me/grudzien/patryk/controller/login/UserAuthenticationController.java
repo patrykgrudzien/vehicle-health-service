@@ -8,6 +8,9 @@ import org.springframework.mobile.device.Device;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.WebRequest;
+
+import static me.grudzien.patryk.utils.log.LogMarkers.CONTROLLER_MARKER;
 
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
@@ -29,9 +32,10 @@ public class UserAuthenticationController {
 	}
 
 	@PostMapping("${custom.properties.endpoints.authentication.root}")
-	public ResponseEntity<?> createAuthenticationToken(@RequestBody final JwtAuthenticationRequest authenticationRequest, final Device device) {
-		log.info("Inside: " + customApplicationProperties.getEndpoints().getAuthentication().getRoot());
-		final String token = userAuthenticationService.authenticateAndGenerateToken(authenticationRequest, device);
+	public ResponseEntity<?> createAuthenticationToken(@RequestBody final JwtAuthenticationRequest authenticationRequest, final Device device,
+	                                                   final WebRequest webRequest) {
+		log.info(CONTROLLER_MARKER, "Inside: {}", customApplicationProperties.getEndpoints().getAuthentication().getRoot());
+		final String token = userAuthenticationService.authenticateAndGenerateToken(authenticationRequest, device, webRequest);
 		return ResponseEntity.ok(new JwtAuthenticationResponse(token));
 	}
 }

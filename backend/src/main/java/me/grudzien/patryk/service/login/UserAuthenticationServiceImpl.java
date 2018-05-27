@@ -10,6 +10,7 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.WebRequest;
 
 import java.util.Objects;
 
@@ -18,6 +19,7 @@ import me.grudzien.patryk.domain.dto.login.JwtUser;
 import me.grudzien.patryk.exceptions.login.BadCredentialsAuthenticationException;
 import me.grudzien.patryk.exceptions.login.UserDisabledAuthenticationException;
 import me.grudzien.patryk.service.security.MyUserDetailsService;
+import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.log.LogMarkers;
 import me.grudzien.patryk.utils.security.JwtTokenUtil;
 
@@ -27,11 +29,14 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 
 	private final UserDetailsService userDetailsService;
 	private final AuthenticationManager authenticationManager;
+	private final LocaleMessagesCreator localeMessagesCreator;
 
 	public UserAuthenticationServiceImpl(@Qualifier(MyUserDetailsService.BEAN_NAME) final UserDetailsService userDetailsService,
-	                                     final AuthenticationManager authenticationManager) {
+	                                     final AuthenticationManager authenticationManager,
+	                                     final LocaleMessagesCreator localeMessagesCreator) {
 		this.userDetailsService = userDetailsService;
 		this.authenticationManager = authenticationManager;
+		this.localeMessagesCreator = localeMessagesCreator;
 	}
 
 	/**
@@ -40,7 +45,8 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 	 * {@link me.grudzien.patryk.exceptions.login.UserDisabledAuthenticationException} will be thrown
 	 */
 	@Override
-	public String authenticateAndGenerateToken(final JwtAuthenticationRequest authenticationRequest, final Device device) {
+	public String authenticateAndGenerateToken(final JwtAuthenticationRequest authenticationRequest, final Device device,
+	                                           final WebRequest webRequest) {
 
 		final String email = authenticationRequest.getEmail();
 		final String password = authenticationRequest.getPassword();
@@ -67,11 +73,11 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 		} catch (final DisabledException exception) {
 			log.error(LogMarkers.EXCEPTION_MARKER, "User with {} is disabled! Error message -> {}", email, exception.getMessage());
 			// it is checked in (AccountStatusUserDetailsChecker implements UserDetailsChecker)
-			throw new UserDisabledAuthenticationException("User is disabled!");
+			throw new UserDisabledAuthenticationException(localeMessagesCreator.buildLocaleMessage("user-disabled-exception", webRequest));
 		} catch (final BadCredentialsException exception) {
-			log.error(LogMarkers.EXCEPTION_MARKER, "Bad credentials! Error message -> {}", exception.getMessage());
+			log.error(LogMarkers.EXCEPTION_MARKER, "E-mail address or password is not correct! Error message -> {}", exception.getMessage());
 			// it is checked in (AbstractUserDetailsAuthenticationProvider)
-			throw new BadCredentialsAuthenticationException("Bad credentials!");
+			throw new BadCredentialsAuthenticationException(localeMessagesCreator.buildLocaleMessage("bad-credentials-exception", webRequest));
 		}
 	}
 }

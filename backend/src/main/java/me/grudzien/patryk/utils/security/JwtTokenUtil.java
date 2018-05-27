@@ -73,7 +73,7 @@ public class JwtTokenUtil implements Serializable {
 		JwtTokenUtil.secret = customApplicationProperties.getJwt().getSecret();
 		JwtTokenUtil.expiration = customApplicationProperties.getJwt().getExpiration();
 
-		log.info(LogMarkers.FLOW_MARKER, "Token expiration >>>> " + expiration);
+		log.info(LogMarkers.FLOW_MARKER, "Token expiration >>>> {}", expiration);
 	}
 
 	public static class Retriever {

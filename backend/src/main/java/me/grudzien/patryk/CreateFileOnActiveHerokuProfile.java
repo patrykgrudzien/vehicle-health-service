@@ -11,6 +11,8 @@ import com.google.common.io.Files;
 import java.io.IOException;
 import java.util.List;
 
+import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
+
 /**
  * This class is used by exec-maven-plugin which is gonna execute this main() method and create files which are triggers for
  * heroku-maven-plugin to start deployment process on Heroku.
@@ -60,7 +62,7 @@ public class CreateFileOnActiveHerokuProfile {
 		String projectPath = "";
 		try {
 			projectPath = new FileSystemResource("").getURI().getPath();
-			log.info("Project path found: " + projectPath);
+			log.info(FLOW_MARKER, "Project path found: {}", projectPath);
 		} catch (final IOException exception) {
 			log.error("Cannot find project path !!!");
 		}
@@ -86,7 +88,7 @@ public class CreateFileOnActiveHerokuProfile {
 			resolveHerokuDeploymentEnabledFilesOutputPaths(activeProfileName).forEach(path -> {
 				try {
 					Files.touch(new FileSystemResource(path).getFile());
-					log.info("File >>>> " + path + " <<<< has been created!");
+					log.info(FLOW_MARKER, "File >>>> {} <<<< has been created!", path);
 				} catch (final IOException exception) {
 					log.error(exception.getMessage());
 				}

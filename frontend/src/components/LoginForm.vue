@@ -37,7 +37,6 @@
             <v-form v-model="valid"
                     ref="myLoginForm"
                     @keyup.native.enter="valid && submit($event)">
-
               <!-- EMAIL -->
               <v-text-field
                 prepend-icon="email"
@@ -48,8 +47,7 @@
                 :hint="$t('email-input-hint')"
                 required
                 :rules="emailRules"
-                :counter="50"
-                autofocus/>
+                :counter="50" />
               <!-- EMAIL -->
 
               <!-- PASSWORD -->
