@@ -107,12 +107,13 @@
     </v-toolbar>
     <!-- TOOLBAR -->
 
-    <!-- CONTENT -->
+    <!-- CONTENT (ROUTES) -->
     <v-content style="position: static">
       <transition name="fade" mode="out-in">
         <router-view/>
       </transition>
     </v-content>
+    <!-- CONTENT (ROUTES) -->
 
     <!-- FOOTER -->
     <v-footer app
