@@ -67,12 +67,12 @@
                dense
                scroll-off-screen
                :scroll-threshold="75">
-      <v-toolbar-side-icon @click.stop="switchSideNavigation(!sideNavigation)" class="hidden-sm-and-up"/>
-      <v-toolbar-title>
+      <v-toolbar-side-icon @click.stop="switchSideNavigation(!sideNavigation)" class="hidden-md-and-up"/>
+      <v-toolbar-title class="hidden-xs">
         <router-link to="/" tag="span" style="cursor: pointer;">{{ $t('place-for-app-title') }}</router-link>
       </v-toolbar-title>
       <v-spacer/>
-      <v-toolbar-items class="hidden-xs-only">
+      <v-toolbar-items class="hidden-sm-and-down">
         <v-btn flat v-for="item in menuItems" :key="item.title" router :to="item.link">
           <v-icon left>
             {{ item.icon }}
