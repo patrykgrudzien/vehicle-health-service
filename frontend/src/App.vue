@@ -160,7 +160,8 @@
         if (this.$route.path.includes(componentsPaths.loginForm) ||
           this.$route.path.includes(componentsPaths.registrationForm) ||
           this.$route.path.includes(componentsPaths.confirmRegistration) ||
-          this.$route.path.includes('/logout')) {
+          this.$route.path.includes('/logout') ||
+          this.$route.fullPath.includes(componentsPaths.logoutSuccessful)) {
 
           this.$router.app.$emit('open-dialog-and-send-lang',
             {

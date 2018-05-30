@@ -3,21 +3,24 @@
     <v-layout row align-center justify-center>
       <v-flex xs12 sm8 md6>
         <!-- CONFIRMATION REGISTRATION ALERT -->
-        <my-alert @dismissed="dismissDialog()"
+        <my-alert :dismissible="true"
+                  @dismissed="dismissDialog()"
                   type="success"
                   v-if="showDialog"
                   :message="confirmationMessage()"/>
         <!-- CONFIRMATION REGISTRATION ALERT -->
 
         <!-- SERVER NOT RUNNING -->
-        <my-alert @dismissed="setServerRunning"
+        <my-alert :dismissible="true"
+                  @dismissed="setServerRunning"
                   type="error"
                   v-if="!isServerRunning"
                   :message="$t('server-status-message')"/>
         <!-- SERVER NOT RUNNING -->
 
         <!-- ERROR ALERT -->
-        <my-alert @dismissed="clearServerExceptionResponse"
+        <my-alert :dismissible="true"
+                  @dismissed="clearServerExceptionResponse"
                   type="error"
                   v-if="getServerExceptionResponse"
                   :message="getServerExceptionResponseMessage"
@@ -25,11 +28,19 @@
         <!-- ERROR ALERT -->
 
         <!-- SUCCESS ALERT -->
-        <my-alert @dismissed="clearServerSuccessResponse"
+        <my-alert :dismissible="true"
+                  @dismissed="clearServerSuccessResponse"
                   type="success"
                   v-if="getServerSuccessResponse"
                   :message="getServerSuccessResponseMessage"/>
         <!-- SUCCESS ALERT -->
+
+        <!-- LOGOUT SUCCESSFUL ALERT -->
+        <my-alert :dismissible="false"
+                  type="success"
+                  v-if="urlContainsLogoutSuccessfulTrue"
+                  :message="$t('logout-successful-message')"/>
+        <!-- LOGOUT SUCCESSFUL ALERT -->
 
         <!-- FORM -->
         <v-card class="elevation-12">
@@ -80,25 +91,22 @@
             </v-btn>
             <v-spacer/>
           </v-card-actions>
-          <v-card-text class="pl-3 ml-1">
+          <v-card-text class="pl-3 ml-1 notSelectable">
             {{ $t('new-user') }}
             <router-link to="/registration-form" exact>{{ $t('register-here') }}</router-link>
           </v-card-text>
         </v-card>
         <!-- FORM -->
 
-        <!-- DIALOG WINDOW -->
-        <v-dialog v-model="tempDialogWindowActive" persistent max-width="450">
-          <v-card class="text-xs-center">
-            <v-card-title id="dialog-title" class="headline">{{ $t('dialog-title') }}</v-card-title>
-            <v-card-text class="pt-0 pb-0">{{ $t('dialog-text') }}</v-card-text>
-            <v-card-actions id="button-container">
-              <v-btn color="primary" flat @click.native="changeLanguageAndHideDialog">{{ $t('agree-button') }}</v-btn>
-              <v-btn color="primary" flat @click.native="hideDialogWindow">{{ $t('disagree-button') }}</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-        <!-- DIALOG WINDOW -->
+        <!-- MY DIALOG WINDOW -->
+        <my-dialog :visibility="tempDialogWindowActive"
+                   dialog-title="change-language-dialog-title"
+                   dialog-text="change-language-dialog-text"
+                   agree-button-text="agree-button"
+                   disagree-button-text="disagree-button"
+                   :agree-button-function="changeLanguageAndHideDialog"
+                   :disagree-button-function="hideDialogWindow"/>
+        <!-- MY DIALOG WINDOW -->
 
       </v-flex>
 
@@ -110,6 +118,7 @@
   import {getMessageFromLocale} from "../main";
   import {mapGetters}           from 'vuex';
   import {mapActions}           from 'vuex';
+  import componentsPaths from '../componentsPaths';
 
   export default {
     props: ['confirmationMessage', 'dismissDialog', 'showDialog', 'type'],
@@ -194,6 +203,9 @@
       getServerSuccessResponseMessage() {
         return this.getServerSuccessResponse.message;
       },
+      urlContainsLogoutSuccessfulTrue() {
+        return this.$route.fullPath.includes(componentsPaths.logoutSuccessful);
+      },
       email: {
         get() {return this.$store.getters.getLoginForm.email;},
         set(value) {this.$store.commit('setLoginFormEmail', value);}
@@ -208,11 +220,11 @@
       },
       loginButtonDisabled() {
         return this.email === '' || !this.email || this.password === '' || !this.password
-          || this.valid === false || this.isLoading;
+          || this.valid === false || this.isLoading === true;
       },
       clearButtonDisabled() {
-        return (this.email === '' || !this.email) && (this.password === '' || !this.password)
-          && this.valid === true || this.isLoading;
+        return (this.email === '' || !this.email) && (this.password === '' || !this.password) &&
+          (this.valid === true || !this.valid) && (this.isLoading === true || !this.isLoading);
       },
     }
   };

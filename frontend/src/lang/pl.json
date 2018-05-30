@@ -59,5 +59,8 @@
   "account-confirmed-and-activated": "Twoje konto zostało potwierdzone oraz aktywowane!",
   "update-mileage-text-field-hint": "Wprowadź aktualny przebieg (tylko liczby).",
   "value-cannot-be-empty": "Ta wartość nie może być pusta!",
-  "update-mileage-dialog-title": "Aktualizacja przebiegu"
+  "update-mileage-dialog-title": "Aktualizacja przebiegu",
+  "main-board-snackbar-text": "Twój przebieg jest pusty. Proszę wprowadź go.",
+  "snackbar-button-text": "Wprowadź przebieg",
+  "logout-successful-message": "Wylogowywanie przebiegło pomyślnie."
 }

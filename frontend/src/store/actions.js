@@ -20,10 +20,12 @@ export default {
         if (!error.response) {
           commit('setServerRunning', false);
           commit('setLoading', false);
+          window.scrollTo(0, 0);
         } else {
           commit('setLoading', false);
           commit('setServerExceptionResponse', error.response.data);
           commit('clearServerSuccessResponse');
+          window.scrollTo(0, 0);
         }
       });
   },
@@ -37,6 +39,7 @@ export default {
         if (response.data.message) {
           commit('setServerExceptionResponse', response.data);
           myRouter.push({path: componentsPaths.loginFailed});
+          window.scrollTo(0, 0);
         } else {
           localStorage.setItem('token', response.data.token);
           commit(types.LOGIN);
@@ -48,10 +51,12 @@ export default {
         if (!error.response) {
           commit('setServerRunning', false);
           commit('setLoading', false);
+          window.scrollTo(0, 0);
         } else {
           commit('setLoading', false);
           commit('setServerExceptionResponse', error.response.data);
           commit('clearServerSuccessResponse');
+          window.scrollTo(0, 0);
         }
       });
   },
@@ -60,6 +65,7 @@ export default {
     localStorage.removeItem('token');
     commit(types.LOGOUT);
     myRouter.push({path: componentsPaths.logoutSuccessful});
+    window.scrollTo(0, 0);
   },
 
   setServerRunning({commit}, payload) {
