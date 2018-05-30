@@ -58,7 +58,8 @@
                 :hint="$t('email-input-hint')"
                 required
                 :rules="emailRules"
-                :counter="50" />
+                :counter="50"
+                class="notSelectable"/>
               <!-- EMAIL -->
 
               <!-- PASSWORD -->
@@ -73,6 +74,7 @@
                 required
                 :rules="passwordRules"
                 :counter="50"
+                class="notSelectable"
                 :append-icon="hidePasswords ? 'visibility_off' : 'visibility'"
                 :append-icon-cb="() => (hidePasswords = !hidePasswords)"
                 :type="hidePasswords ? 'password' : 'text'"/>
