@@ -47,7 +47,8 @@
                       :hint="$t('first-name-input-hint')"
                       required
                       :rules="firstNameRules"
-                      :counter="50" />
+                      :counter="50"
+                      class="notSelectable"/>
                   </v-flex>
                   <!-- YOUR NAME -->
 
@@ -62,7 +63,8 @@
                       :hint="$t('last-name-input-hint')"
                       required
                       :rules="lastNameRules"
-                      :counter="50"/>
+                      :counter="50"
+                      class="notSelectable"/>
                   </v-flex>
                   <!-- YOUR LAST NAME -->
                 </v-layout>
@@ -83,7 +85,8 @@
                       required
                       :rules="emailRules"
                       :error="emailsDoNotMatch"
-                      :counter="50"/>
+                      :counter="50"
+                      class="notSelectable"/>
                   </v-flex>
                   <!-- YOUR EMAIL -->
 
@@ -100,7 +103,8 @@
                       required
                       :rules="confirmEmailRules"
                       :error="emailsDoNotMatch"
-                      :counter="50"/>
+                      :counter="50"
+                      class="notSelectable"/>
                   </v-flex>
                   <!-- CONFIRM EMAIL -->
                 </v-layout>
@@ -123,6 +127,7 @@
                       :rules="passwordRules"
                       :error="passwordsDoNotMatch"
                       :counter="50"
+                      class="notSelectable"
                       :append-icon="hidePasswords ? 'visibility_off' : 'visibility'"
                       :append-icon-cb="() => (hidePasswords = !hidePasswords)"
                       :type="hidePasswords ? 'password' : 'text'"/>
@@ -144,6 +149,7 @@
                       :rules="confirmPasswordRules"
                       :error="passwordsDoNotMatch"
                       :counter="50"
+                      class="notSelectable"
                       :append-icon="hidePasswords ? 'visibility_off' : 'visibility'"
                       :append-icon-cb="() => (hidePasswords = !hidePasswords)"
                       :type="hidePasswords ? 'password' : 'text'"/>
