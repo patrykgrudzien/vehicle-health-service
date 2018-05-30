@@ -12,7 +12,6 @@
            :errors="errors">
     {{ message }}
     <template v-if="errors">
-      <p class="pl-1 mb-1">{{ message }}</p>
       <ul class="pl-3" v-for="error in errors">
         <li>{{ error }}</li>
       </ul>
@@ -22,12 +21,21 @@
 
 <script>
   export default {
-    props: [
-      'message',
-      'type',
-      'errors',
-      'dismissible'
-    ],
+    props: {
+      message: {},
+      type: {
+        default: 'success',
+        type: String
+      },
+      errors: {
+        default: null,
+        type: Array
+      },
+      dismissible: {
+        default: false,
+        type: Boolean
+      }
+    },
     methods: {
       onClose() {
         this.$emit('dismissed');

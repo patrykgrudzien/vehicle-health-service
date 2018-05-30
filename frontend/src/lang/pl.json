@@ -60,7 +60,7 @@
   "update-mileage-text-field-hint": "Wprowadź aktualny przebieg (tylko liczby).",
   "value-cannot-be-empty": "Ta wartość nie może być pusta!",
   "update-mileage-dialog-title": "Aktualizacja przebiegu",
-  "main-board-snackbar-text": "Twój przebieg jest pusty. Proszę wprowadź go.",
+  "main-board-snackbar-text": "Twój przebieg jest pusty!",
   "snackbar-button-text": "Wprowadź przebieg",
   "logout-successful-message": "Wylogowywanie przebiegło pomyślnie.",
   "authentication-required-message": "Musisz być zalogowany!"
