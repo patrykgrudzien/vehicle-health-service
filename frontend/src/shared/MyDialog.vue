@@ -55,6 +55,7 @@
 <script>
   import {getMessageFromLocale} from "../main";
   import {mapGetters}           from 'vuex';
+  import componentsPaths from '../componentsPaths';
 
   export default {
     props: [
@@ -113,7 +114,8 @@
         }
       },
       disabledIfInputEmpty() {
-        return !this.getDialogTextFieldData || this.getDialogTextFieldData === null || this.getDialogTextFieldData === '';
+        return (!this.getDialogTextFieldData || this.getDialogTextFieldData === null || this.getDialogTextFieldData === '') &&
+          this.$route.fullPath.includes(componentsPaths.mainBoard);
       }
     }
   }

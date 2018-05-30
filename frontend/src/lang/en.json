@@ -59,5 +59,8 @@
   "account-confirmed-and-activated": "Your account has been confirmed and activated!",
   "update-mileage-text-field-hint": "Enter current mileage (numbers only).",
   "value-cannot-be-empty": "This value cannot be empty!",
-  "update-mileage-dialog-title": "Mileage update"
+  "update-mileage-dialog-title": "Mileage update",
+  "main-board-snackbar-text": "Your mileage is empty. Please provide it.",
+  "snackbar-button-text": "Provide mileage",
+  "logout-successful-message": "You have been successfully logout."
 }

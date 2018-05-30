@@ -6,16 +6,35 @@
               justify-center
               row
               wrap>
-      <v-flex xs12 sm12 md12 lg12 xl12>
-        <div class="text-xs-center">
-          <span class="headline notSelectable">{{ $t('current-mileage-title') }}</span>
 
+      <v-flex xs12 sm12 md12 lg12 xl12>
+
+        <v-snackbar
+          :timeout="0"
+          :bottom="true"
+          :multi-line="applyBasedOnDeviceResolution"
+          color="secondary"
+          :value="snackbarVisibility">
+          {{ $t('main-board-snackbar-text') }}
+          <v-btn flat
+                 ripple
+                 @click.native="toggleDialogWindow"
+                 color="background"
+                 class="ml-4">{{ $t('snackbar-button-text') }}</v-btn>
+        </v-snackbar>
+
+        <div class="text-xs-center">
+          <span class="headline notSelectable">
+            {{ $t('current-mileage-title') }}
+          </span>
           <span id="mileage-field"
                 class="headline primary--text notSelectable"
-                @click="showDialogWindow">
+                @click="toggleDialogWindow">
               {{ getDialogTextFieldData }}
             </span>
-          <span class="headline notSelectable">km</span>
+          <span class="headline notSelectable">
+            km
+          </span>
         </div>
 
         <!-- MY DIALOG WINDOW -->
@@ -25,8 +44,8 @@
                    dialog-title="update-mileage-dialog-title"
                    agree-button-text="agree-button"
                    disagree-button-text="disagree-button"
-                   :agree-button-function="buttonClickFunction"
-                   :disagree-button-function="buttonClickFunction"/>
+                   :agree-button-function="toggleDialogWindow"
+                   :disagree-button-function="toggleDialogWindow"/>
         <!-- MY DIALOG WINDOW -->
 
       </v-flex>
@@ -174,17 +193,20 @@
       showIntervalsDetails() {
         alert('IN PROGRESS...');
       },
-      showDialogWindow() {
-        this.mileage.editMode = !this.mileage.editMode;
-      },
-      buttonClickFunction() {
+      toggleDialogWindow() {
         this.mileage.editMode = !this.mileage.editMode;
       }
     },
     computed: {
       ...mapGetters([
         'getDialogTextFieldData'
-      ])
+      ]),
+      snackbarVisibility() {
+        return (!this.getDialogTextFieldData || this.getDialogTextFieldData === '');
+      },
+      applyBasedOnDeviceResolution() {
+        return this.$vuetify.breakpoint.smAndDown;
+      }
     }
   }
 </script>

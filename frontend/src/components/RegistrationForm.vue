@@ -3,14 +3,16 @@
     <v-layout row align-center justify-center>
       <v-flex xs12 sm8 md8>
         <!-- SERVER NOT RUNNING -->
-        <my-alert @dismissed="setServerRunning"
+        <my-alert :dismissible="true"
+                  @dismissed="setServerRunning"
                   type="error"
                   v-if="!isServerRunning"
                   :message="$t('server-status-message')"/>
         <!-- SERVER NOT RUNNING -->
 
         <!-- ERROR ALERT -->
-        <my-alert @dismissed="clearServerExceptionResponse"
+        <my-alert :dismissible="true"
+                  @dismissed="clearServerExceptionResponse"
                   type="error"
                   v-if="getServerExceptionResponse"
                   :message="getServerExceptionResponseMessage"
@@ -18,7 +20,8 @@
         <!-- ERROR ALERT -->
 
         <!-- SUCCESS ALERT -->
-        <my-alert @dismissed="clearServerSuccessResponse"
+        <my-alert :dismissible="true"
+                  @dismissed="clearServerSuccessResponse"
                   type="success"
                   v-if="getServerSuccessResponse"
                   :message="getServerSuccessResponseMessage"/>

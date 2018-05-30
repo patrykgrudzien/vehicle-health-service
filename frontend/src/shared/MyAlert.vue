@@ -5,7 +5,7 @@
     (input) - "event" -> the updated bound model
   -->
   <v-alert :type="type"
-           dismissible
+           :dismissible="dismissible"
            @input="onClose"
            :value="true"
            transition="scale-transition"
@@ -25,7 +25,8 @@
     props: [
       'message',
       'type',
-      'errors'
+      'errors',
+      'dismissible'
     ],
     methods: {
       onClose() {

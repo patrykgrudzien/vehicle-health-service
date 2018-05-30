@@ -31,7 +31,7 @@ const state = {
     valid: true,
   },
   sideNavigation: false,
-  dialogTextFieldData: 123456
+  dialogTextFieldData: ''
 };
 
 export default new Vuex.Store({
