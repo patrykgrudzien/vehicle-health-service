@@ -30,7 +30,8 @@ const state = {
     confirmedPassword: '',
     valid: true,
   },
-  sideNavigation: false
+  sideNavigation: false,
+  dialogTextFieldData: 123456
 };
 
 export default new Vuex.Store({

@@ -36,8 +36,8 @@
   "emails-do-not-match": "Emails do not match!",
   "email-must-be-valid": "E-mail must be valid",
   "footer-text": "Made by - Patryk Grudzień 2018",
-  "dialog-title": "Do you want to change app language?",
-  "dialog-text": "Changing application language will cause your form will be cleared. Are you sure?",
+  "change-language-dialog-title": "Do you want to change app language?",
+  "change-language-dialog-text": "Changing application language will cause your form will be cleared. Are you sure?",
   "agree-button": "Agree",
   "disagree-button": "Disagree",
   "server-status-message": "Cannot connect to the server. It's probably not working...",
@@ -56,5 +56,8 @@
   "mileage-tooltip-text": "Click to update the mileage",
   "verification-token-not-found": "Verification token not found for your account. Register again.",
   "verification-token-expired": "Verification token expired. Would you like to resend it again?",
-  "account-confirmed-and-activated": "Your account has been confirmed and activated!"
+  "account-confirmed-and-activated": "Your account has been confirmed and activated!",
+  "update-mileage-text-field-hint": "Enter current mileage (numbers only).",
+  "value-cannot-be-empty": "This value cannot be empty!",
+  "update-mileage-dialog-title": "Mileage update"
 }

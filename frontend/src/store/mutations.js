@@ -78,6 +78,9 @@ export default {
   },
   setRegistrationFormValid(state, payload) {
     state.registrationForm.valid = payload;
-  }
+  },
   // -------------- REGISTRATION FORM -------------- //
+  setDialogTextFieldData(state, payload) {
+    state.dialogTextFieldData = payload;
+  }
 }

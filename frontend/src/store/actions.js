@@ -14,6 +14,7 @@ export default {
       .then(response => {
         commit('setLoading', false);
         commit('setServerSuccessResponse', response.data);
+        window.scrollTo(0, 0);
       })
       .catch(error => {
         if (!error.response) {
@@ -75,5 +76,9 @@ export default {
 
   setLang({commit}, payload) {
     commit(types.SET_LANG, payload);
+  },
+
+  setDialogTextFieldData({commit}, payload) {
+    commit('setDialogTextFieldData', payload);
   }
 }

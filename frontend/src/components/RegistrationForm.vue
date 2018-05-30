@@ -159,25 +159,22 @@
             </v-btn>
             <v-spacer/>
           </v-card-actions>
-          <v-card-text class="pl-3 ml-1">
+          <v-card-text class="pl-3 ml-1 notSelectable">
             {{ $t('already-registered') }}
             <router-link to="/login" exact>{{ $t('login-here') }}</router-link>
           </v-card-text>
         </v-card>
         <!-- FORM -->
 
-        <!-- DIALOG WINDOW -->
-        <v-dialog v-model="tempDialogWindowActive" persistent max-width="450">
-          <v-card class="text-xs-center">
-            <v-card-title id="dialog-title" class="headline">{{ $t('dialog-title') }}</v-card-title>
-            <v-card-text class="pt-0 pb-0">{{ $t('dialog-text') }}</v-card-text>
-            <v-card-actions id="button-container">
-              <v-btn color="primary" flat @click.native="changeLanguageAndHideDialog">{{ $t('agree-button') }}</v-btn>
-              <v-btn color="primary" flat @click.native="hideDialogWindow">{{ $t('disagree-button') }}</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-        <!-- DIALOG WINDOW -->
+        <!-- MY DIALOG WINDOW -->
+        <my-dialog :visibility="tempDialogWindowActive"
+                   dialog-title="change-language-dialog-title"
+                   dialog-text="change-language-dialog-text"
+                   agree-button-text="agree-button"
+                   disagree-button-text="disagree-button"
+                   :agree-button-function="changeLanguageAndHideDialog"
+                   :disagree-button-function="hideDialogWindow"/>
+        <!-- MY DIALOG WINDOW -->
 
       </v-flex>
     </v-layout>
@@ -336,13 +333,13 @@
           this.email === '' || !this.email || this.confirmedEmail === '' || !this.confirmedEmail ||
           this.password === '' || !this.password || this.confirmedPassword === '' || !this.confirmedPassword ||
           this.valid === false || this.emailsDoNotMatch === true || this.passwordsDoNotMatch === true ||
-          this.isLoading;
+          this.isLoading === true;
       },
       clearButtonDisabled() {
         return (this.firstName === '' || !this.firstName) && (this.lastName === '' || !this.lastName) &&
           (this.email === '' || !this.email) && (this.confirmedEmail === '' || !this.confirmedEmail) &&
           (this.password === '' || !this.password) && (this.confirmedPassword === '' || !this.confirmedPassword) &&
-          this.valid === true || this.isLoading;
+          (this.valid === true || !this.valid) && (this.isLoading === true || !this.isLoading);
       },
       emailsDoNotMatch() {
         if (this.email !== '' && this.confirmedEmail !== '' && this.email !== this.confirmedEmail) {

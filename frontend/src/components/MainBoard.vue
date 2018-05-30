@@ -8,17 +8,27 @@
               wrap>
       <v-flex xs12 sm12 md12 lg12 xl12>
         <div class="text-xs-center">
-          <span class="headline">{{ $t('current-mileage-title') }}</span>
+          <span class="headline notSelectable">{{ $t('current-mileage-title') }}</span>
 
-          <v-tooltip bottom dark open-delay="150">
-            <span id="mileage-field"
-                  class="headline primary--text"
-                  @click="updateMileage"
-                  slot="activator">200000</span>
-            <span>{{ $t('mileage-tooltip-text') }}</span>
-          </v-tooltip>
-          <span class="headline">km</span>
+          <span id="mileage-field"
+                class="headline primary--text notSelectable"
+                @click="showDialogWindow">
+              {{ getDialogTextFieldData }}
+            </span>
+          <span class="headline notSelectable">km</span>
         </div>
+
+        <!-- MY DIALOG WINDOW -->
+        <my-dialog :visibility="mileage.editMode"
+                   :include-text-field="true"
+                   :hint="'update-mileage-text-field-hint'"
+                   dialog-title="update-mileage-dialog-title"
+                   agree-button-text="agree-button"
+                   disagree-button-text="disagree-button"
+                   :agree-button-function="buttonClickFunction"
+                   :disagree-button-function="buttonClickFunction"/>
+        <!-- MY DIALOG WINDOW -->
+
       </v-flex>
 
       <!-- CARD 1 -->
@@ -141,9 +151,15 @@
 </template>
 
 <script>
+  import {mapGetters} from 'vuex';
+
   export default {
     data() {
-      return {}
+      return {
+        mileage: {
+          editMode: false
+        }
+      }
     },
     methods: {
       showEngineDetails() {
@@ -158,9 +174,17 @@
       showIntervalsDetails() {
         alert('IN PROGRESS...');
       },
-      updateMileage() {
-        alert('IN PROGRESS...');
+      showDialogWindow() {
+        this.mileage.editMode = !this.mileage.editMode;
+      },
+      buttonClickFunction() {
+        this.mileage.editMode = !this.mileage.editMode;
       }
+    },
+    computed: {
+      ...mapGetters([
+        'getDialogTextFieldData'
+      ])
     }
   }
 </script>
