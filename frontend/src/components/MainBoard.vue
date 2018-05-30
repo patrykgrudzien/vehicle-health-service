@@ -20,7 +20,7 @@
                  ripple
                  @click.native="toggleDialogWindow"
                  color="background"
-                 class="ml-4">{{ $t('snackbar-button-text') }}</v-btn>
+                 class="ml-3">{{ $t('snackbar-button-text') }}</v-btn>
         </v-snackbar>
 
         <div class="text-xs-center">

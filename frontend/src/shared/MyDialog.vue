@@ -44,7 +44,8 @@
         <v-btn v-if="disagreeButtonText && disagreeButtonText !== ''"
                color="primary"
                flat
-               @click.native="disagreeButtonFunction">
+               @click.native="disagreeButtonFunction"
+               :disabled="disabledIfInputEmpty">
           {{ $t(`${disagreeButtonText}`) }}
         </v-btn>
       </v-card-actions>
