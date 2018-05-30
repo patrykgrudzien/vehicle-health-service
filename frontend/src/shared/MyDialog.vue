@@ -5,7 +5,7 @@
 
     <v-card class="text-xs-center">
       <v-card-title id="dialog-title"
-                    class="headline">
+                    class="headline notSelectable">
         {{ $t(`${dialogTitle}`) }}
       </v-card-title>
       <v-card-text :class="cardTextClassesWhenTextFieldExists"
@@ -22,13 +22,14 @@
             <v-text-field
               v-if="includeTextField && includeTextField === true"
               v-model="dialogTextFieldData"
-              class="ma-0 pa-0"
+              class="ma-0 pa-0 notSelectable"
               type="text"
               :hint="$t(`${hint}`)"
               :persistent-hint="true"
               required
               :rules="notEmpty"
-              mask="### ### ###"/>
+              mask="### ### ###"
+              autofocus=""/>
           </v-flex>
         </v-layout>
       </v-container>
@@ -59,17 +60,42 @@
   import componentsPaths from '../componentsPaths';
 
   export default {
-    props: [
-      'includeTextField',
-      'visibility',
-      'dialogTitle',
-      'dialogText',
-      'agreeButtonText',
-      'disagreeButtonText',
-      'agreeButtonFunction',
-      'disagreeButtonFunction',
-      'hint'
-    ],
+    props: {
+      includeTextField: {
+        default: false,
+        type: Boolean
+      },
+      visibility: {
+        default: false,
+        type: Boolean
+      },
+      dialogTitle: {
+        default: '',
+        type: String
+      },
+      dialogText: {
+        default: '',
+        type: String
+      },
+      agreeButtonText: {
+        default: '',
+        type: String
+      },
+      disagreeButtonText: {
+        default: '',
+        type: String
+      },
+      agreeButtonFunction: {
+        type: Function
+      },
+      disagreeButtonFunction: {
+        type: Function
+      },
+      hint: {
+        default: '',
+        type: String
+      }
+    },
     data() {
       return {
         notEmpty: [

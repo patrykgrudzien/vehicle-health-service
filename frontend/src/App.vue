@@ -188,11 +188,7 @@
       menuItems() {
         if (this.isLogged) {
           return [
-            {
-              icon: 'person',
-              title: 'about-me-menu-button',
-              link: componentsPaths.aboutMe
-            }
+            // FOR NOW THERE ARE ONLY "LOGOUT" AND "LANGUAGE" BUTTONS
           ]
         } else {
           return [
@@ -289,5 +285,16 @@
     -moz-user-select: none;         /* Firefox */
     -ms-user-select: none;          /* Internet Explorer/Edge */
     user-select: none;              /* Non-prefixed version, currently supported by Chrome and Opera */
+  }
+
+  .centerTextInsideDiv {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .centerSpanInsideDiv {
+    display: table;
+    margin: 0 auto;
   }
 </style>

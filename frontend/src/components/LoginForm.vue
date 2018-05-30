@@ -3,7 +3,7 @@
     <v-layout row align-center justify-center>
       <v-flex xs12 sm8 md6>
         <!-- CONFIRMATION REGISTRATION ALERT -->
-        <my-alert :dismissible="true"
+        <my-alert dismissible
                   @dismissed="dismissDialog()"
                   type="success"
                   v-if="showDialog"
@@ -11,24 +11,33 @@
         <!-- CONFIRMATION REGISTRATION ALERT -->
 
         <!-- SERVER NOT RUNNING -->
-        <my-alert :dismissible="true"
+        <my-alert dismissible
                   @dismissed="setServerRunning"
                   type="error"
                   v-if="!isServerRunning"
                   :message="$t('server-status-message')"/>
         <!-- SERVER NOT RUNNING -->
 
-        <!-- ERROR ALERT -->
-        <my-alert :dismissible="true"
+        <!-- ERROR ALERT (only message from server) -->
+        <my-alert dismissible
                   @dismissed="clearServerExceptionResponse"
                   type="error"
-                  v-if="getServerExceptionResponse"
+                  v-if="getServerExceptionResponse && !getServerExceptionResponseErrors"
+                  :message="getServerExceptionResponseMessage"
+                  :errors="getServerExceptionResponseErrors"/>
+        <!-- ERROR ALERT (only message from server) -->
+
+        <!-- ERROR ALERT -->
+        <my-alert dismissible
+                  @dismissed="clearServerExceptionResponse"
+                  type="error"
+                  v-if="getServerExceptionResponse && getServerExceptionResponseErrors"
                   :message="getServerExceptionResponseMessage"
                   :errors="getServerExceptionResponseErrors"/>
         <!-- ERROR ALERT -->
 
         <!-- SUCCESS ALERT -->
-        <my-alert :dismissible="true"
+        <my-alert dismissible
                   @dismissed="clearServerSuccessResponse"
                   type="success"
                   v-if="getServerSuccessResponse"
@@ -48,6 +57,14 @@
                   v-if="urlContainsAuthenticationRequired"
                   :message="$t('authentication-required-message')"/>
         <!-- AUTHENTICATION REQUIRED ALERT (SECURED RESOURCE -> "/main-board" without token") -->
+
+        <!-- FORM FILLED INCORRECTLY ALERT -->
+        <my-alert dismissible
+                  @dismissed="clearServerExceptionResponse"
+                  type="error"
+                  v-if="valid === false && getServerSuccessResponse !== null"
+                  :message="formFilledIncorrectlyMessage"/>
+        <!-- FORM FILLED INCORRECTLY ALERT -->
 
         <!-- FORM -->
         <v-card class="elevation-12">
@@ -159,6 +176,7 @@
           this.$store.dispatch('login', this.getLoginForm);
         } else {
           this.$store.commit('setServerExceptionResponse', 'Form filled incorrectly!');
+          window.scrollTo(0, 0);
         }
       },
       clearFormFields() {
@@ -203,6 +221,9 @@
         'getServerSuccessResponse',
         'isLoading'
       ]),
+      formFilledIncorrectlyMessage() {
+        return this.getServerExceptionResponse;
+      },
       getServerExceptionResponseMessage() {
         return this.getServerExceptionResponse.message;
       },

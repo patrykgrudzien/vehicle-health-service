@@ -14,13 +14,17 @@
           :bottom="true"
           :multi-line="applyBasedOnDeviceResolution"
           color="secondary"
+          class="notSelectable"
           :value="snackbarVisibility">
-          {{ $t('main-board-snackbar-text') }}
+          <span class="centerSpanInsideDiv">{{ $t('main-board-snackbar-text') }}</span>
           <v-btn flat
                  ripple
                  @click.native="toggleDialogWindow"
                  color="background"
-                 class="ml-3">{{ $t('snackbar-button-text') }}</v-btn>
+                 class="ml-3 notSelectable"
+                 v-if="mileage.editMode === false">
+            {{ $t('snackbar-button-text') }}
+          </v-btn>
         </v-snackbar>
 
         <div class="text-xs-center">
@@ -39,7 +43,7 @@
 
         <!-- MY DIALOG WINDOW -->
         <my-dialog :visibility="mileage.editMode"
-                   :include-text-field="true"
+                   include-text-field
                    :hint="'update-mileage-text-field-hint'"
                    dialog-title="update-mileage-dialog-title"
                    agree-button-text="agree-button"
@@ -70,7 +74,7 @@
               </span>
             </div>
           </v-card-title>
-          <v-card-actions class="button-container pt-0">
+          <v-card-actions class="centerTextInsideDiv pt-0">
             <v-btn flat color="primary" @click="showEngineDetails">
               {{ $t('details-button') }}
             </v-btn>
@@ -99,7 +103,7 @@
               </span>
             </div>
           </v-card-title>
-          <v-card-actions class="button-container pt-0">
+          <v-card-actions class="centerTextInsideDiv pt-0">
             <v-btn flat color="primary" @click="showFluidsDetails">
               {{ $t('details-button') }}
             </v-btn>
@@ -128,7 +132,7 @@
               </span>
             </div>
           </v-card-title>
-          <v-card-actions class="button-container pt-0">
+          <v-card-actions class="centerTextInsideDiv pt-0">
             <v-btn flat color="primary" @click="showTiresDetails">
               {{ $t('details-button') }}
             </v-btn>
@@ -157,7 +161,7 @@
               </span>
             </div>
           </v-card-title>
-          <v-card-actions class="button-container pt-0">
+          <v-card-actions class="centerTextInsideDiv pt-0">
             <v-btn flat color="primary" @click="showIntervalsDetails">
               {{ $t('details-button') }}
             </v-btn>
@@ -218,12 +222,6 @@
 
   #mileage-field:hover {
     background-color: rgba(60, 60, 60, 1);;
-  }
-
-  .button-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
 
   .full-width {
