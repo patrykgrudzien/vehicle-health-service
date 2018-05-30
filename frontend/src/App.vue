@@ -4,7 +4,7 @@
     <!-- NAVIGATION DRAWER -->
     <v-navigation-drawer app clipped temporary v-model="sideNavigation">
       <v-list dense>
-        <v-list-tile v-for="item in menuItems" :key="item.title" router :to="item.link">
+        <v-list-tile ripple v-for="item in menuItems" :key="item.title" router :to="item.link">
           <v-list-tile-action>
             <v-icon>{{ item.icon }}</v-icon>
           </v-list-tile-action>
@@ -14,7 +14,7 @@
         </v-list-tile>
 
         <!-- LOGOUT -->
-        <v-list-tile v-if="isLogged === 1" @click="logout">
+        <v-list-tile ripple v-if="isLogged === 1" @click="logout">
           <v-list-tile-action>
             <v-icon left>lock_outline</v-icon>
           </v-list-tile-action>
@@ -32,7 +32,7 @@
           :prepend-icon="language.icon">
 
           <!-- HEADER -->
-          <v-list-tile slot="activator">
+          <v-list-tile ripple slot="activator">
             <v-list-tile-content>
               <v-list-tile-title>{{ $t(`${language.title}`) }}</v-list-tile-title>
             </v-list-tile-content>
@@ -42,7 +42,8 @@
           <!-- ITEMS -->
           <v-list-tile v-for="language in languages"
                        :key="language.title"
-                       @click="showModalAndSendLang(`${language.langCode}`)">
+                       @click="showModalAndSendLang(`${language.langCode}`)"
+                       ripple>
             <v-list-tile-action>
               <v-icon>
                 <!-- for now there is no icon here (added for alignment purpose) -->
@@ -68,12 +69,18 @@
                scroll-off-screen
                :scroll-threshold="75">
       <v-toolbar-side-icon @click.stop="switchSideNavigation(!sideNavigation)" class="hidden-md-and-up"/>
-      <v-toolbar-title class="hidden-xs">
+      <v-toolbar-title class="hidden-xs notSelectable">
         <router-link to="/" tag="span" style="cursor: pointer;">{{ $t('place-for-app-title') }}</router-link>
       </v-toolbar-title>
       <v-spacer/>
       <v-toolbar-items class="hidden-sm-and-down">
-        <v-btn flat v-for="item in menuItems" :key="item.title" router :to="item.link">
+        <v-btn
+          flat
+          v-for="item in menuItems"
+          :key="item.title"
+          router
+          :to="item.link"
+          ripple>
           <v-icon left>
             {{ item.icon }}
           </v-icon>
@@ -119,9 +126,9 @@
     <v-footer app
               fixed
               class="pa-3"
-              v-show="isLogged === 0 || isLogged === null">
+              v-if="isLogged === 0 || isLogged === null">
       <v-spacer/>
-      <span>&copy; {{ $t('footer-text') }}</span>
+      <span class="notSelectable">&copy; {{ $t('footer-text') }}</span>
     </v-footer>
     <!-- FOOTER -->
 
@@ -272,5 +279,14 @@
 
   .fade-enter, .fade-leave-to {
     opacity: 0;
+  }
+
+  .notSelectable {
+    -webkit-touch-callout: none;    /* iOS Safari */
+    -webkit-user-select: none;      /* Safari */
+    -khtml-user-select: none;       /* Konqueror HTML */
+    -moz-user-select: none;         /* Firefox */
+    -ms-user-select: none;          /* Internet Explorer/Edge */
+    user-select: none;              /* Non-prefixed version, currently supported by Chrome and Opera */
   }
 </style>

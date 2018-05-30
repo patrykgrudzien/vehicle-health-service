@@ -1,4 +1,9 @@
 <template>
+  <!--
+    (dismissible) - specifies that the Alert can be closed
+    (value) - controls visibility
+    (input) - "event" -> the updated bound model
+  -->
   <v-alert :type="type"
            dismissible
            @input="onClose"

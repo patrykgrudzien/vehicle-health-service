@@ -8,5 +8,6 @@ export default {
   getLang: state => state.lang,
   getLoginForm: state => state.loginForm,
   getRegistrationForm: state => state.registrationForm,
-  getSideNavigation: state => state.sideNavigation
+  getSideNavigation: state => state.sideNavigation,
+  getDialogTextFieldData: state => state.dialogTextFieldData
 };

@@ -36,8 +36,8 @@
   "emails-do-not-match": "Adresy email nie są takie same!",
   "email-must-be-valid": "E-mail musi mieć odpowiedni format",
   "footer-text": "Autor - Patryk Grudzień 2018",
-  "dialog-title": "Chcesz zmienić język aplikacji?",
-  "dialog-text": "Zmiana języka spowoduje, że twój formularz zostanie wyczyszczony. Jesteś pewien?",
+  "change-language-dialog-title": "Chcesz zmienić język aplikacji?",
+  "change-language-dialog-text": "Zmiana języka spowoduje, że twój formularz zostanie wyczyszczony. Jesteś pewien?",
   "agree-button": "Potwierdź",
   "disagree-button": "Anuluj",
   "server-status-message": "Nie można połączyć się z serwerem. Prawdopodobnie nie działa...",
@@ -56,5 +56,8 @@
   "mileage-tooltip-text": "Kliknij aby uaktualnić przebieg",
   "verification-token-not-found": "Nie znaleziono tokenu weryfikacyjnego. Zarejestruj się ponownie.",
   "verification-token-expired": "Token weryfikacyjny stracił ważność. Wygenerować nowy?",
-  "account-confirmed-and-activated": "Twoje konto zostało potwierdzone oraz aktywowane!"
+  "account-confirmed-and-activated": "Twoje konto zostało potwierdzone oraz aktywowane!",
+  "update-mileage-text-field-hint": "Wprowadź aktualny przebieg (tylko liczby).",
+  "value-cannot-be-empty": "Ta wartość nie może być pusta!",
+  "update-mileage-dialog-title": "Aktualizacja przebiegu"
 }

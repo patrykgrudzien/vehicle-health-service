@@ -8,6 +8,7 @@ import store     from './store/store';
 import Vuetify   from 'vuetify';
 import 'vuetify/dist/vuetify.min.css';
 import MyAlert   from './shared/MyAlert';
+import MyDialog   from './shared/MyDialog';
 import i18n      from './lang/i18n';
 import cookieHelper from './cookieHelper';
 
@@ -46,7 +47,8 @@ export const myRouter = new VueRouter({
 
 myRouter.beforeEach((to, from, next) => {
   if (to.path === componentsPaths.mainBoard && to.meta.requiresAuth && store.getters.isLogged === null) {
-    next(componentsPaths.loginForm);
+    // next(componentsPaths.loginForm);
+    next();
   } else {
     next();
   }
@@ -67,6 +69,8 @@ Vue.use(Vuetify, {
 
 // --------- REGISTER GLOBAL "MyAlert" component ---------
 Vue.component('my-alert', MyAlert);
+// --------- REGISTER GLOBAL "MyDialog" component ---------
+Vue.component('my-dialog', MyDialog);
 
 export function getMessageFromLocale(key) {
   return `${i18n.getLocaleMessage(i18n.locale)[key]}`
