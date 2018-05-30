@@ -62,7 +62,7 @@
         <!-- PostgreSql -->
         <postgre.sql.version>42.2.1</postgre.sql.version>
         <!-- Google Guava -->
-        <guava.version>24.0-jre</guava.version>
+        <guava.version>25.1-jre</guava.version>
         <!-- Lombok -->
         <lombok.version>1.16.20</lombok.version>
         <!-- Apache Commons BeanUtils -->

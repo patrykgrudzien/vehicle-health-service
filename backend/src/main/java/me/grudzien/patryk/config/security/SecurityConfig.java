@@ -128,6 +128,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				             "/registration-confirmed",
 				             "/server-health",
 				             "/login",
-				             "/main-board");
+				             "/main-board",
+				             "/authentication-required");
 	}
 }

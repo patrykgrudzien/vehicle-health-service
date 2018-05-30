@@ -23,7 +23,8 @@ public class HerokuForwardingController {
 	 * @return bundled index.html on page reloading, going back/forward browser action.
 	 */
 	@RequestMapping({
-            "/server-health", "/about-me", "/registration-form", "/registration-confirmed", "/login", "/main-board"
+            "/server-health", "/about-me", "/registration-form", "/registration-confirmed", "/login", "/main-board",
+            "/authentication-required"
 	})
 	public String forwardHerokuRequests() {
 		log.info(LogMarkers.CONTROLLER_MARKER, "Request forwarded to index.html.");

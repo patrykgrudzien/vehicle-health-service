@@ -62,5 +62,6 @@
   "update-mileage-dialog-title": "Aktualizacja przebiegu",
   "main-board-snackbar-text": "Twój przebieg jest pusty. Proszę wprowadź go.",
   "snackbar-button-text": "Wprowadź przebieg",
-  "logout-successful-message": "Wylogowywanie przebiegło pomyślnie."
+  "logout-successful-message": "Wylogowywanie przebiegło pomyślnie.",
+  "authentication-required-message": "Musisz być zalogowany!"
 }

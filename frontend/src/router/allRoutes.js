@@ -49,6 +49,11 @@ export default [
     component: LoginForm
   },
   {
+    name: 'LoginForm-secured-resource-authentication-required',
+    path: componentsPaths.authenticationRequired,
+    component: LoginForm
+  },
+  {
     name: 'MainBoard',
     path: componentsPaths.mainBoard,
     component: MainBoard,
