@@ -42,6 +42,13 @@
                   :message="$t('logout-successful-message')"/>
         <!-- LOGOUT SUCCESSFUL ALERT -->
 
+        <!-- AUTHENTICATION REQUIRED ALERT (SECURED RESOURCE -> "/main-board" without token") -->
+        <my-alert :dismissible="false"
+                  type="error"
+                  v-if="urlContainsAuthenticationRequired"
+                  :message="$t('authentication-required-message')"/>
+        <!-- AUTHENTICATION REQUIRED ALERT (SECURED RESOURCE -> "/main-board" without token") -->
+
         <!-- FORM -->
         <v-card class="elevation-12">
           <v-card-text>
@@ -207,6 +214,9 @@
       },
       urlContainsLogoutSuccessfulTrue() {
         return this.$route.fullPath.includes(componentsPaths.logoutSuccessful);
+      },
+      urlContainsAuthenticationRequired() {
+        return this.$route.fullPath.includes(componentsPaths.authenticationRequired);
       },
       email: {
         get() {return this.$store.getters.getLoginForm.email;},

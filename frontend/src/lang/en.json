@@ -62,5 +62,6 @@
   "update-mileage-dialog-title": "Mileage update",
   "main-board-snackbar-text": "Your mileage is empty. Please provide it.",
   "snackbar-button-text": "Provide mileage",
-  "logout-successful-message": "You have been successfully logout."
+  "logout-successful-message": "You have been successfully logout.",
+  "authentication-required-message": "You must be logged in!"
 }

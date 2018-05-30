@@ -10,5 +10,6 @@ export default {
   // /logout?successful=true
   logoutSuccessfulWildcard: '/logout**',
   logoutSuccessful: '/logout?successful=true',
-  mainBoard: '/main-board'
+  mainBoard: '/main-board',
+  authenticationRequired: '/authentication-required'
 }

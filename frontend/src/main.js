@@ -48,7 +48,7 @@ export const myRouter = new VueRouter({
 myRouter.beforeEach((to, from, next) => {
   if (to.path === componentsPaths.mainBoard && to.meta.requiresAuth && store.getters.isLogged === null) {
     // PRODUCTION
-    next(componentsPaths.loginForm);
+    next(componentsPaths.authenticationRequired);
     // DEVELOPMENT
     // next();
   } else {
