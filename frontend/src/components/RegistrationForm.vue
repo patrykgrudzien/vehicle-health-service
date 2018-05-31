@@ -364,10 +364,19 @@
           this.isLoading === true;
       },
       clearButtonDisabled() {
-        return (this.firstName === '' || !this.firstName) && (this.lastName === '' || !this.lastName) &&
-          (this.email === '' || !this.email) && (this.confirmedEmail === '' || !this.confirmedEmail) &&
-          (this.password === '' || !this.password) && (this.confirmedPassword === '' || !this.confirmedPassword) &&
-          (this.valid === true || !this.valid) && (this.isLoading === true || !this.isLoading);
+        return (
+                  (this.firstName === '' || !this.firstName) && (this.lastName === '' || !this.lastName) &&
+                  (this.email === '' || !this.email) && (this.confirmedEmail === '' || !this.confirmedEmail) &&
+                  (this.password === '' || !this.password) && (this.confirmedPassword === '' || !this.confirmedPassword) &&
+                  (this.valid === true || !this.valid) && (this.isLoading === true || !this.isLoading)
+               )
+                  ||
+               (
+                  (this.firstName !== '' || this.firstName) && (this.lastName !== '' || this.lastName) &&
+                  (this.email !== '' || this.email) && (this.confirmedEmail !== '' || this.confirmedEmail) &&
+                  (this.password !== '' || this.password) && (this.confirmedPassword !== '' || this.confirmedPassword) &&
+                  (this.isLoading === true || this.isLoading)
+               );
       },
       emailsDoNotMatch() {
         if (this.email !== '' && this.confirmedEmail !== '' && this.email !== this.confirmedEmail) {

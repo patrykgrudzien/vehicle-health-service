@@ -257,8 +257,15 @@
           || this.valid === false || this.isLoading === true;
       },
       clearButtonDisabled() {
-        return (this.email === '' || !this.email) && (this.password === '' || !this.password) &&
-          (this.valid === true || !this.valid) && (this.isLoading === true || !this.isLoading);
+        return (
+                  (this.email === '' || !this.email) && (this.password === '' || !this.password) &&
+                  (this.valid === true || !this.valid) && (this.isLoading === true || !this.isLoading)
+               )
+                  ||
+               (
+                  (this.email !== '' || this.email) && (this.password !== '' || this.password) &&
+                  (this.isLoading === true || this.isLoading)
+               );
       },
     }
   };
