@@ -62,7 +62,8 @@
         <my-alert dismissible
                   @dismissed="clearServerExceptionResponse"
                   type="error"
-                  v-if="valid === false && getServerSuccessResponse !== null"
+                  v-if="formFilledIncorrectlyMessage !== null && formFilledIncorrectlyMessage !== '' &&
+                        getServerSuccessResponse !== null"
                   :message="formFilledIncorrectlyMessage"/>
         <!-- FORM FILLED INCORRECTLY ALERT -->
 
