@@ -51,7 +51,7 @@
   "engine-card-header": "SILNIK",
   "fluids-card-header": "PŁYNY",
   "tires-card-header": "OPONY",
-  "intervals-card-header": "INTERWAŁY WYMIAN",
+  "maintenance-costs-card-header": "KOSZTY UTRZYMANIA",
   "current-mileage-title": "Aktualny przebieg:",
   "mileage-tooltip-text": "Kliknij aby uaktualnić przebieg",
   "verification-token-not-found": "Nie znaleziono tokenu weryfikacyjnego. Zarejestruj się ponownie.",
@@ -63,5 +63,8 @@
   "main-board-snackbar-text": "Twój przebieg jest pusty!",
   "snackbar-button-text": "Wprowadź przebieg",
   "logout-successful-message": "Wylogowywanie przebiegło pomyślnie.",
-  "authentication-required-message": "Musisz być zalogowany!"
+  "authentication-required-message": "Musisz być zalogowany!",
+  "mileage-agree-button-text": "Zapisz",
+  "mileage-disagree-button-text": "Anuluj",
+  "welcome-principal-user": "Witaj,"
 }

@@ -100,8 +100,6 @@ public class JwtTokenUtil implements Serializable {
 		}
 
 		public static Claims getAllClaimsFromToken(final String token) {
-			// TODO: surround it with try/catch cause "getUserEmailFromToken()" is used in "JwtAuthorizationTokenFilter" but in can be
-			// TODO: a situation where token DOES NOT exists and some EXCEPTION will be thrown
 			return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
 		}
 	}

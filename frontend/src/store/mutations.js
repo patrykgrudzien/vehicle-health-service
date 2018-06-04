@@ -80,7 +80,14 @@ export default {
     state.registrationForm.valid = payload;
   },
   // -------------- REGISTRATION FORM -------------- //
+
   setDialogTextFieldData(state, payload) {
     state.dialogTextFieldData = payload;
+  },
+  setPrincipalFirstName(state, payload) {
+    state.principalFirstName = payload;
+  },
+  clearPrincipalFirstName(state) {
+    state.principalFirstName = null;
   }
 }

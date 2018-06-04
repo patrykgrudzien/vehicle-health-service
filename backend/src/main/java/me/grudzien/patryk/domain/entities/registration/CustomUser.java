@@ -3,6 +3,10 @@ package me.grudzien.patryk.domain.entities.registration;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.ToString;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.google.common.collect.Lists;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -14,6 +18,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -24,10 +29,14 @@ import javax.validation.constraints.Size;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
+
+import me.grudzien.patryk.domain.entities.vehicle.Vehicle;
 
 @Entity
-@Table(name = "CUSTOM_USER", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
+@Table(name = "CUSTOM_USER", uniqueConstraints = @UniqueConstraint(columnNames = {"email", "username"}))
 @Data
+@ToString(exclude = {"username", "password", "lastPasswordResetDate", "roles", "vehicles"})
 @AllArgsConstructor
 @Builder(builderMethodName = "Builder")
 @SequenceGenerator(name = "customUserGenerator", sequenceName = "customUserSequence", allocationSize = 1)
@@ -53,7 +62,7 @@ public class CustomUser {
 	@Size(min = 4, max = 50)
 	private String lastName;
 
-	@Column(name = "EMAIL", length = 50)
+	@Column(name = "EMAIL", length = 50, unique = true)
 	@NotNull
 	@Size(min = 4, max = 50)
 	private String email;
@@ -82,9 +91,13 @@ public class CustomUser {
 	           inverseJoinColumns = @JoinColumn(name = "ROLE_ID", referencedColumnName = "ID"))
 	private Collection<Role> roles;
 
+	@OneToMany(mappedBy = "customUser")
+	@JsonBackReference
+	private List<Vehicle> vehicles = Lists.newArrayList();
+
 	public CustomUser() {
 		this.isEnabled = false;
 		this.createdDate = new Date();
-		this.username = this.firstName + this.lastName;
+		this.username = this.firstName + "-" + this.lastName;
 	}
 }

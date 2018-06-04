@@ -18,7 +18,7 @@
         <v-layout row
                   align-center
                   justify-center>
-          <v-flex xs8>
+          <v-flex xs8 class="notSelectable">
             <v-text-field
               v-if="includeTextField && includeTextField === true"
               v-model="dialogTextFieldData"
@@ -29,7 +29,7 @@
               required
               :rules="notEmpty"
               mask="### ### ###"
-              autofocus=""/>
+              autofocus/>
           </v-flex>
         </v-layout>
       </v-container>

@@ -3,6 +3,7 @@ package me.grudzien.patryk.service.security;
 import lombok.extern.log4j.Log4j2;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -30,6 +31,7 @@ public class MyUserDetailsService implements UserDetailsService {
 	}
 
 	@Override
+	@Cacheable("principal-user")
 	public UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException {
 		log.info(FLOW_MARKER, "loadUserByUsername() inside >>>> MyUserDetailsService >>>> Spring Security");
 

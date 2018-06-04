@@ -1,11 +1,11 @@
 package me.grudzien.patryk.repository.registration;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.CrudRepository;
 
 import me.grudzien.patryk.domain.entities.registration.CustomUser;
 import me.grudzien.patryk.domain.entities.registration.EmailVerificationToken;
 
-public interface EmailVerificationTokenRepository extends JpaRepository<EmailVerificationToken, Long> {
+public interface EmailVerificationTokenRepository extends CrudRepository<EmailVerificationToken, Long> {
 
 	EmailVerificationToken findByToken(String token);
 

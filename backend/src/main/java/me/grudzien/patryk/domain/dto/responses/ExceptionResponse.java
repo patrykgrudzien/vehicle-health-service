@@ -20,6 +20,7 @@ public class ExceptionResponse extends CustomResponse {
 
 	private String message;
 	private List<String> errors;
+	private String code;
 
 	public static <T extends RuntimeException> ExceptionResponse buildMessage(final T exception) {
 		return ExceptionResponse.Builder()

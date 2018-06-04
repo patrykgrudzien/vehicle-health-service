@@ -51,7 +51,7 @@
   "engine-card-header": "ENGINE",
   "fluids-card-header": "FLUIDS",
   "tires-card-header": "TIRES",
-  "intervals-card-header": "INTERVALS",
+  "maintenance-costs-card-header": "MAINTENANCE COSTS",
   "current-mileage-title": "Current mileage:",
   "mileage-tooltip-text": "Click to update the mileage",
   "verification-token-not-found": "Verification token not found for your account. Register again.",
@@ -63,5 +63,8 @@
   "main-board-snackbar-text": "Your mileage is empty!",
   "snackbar-button-text": "Provide mileage",
   "logout-successful-message": "You have been successfully logout.",
-  "authentication-required-message": "You must be logged in!"
+  "authentication-required-message": "You must be logged in!",
+  "mileage-agree-button-text": "Save",
+  "mileage-disagree-button-text": "Cancel",
+  "welcome-principal-user": "Welcome,"
 }
