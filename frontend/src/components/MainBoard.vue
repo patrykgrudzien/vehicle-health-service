@@ -12,7 +12,6 @@
         <v-snackbar
           :timeout="0"
           :bottom="true"
-          :multi-line="applyBasedOnDeviceResolution"
           color="secondary"
           class="notSelectable"
           :value="snackbarVisibility">
@@ -41,16 +40,16 @@
           </span>
         </div>
 
-        <!-- MY DIALOG WINDOW -->
+        <!-- MY DIALOG WINDOW WITH MILEAGE INPUT FIELD -->
         <my-dialog :visibility="mileage.editMode"
                    include-text-field
                    :hint="'update-mileage-text-field-hint'"
                    dialog-title="update-mileage-dialog-title"
-                   agree-button-text="agree-button"
-                   disagree-button-text="disagree-button"
+                   agree-button-text="mileage-agree-button-text"
+                   disagree-button-text="mileage-disagree-button-text"
                    :agree-button-function="toggleDialogWindow"
                    :disagree-button-function="toggleDialogWindow"/>
-        <!-- MY DIALOG WINDOW -->
+        <!-- MY DIALOG WINDOW WITH MILEAGE INPUT FIELD -->
 
       </v-flex>
 
@@ -152,7 +151,7 @@
           <v-card-title>
             <div class="text-xs-center full-width">
               <div class="mb-2">
-                <span class="white--text title">{{ $t('intervals-card-header') }}</span>
+                <span class="white--text title">{{ $t('maintenance-costs-card-header') }}</span>
               </div>
               <span class="grey--text">
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
@@ -203,13 +202,41 @@
     },
     computed: {
       ...mapGetters([
-        'getDialogTextFieldData'
+        'getDialogTextFieldData',
+        'isLogged'
       ]),
       snackbarVisibility() {
         return (!this.getDialogTextFieldData || this.getDialogTextFieldData === '');
-      },
-      applyBasedOnDeviceResolution() {
-        return this.$vuetify.breakpoint.smAndDown;
+      }
+    },
+    created() {
+      if (this.isLogged === 1) {
+        // GET PRINCIPAL USER AFTER SUCCESSFULLY LOGIN PROCESS
+        this.axios.get('/security/principal')
+          .then(response => {
+            localStorage.setItem('principalFirstName', response.data.firstname);
+            this.$store.commit('setPrincipalFirstName', localStorage.getItem('principalFirstName'));
+
+            // GET (VEHICLE) FOR LOADED PRINCIPAL USER
+            let customUserEmail = response.data.email;
+            this.axios.get(`/vehicles/${customUserEmail}`)
+              .then(response => {
+                // display Vehicle object
+                console.log(response.data);
+              })
+              .catch(error => {
+                // for now if no vehicle found -> RuntimeException("No vehicle found for specified user email") is thrown
+                console.log(error.response.data);
+              });
+            // GET (VEHICLE) FOR LOADED PRINCIPAL USER
+
+          })
+          .catch(error => {
+            console.log(error.response.data);
+            this.$store.dispatch('logout');
+            window.scrollTo(0, 0);
+          });
+        // GET PRINCIPAL USER AFTER SUCCESSFULLY LOGIN PROCESS
       }
     }
   }
@@ -226,5 +253,10 @@
 
   .full-width {
     width: 100%;
+  }
+
+  .centerSpanInsideDiv {
+    display: table;
+    margin: 0 auto;
   }
 </style>

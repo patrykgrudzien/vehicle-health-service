@@ -11,6 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.context.request.WebRequest;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+
 import javax.servlet.http.HttpServletResponse;
 
 import java.util.Calendar;
@@ -24,6 +27,10 @@ import me.grudzien.patryk.domain.dto.registration.UserRegistrationDto;
 import me.grudzien.patryk.domain.entities.registration.CustomUser;
 import me.grudzien.patryk.domain.entities.registration.EmailVerificationToken;
 import me.grudzien.patryk.domain.entities.registration.Role;
+import me.grudzien.patryk.domain.entities.vehicle.Vehicle;
+import me.grudzien.patryk.domain.entities.engine.Engine;
+import me.grudzien.patryk.domain.enums.engine.EngineType;
+import me.grudzien.patryk.domain.enums.vehicle.VehicleType;
 import me.grudzien.patryk.domain.enums.RoleName;
 import me.grudzien.patryk.events.registration.OnRegistrationCompleteEvent;
 import me.grudzien.patryk.exceptions.registration.CustomUserValidationException;
@@ -33,6 +40,8 @@ import me.grudzien.patryk.exceptions.registration.UserAlreadyExistsException;
 import me.grudzien.patryk.handlers.web.HttpResponseHandler;
 import me.grudzien.patryk.repository.registration.CustomUserRepository;
 import me.grudzien.patryk.repository.registration.EmailVerificationTokenRepository;
+import me.grudzien.patryk.repository.vehicle.VehicleRepository;
+import me.grudzien.patryk.repository.engine.EngineRepository;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 
 @Log4j2
@@ -47,13 +56,26 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 	private final HttpResponseHandler httpResponseHandler;
 	private final EmailService emailService;
 	private final LocaleMessagesCreator localeMessagesCreator;
+	private final EngineRepository engineRepository;
+	private final VehicleRepository vehicleRepository;
 
 	@Autowired
 	public UserRegistrationServiceImpl(final CustomUserRepository customUserRepository, final BCryptPasswordEncoder passwordEncoder,
 	                                   final ApplicationEventPublisher eventPublisher,
 	                                   final EmailVerificationTokenRepository emailVerificationTokenRepository,
 	                                   final HttpResponseHandler httpResponseHandler, final EmailService emailService,
-	                                   final LocaleMessagesCreator localeMessagesCreator) {
+	                                   final LocaleMessagesCreator localeMessagesCreator, final EngineRepository engineRepository,
+	                                   final VehicleRepository vehicleRepository) {
+
+		Preconditions.checkNotNull(customUserRepository, "customUserRepository cannot be null!");
+		Preconditions.checkNotNull(passwordEncoder, "passwordEncoder cannot be null!");
+		Preconditions.checkNotNull(eventPublisher, "eventPublisher cannot be null!");
+		Preconditions.checkNotNull(emailVerificationTokenRepository, "emailVerificationTokenRepository cannot be null!");
+		Preconditions.checkNotNull(httpResponseHandler, "httpResponseHandler cannot be null!");
+		Preconditions.checkNotNull(emailService, "emailService cannot be null!");
+		Preconditions.checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
+		Preconditions.checkNotNull(engineRepository, "engineRepository cannot be null!");
+		Preconditions.checkNotNull(vehicleRepository, "carRepository cannot be null!");
 
 		this.customUserRepository = customUserRepository;
 		this.passwordEncoder = passwordEncoder;
@@ -62,6 +84,8 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 		this.httpResponseHandler = httpResponseHandler;
 		this.emailService = emailService;
 		this.localeMessagesCreator = localeMessagesCreator;
+		this.engineRepository = engineRepository;
+		this.vehicleRepository = vehicleRepository;
 	}
 
 	@Override
@@ -84,6 +108,16 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 			                                        .roles(Collections.singleton(new Role(RoleName.ROLE_ADMIN)))
 			                                        .createdDate(new Date())
 			                                        .build();
+
+			// TODO: temporary (test purposes)
+			final Engine engine = Engine.Builder().engineType(EngineType.DIESEL).build();
+			final Vehicle vehicle = Vehicle.Builder().vehicleType(VehicleType.CAR).engine(engine).build();
+			vehicle.setCustomUser(customUser);
+			engineRepository.save(engine);
+			vehicleRepository.save(vehicle);
+			customUser.setVehicles(Lists.newArrayList(vehicle));
+			// TODO: temporary (test purposes)
+
 			customUserRepository.save(customUser);
 
 			// we use Spring Event to create the token and send verification email (it should not be performed by controller directly)

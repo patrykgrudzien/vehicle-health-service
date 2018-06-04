@@ -51,7 +51,12 @@ myRouter.beforeEach((to, from, next) => {
     next(componentsPaths.authenticationRequired);
     // DEVELOPMENT
     // next();
-  } else {
+  }
+  else if (to.path === componentsPaths.mainBoard && store.getters.getPrincipalFirstName === null && store.getters.isLogged !== null) {
+    store.commit('setPrincipalFirstName', localStorage.getItem('principalFirstName'));
+    next();
+  }
+  else {
     next();
   }
 });

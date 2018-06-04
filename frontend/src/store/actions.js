@@ -45,6 +45,7 @@ export default {
           commit(types.LOGIN);
           commit('clearServerExceptionResponse');
           myRouter.push({path: componentsPaths.mainBoard});
+          window.scrollTo(0 ,0);
         }
       })
       .catch(error => {
@@ -63,7 +64,11 @@ export default {
 
   logout({commit}) {
     localStorage.removeItem('token');
+    localStorage.removeItem('principalFirstName');
     commit(types.LOGOUT);
+    commit('clearPrincipalFirstName');
+    commit('clearServerExceptionResponse');
+    commit('clearServerSuccessResponse');
     myRouter.push({path: componentsPaths.logoutSuccessful});
     window.scrollTo(0, 0);
   },
@@ -86,5 +91,9 @@ export default {
 
   setDialogTextFieldData({commit}, payload) {
     commit('setDialogTextFieldData', payload);
+  },
+
+  setPrincipalFirstName({commit}, payload) {
+    commit('setPrincipalFirstName', payload);
   }
 }

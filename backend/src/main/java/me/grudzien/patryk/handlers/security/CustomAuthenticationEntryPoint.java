@@ -19,6 +19,11 @@ import me.grudzien.patryk.handlers.web.HttpResponseHandler;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.log.LogMarkers;
 
+/**
+ * IMPORTANT NOTE:
+ * {@link me.grudzien.patryk.handlers.exception.ExceptionHandlingController} only handles exceptions come from @Controller classes that's
+ * why all exceptions which come from JWT will be omitted (they are specific to Servlet itself) !!!
+ */
 @Log4j2
 @Component
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {

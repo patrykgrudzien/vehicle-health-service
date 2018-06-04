@@ -1,6 +1,5 @@
 package me.grudzien.patryk.config.security;
 
-import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.log4j.Log4j2;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,8 +16,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
+import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
+
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
-import me.grudzien.patryk.exceptions.registration.TokenExpiredException;
 import me.grudzien.patryk.utils.log.LogMarkers;
 import me.grudzien.patryk.utils.security.JwtTokenUtil;
 
@@ -47,16 +47,9 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
 		String authToken = null;
 		if (requestHeader != null && requestHeader.startsWith("Bearer ")) {
 			authToken = requestHeader.substring(7);
-			try {
-				email = JwtTokenUtil.Retriever.getUserEmailFromToken(authToken);
-			} catch (final IllegalArgumentException exception) {
-				log.error(LogMarkers.FLOW_MARKER, "An error occurred during getting email from token, {}", exception);
-			} catch (final ExpiredJwtException exception) {
-				log.warn(LogMarkers.FLOW_MARKER, "The JWT token is expired and not valid anymore, {}", exception);
-				throw new TokenExpiredException("The JWT token is expired and not valid anymore");
-			}
+			email = JwtTokenUtil.Retriever.getUserEmailFromToken(authToken);
 		} else {
-			log.warn(LogMarkers.FLOW_MARKER, "Couldn't find bearer string, will ignore the header");
+			log.warn(EXCEPTION_MARKER, "Couldn't find bearer string, will ignore the header");
 		}
 
 		log.info(LogMarkers.FLOW_MARKER, "Checking authentication for user email {}.", email);

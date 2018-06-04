@@ -13,6 +13,21 @@
           </v-list-tile-content>
         </v-list-tile>
 
+        <!-- PRINCIPAL USER (AVATAR) -->
+        <v-list-tile ripple v-if="isLogged === 1">
+          <v-list-tile-action>
+            <v-icon left>account_circle</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>
+              <span>{{ $t('welcome-principal-user') }}</span>
+              <span></span>
+              <span>{{ getPrincipalFirstName }}</span>
+            </v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+        <!-- PRINCIPAL USER (AVATAR) -->
+
         <!-- LOGOUT -->
         <v-list-tile ripple v-if="isLogged === 1" @click="logout">
           <v-list-tile-action>
@@ -26,6 +41,7 @@
 
         <!-- LANGUAGES -->
         <v-list-group
+          v-if="!isLogged"
           v-for="language in languagesNavDrawer"
           v-model="language.active"
           :key="language.title"
@@ -70,10 +86,26 @@
                :scroll-threshold="75">
       <v-toolbar-side-icon @click.stop="switchSideNavigation(!sideNavigation)" class="hidden-md-and-up"/>
       <v-toolbar-title class="hidden-xs notSelectable">
-        <router-link to="/" tag="span" style="cursor: pointer;">{{ $t('place-for-app-title') }}</router-link>
+        <router-link :to="determineHomeLink"
+                     tag="span"
+                     style="cursor: pointer;">
+          {{ $t('place-for-app-title') }}
+        </router-link>
       </v-toolbar-title>
       <v-spacer/>
       <v-toolbar-items class="hidden-sm-and-down">
+
+        <!-- PRINCIPAL USER (AVATAR) -->
+        <v-btn flat ripple v-if="isLogged === 1">
+          <span>{{ $t('welcome-principal-user') }}</span>
+          <span class="ml-1"></span>
+          <span>{{ getPrincipalFirstName }}</span>
+          <v-icon right dark>
+            account_circle
+          </v-icon>
+        </v-btn>
+        <!-- PRINCIPAL USER (AVATAR) -->
+
         <v-btn
           flat
           v-for="item in menuItems"
@@ -95,7 +127,7 @@
         <!-- LOGOUT -->
 
         <!-- LANGUAGES -->
-        <v-menu offset-y>
+        <v-menu offset-y v-if="!isLogged">
           <v-btn flat slot="activator">
             <v-icon left>language</v-icon>
             {{ $t('language-menu-button') }}
@@ -183,7 +215,8 @@
     computed: {
       ...mapGetters([
         'getSideNavigation',
-        'isLogged'
+        'isLogged',
+        'getPrincipalFirstName'
       ]),
       menuItems() {
         if (this.isLogged) {
@@ -232,6 +265,9 @@
             ]
           }
         }
+      },
+      determineHomeLink() {
+        return this.isLogged === 1 ? componentsPaths.mainBoard : componentsPaths.home;
       }
     },
     created() {
