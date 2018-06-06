@@ -17,8 +17,6 @@ import org.springframework.web.context.request.WebRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import static me.grudzien.patryk.utils.log.LogMarkers.CONTROLLER_MARKER;
-
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.domain.dto.registration.UserRegistrationDto;
 import me.grudzien.patryk.domain.dto.responses.CustomResponse;
@@ -26,6 +24,8 @@ import me.grudzien.patryk.domain.dto.responses.SuccessResponse;
 import me.grudzien.patryk.handlers.web.HttpResponseHandler;
 import me.grudzien.patryk.service.registration.UserRegistrationService;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
+
+import static me.grudzien.patryk.utils.log.LogMarkers.CONTROLLER_MARKER;
 
 @Log4j2
 @RestController
@@ -53,7 +53,6 @@ public class UserRegistrationController {
 	public ResponseEntity<CustomResponse> registerUserAccount(@RequestBody @Valid final UserRegistrationDto userRegistrationDto,
 	                                                          final BindingResult bindingResult, final WebRequest webRequest) {
 		log.info(CONTROLLER_MARKER, "Inside: {}", customApplicationProperties.getEndpoints().getRegistration().getRootRegisterUserAccount());
-		// TODO: catch "PSQLException" in case of DB ConstraintViolationExceptions
 		final String message = localeMessagesCreator.buildLocaleMessageWithParam("register-user-account-success",
 		                                                                         webRequest, userRegistrationDto.getEmail());
 		userRegistrationService.registerNewCustomUserAccount(userRegistrationDto, bindingResult, webRequest);

@@ -17,7 +17,9 @@ public final class LocaleMessagesHelper {
 	@Value("${custom.properties.messages-language.header}")
 	private String messagesLanguageHeader;
 
-	private LocaleMessagesHelper() {}
+	private LocaleMessagesHelper() {
+		throw new UnsupportedOperationException("Creating object of this class is not allowed!");
+	}
 
 	public <T> Locale buildLocale(final T request) {
 		if (request instanceof WebRequest) {
