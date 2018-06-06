@@ -36,7 +36,7 @@ import me.grudzien.patryk.domain.entities.vehicle.Vehicle;
 @Entity
 @Table(name = "CUSTOM_USER", uniqueConstraints = @UniqueConstraint(columnNames = {"email", "username"}))
 @Data
-@ToString(exclude = {"username", "password", "lastPasswordResetDate", "roles", "vehicles"})
+@ToString(exclude = {"password", "lastPasswordResetDate", "roles", "vehicles"})
 @AllArgsConstructor
 @Builder(builderMethodName = "Builder")
 @SequenceGenerator(name = "customUserGenerator", sequenceName = "customUserSequence", allocationSize = 1)
@@ -46,11 +46,6 @@ public class CustomUser {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "customUserGenerator")
 	@Column(name = "ID")
 	private Long id;
-
-	@Column(name = "USERNAME", length = 100, unique = true)
-	@NotNull
-	@Size(min = 4, max = 100)
-	private String username;
 
 	@Column(name = "FIRST_NAME", length = 50)
 	@NotNull
@@ -93,11 +88,12 @@ public class CustomUser {
 
 	@OneToMany(mappedBy = "customUser")
 	@JsonBackReference
+	// @Builder would ignore the initializing expression entirely without this annotation below
+	@Builder.Default
 	private List<Vehicle> vehicles = Lists.newArrayList();
 
 	public CustomUser() {
 		this.isEnabled = false;
 		this.createdDate = new Date();
-		this.username = this.firstName + "-" + this.lastName;
 	}
 }

@@ -9,7 +9,9 @@ import org.apache.logging.log4j.MarkerManager;
 public final class LogMarkers {
 
 	// disabling class object creation
-	private LogMarkers() {}
+	private LogMarkers() {
+		throw new UnsupportedOperationException("Creating object of this class is not allowed!");
+	}
 
 	public static final Marker FLOW_MARKER = MarkerManager.getMarker("FLOW");
 	public static final Marker CONTROLLER_MARKER = MarkerManager.getMarker("CONTROLLER");

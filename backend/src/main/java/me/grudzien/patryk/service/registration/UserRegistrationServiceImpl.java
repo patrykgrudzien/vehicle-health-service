@@ -21,28 +21,28 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.stream.Collectors;
 
-import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
-
 import me.grudzien.patryk.domain.dto.registration.UserRegistrationDto;
+import me.grudzien.patryk.domain.entities.engine.Engine;
 import me.grudzien.patryk.domain.entities.registration.CustomUser;
 import me.grudzien.patryk.domain.entities.registration.EmailVerificationToken;
 import me.grudzien.patryk.domain.entities.registration.Role;
 import me.grudzien.patryk.domain.entities.vehicle.Vehicle;
-import me.grudzien.patryk.domain.entities.engine.Engine;
+import me.grudzien.patryk.domain.enums.RoleName;
 import me.grudzien.patryk.domain.enums.engine.EngineType;
 import me.grudzien.patryk.domain.enums.vehicle.VehicleType;
-import me.grudzien.patryk.domain.enums.RoleName;
 import me.grudzien.patryk.events.registration.OnRegistrationCompleteEvent;
 import me.grudzien.patryk.exceptions.registration.CustomUserValidationException;
 import me.grudzien.patryk.exceptions.registration.TokenExpiredException;
 import me.grudzien.patryk.exceptions.registration.TokenNotFoundException;
 import me.grudzien.patryk.exceptions.registration.UserAlreadyExistsException;
 import me.grudzien.patryk.handlers.web.HttpResponseHandler;
+import me.grudzien.patryk.repository.engine.EngineRepository;
 import me.grudzien.patryk.repository.registration.CustomUserRepository;
 import me.grudzien.patryk.repository.registration.EmailVerificationTokenRepository;
 import me.grudzien.patryk.repository.vehicle.VehicleRepository;
-import me.grudzien.patryk.repository.engine.EngineRepository;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
+
+import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
 
 @Log4j2
 @Service
@@ -100,7 +100,6 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 		if (!bindingResult.hasErrors()) {
 			log.info("No validation errors during user registration.");
 			final CustomUser customUser = CustomUser.Builder()
-			                                        .username(userRegistrationDto.getFirstName() + userRegistrationDto.getLastName())
 			                                        .firstName(userRegistrationDto.getFirstName())
 			                                        .lastName(userRegistrationDto.getLastName())
 			                                        .email(userRegistrationDto.getEmail())
