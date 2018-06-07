@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.ToString;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.google.common.collect.Lists;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -88,9 +87,7 @@ public class CustomUser {
 
 	@OneToMany(mappedBy = "customUser")
 	@JsonBackReference
-	// @Builder would ignore the initializing expression entirely without this annotation below
-	@Builder.Default
-	private List<Vehicle> vehicles = Lists.newArrayList();
+	private List<Vehicle> vehicles;
 
 	public CustomUser() {
 		this.isEnabled = false;
