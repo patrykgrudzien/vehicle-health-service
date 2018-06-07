@@ -9,13 +9,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mobile.device.Device;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.WebRequest;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
@@ -56,8 +59,12 @@ public class JwtTokenUtil implements Serializable {
 	private static final String AUDIENCE_MOBILE = "mobile";
 	private static final String AUDIENCE_TABLET = "tablet";
 
-	private static String secret;
-	private static Long expiration;
+	public static final String BEARER = "Bearer ";
+	public static final int JWT_TOKEN_BEGIN_INDEX = 7;
+
+	private static String tokenSecret;
+	private static String tokenHeader;
+	private static Long tokenExpiration;
 
 	private final CustomApplicationProperties customApplicationProperties;
 
@@ -70,10 +77,11 @@ public class JwtTokenUtil implements Serializable {
 	public void init() {
 		log.info(LogMarkers.FLOW_MARKER, "init() inside >>>> JwtTokenUtil");
 
-		JwtTokenUtil.secret = customApplicationProperties.getJwt().getSecret();
-		JwtTokenUtil.expiration = customApplicationProperties.getJwt().getExpiration();
+		tokenSecret = customApplicationProperties.getJwt().getSecret();
+		tokenHeader = customApplicationProperties.getJwt().getHeader();
+		tokenExpiration = customApplicationProperties.getJwt().getExpiration();
 
-		log.info(LogMarkers.FLOW_MARKER, "Token expiration >>>> {}", expiration);
+		log.info(LogMarkers.FLOW_MARKER, "Token tokenExpiration >>>> {}", tokenExpiration);
 	}
 
 	public static class Retriever {
@@ -100,7 +108,19 @@ public class JwtTokenUtil implements Serializable {
 		}
 
 		public static Claims getAllClaimsFromToken(final String token) {
-			return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+			return Jwts.parser().setSigningKey(tokenSecret).parseClaimsJws(token).getBody();
+		}
+
+		public static <T> String getJwtTokenFromRequest(final T request) {
+			if (request instanceof WebRequest) {
+				return Objects.requireNonNull(((WebRequest) request).getHeader(tokenHeader), "NO \"Authorization\" header found!")
+				              .substring(JWT_TOKEN_BEGIN_INDEX);
+			} else if (request instanceof HttpServletRequest) {
+				return Objects.requireNonNull(((HttpServletRequest) request).getHeader(tokenHeader), "NO \"Authorization\" header found!")
+				              .substring(JWT_TOKEN_BEGIN_INDEX);
+			} else {
+				return "No JWT Token found!";
+			}
 		}
 	}
 
@@ -117,7 +137,7 @@ public class JwtTokenUtil implements Serializable {
 			log.info(LogMarkers.METHOD_INVOCATION_MARKER, "JWT token generated inside >>>> doGenerateToken() >>>> JwtTokenUtil");
 
 			return Jwts.builder().setClaims(claims).setSubject(userEmail).setAudience(audience).setIssuedAt(new Date())
-			           .setExpiration(expirationDate).signWith(SignatureAlgorithm.HS512, secret).compact();
+			           .setExpiration(expirationDate).signWith(SignatureAlgorithm.HS512, tokenSecret).compact();
 		}
 
 		public String refreshToken(final String token) {
@@ -127,12 +147,12 @@ public class JwtTokenUtil implements Serializable {
 			claims.setIssuedAt(new Date());
 			claims.setExpiration(expirationDate);
 
-			return Jwts.builder().setClaims(claims).signWith(SignatureAlgorithm.HS512, secret).compact();
+			return Jwts.builder().setClaims(claims).signWith(SignatureAlgorithm.HS512, tokenSecret).compact();
 		}
 
 		public static Date calculateExpirationDate(final Date createdDate) {
 			// token will be valid for 15 minutes (900 000 milliseconds)
-			return new Date(createdDate.getTime() + expiration);
+			return new Date(createdDate.getTime() + tokenExpiration);
 		}
 
 		public static String generateAudience(final Device device) {

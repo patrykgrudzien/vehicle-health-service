@@ -12,9 +12,8 @@ import me.grudzien.patryk.domain.entities.registration.Role;
 
 public final class JwtUserFactory {
 
-	// disabling default constructor
 	private JwtUserFactory() {
-
+		throw new UnsupportedOperationException("Creating object of this class is not allowed!");
 	}
 
 	public static JwtUser create(final CustomUser customUser) {

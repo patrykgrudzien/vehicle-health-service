@@ -33,7 +33,7 @@ import java.util.List;
 import me.grudzien.patryk.domain.entities.vehicle.Vehicle;
 
 @Entity
-@Table(name = "CUSTOM_USER", uniqueConstraints = @UniqueConstraint(columnNames = {"email", "username"}))
+@Table(name = "CUSTOM_USER", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
 @Data
 @ToString(exclude = {"password", "lastPasswordResetDate", "roles", "vehicles"})
 @AllArgsConstructor
