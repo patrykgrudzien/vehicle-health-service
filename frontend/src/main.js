@@ -1,16 +1,17 @@
-import Vue       from 'vue';
-import VueRouter from 'vue-router';
-import allRoutes from './router/allRoutes';
-import axios     from 'axios';
-import VueAxios  from 'vue-axios';
-import App       from './App';
-import store     from './store/store';
-import Vuetify   from 'vuetify';
+import Vue             from 'vue';
+import VueRouter       from 'vue-router';
+import allRoutes       from './router/allRoutes';
+import axios           from 'axios';
+import VueAxios        from 'vue-axios';
+import App             from './App';
+import store           from './store/store';
+import Vuetify         from 'vuetify';
 import 'vuetify/dist/vuetify.min.css';
-import MyAlert   from './shared/MyAlert';
-import MyDialog   from './shared/MyDialog';
-import i18n      from './lang/i18n';
-import cookieHelper from './cookieHelper';
+import MyAlert         from './shared/MyAlert';
+import MyDialog        from './shared/MyDialog';
+import i18n            from './lang/i18n';
+import cookieHelper    from './cookieHelper';
+import NavigationGuard from './router/NavigationGuard';
 
 // --------- AXIOS ---------
 // PRODUCTION
@@ -45,25 +46,10 @@ export const myRouter = new VueRouter({
   mode: 'history'
 });
 
-myRouter.beforeEach((to, from, next) => {
-  if (to.path === componentsPaths.mainBoard && to.meta.requiresAuth && store.getters.isLogged === null) {
-    // PRODUCTION
-    next(componentsPaths.authenticationRequired);
-    // DEVELOPMENT
-    // next();
-  }
-  else if (to.path === componentsPaths.mainBoard && store.getters.getPrincipalFirstName === null && store.getters.isLogged !== null) {
-    store.commit('setPrincipalFirstName', localStorage.getItem('principalFirstName'));
-    next();
-  }
-  else {
-    next();
-  }
-});
+myRouter.beforeEach(NavigationGuard);
 
 // --------- VUETIFY ---------
 import colors from 'vuetify/es5/util/colors';
-import componentsPaths from "./componentsPaths";
 
 Vue.use(Vuetify, {
   theme: {

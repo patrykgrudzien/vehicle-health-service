@@ -87,6 +87,8 @@ export default {
 
   setLang({commit}, payload) {
     commit(types.SET_LANG, payload);
+    commit('clearServerExceptionResponse');
+    commit('clearServerSuccessResponse');
   },
 
   setDialogTextFieldData({commit}, payload) {
