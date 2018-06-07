@@ -3,6 +3,7 @@ package me.grudzien.patryk.controller.login;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,7 +34,7 @@ public class PrincipalController {
 
 	@GetMapping("/firstname")
 	@PreAuthorize("isAuthenticated()")
-	public String getPrincipalUserFirstName(final WebRequest webRequest) {
-		return getPrincipalUserFromAuthToken(webRequest).getFirstname();
+	public String getPrincipalUserFirstName() {
+		return SecurityContextHolder.getContext().getAuthentication().getName();
 	}
 }

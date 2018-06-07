@@ -9,7 +9,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.request.WebRequest;
 
 import static me.grudzien.patryk.utils.log.LogMarkers.CONTROLLER_MARKER;
 
@@ -35,9 +34,9 @@ public class SecuredResourceController {
 
 	@GetMapping("${custom.properties.endpoints.server.health-check}")
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<CustomResponse> healthCheck(final WebRequest webRequest) {
+	public ResponseEntity<CustomResponse> healthCheck() {
 		log.info(CONTROLLER_MARKER, "Inside: {}", customApplicationProperties.getEndpoints().getServer().getRootHealthCheck());
-		final String message = localeMessagesCreator.buildLocaleMessage("health-check-secured-resource", webRequest);
+		final String message = localeMessagesCreator.buildLocaleMessage("health-check-secured-resource");
 		return new ResponseEntity<>(new SuccessResponse(message), HttpStatus.OK);
 	}
 }

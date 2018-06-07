@@ -4,7 +4,6 @@ import lombok.extern.log4j.Log4j2;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.WebRequest;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -37,36 +36,36 @@ public class HttpResponseHandler {
 		this.localeMessagesCreator = localeMessagesCreator;
 	}
 
-	public void redirectUserToEmailTokenExpiredUrl(final WebRequest webRequest, final HttpServletResponse response) {
+	public void redirectUserToEmailTokenExpiredUrl(final HttpServletResponse response) {
 		try {
 			response.sendRedirect(herokuAppEndpointResolver.determineBaseAppUrlForConfirmRegistration() +
 			                      customApplicationProperties.getEndpoints().getRegistration().getConfirmedTokenExpired());
 			log.info("User successfully redirected to registration confirmed token expired url.");
 		} catch (final IOException exception) {
 			log.error(LogMarkers.EXCEPTION_MARKER, "Cannot redirect user to registration confirmed token expired url.");
-			throw new RedirectionException(localeMessagesCreator.buildLocaleMessage("cannot-redirect-to-registration-confirmed-token-expired-url", webRequest));
+			throw new RedirectionException(localeMessagesCreator.buildLocaleMessage("cannot-redirect-to-registration-confirmed-token-expired-url"));
 		}
 	}
 
-	public void redirectUserToConfirmedUrl(final WebRequest webRequest, final HttpServletResponse response) {
+	public void redirectUserToConfirmedUrl(final HttpServletResponse response) {
 		try {
 			response.sendRedirect(herokuAppEndpointResolver.determineBaseAppUrlForConfirmRegistration() +
 			                      customApplicationProperties.getEndpoints().getRegistration().getConfirmed());
 			log.info("User successfully redirected to registration confirmed url.");
 		} catch (final IOException exception) {
 			log.error(LogMarkers.EXCEPTION_MARKER, "Cannot redirect user to registration confirmed url.");
-			throw new RedirectionException(localeMessagesCreator.buildLocaleMessage("cannot-redirect-to-registration-confirmed-url", webRequest));
+			throw new RedirectionException(localeMessagesCreator.buildLocaleMessage("cannot-redirect-to-registration-confirmed-url"));
 		}
 	}
 
-	public void redirectUserToEmailTokenNotFoundUrl(final WebRequest webRequest, final HttpServletResponse response) {
+	public void redirectUserToEmailTokenNotFoundUrl(final HttpServletResponse response) {
 		try {
 			response.sendRedirect(herokuAppEndpointResolver.determineBaseAppUrlForConfirmRegistration() +
 			                      customApplicationProperties.getEndpoints().getRegistration().getConfirmedTokenNotFound());
 			log.info("User successfully redirected to registration confirmed token not found url.");
 		} catch (final IOException exception) {
 			log.error(LogMarkers.EXCEPTION_MARKER, "Cannot redirect user to registration confirmed token not found url.");
-			throw new RedirectionException(localeMessagesCreator.buildLocaleMessage("cannot-redirect-to-registration-confirmed-token-not-found-url", webRequest));
+			throw new RedirectionException(localeMessagesCreator.buildLocaleMessage("cannot-redirect-to-registration-confirmed-token-not-found-url"));
 		}
 	}
 }

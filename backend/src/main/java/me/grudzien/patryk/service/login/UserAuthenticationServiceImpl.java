@@ -10,7 +10,6 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.WebRequest;
 
 import java.util.Objects;
 
@@ -45,8 +44,7 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 	 * {@link me.grudzien.patryk.exceptions.login.UserDisabledAuthenticationException} will be thrown
 	 */
 	@Override
-	public String authenticateAndGenerateToken(final JwtAuthenticationRequest authenticationRequest, final Device device,
-	                                           final WebRequest webRequest) {
+	public String authenticateAndGenerateToken(final JwtAuthenticationRequest authenticationRequest, final Device device) {
 
 		final String email = authenticationRequest.getEmail();
 		final String password = authenticationRequest.getPassword();
@@ -73,11 +71,11 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 		} catch (final DisabledException exception) {
 			log.error(LogMarkers.EXCEPTION_MARKER, "User with {} is disabled! Error message -> {}", email, exception.getMessage());
 			// it is checked in (AccountStatusUserDetailsChecker implements UserDetailsChecker)
-			throw new UserDisabledAuthenticationException(localeMessagesCreator.buildLocaleMessage("user-disabled-exception", webRequest));
+			throw new UserDisabledAuthenticationException(localeMessagesCreator.buildLocaleMessage("user-disabled-exception"));
 		} catch (final BadCredentialsException exception) {
 			log.error(LogMarkers.EXCEPTION_MARKER, "E-mail address or password is not correct! Error message -> {}", exception.getMessage());
 			// it is checked in (AbstractUserDetailsAuthenticationProvider)
-			throw new BadCredentialsAuthenticationException(localeMessagesCreator.buildLocaleMessage("bad-credentials-exception", webRequest));
+			throw new BadCredentialsAuthenticationException(localeMessagesCreator.buildLocaleMessage("bad-credentials-exception"));
 		}
 	}
 }

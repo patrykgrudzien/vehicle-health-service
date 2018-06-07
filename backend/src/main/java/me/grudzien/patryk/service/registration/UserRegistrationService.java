@@ -14,7 +14,7 @@ public interface UserRegistrationService {
 
 	void registerNewCustomUserAccount(UserRegistrationDto userRegistrationDto, BindingResult bindingResult, WebRequest webRequest);
 
-	void confirmRegistration(String emailVerificationToken, HttpServletResponse response, WebRequest webRequest);
+	void confirmRegistration(String emailVerificationToken, HttpServletResponse response);
 
 	CustomUser getCustomUserFromEmailVerificationToken(String emailVerificationToken);
 
