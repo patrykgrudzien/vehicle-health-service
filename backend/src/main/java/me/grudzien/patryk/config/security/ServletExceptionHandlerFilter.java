@@ -24,16 +24,19 @@ import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
 import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 
 import me.grudzien.patryk.domain.dto.responses.ExceptionResponse;
+import me.grudzien.patryk.utils.i18n.LocaleMessagesHelper;
 
 @Log4j2
 @Component
 public class ServletExceptionHandlerFilter extends OncePerRequestFilter {
 
 	private final ObjectMapper objectMapper;
+	private final LocaleMessagesHelper localeMessagesHelper;
 
 	@Autowired
-	public ServletExceptionHandlerFilter(final ObjectMapper objectMapper) {
+	public ServletExceptionHandlerFilter(final ObjectMapper objectMapper, final LocaleMessagesHelper localeMessagesHelper) {
 		this.objectMapper = objectMapper;
+		this.localeMessagesHelper = localeMessagesHelper;
 	}
 
 	@Override
@@ -41,6 +44,19 @@ public class ServletExceptionHandlerFilter extends OncePerRequestFilter {
 			throws ServletException, IOException {
 
 		log.info(FLOW_MARKER, "Inside >>>> ServletExceptionHandlerFilter");
+
+		/**
+		 * Method {@link me.grudzien.patryk.utils.i18n.LocaleMessagesHelper#determineApplicationLocale(Object)} must be called in the first
+		 * step because it sets locale according to header coming from UI.
+		 *
+		 * Filters' order is specified in:
+		 * {@link me.grudzien.patryk.config.security.SecurityConfig#configure(org.springframework.security.config.annotation.web.builders.HttpSecurity)}
+		 *
+		 * Later {@link me.grudzien.patryk.utils.i18n.LocaleMessagesHelper#getLocale()} is used in
+		 * {@link me.grudzien.patryk.utils.i18n.LocaleMessagesCreator#buildLocaleMessage(String)} related methods to create i18n messages
+		 * without passing WebRequest or HttpServletRequest object later in the code flow.
+		 */
+		localeMessagesHelper.determineApplicationLocale(request);
 
 		try {
 			filterChain.doFilter(request, response);

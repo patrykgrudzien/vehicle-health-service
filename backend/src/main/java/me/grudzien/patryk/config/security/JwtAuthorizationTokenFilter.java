@@ -2,11 +2,13 @@ package me.grudzien.patryk.config.security;
 
 import lombok.extern.log4j.Log4j2;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -16,19 +18,21 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
+import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
+
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
+import me.grudzien.patryk.service.security.MyUserDetailsService;
 import me.grudzien.patryk.utils.log.LogMarkers;
 import me.grudzien.patryk.utils.security.JwtTokenUtil;
 
-import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
-
 @Log4j2
+@Component
 public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
 
 	private final String tokenHeader;
 	private final UserDetailsService userDetailsService;
 
-	public JwtAuthorizationTokenFilter(final UserDetailsService userDetailsService,
+	public JwtAuthorizationTokenFilter(@Qualifier(MyUserDetailsService.BEAN_NAME) final UserDetailsService userDetailsService,
 	                                   final CustomApplicationProperties customApplicationProperties) {
 		this.userDetailsService = userDetailsService;
 		this.tokenHeader = customApplicationProperties.getJwt().getHeader();

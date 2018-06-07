@@ -15,6 +15,7 @@ import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 
 import me.grudzien.patryk.domain.entities.registration.CustomUser;
 import me.grudzien.patryk.repository.registration.CustomUserRepository;
+import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.security.JwtUserFactory;
 
 @Log4j2
@@ -23,11 +24,14 @@ import me.grudzien.patryk.utils.security.JwtUserFactory;
 public class MyUserDetailsService implements UserDetailsService {
 
 	public static final String BEAN_NAME = "myUserDetailsService";
+
 	private final CustomUserRepository customUserRepository;
+	private final LocaleMessagesCreator localeMessagesCreator;
 
 	@Autowired
-	public MyUserDetailsService(final CustomUserRepository customUserRepository) {
+	public MyUserDetailsService(final CustomUserRepository customUserRepository, final LocaleMessagesCreator localeMessagesCreator) {
 		this.customUserRepository = customUserRepository;
+		this.localeMessagesCreator = localeMessagesCreator;
 	}
 
 	@Override
@@ -38,7 +42,7 @@ public class MyUserDetailsService implements UserDetailsService {
 		final CustomUser customUser = customUserRepository.findByEmail(email);
 		if (customUser == null) {
 			log.error(EXCEPTION_MARKER, "No user found for specified email: {}", email);
-			throw new UsernameNotFoundException("No user found for specified email: " + email);
+			throw new UsernameNotFoundException(localeMessagesCreator.buildLocaleMessageWithParam("user-not-found-by-email", email));
 		} else {
 			log.info(FLOW_MARKER, "User with {} address found.", email);
 			return JwtUserFactory.create(customUser);

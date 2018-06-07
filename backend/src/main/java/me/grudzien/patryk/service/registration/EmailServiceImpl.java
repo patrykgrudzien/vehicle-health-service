@@ -8,7 +8,6 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.WebRequest;
 
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
@@ -64,13 +63,13 @@ public class EmailServiceImpl implements EmailService {
 	}
 
 	@Override
-	public void sendMessageUsingTemplate(final EmailDto emailDto, final WebRequest webRequest) {
+	public void sendMessageUsingTemplate(final EmailDto emailDto) {
 		// context object holds all the (key, value) pairs we can use inside the template
 		final Context context = new Context();
 		context.setVariables(emailDto.getTemplatePlaceholders());
 
 		// we process the HTML Thymeleaf Email Template by calling process() method
-		final String htmlTemplate = templateEngine.process("email-template_" + localeMessagesHelper.buildLocale(webRequest), context);
+		final String htmlTemplate = templateEngine.process("email-template_" + localeMessagesHelper.getLocale(), context);
 
 		final MimeMessage message = javaMailSender.createMimeMessage();
 		try {

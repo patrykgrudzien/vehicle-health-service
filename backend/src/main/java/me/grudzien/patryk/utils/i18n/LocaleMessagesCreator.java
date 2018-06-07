@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.WebRequest;
 
 import java.util.List;
 
@@ -25,22 +24,18 @@ public class LocaleMessagesCreator {
 		this.localeMessagesHelper = localeMessagesHelper;
 	}
 
-	@SuppressWarnings("SameParameterValue")
-	public <T> String buildLocaleMessage(final String messageCode, final T webRequest) {
-		return messageSource.getMessage(messageCode, new Object[]{}, DEFAULT_MESSAGE, localeMessagesHelper.buildLocale(webRequest));
+	public String buildLocaleMessage(final String messageCode) {
+		return messageSource.getMessage(messageCode, new Object[]{}, DEFAULT_MESSAGE, localeMessagesHelper.getLocale());
 	}
 
-	@SuppressWarnings("SameParameterValue")
-	public String buildLocaleMessageWithParam(final String messageCode, final WebRequest webRequest, @Nullable final Object param) {
+	public String buildLocaleMessageWithParam(final String messageCode, @Nullable final Object param) {
 		return localeMessagesHelper.removeSquareBracketsFromMessage(messageSource.getMessage(messageCode, new Object[]{param}, DEFAULT_MESSAGE,
-		                                                                                     localeMessagesHelper.buildLocale(webRequest)));
+		                                                                                     localeMessagesHelper.getLocale()));
 	}
 
 	@SafeVarargs
-	@SuppressWarnings("SameParameterValue")
-	public final String buildLocaleMessageWithParams(final String messageCode, final WebRequest webRequest,
-	                                                 @Nullable final List<Object>... params) {
+	public final String buildLocaleMessageWithParams(final String messageCode, @Nullable final List<Object>... params) {
 		return localeMessagesHelper.removeSquareBracketsFromMessage(messageSource.getMessage(messageCode, params, DEFAULT_MESSAGE,
-		                                                                                     localeMessagesHelper.buildLocale(webRequest)));
+		                                                                                     localeMessagesHelper.getLocale()));
 	}
 }

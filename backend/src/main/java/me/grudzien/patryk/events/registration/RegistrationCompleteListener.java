@@ -20,8 +20,8 @@ import me.grudzien.patryk.utils.HerokuAppEndpointResolver;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 
 /**
- * That listener is going to handle OnRegistrationCompleteEvent which is published by
- * CustomUser object in CustomUserServiceImpl after saving new user to database.
+ * That listener is going to handle {@link OnRegistrationCompleteEvent} which is published by
+ * {@link CustomUser} object in {@link me.grudzien.patryk.service.registration.UserRegistrationServiceImpl} after saving new user to database.
  */
 @Log4j2
 @Component
@@ -58,7 +58,7 @@ public class RegistrationCompleteListener implements ApplicationListener<OnRegis
 		log.info(FLOW_MARKER, "Created token: {}", token);
 
 		final String recipientAddress = userBeingRegistered.getEmail();
-		final String subject = localeMessagesCreator.buildLocaleMessage("registration-email-subject", event.getWebRequest());
+		final String subject = localeMessagesCreator.buildLocaleMessage("registration-email-subject");
 		final String confirmationUrl = event.getApplicationUrl() + customApplicationProperties.getEndpoints()
 		                                                                                      .getRegistration()
 		                                                                                      .getRootConfirmationUrl() + token;
@@ -73,8 +73,7 @@ public class RegistrationCompleteListener implements ApplicationListener<OnRegis
 			                                                        .put("confirmationUrl",
 			                                                             herokuAppEndpointResolver.determineBaseAppUrlForVerificationToken() + confirmationUrl)
 			                                                        .build())
-		                                              .build(),
-		                                      event.getWebRequest());
+		                                              .build());
 		log.info(FLOW_MARKER, "{} email has been sent to {}", subject, recipientAddress);
 	}
 }

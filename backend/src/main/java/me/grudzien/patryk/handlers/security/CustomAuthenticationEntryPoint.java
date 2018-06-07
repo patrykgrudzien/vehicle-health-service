@@ -51,7 +51,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 		// set up the custom response body
 		final AuthenticationEntryPointResponse customResponseBody = new AuthenticationEntryPointResponse(
 				HttpResponseHandler.SECURED_RESOURCE_CODE,
-				localeMessagesCreator.buildLocaleMessage("secured-resource-message", request));
+				localeMessagesCreator.buildLocaleMessage("secured-resource-message"));
 		// write the custom response body
 		objectMapper.writeValue(response.getOutputStream(), customResponseBody);
 		// commit the response

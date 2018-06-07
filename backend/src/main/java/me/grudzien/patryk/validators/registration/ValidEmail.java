@@ -15,7 +15,8 @@ import java.lang.annotation.Target;
 @Documented
 public @interface ValidEmail {
 
-	String message() default "Provided email has incorrect format.";
+	// value of this String comes from -> resources/locale/messages_xx.properties
+	String message() default "valid-email-message-default";
 
 	Class<?>[] groups() default {};
 
