@@ -16,11 +16,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
-
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.utils.log.LogMarkers;
 import me.grudzien.patryk.utils.security.JwtTokenUtil;
+
+import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
 
 @Log4j2
 public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
@@ -45,8 +45,8 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
 
 		String email = null;
 		String authToken = null;
-		if (requestHeader != null && requestHeader.startsWith("Bearer ")) {
-			authToken = requestHeader.substring(7);
+		if (requestHeader != null && requestHeader.startsWith(JwtTokenUtil.BEARER)) {
+			authToken = requestHeader.substring(JwtTokenUtil.JWT_TOKEN_BEGIN_INDEX);
 			email = JwtTokenUtil.Retriever.getUserEmailFromToken(authToken);
 		} else {
 			log.warn(EXCEPTION_MARKER, "Couldn't find bearer string, will ignore the header");

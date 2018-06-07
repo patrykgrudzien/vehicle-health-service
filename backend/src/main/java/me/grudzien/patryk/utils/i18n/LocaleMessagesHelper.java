@@ -17,9 +17,8 @@ public final class LocaleMessagesHelper {
 	@Value("${custom.properties.messages-language.header}")
 	private String messagesLanguageHeader;
 
-	private LocaleMessagesHelper() {
-		throw new UnsupportedOperationException("Creating object of this class is not allowed!");
-	}
+	// cannot throw new UnsupportedOperationException("Creating object of this class is not allowed!") here -> Spring requires it!
+	private LocaleMessagesHelper() {}
 
 	public <T> Locale buildLocale(final T request) {
 		if (request instanceof WebRequest) {
