@@ -58,7 +58,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		log.info(LogMarkers.FLOW_MARKER, "Authentication Provider configured globally.");
 	}
 
-	// This method is overriden to expose the (AuthenticationManager) BEAN from "configure(AuthenticationManagerBuilder)"
+	/**
+	 * This method is overriden to expose the {@link org.springframework.security.authentication.AuthenticationManager} bean from
+	 * {@link org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter#configure
+	 * (org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder)}
+	 */
 	@Bean
 	@Override
 	public AuthenticationManager authenticationManagerBean() throws Exception {
