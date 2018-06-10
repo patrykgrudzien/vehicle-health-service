@@ -81,13 +81,10 @@ export default {
   },
   // -------------- REGISTRATION FORM -------------- //
 
-  setDialogTextFieldData(state, payload) {
-    state.dialogTextFieldData = payload;
+  setPrincipalUserFirstName(state, payload) {
+    state.principalUserFirstName = payload;
   },
-  setPrincipalFirstName(state, payload) {
-    state.principalFirstName = payload;
-  },
-  clearPrincipalFirstName(state) {
-    state.principalFirstName = null;
+  clearPrincipalUserFirstName(state) {
+    state.principalUserFirstName = null;
   }
 }
