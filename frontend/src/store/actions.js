@@ -52,11 +52,13 @@ export default {
         if (!error.response) {
           commit('setServerRunning', false);
           commit('setLoading', false);
+          commit('clearPrincipalUserFirstName');
           window.scrollTo(0, 0);
         } else {
           commit('setLoading', false);
           commit('setServerExceptionResponse', error.response.data);
           commit('clearServerSuccessResponse');
+          commit('clearPrincipalUserFirstName');
           window.scrollTo(0, 0);
         }
       });
@@ -64,11 +66,10 @@ export default {
 
   logout({commit}) {
     localStorage.removeItem('token');
-    localStorage.removeItem('principalFirstName');
     commit(types.LOGOUT);
-    commit('clearPrincipalFirstName');
     commit('clearServerExceptionResponse');
     commit('clearServerSuccessResponse');
+    commit('clearPrincipalUserFirstName');
     myRouter.push({path: componentsPaths.logoutSuccessful});
     window.scrollTo(0, 0);
   },
@@ -91,11 +92,7 @@ export default {
     commit('clearServerSuccessResponse');
   },
 
-  setDialogTextFieldData({commit}, payload) {
-    commit('setDialogTextFieldData', payload);
-  },
-
-  setPrincipalFirstName({commit}, payload) {
-    commit('setPrincipalFirstName', payload);
+  setPrincipalUserFirstName({commit}, payload) {
+    commit('setPrincipalUserFirstName', payload);
   }
 }
