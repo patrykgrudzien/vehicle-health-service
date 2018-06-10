@@ -84,6 +84,7 @@ public class CustomApplicationProperties {
 		public static class Authentication {
 			private String root;
 			private String failureUrl;
+			private String principalUser;
 		}
 
 		@Getter
