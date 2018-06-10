@@ -9,6 +9,5 @@ export default {
   getLoginForm: state => state.loginForm,
   getRegistrationForm: state => state.registrationForm,
   getSideNavigation: state => state.sideNavigation,
-  getDialogTextFieldData: state => state.dialogTextFieldData,
-  getPrincipalFirstName: state => state.principalFirstName
+  getPrincipalUserFirstName: state => state.principalUserFirstName
 };
