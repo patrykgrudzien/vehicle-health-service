@@ -21,7 +21,7 @@
           <v-flex xs8 class="notSelectable">
             <v-text-field
               v-if="includeTextField && includeTextField === true"
-              v-model="dialogTextFieldData"
+              :value="value"
               class="ma-0 pa-0 notSelectable"
               type="text"
               :hint="$t(`${hint}`)"
@@ -56,7 +56,6 @@
 
 <script>
   import {getMessageFromLocale} from "../main";
-  import {mapGetters}           from 'vuex';
   import componentsPaths from '../componentsPaths';
 
   export default {
@@ -94,6 +93,9 @@
       hint: {
         default: '',
         type: String
+      },
+      value: {
+        type: Number
       }
     },
     data() {
@@ -104,13 +106,6 @@
       }
     },
     computed: {
-      ...mapGetters([
-        'getDialogTextFieldData'
-      ]),
-      dialogTextFieldData: {
-        get() {return this.$store.getters.getDialogTextFieldData;},
-        set(value) {this.$store.commit('setDialogTextFieldData', value);}
-      },
       containerClassesWhenTextFieldExists() {
         if (this.includeTextField && this.includeTextField === true) {
           return {
@@ -141,7 +136,7 @@
         }
       },
       disabledIfInputEmpty() {
-        return (!this.getDialogTextFieldData || this.getDialogTextFieldData === null || this.getDialogTextFieldData === '') &&
+        return (!this.value || this.value === null || this.value === '') &&
           this.$route.fullPath.includes(componentsPaths.mainBoard);
       }
     }
