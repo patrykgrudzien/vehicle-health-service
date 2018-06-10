@@ -46,6 +46,7 @@ export const myRouter = new VueRouter({
   mode: 'history'
 });
 
+// --------- NAVIGATION GUARD ---------
 myRouter.beforeEach(NavigationGuard);
 
 // --------- VUETIFY ---------
