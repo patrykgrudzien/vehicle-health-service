@@ -19,6 +19,7 @@ custom:
       authentication:
         root: /auth
         failure-url: /login?error=true
+        principal-user: /principal-user
       logout:
         root: /logout
         success-url: ?logout
