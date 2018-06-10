@@ -39,6 +39,9 @@ public class Vehicle {
 	@Column(name = "ID")
 	private Long id;
 
+	@Column(name = "MILEAGE")
+	private Long mileage;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "CUSTOM_USER_ID")
 	@JsonBackReference

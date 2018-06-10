@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import me.grudzien.patryk.domain.entities.vehicle.Vehicle;
+import me.grudzien.patryk.domain.dto.vehicle.VehicleDto;
 import me.grudzien.patryk.service.vehicle.VehicleService;
 
 @RestController
@@ -20,8 +20,13 @@ public class VehicleController {
 		this.vehicleService = vehicleService;
 	}
 
-	@GetMapping("/{customUserEmail}")
-	public Vehicle getVehicleForCustomUser(@PathVariable("customUserEmail") final String customUserEmail) {
-		return vehicleService.findByCustomUserEmail(customUserEmail);
+	@GetMapping("/{ownerEmailAddress}")
+	public VehicleDto getVehicleDtoForOwnerEmailAddress(@PathVariable("ownerEmailAddress") final String ownerEmailAddress) {
+		return vehicleService.findDtoByOwnerEmailAddress(ownerEmailAddress);
+	}
+
+	@GetMapping("/get-current-mileage/{ownerEmailAddress}")
+	public Long getVehicleCurrentMileage(@PathVariable("ownerEmailAddress") final String ownerEmailAddress) {
+		return vehicleService.findDtoByOwnerEmailAddress(ownerEmailAddress).getMileage();
 	}
 }

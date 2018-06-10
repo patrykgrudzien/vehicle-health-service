@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+import me.grudzien.patryk.domain.dto.vehicle.VehicleDto;
 import me.grudzien.patryk.domain.entities.vehicle.Vehicle;
 import me.grudzien.patryk.repository.vehicle.VehicleRepository;
 
@@ -30,5 +31,12 @@ public class VehicleServiceImpl implements VehicleService {
 		return Optional.ofNullable(vehicleRepository.findByCustomUserEmail(customUserEmail))
 		               // RuntimeException as temporary solution TODO
 		               .orElseThrow(() -> new RuntimeException("No vehicle found for specified user email: " + customUserEmail));
+	}
+
+	@Override
+	public VehicleDto findDtoByOwnerEmailAddress(final String ownerEmailAddress) {
+		return Optional.ofNullable(vehicleRepository.findDtoByOwnerEmailAddress(ownerEmailAddress))
+		               // RuntimeException as temporary solution TODO
+		               .orElseThrow(() -> new RuntimeException("No vehicle found for specified user email: " + ownerEmailAddress));
 	}
 }
