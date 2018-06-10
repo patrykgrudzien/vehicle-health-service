@@ -15,7 +15,8 @@ import java.util.Date;
 @Getter
 @Builder(builderMethodName = "Builder")
 @RequiredArgsConstructor
-@JsonIgnoreProperties({"id", "accountNonExpired", "accountNonLocked", "credentialsNonExpired", "password", "lastPasswordResetDate", "authorities"})
+@JsonIgnoreProperties({"id", "accountNonExpired", "accountNonLocked", "credentialsNonExpired", "password", "lastPasswordResetDate",
+                       "authorities", "username", "enabled"})
 public class JwtUser implements UserDetails {
 
 	private static final long serialVersionUID = -5701766234662554950L;
