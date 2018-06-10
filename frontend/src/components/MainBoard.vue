@@ -6,9 +6,7 @@
               justify-center
               row
               wrap>
-
       <v-flex xs12 sm12 md12 lg12 xl12>
-
         <v-snackbar
           :timeout="0"
           :bottom="true"
@@ -33,21 +31,20 @@
           <span id="mileage-field"
                 class="headline primary--text notSelectable"
                 @click="toggleDialogWindow">
-              {{ getDialogTextFieldData }}
+            {{ mileage.value }}
             </span>
-          <span class="headline notSelectable">
-            km
-          </span>
+          <span class="headline notSelectable">km</span>
         </div>
 
         <!-- MY DIALOG WINDOW WITH MILEAGE INPUT FIELD -->
         <my-dialog :visibility="mileage.editMode"
                    include-text-field
+                   :value="mileage.value"
                    :hint="'update-mileage-text-field-hint'"
                    dialog-title="update-mileage-dialog-title"
                    agree-button-text="mileage-agree-button-text"
                    disagree-button-text="mileage-disagree-button-text"
-                   :agree-button-function="toggleDialogWindow"
+                   :agree-button-function="updateCurrentMileage"
                    :disagree-button-function="toggleDialogWindow"/>
         <!-- MY DIALOG WINDOW WITH MILEAGE INPUT FIELD -->
 
@@ -179,7 +176,8 @@
     data() {
       return {
         mileage: {
-          editMode: false
+          editMode: false,
+          value: null
         }
       }
     },
@@ -196,47 +194,45 @@
       showIntervalsDetails() {
         alert('IN PROGRESS...');
       },
+      updateCurrentMileage() {
+      },
       toggleDialogWindow() {
         this.mileage.editMode = !this.mileage.editMode;
       }
     },
     computed: {
       ...mapGetters([
-        'getDialogTextFieldData',
         'isLogged'
       ]),
       snackbarVisibility() {
-        return (!this.getDialogTextFieldData || this.getDialogTextFieldData === '');
+        return this.mileage.value === null;
       }
     },
-    created() {
+    mounted() {
       if (this.isLogged === 1) {
-        // GET PRINCIPAL USER AFTER SUCCESSFULLY LOGIN PROCESS
-        this.axios.get('/security/principal')
-          .then(response => {
-            localStorage.setItem('principalFirstName', response.data.firstname);
-            this.$store.commit('setPrincipalFirstName', localStorage.getItem('principalFirstName'));
+        // --- PAGE REFRESH EVENT --- //
+        this.$router.onReady(() => {
+          this.axios.get('/principal-user')
+            .then(response => {
+              this.$store.commit('setPrincipalUserFirstName', response.data.firstname);
 
-            // GET (VEHICLE) FOR LOADED PRINCIPAL USER
-            let customUserEmail = response.data.email;
-            this.axios.get(`/vehicles/${customUserEmail}`)
-              .then(response => {
-                // display Vehicle object
-                console.log(response.data);
-              })
-              .catch(error => {
-                // for now if no vehicle found -> RuntimeException("No vehicle found for specified user email") is thrown
-                console.log(error.response.data);
-              });
-            // GET (VEHICLE) FOR LOADED PRINCIPAL USER
+              let ownerEmailAddress = response.data.email;
+              // --- CURRENT MILEAGE --- //
+              this.axios.get(`/vehicles/get-current-mileage/${ownerEmailAddress}`)
+                .then(response => {
+                  this.mileage.value = response.data;
+                })
+                .catch(error => {
+                  console.log(error.response.data);
+                });
+              // --- CURRENT MILEAGE --- //
 
-          })
-          .catch(error => {
-            console.log(error.response.data);
-            this.$store.dispatch('logout');
-            window.scrollTo(0, 0);
-          });
-        // GET PRINCIPAL USER AFTER SUCCESSFULLY LOGIN PROCESS
+            })
+            .catch(error => {
+              console.log(error.response.data);
+            });
+        });
+        // --- PAGE REFRESH EVENT --- //
       }
     }
   }
@@ -253,10 +249,5 @@
 
   .full-width {
     width: 100%;
-  }
-
-  .centerSpanInsideDiv {
-    display: table;
-    margin: 0 auto;
   }
 </style>
