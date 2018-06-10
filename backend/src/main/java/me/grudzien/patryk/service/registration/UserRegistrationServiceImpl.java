@@ -111,6 +111,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 			// TODO: temporary (test purposes)
 			final Engine engine = Engine.Builder().engineType(EngineType.DIESEL).build();
 			final Vehicle vehicle = Vehicle.Builder().vehicleType(VehicleType.CAR).engine(engine).build();
+			vehicle.setMileage(210999L);
 			vehicle.setCustomUser(customUser);
 			engineRepository.save(engine);
 			vehicleRepository.save(vehicle);
