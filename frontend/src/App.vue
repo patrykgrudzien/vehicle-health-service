@@ -14,7 +14,7 @@
         </v-list-tile>
 
         <!-- PRINCIPAL USER (AVATAR) -->
-        <v-list-tile ripple v-if="isLogged === 1">
+        <v-list-tile ripple v-if="isLogged === 1 && getPrincipalUserFirstName !== null">
           <v-list-tile-action>
             <v-icon left>account_circle</v-icon>
           </v-list-tile-action>
@@ -22,7 +22,7 @@
             <v-list-tile-title>
               <span>{{ $t('welcome-principal-user') }}</span>
               <span></span>
-              <span>{{ getPrincipalFirstName }}</span>
+              <span>{{ getPrincipalUserFirstName }}</span>
             </v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
@@ -96,10 +96,10 @@
       <v-toolbar-items class="hidden-sm-and-down">
 
         <!-- PRINCIPAL USER (AVATAR) -->
-        <v-btn flat ripple v-if="isLogged === 1">
+        <v-btn flat ripple v-if="isLogged === 1 && getPrincipalUserFirstName !== null">
           <span>{{ $t('welcome-principal-user') }}</span>
           <span class="ml-1"></span>
-          <span>{{ getPrincipalFirstName }}</span>
+          <span>{{ getPrincipalUserFirstName }}</span>
           <v-icon right dark>
             account_circle
           </v-icon>
@@ -216,7 +216,7 @@
       ...mapGetters([
         'getSideNavigation',
         'isLogged',
-        'getPrincipalFirstName'
+        'getPrincipalUserFirstName'
       ]),
       menuItems() {
         if (this.isLogged) {
