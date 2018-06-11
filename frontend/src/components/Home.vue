@@ -1,49 +1,53 @@
 <template>
   <!-- full size home-background -->
   <v-container id="home-background" fluid fill-height>
-    <v-layout align-center justify-center>
-      <v-flex xs11 sm7 md6 lg6 xl6>
-        <v-card id="cards-container" flat disabled>
-          <v-container grid-list-xs>
-            <v-layout>
-              <v-flex>
-                <v-card-text
-                  :class="text1ComputedClasses">
-                  {{ $t('background-text-1')}}
-                </v-card-text>
-              </v-flex>
-            </v-layout>
-          </v-container>
-          <v-container grid-list-xs>
-            <v-layout>
-              <v-flex xs6>
-                <v-card-text :class="text23ComputedClasses">{{ $t('background-text-2') }}</v-card-text>
-              </v-flex>
-              <v-flex xs6>
-                <v-card-text :class="text23ComputedClasses">{{ $t('background-text-3') }}</v-card-text>
-              </v-flex>
-            </v-layout>
-          </v-container>
-          <v-container grid-list-xs>
-            <v-layout>
-              <v-flex xs6>
-                <v-card-text :class="text45ComputedClasses">{{ $t('background-text-4') }}</v-card-text>
-              </v-flex>
-              <v-flex xs6>
-                <v-card-text :class="text45ComputedClasses">{{ $t('background-text-5') }}</v-card-text>
-              </v-flex>
-            </v-layout>
-          </v-container>
-        </v-card>
-      </v-flex>
-    </v-layout>
+    <transition name="slide-from-left">
+      <v-layout v-if="showAfterCreated" key="slideFromLeft" align-center justify-center>
+        <v-flex xs11 sm7 md6 lg6 xl6>
+          <v-card id="cards-container" flat disabled>
+            <v-container grid-list-xs>
+              <v-layout>
+                <v-flex>
+                  <v-card-text
+                    :class="text1ComputedClasses">
+                    {{ $t('background-text-1')}}
+                  </v-card-text>
+                </v-flex>
+              </v-layout>
+            </v-container>
+            <v-container grid-list-xs>
+              <v-layout>
+                <v-flex xs6>
+                  <v-card-text :class="text23ComputedClasses">{{ $t('background-text-2') }}</v-card-text>
+                </v-flex>
+                <v-flex xs6>
+                  <v-card-text :class="text23ComputedClasses">{{ $t('background-text-3') }}</v-card-text>
+                </v-flex>
+              </v-layout>
+            </v-container>
+            <v-container grid-list-xs>
+              <v-layout>
+                <v-flex xs6>
+                  <v-card-text :class="text45ComputedClasses">{{ $t('background-text-4') }}</v-card-text>
+                </v-flex>
+                <v-flex xs6>
+                  <v-card-text :class="text45ComputedClasses">{{ $t('background-text-5') }}</v-card-text>
+                </v-flex>
+              </v-layout>
+            </v-container>
+          </v-card>
+        </v-flex>
+      </v-layout>
+    </transition>
   </v-container>
 </template>
 
 <script>
   export default {
     data() {
-      return {}
+      return {
+        showAfterCreated: false
+      }
     },
     computed: {
       text1ComputedClasses() {
@@ -82,11 +86,26 @@
           'pa-0': this.$vuetify.breakpoint.xsOnly
         }
       }
+    },
+    created() {
+      // for transition purpose
+      setTimeout(() => {
+        this.showAfterCreated = true;
+      }, 0);
     }
   }
 </script>
 
 <style scoped>
+  .slide-from-left-enter-active, .slide-from-left-leave-active {
+    transition: transform 900ms ease-in-out;
+  }
+
+  .slide-from-left-enter, .slide-from-left-leave-to {
+    opacity: 0;
+    transform: translateX(-125%);
+  }
+
   #cards-container {
     background: rgba(60, 60, 60, 0.7);
     font-family: 'Arsenal', sans-serif;
