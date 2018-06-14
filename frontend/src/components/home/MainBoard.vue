@@ -61,7 +61,8 @@
       <!-- MILEAGE FLEX -->
 
       <!-- CARD 1 -->
-      <v-flex xs10 sm6 md5 :class="card1Classes">
+      <v-flex xs10 sm6 md5
+              :class="card1Classes">
         <v-card disabled class="elevation-12">
           <v-card-media
             src="../../../static/engine-1.jpg"
@@ -81,7 +82,11 @@
             </div>
           </v-card-title>
           <v-card-actions class="centerTextInsideDiv pt-0">
-            <v-btn flat color="primary" @click="showEngineDetails">
+            <v-btn flat
+                   color="primary"
+                   router
+                   :to="`${'/main-board/vehicle/' + ownerId + '/engine'}`"
+                   ripple >
               {{ $t('details-button') }}
             </v-btn>
           </v-card-actions>
@@ -110,7 +115,11 @@
             </div>
           </v-card-title>
           <v-card-actions class="centerTextInsideDiv pt-0">
-            <v-btn flat color="primary" @click="showFluidsDetails">
+            <v-btn flat
+                   color="primary"
+                   router
+                   :to="`${'/main-board/vehicle/' + ownerId + '/fluids'}`"
+                   ripple >
               {{ $t('details-button') }}
             </v-btn>
           </v-card-actions>
@@ -139,7 +148,11 @@
             </div>
           </v-card-title>
           <v-card-actions class="centerTextInsideDiv pt-0">
-            <v-btn flat color="primary" @click="showTiresDetails">
+            <v-btn flat
+                   color="primary"
+                   router
+                   :to="`${'/main-board/vehicle/' + ownerId + '/tires'}`"
+                   ripple >
               {{ $t('details-button') }}
             </v-btn>
           </v-card-actions>
@@ -168,7 +181,11 @@
             </div>
           </v-card-title>
           <v-card-actions class="centerTextInsideDiv pt-0">
-            <v-btn flat color="primary" @click="showIntervalsDetails">
+            <v-btn flat
+                   color="primary"
+                   router
+                   :to="`${'/main-board/vehicle/' + ownerId + '/maintenance-costs'}`"
+                   ripple >
               {{ $t('details-button') }}
             </v-btn>
           </v-card-actions>
@@ -191,23 +208,12 @@
           new: null
         },
         ownerEmailAddress: null,
+        ownerId: null,
         dialogInputFieldValue: null,
         inputFieldAutofocus: false
       }
     },
     methods: {
-      showEngineDetails() {
-        alert('IN PROGRESS...');
-      },
-      showFluidsDetails() {
-        alert('IN PROGRESS...');
-      },
-      showTiresDetails() {
-        alert('IN PROGRESS...');
-      },
-      showIntervalsDetails() {
-        alert('IN PROGRESS...');
-      },
       toggleDialogWindow() {
         this.mileage.editMode = !this.mileage.editMode;
         this.inputFieldAutofocus = !this.inputFieldAutofocus;
@@ -311,6 +317,7 @@
 
               // --- CURRENT MILEAGE --- //
               this.ownerEmailAddress = response.data.email;
+              this.ownerId = response.data.id;
               this.axios.get(`/vehicles/vehicle/get-current-mileage/${window.btoa(this.ownerEmailAddress)}`)
                 .then(response => {
                   this.mileage.current = response.data;
