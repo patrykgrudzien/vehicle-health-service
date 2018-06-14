@@ -112,7 +112,7 @@
   }
 
   #home-background {
-    background: url('../../static/engine-5.jpg') no-repeat center center fixed;
+    background: url('../../../static/engine-5.jpg') no-repeat center center fixed;
     background-size: contain;
     box-shadow: inset 0 0 0 2000px rgba(48, 48, 48, 0.55);
   }

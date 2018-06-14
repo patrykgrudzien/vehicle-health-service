@@ -1,10 +1,10 @@
-import Home                from '../components/Home';
+import Home                from '../components/home/Home';
 import ServerCheck         from '../components/ServerCheck';
 import AboutMe             from '../components/AboutMe';
-import RegistrationForm    from '../components/RegistrationForm';
-import ConfirmRegistration from '../components/ConfirmRegistration';
-import LoginForm           from '../components/LoginForm';
-import MainBoard           from '../components/MainBoard';
+import RegistrationForm    from '../components/registration/RegistrationForm';
+import ConfirmRegistration from '../components/login/ConfirmRegistration';
+import LoginForm           from '../components/login/LoginForm';
+import MainBoard           from '../components/home/MainBoard';
 import componentsPaths     from '../componentsPaths';
 
 export default [

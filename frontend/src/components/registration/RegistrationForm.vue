@@ -209,7 +209,7 @@
 </template>
 
 <script>
-  import {getMessageFromLocale} from '../main';
+  import {getMessageFromLocale} from '../../main';
   import {mapGetters}           from 'vuex';
   import {mapActions}           from 'vuex';
 
