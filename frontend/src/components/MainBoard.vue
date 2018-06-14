@@ -24,28 +24,33 @@
           </v-btn>
         </v-snackbar>
 
-        <div class="text-xs-center">
+        <v-flex class="text-xs-center ma-0 pa-0">
           <span class="headline notSelectable">
             {{ $t('current-mileage-title') }}
           </span>
           <span id="mileage-field"
                 class="headline primary--text notSelectable"
                 @click="toggleDialogWindow">
-            {{ mileage.value }}
+            {{ mileage.current }}
             </span>
           <span class="headline notSelectable">km</span>
-        </div>
+        </v-flex>
 
         <!-- MY DIALOG WINDOW WITH MILEAGE INPUT FIELD -->
         <my-dialog :visibility="mileage.editMode"
                    include-text-field
-                   :value="mileage.value"
+                   :value="mileage.new"
+                   @onChange="catchChangeEvent"
+                   @onInput="catchInputEvent"
                    :hint="'update-mileage-text-field-hint'"
                    dialog-title="update-mileage-dialog-title"
                    agree-button-text="mileage-agree-button-text"
                    disagree-button-text="mileage-disagree-button-text"
                    :agree-button-function="updateCurrentMileage"
-                   :disagree-button-function="toggleDialogWindow"/>
+                   :agree-button-disabled-condition="snackbarVisibility"
+                   :disagree-button-function="closeDialogAndRevertTemporaryValue"
+                   :disagree-button-disabled-condition="false"
+                   :inputFieldAutofocus="inputFieldAutofocus" />
         <!-- MY DIALOG WINDOW WITH MILEAGE INPUT FIELD -->
 
       </v-flex>
@@ -177,8 +182,12 @@
       return {
         mileage: {
           editMode: false,
-          value: null
-        }
+          current: null,
+          new: null
+        },
+        ownerEmailAddress: null,
+        dialogInputFieldValue: null,
+        inputFieldAutofocus: false
       }
     },
     methods: {
@@ -194,10 +203,48 @@
       showIntervalsDetails() {
         alert('IN PROGRESS...');
       },
-      updateCurrentMileage() {
-      },
       toggleDialogWindow() {
         this.mileage.editMode = !this.mileage.editMode;
+        this.inputFieldAutofocus = !this.inputFieldAutofocus;
+      },
+      catchChangeEvent() {
+        this.mileage.new = this.dialogInputFieldValue;
+      },
+      catchInputEvent(payload) {
+        this.dialogInputFieldValue = payload;
+        this.mileage.new = payload;
+      },
+      closeDialogAndRevertTemporaryValue() {
+        this.toggleDialogWindow();
+        this.mileage.new = this.mileage.current;
+        this.dialogInputFieldValue = this.mileage.current;
+      },
+      updateCurrentMileage() {
+        this.axios.put(`/vehicles/vehicle/update-current-mileage/${window.btoa(this.ownerEmailAddress)}`, {
+          encodedMileage: window.btoa(this.mileage.new)
+        }).then(() => {
+          this.toggleDialogWindow();
+          // --- CURRENT MILEAGE --- //
+          this.axios.get(`/vehicles/vehicle/get-current-mileage/${window.btoa(this.ownerEmailAddress)}`)
+              .then(response => {
+                this.mileage.current = response.data;
+                this.mileage.new = this.mileage.current;
+              })
+              .catch(error => {
+                console.log(error.response);
+                console.log('ERROR -> /vehicles/vehicle/get-current-mileage');
+              });
+          // --- CURRENT MILEAGE --- //
+        }).catch(error => {
+          console.log(error.response);
+          console.log('ERROR -> /vehicles/vehicle/update-current-mileage');
+          // --- TOKEN EXPIRED --- //
+          this.$store.dispatch('logout')
+              .then(() => {
+                console.log('User logged out successfully.')
+              });
+          // --- TOKEN EXPIRED --- //
+        })
       }
     },
     computed: {
@@ -205,7 +252,9 @@
         'isLogged'
       ]),
       snackbarVisibility() {
-        return this.mileage.value === null;
+        return (this.mileage.current === null || !this.mileage.current || this.mileage.current === '') ||
+          (this.mileage.new === null || !this.mileage.new || this.mileage.new === '') ||
+          (this.dialogInputFieldValue !== null && !this.dialogInputFieldValue && this.dialogInputFieldValue === '');
       }
     },
     mounted() {
@@ -216,20 +265,29 @@
             .then(response => {
               this.$store.commit('setPrincipalUserFirstName', response.data.firstname);
 
-              let ownerEmailAddress = response.data.email;
               // --- CURRENT MILEAGE --- //
-              this.axios.get(`/vehicles/get-current-mileage/${ownerEmailAddress}`)
+              this.ownerEmailAddress = response.data.email;
+              this.axios.get(`/vehicles/vehicle/get-current-mileage/${window.btoa(this.ownerEmailAddress)}`)
                 .then(response => {
-                  this.mileage.value = response.data;
+                  this.mileage.current = response.data;
+                  this.mileage.new = this.mileage.current;
                 })
                 .catch(error => {
-                  console.log(error.response.data);
+                  console.log(error.response);
+                  console.log('ERROR -> /vehicles/vehicle/get-current-mileage');
                 });
               // --- CURRENT MILEAGE --- //
 
             })
             .catch(error => {
-              console.log(error.response.data);
+              console.log(error.response);
+              console.log('ERROR -> /principal-user');
+              // --- TOKEN EXPIRED --- //
+              this.$store.dispatch('logout')
+                  .then(() => {
+                    console.log('User logged out successfully.')
+                  });
+              // --- TOKEN EXPIRED --- //
             });
         });
         // --- PAGE REFRESH EVENT --- //
