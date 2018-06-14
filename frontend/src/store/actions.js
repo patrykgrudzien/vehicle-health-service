@@ -33,7 +33,10 @@ export default {
   login({commit}, credentials) {
     commit('setLoading', true);
     commit('clearServerExceptionResponse');
-    Vue.axios.post(serverEndpoints.authentication.root, credentials)
+    Vue.axios.post(serverEndpoints.authentication.root, {
+      email: window.btoa(credentials.email),
+      password: window.btoa(credentials.password)
+    })
       .then(response => {
         commit('setLoading', false);
         if (response.data.message) {
@@ -44,6 +47,7 @@ export default {
           localStorage.setItem('token', response.data.token);
           commit(types.LOGIN);
           commit('clearServerExceptionResponse');
+          commit('clearLoginForm');
           myRouter.push({path: componentsPaths.mainBoard});
           window.scrollTo(0 ,0);
         }
