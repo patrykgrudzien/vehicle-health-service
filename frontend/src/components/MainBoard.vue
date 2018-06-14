@@ -6,7 +6,9 @@
               justify-center
               row
               wrap>
+      <!-- MILEAGE FLEX -->
       <v-flex xs12 sm12 md12 lg12 xl12>
+        <!-- SNACKBAR -->
         <v-snackbar
           :timeout="0"
           :bottom="true"
@@ -23,7 +25,9 @@
             {{ $t('snackbar-button-text') }}
           </v-btn>
         </v-snackbar>
+        <!-- SNACKBAR -->
 
+        <!-- MILEAGE TITLE, CURRENT STATE, KM -->
         <v-flex class="text-xs-center ma-0 pa-0">
           <span class="headline notSelectable">
             {{ $t('current-mileage-title') }}
@@ -35,6 +39,7 @@
             </span>
           <span class="headline notSelectable">km</span>
         </v-flex>
+        <!-- MILEAGE TITLE, CURRENT STATE, KM -->
 
         <!-- MY DIALOG WINDOW WITH MILEAGE INPUT FIELD -->
         <my-dialog :visibility="mileage.editMode"
@@ -52,15 +57,15 @@
                    :disagree-button-disabled-condition="false"
                    :inputFieldAutofocus="inputFieldAutofocus" />
         <!-- MY DIALOG WINDOW WITH MILEAGE INPUT FIELD -->
-
       </v-flex>
+      <!-- MILEAGE FLEX -->
 
       <!-- CARD 1 -->
-      <v-flex xs10 sm6 md5 :class="{'mr-5': this.$vuetify.breakpoint.lgAndUp}">
+      <v-flex xs10 sm6 md5 :class="card1Classes">
         <v-card disabled class="elevation-12">
           <v-card-media
             src="../../static/engine-1.jpg"
-            height="150px"
+            :height="cardMediaHeight"
             class="white--text text-xs-center">
           </v-card-media>
           <v-card-title>
@@ -85,11 +90,11 @@
       <!-- CARD 1 -->
 
       <!-- CARD 2 -->
-      <v-flex xs10 sm6 md5 :class="{'ml-5': this.$vuetify.breakpoint.lgAndUp}">
+      <v-flex xs10 sm6 md5 :class="card2Classes">
         <v-card disabled class="elevation-12">
           <v-card-media
             src="../../static/engine-2.jpg"
-            height="150px"
+            :height="cardMediaHeight"
             class="white--text text-xs-center">
           </v-card-media>
           <v-card-title>
@@ -114,11 +119,11 @@
       <!-- CARD 2 -->
 
       <!-- CARD 3 -->
-      <v-flex xs10 sm6 md5 :class="{'mr-5': this.$vuetify.breakpoint.lgAndUp}">
+      <v-flex xs10 sm6 md5 :class="card3Classes">
         <v-card disabled class="elevation-12">
           <v-card-media
             src="../../static/engine-3.jpg"
-            height="150px"
+            :height="cardMediaHeight"
             class="white--text text-xs-center">
           </v-card-media>
           <v-card-title>
@@ -143,11 +148,11 @@
       <!-- CARD 3 -->
 
       <!-- CARD 4 -->
-      <v-flex xs10 sm6 md5 :class="{'ml-5': this.$vuetify.breakpoint.lgAndUp}">
+      <v-flex xs10 sm6 md5 :class="card4Classes">
         <v-card disabled class="elevation-12">
           <v-card-media
             src="../../static/engine-4.jpg"
-            height="150px"
+            :height="cardMediaHeight"
             class="white--text text-xs-center">
           </v-card-media>
           <v-card-title>
@@ -255,6 +260,45 @@
         return (this.mileage.current === null || !this.mileage.current || this.mileage.current === '') ||
           (this.mileage.new === null || !this.mileage.new || this.mileage.new === '') ||
           (this.dialogInputFieldValue !== null && !this.dialogInputFieldValue && this.dialogInputFieldValue === '');
+      },
+      card1Classes () {
+        if (this.$vuetify.breakpoint.lgAndUp) {
+          return {
+            'mr-5': true,
+            'ml-5': true
+          }
+        }
+      },
+      card2Classes () {
+        if (this.$vuetify.breakpoint.lgAndUp) {
+          return {
+            'mr-5': true,
+            'ml-5': true
+          }
+        }
+      },
+      card3Classes () {
+        if (this.$vuetify.breakpoint.lgAndUp) {
+          return {
+            'mr-5': true,
+            'ml-5': true
+          }
+        }
+      },
+      card4Classes () {
+        if (this.$vuetify.breakpoint.lgAndUp) {
+          return {
+            'mr-5': true,
+            'ml-5': true
+          }
+        }
+      },
+      cardMediaHeight() {
+        if (this.$vuetify.breakpoint.lgAndUp) {
+          return '250px';
+        } else {
+          return '150px';
+        }
       }
     },
     mounted() {
