@@ -74,8 +74,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		log.info(LogMarkers.FLOW_MARKER, "Inside Spring Security >>>> HttpSecurity configuration.");
 
 		httpSecurity
-				// development purpose (no existing on production "Heroku")
-				.cors().and()
 				// don't need CSRF because JWT token is invulnerable
 				.csrf().disable()
 				// show message to the user that some resource requires authentication
@@ -88,10 +86,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         .and()
                 // filters
 		        .authorizeRequests()
-			        // /registration/**
-			        .antMatchers(customApplicationProperties.getEndpoints().getRegistration().getRoot() + "/**").permitAll()
-			        // /auth/**
-			        .antMatchers(customApplicationProperties.getEndpoints().getAuthentication().getRoot() + "/**").permitAll()
+					// allow calls for request methods of "OPTIONS" type -> (CORS purpose) without checking JWT token
+					// (this helps to avoid duplicate calls before the specific ones)
+					.antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+					// /auth
+					.antMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getAuthentication().getRoot()).permitAll()
+					// /auth/**
+					.antMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getAuthentication().getRoot() + "/**").permitAll()
+			        // /registration/**  (/register-user-account)
+			        .antMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getRegistration().getRoot() + "/**").permitAll()
+					// /registration/**  (/confirm)
+					.antMatchers(HttpMethod.GET, customApplicationProperties.getEndpoints().getRegistration().getRoot() + "/**").permitAll()
 			        // require authentication via JWT
 					.anyRequest().authenticated();
 
@@ -110,9 +115,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 		// AuthenticationTokenFilter will ignore the below paths
 		web.ignoring()
+		        // allow calls for request methods of "OPTIONS" type -> (CORS purpose) without checking JWT token
+		        // (this helps to avoid duplicate calls before the specific ones)
+		        .antMatchers(HttpMethod.OPTIONS, "/**")
+		            .and()
+		   .ignoring()
 		        // /auth
 		        .antMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getAuthentication().getRoot())
 					.and()
+		    .ignoring()
+		        // /auth/**
+		        .antMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getAuthentication().getRoot() + "/**")
+		            .and()
 			.ignoring()
 		        // /registration/**  (/register-user-account)
 				.antMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getRegistration().getRoot() + "/**")
@@ -127,7 +141,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                              "/favicon.ico",
                              "/static/**",
                              "/static/*.html",
-                             "/static/favicon.ico",
+                             "/static/engine-1.jpg",
+                             "/static/engine-2.jpg",
+                             "/static/engine-3.jpg",
+                             "/static/engine-4.jpg",
+                             "/static/engine-5.jpg",
                              "/static/css/**",
                              "/static/js/**")
 					.and()
