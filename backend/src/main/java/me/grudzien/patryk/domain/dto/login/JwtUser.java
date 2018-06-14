@@ -15,7 +15,7 @@ import java.util.Date;
 @Getter
 @Builder(builderMethodName = "Builder")
 @RequiredArgsConstructor
-@JsonIgnoreProperties({"id", "accountNonExpired", "accountNonLocked", "credentialsNonExpired", "password", "lastPasswordResetDate",
+@JsonIgnoreProperties({"accountNonExpired", "accountNonLocked", "credentialsNonExpired", "password", "lastPasswordResetDate",
                        "authorities", "username", "enabled", "roles"})
 public class JwtUser implements UserDetails {
 

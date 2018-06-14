@@ -157,6 +157,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				             "/server-health",
 				             "/login",
 				             "/main-board",
+				             "/main-board/**",
 				             "/authentication-required");
 	}
 }
