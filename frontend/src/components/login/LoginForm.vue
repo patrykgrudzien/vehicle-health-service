@@ -142,10 +142,10 @@
 </template>
 
 <script>
-  import {getMessageFromLocale} from "../main";
+  import {getMessageFromLocale} from "../../main";
   import {mapGetters}           from 'vuex';
   import {mapActions}           from 'vuex';
-  import componentsPaths from '../componentsPaths';
+  import componentsPaths from '../../componentsPaths';
 
   export default {
     props: ['confirmationMessage', 'dismissDialog', 'showDialog', 'type'],

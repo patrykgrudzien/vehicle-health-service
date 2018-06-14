@@ -7,7 +7,7 @@
 
 <script>
   import LoginForm from './LoginForm';
-  import {getMessageFromLocale} from "../main";
+  import {getMessageFromLocale} from "../../main";
 
   export default {
     components: {

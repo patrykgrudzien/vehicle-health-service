@@ -9,6 +9,7 @@ export default (to, from, next) => {
       next(paths.authenticationRequired);
       // DEVELOPMENT
       // next();
+      return;
     }
     // must be called in other scenarios
     next();
