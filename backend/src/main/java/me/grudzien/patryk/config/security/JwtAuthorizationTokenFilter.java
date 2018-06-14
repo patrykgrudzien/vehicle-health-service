@@ -18,12 +18,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
-
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.service.security.MyUserDetailsService;
 import me.grudzien.patryk.utils.log.LogMarkers;
 import me.grudzien.patryk.utils.security.JwtTokenUtil;
+
+import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
 
 @Log4j2
 @Component
@@ -43,7 +43,7 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response,
 	                                final FilterChain filterChain) throws ServletException, IOException {
-		log.info(LogMarkers.FLOW_MARKER, "Processing authentication for '{}'", request.getRequestURL());
+		log.info(LogMarkers.FLOW_MARKER, "Processing authentication for ({}), request method ({})", request.getRequestURL(), request.getMethod());
 
 		final String requestHeader = request.getHeader(this.tokenHeader);
 
