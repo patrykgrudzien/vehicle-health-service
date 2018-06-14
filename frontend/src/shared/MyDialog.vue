@@ -23,8 +23,9 @@
             <v-text-field
               v-if="includeTextField && includeTextField === true"
               :value="value"
-              @change="onChange"
-              @input="onInput"
+              @change="onChangeEvent"
+              @input="onInputEvent"
+              @keyup.enter.native="onEnterClicked"
               class="ma-0 pa-0 notSelectable"
               type="text"
               :hint="$t(`${hint}`)"
@@ -109,11 +110,14 @@
       }
     },
     methods: {
-      onChange(payload) {
-        this.$emit('onChange', payload);
+      onChangeEvent(payload) {
+        this.$emit('onChangeEvent', payload);
       },
-      onInput(payload) {
-        this.$emit('onInput', payload);
+      onInputEvent(payload) {
+        this.$emit('onInputEvent', payload);
+      },
+      onEnterClicked(payload) {
+        this.$emit('onEnterClicked', payload);
       }
     },
     computed: {
