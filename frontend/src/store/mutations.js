@@ -51,6 +51,12 @@ export default {
   setLoginFormValid(state, payload) {
     state.loginForm.valid = payload;
   },
+
+  clearLoginForm(state) {
+    state.loginForm.email = '';
+    state.loginForm.password = '';
+    state.loginForm.valid = true;
+  },
   // -------------- LOGIN FORM -------------- //
 
   setSideNavigation(state, payload) {
