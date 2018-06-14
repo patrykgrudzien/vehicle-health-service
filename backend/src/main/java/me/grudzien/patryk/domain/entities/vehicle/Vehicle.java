@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -42,7 +43,7 @@ public class Vehicle {
 	@Column(name = "MILEAGE")
 	private Long mileage;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "CUSTOM_USER_ID")
 	@JsonBackReference
 	private CustomUser customUser;
@@ -51,7 +52,7 @@ public class Vehicle {
 	@Column(name = "VEHICLE_TYPE")
 	private VehicleType vehicleType;
 
-	@OneToOne
+	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "ENGINE_ID")
 	private Engine engine;
 }
