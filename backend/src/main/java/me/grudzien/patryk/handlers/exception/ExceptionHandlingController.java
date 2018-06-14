@@ -14,6 +14,7 @@ import me.grudzien.patryk.exceptions.registration.CustomUserValidationException;
 import me.grudzien.patryk.exceptions.registration.TokenExpiredException;
 import me.grudzien.patryk.exceptions.registration.TokenNotFoundException;
 import me.grudzien.patryk.exceptions.registration.UserAlreadyExistsException;
+import me.grudzien.patryk.exceptions.vehicle.VehicleNotFoundException;
 
 /**
  * The @ControllerAdvice annotation is a component annotation allowing implementation classes to be auto-detected
@@ -67,5 +68,10 @@ public class ExceptionHandlingController {
 	public ResponseEntity<ExceptionResponse> badCredentials(final BadCredentialsAuthenticationException exception) {
 		// returning 200 OK status just to catch error message and display it on UI
 		return new ResponseEntity<>(ExceptionResponse.buildMessage(exception), HttpStatus.OK);
+	}
+
+	@ExceptionHandler(VehicleNotFoundException.class)
+	public ResponseEntity<ExceptionResponse> vehicleNotFoundException(final VehicleNotFoundException exception) {
+		return new ResponseEntity<>(ExceptionResponse.buildMessage(exception), HttpStatus.BAD_REQUEST);
 	}
 }
