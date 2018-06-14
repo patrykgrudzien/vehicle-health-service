@@ -11,7 +11,7 @@ import java.io.IOException;
 
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.exceptions.RedirectionException;
-import me.grudzien.patryk.utils.HerokuAppEndpointResolver;
+import me.grudzien.patryk.utils.web.HerokuAppEndpointResolver;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.log.LogMarkers;
 
