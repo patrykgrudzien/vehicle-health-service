@@ -17,19 +17,22 @@
                    :class="containerClassesWhenTextFieldExists">
         <v-layout row
                   align-center
-                  justify-center>
+                  justify-center
+                  class="notSelectable">
           <v-flex xs8 class="notSelectable">
             <v-text-field
               v-if="includeTextField && includeTextField === true"
               :value="value"
+              @change="onChange"
+              @input="onInput"
               class="ma-0 pa-0 notSelectable"
               type="text"
               :hint="$t(`${hint}`)"
               :persistent-hint="true"
               required
-              :rules="notEmpty"
               mask="### ### ###"
-              autofocus/>
+              :autofocus="inputFieldAutofocus"
+              ref="inputFieldReference"/>
           </v-flex>
         </v-layout>
       </v-container>
@@ -39,14 +42,14 @@
                color="primary"
                flat
                @click.native="agreeButtonFunction"
-               :disabled="disabledIfInputEmpty">
+               :disabled="agreeButtonDisabledCondition">
           {{ $t(`${agreeButtonText}`) }}
         </v-btn>
         <v-btn v-if="disagreeButtonText && disagreeButtonText !== ''"
                color="primary"
                flat
                @click.native="disagreeButtonFunction"
-               :disabled="disabledIfInputEmpty">
+               :disabled="disagreeButtonDisabledCondition">
           {{ $t(`${disagreeButtonText}`) }}
         </v-btn>
       </v-card-actions>
@@ -55,9 +58,6 @@
 </template>
 
 <script>
-  import {getMessageFromLocale} from "../main";
-  import componentsPaths from '../componentsPaths';
-
   export default {
     props: {
       includeTextField: {
@@ -87,22 +87,33 @@
       agreeButtonFunction: {
         type: Function
       },
+      agreeButtonDisabledCondition: {
+        default: false,
+        type: Boolean
+      },
       disagreeButtonFunction: {
         type: Function
+      },
+      disagreeButtonDisabledCondition: {
+        default: false,
+        type: Boolean
       },
       hint: {
         default: '',
         type: String
       },
-      value: {
-        type: Number
+      value: {},
+      inputFieldAutofocus: {
+        default: false,
+        type: Boolean
       }
     },
-    data() {
-      return {
-        notEmpty: [
-          v => !!v || `${getMessageFromLocale('value-cannot-be-empty')}`
-        ]
+    methods: {
+      onChange(payload) {
+        this.$emit('onChange', payload);
+      },
+      onInput(payload) {
+        this.$emit('onInput', payload);
       }
     },
     computed: {
@@ -134,10 +145,13 @@
             'pb-2': true
           }
         }
-      },
-      disabledIfInputEmpty() {
-        return (!this.value || this.value === null || this.value === '') &&
-          this.$route.fullPath.includes(componentsPaths.mainBoard);
+      }
+    },
+    watch: {
+      inputFieldAutofocus(value) {
+        if (value) {
+          this.$nextTick(this.$refs.inputFieldReference.focus);
+        }
       }
     }
   }
