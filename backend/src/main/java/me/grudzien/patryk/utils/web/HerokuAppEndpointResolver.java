@@ -1,4 +1,4 @@
-package me.grudzien.patryk.utils;
+package me.grudzien.patryk.utils.web;
 
 import lombok.extern.log4j.Log4j2;
 
