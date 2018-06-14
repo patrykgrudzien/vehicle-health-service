@@ -5,9 +5,14 @@ import me.grudzien.patryk.domain.entities.vehicle.Vehicle;
 
 public interface VehicleService {
 
-	Vehicle findByCustomUserId(Long customUserId);
+	/**
+	 * customUserId is passed as String because it's encoded on UI side and encoded form is always String type
+	 */
+	Vehicle findByCustomUserId(String customUserId);
 
 	Vehicle findByCustomUserEmail(String customUserEmail);
 
 	VehicleDto findDtoByOwnerEmailAddress(String ownerEmailAddress);
+
+	void updateCurrentMileage(String currentMileage, String ownerEmailAddress);
 }
