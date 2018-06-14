@@ -7,46 +7,35 @@
               row
               wrap>
       <!-- MILEAGE FLEX -->
-      <v-flex xs12 sm12 md12 lg12 xl12>
-        <!-- SNACKBAR -->
-        <v-snackbar
-          :timeout="0"
-          :bottom="true"
-          color="secondary"
-          class="notSelectable"
-          :value="snackbarVisibility">
-          <span class="centerSpanInsideDiv">{{ $t('main-board-snackbar-text') }}</span>
-          <v-btn flat
-                 ripple
-                 @click.native="toggleDialogWindow"
-                 color="background"
-                 class="ml-3 notSelectable"
-                 v-if="mileage.editMode === false">
-            {{ $t('snackbar-button-text') }}
-          </v-btn>
-        </v-snackbar>
-        <!-- SNACKBAR -->
-
+      <v-flex xs12 sm12 md12 lg12 xl12 class="mb-0 mt-0 pb-0 pt-0">
         <!-- MILEAGE TITLE, CURRENT STATE, KM -->
-        <v-flex class="text-xs-center ma-0 pa-0">
-          <span class="headline notSelectable">
-            {{ $t('current-mileage-title') }}
-          </span>
-          <span id="mileage-field"
-                class="headline primary--text notSelectable"
-                @click="toggleDialogWindow">
+        <v-layout align-center
+                  justify-center
+                  v-bind="rowColumnDeterminer"
+                  wrap>
+          <v-flex :class="mileageTitleClasses">
+            <span class="headline notSelectable">
+              {{ $t('current-mileage-title') }}
+            </span>
+          </v-flex>
+          <v-flex :class="mileageValueClasses">
+            <span id="mileage-field"
+                  class="headline primary--text notSelectable"
+                  @click="toggleDialogWindow">
             {{ mileage.current }}
             </span>
-          <span class="headline notSelectable">km</span>
-        </v-flex>
+            <span class="headline notSelectable">km</span>
+          </v-flex>
+        </v-layout>
         <!-- MILEAGE TITLE, CURRENT STATE, KM -->
 
         <!-- MY DIALOG WINDOW WITH MILEAGE INPUT FIELD -->
         <my-dialog :visibility="mileage.editMode"
                    include-text-field
                    :value="mileage.new"
-                   @onChange="catchChangeEvent"
-                   @onInput="catchInputEvent"
+                   @onChangeEvent="catchChangeEvent"
+                   @onInputEvent="catchInputEvent"
+                   @onEnterClicked="updateCurrentMileage"
                    :hint="'update-mileage-text-field-hint'"
                    dialog-title="update-mileage-dialog-title"
                    agree-button-text="mileage-agree-button-text"
@@ -61,8 +50,7 @@
       <!-- MILEAGE FLEX -->
 
       <!-- CARD 1 -->
-      <v-flex xs10 sm6 md5
-              :class="card1Classes">
+      <v-flex xs10 sm6 md5 :class="card1Classes">
         <v-card disabled class="elevation-12">
           <v-card-media
             src="../../../static/engine-1.jpg"
@@ -193,6 +181,25 @@
       </v-flex>
       <!-- CARD 4 -->
     </v-layout>
+
+    <!-- SNACKBAR -->
+    <v-snackbar
+      :timeout="0"
+      :bottom="true"
+      color="secondary"
+      class="notSelectable"
+      :value="snackbarVisibility">
+      <span class="centerSpanInsideDiv">{{ $t('main-board-snackbar-text') }}</span>
+      <v-btn flat
+             ripple
+             @click.native="toggleDialogWindow"
+             color="background"
+             class="ml-3 notSelectable"
+             v-if="mileage.editMode === false">
+        {{ $t('snackbar-button-text') }}
+      </v-btn>
+    </v-snackbar>
+    <!-- SNACKBAR -->
   </v-container>
 </template>
 
@@ -270,7 +277,7 @@
       card1Classes () {
         if (this.$vuetify.breakpoint.lgAndUp) {
           return {
-            'mr-5': true,
+            'mr-4': true,
             'ml-5': true
           }
         }
@@ -279,14 +286,14 @@
         if (this.$vuetify.breakpoint.lgAndUp) {
           return {
             'mr-5': true,
-            'ml-5': true
+            'ml-4': true
           }
         }
       },
       card3Classes () {
         if (this.$vuetify.breakpoint.lgAndUp) {
           return {
-            'mr-5': true,
+            'mr-4': true,
             'ml-5': true
           }
         }
@@ -295,7 +302,7 @@
         if (this.$vuetify.breakpoint.lgAndUp) {
           return {
             'mr-5': true,
-            'ml-5': true
+            'ml-4': true
           }
         }
       },
@@ -304,6 +311,55 @@
           return '250px';
         } else {
           return '150px';
+        }
+      },
+      rowColumnDeterminer() {
+        const binding = {};
+        if (this.$vuetify.breakpoint.xsOnly) {
+          binding.column = true;
+        } else {
+          binding.row = true;
+        }
+        return binding;
+      },
+      mileageTitleClasses() {
+        if (this.$vuetify.breakpoint.xsOnly) {
+          return {
+            'text-xs-center': true,
+            'pt-0': true,
+            'pb-0': true,
+            'mt-0': true,
+            'mb-0': true
+          }
+        } else {
+          return {
+            'text-xs-right': true,
+            'pt-1': true,
+            'pb-1': true,
+            'mt-0': true,
+            'mb-0': true,
+            'pr-1': true
+          }
+        }
+      },
+      mileageValueClasses() {
+        if (this.$vuetify.breakpoint.xsOnly) {
+          return {
+            'text-xs-center': true,
+            'pt-0': true,
+            'pb-0': true,
+            'mt-0': true,
+            'mb-0': true
+          }
+        } else {
+          return {
+            'text-xs-left': true,
+            'pt-1': true,
+            'pb-1': true,
+            'mt-0': true,
+            'mb-0': true,
+            'pl-1': true
+          }
         }
       }
     },
