@@ -96,7 +96,9 @@
       <v-toolbar-items class="hidden-sm-and-down">
 
         <!-- PRINCIPAL USER (AVATAR) -->
-        <v-btn flat ripple v-if="isLogged === 1 && getPrincipalUserFirstName !== null">
+        <v-btn flat
+               ripple
+               v-if="isLogged === 1 && getPrincipalUserFirstName !== null">
           <span>{{ $t('welcome-principal-user') }}</span>
           <span class="ml-1"></span>
           <span>{{ getPrincipalUserFirstName }}</span>

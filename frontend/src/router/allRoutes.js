@@ -5,6 +5,10 @@ import RegistrationForm    from '../components/registration/RegistrationForm';
 import ConfirmRegistration from '../components/login/ConfirmRegistration';
 import LoginForm           from '../components/login/LoginForm';
 import MainBoard           from '../components/home/MainBoard';
+import Engine              from '../components/vehicle/Engine';
+import Fluids              from '../components/vehicle/Fluids';
+import Tires               from '../components/vehicle/Tires';
+import MaintenanceCosts    from '../components/vehicle/MaintenanceCosts';
 import componentsPaths     from '../componentsPaths';
 
 export default [
@@ -57,6 +61,30 @@ export default [
     name: 'MainBoard',
     path: componentsPaths.mainBoard,
     component: MainBoard,
+    meta: {requiresAuth: true}
+  },
+  {
+    name: 'Engine',
+    path: componentsPaths.engine,
+    component: Engine,
+    meta: {requiresAuth: true}
+  },
+  {
+    name: 'Fluids',
+    path: componentsPaths.fluids,
+    component: Fluids,
+    meta: {requiresAuth: true}
+  },
+  {
+    name: 'Tires',
+    path: componentsPaths.tires,
+    component: Tires,
+    meta: {requiresAuth: true}
+  },
+  {
+    name: 'Maintenance-Costs',
+    path: componentsPaths.maintenanceCosts,
+    component: MaintenanceCosts,
     meta: {requiresAuth: true}
   }
 ];
