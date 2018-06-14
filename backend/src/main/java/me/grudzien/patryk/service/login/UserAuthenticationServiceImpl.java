@@ -11,6 +11,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Preconditions;
+
 import java.util.Objects;
 
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
@@ -21,6 +23,7 @@ import me.grudzien.patryk.service.security.MyUserDetailsService;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.log.LogMarkers;
 import me.grudzien.patryk.utils.security.JwtTokenUtil;
+import me.grudzien.patryk.utils.web.RequestsDecoder;
 
 @Log4j2
 @Service
@@ -29,13 +32,22 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 	private final UserDetailsService userDetailsService;
 	private final AuthenticationManager authenticationManager;
 	private final LocaleMessagesCreator localeMessagesCreator;
+	private final RequestsDecoder requestsDecoder;
 
 	public UserAuthenticationServiceImpl(@Qualifier(MyUserDetailsService.BEAN_NAME) final UserDetailsService userDetailsService,
 	                                     final AuthenticationManager authenticationManager,
-	                                     final LocaleMessagesCreator localeMessagesCreator) {
+	                                     final LocaleMessagesCreator localeMessagesCreator,
+	                                     final RequestsDecoder requestsDecoder) {
+
+		Preconditions.checkNotNull(userDetailsService, "userDetailsService cannot be null!");
+		Preconditions.checkNotNull(authenticationManager, "authenticationManager cannot be null!");
+		Preconditions.checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
+		Preconditions.checkNotNull(requestsDecoder, "requestsDecoder cannot be null!");
+
 		this.userDetailsService = userDetailsService;
 		this.authenticationManager = authenticationManager;
 		this.localeMessagesCreator = localeMessagesCreator;
+		this.requestsDecoder = requestsDecoder;
 	}
 
 	/**
@@ -46,8 +58,8 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 	@Override
 	public String authenticateAndGenerateToken(final JwtAuthenticationRequest authenticationRequest, final Device device) {
 
-		final String email = authenticationRequest.getEmail();
-		final String password = authenticationRequest.getPassword();
+		final String email = requestsDecoder.decodeStringParam(authenticationRequest.getEmail());
+		final String password = requestsDecoder.decodeStringParam(authenticationRequest.getPassword());
 
 		Objects.requireNonNull(email);
 		Objects.requireNonNull(password);
@@ -65,7 +77,7 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
 
 			// Reload password post-security so we can generate the token
-			final JwtUser jwtUser = (JwtUser) userDetailsService.loadUserByUsername(authenticationRequest.getEmail());
+			final JwtUser jwtUser = (JwtUser) userDetailsService.loadUserByUsername(email);
 			return JwtTokenUtil.Creator.generateToken(jwtUser, device);
 
 		} catch (final DisabledException exception) {

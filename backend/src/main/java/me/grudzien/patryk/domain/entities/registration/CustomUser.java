@@ -85,7 +85,7 @@ public class CustomUser {
 	           inverseJoinColumns = @JoinColumn(name = "ROLE_ID", referencedColumnName = "ID"))
 	private Collection<Role> roles;
 
-	@OneToMany(mappedBy = "customUser")
+	@OneToMany(mappedBy = "customUser", cascade = CascadeType.ALL)
 	@JsonBackReference
 	private List<Vehicle> vehicles;
 
