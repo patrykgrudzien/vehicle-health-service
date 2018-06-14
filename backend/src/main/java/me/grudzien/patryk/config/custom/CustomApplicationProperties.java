@@ -38,6 +38,16 @@ public class CustomApplicationProperties {
 		private Authentication authentication = new Authentication();
 		private Logout logout = new Logout();
 		private Heroku heroku = new Heroku();
+		private VehicleResource vehicleResource = new VehicleResource();
+
+		@Getter
+		@Setter
+		public static class VehicleResource {
+			private String root;
+			private String getVehicle;
+			private String getCurrentMileage;
+			private String updateCurrentMileage;
+		}
 
 		@Getter
 		@Setter
