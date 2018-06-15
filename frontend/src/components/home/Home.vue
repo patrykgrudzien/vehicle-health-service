@@ -1,10 +1,18 @@
 <template>
   <!-- full size home-background -->
-  <v-container id="home-background" fluid fill-height>
+  <v-container id="home-background"
+               fluid
+               fill-height
+               class="notSelectable">
     <transition name="slide-from-left">
-      <v-layout v-if="showAfterCreated" key="slideFromLeft" align-center justify-center>
+      <v-layout v-if="showAfterCreated"
+                key="slideFromLeft"
+                align-center
+                justify-center>
         <v-flex xs11 sm7 md6 lg6 xl6>
-          <v-card id="cards-container" flat disabled>
+          <v-card id="cards-container"
+                  flat
+                  disabled>
             <v-container grid-list-xs>
               <v-layout>
                 <v-flex>

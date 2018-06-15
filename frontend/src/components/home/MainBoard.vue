@@ -50,8 +50,10 @@
       <!-- MILEAGE FLEX -->
 
       <!-- CARD 1 -->
-      <v-flex xs10 sm6 md5 :class="card1Classes">
-        <v-card disabled class="elevation-12">
+      <v-flex xs10 sm6 md5
+              :class="card1Classes">
+        <v-card disabled
+                class="elevation-12">
           <v-card-media
             src="../../../static/engine-1.jpg"
             :height="cardMediaHeight"
@@ -83,8 +85,10 @@
       <!-- CARD 1 -->
 
       <!-- CARD 2 -->
-      <v-flex xs10 sm6 md5 :class="card2Classes">
-        <v-card disabled class="elevation-12">
+      <v-flex xs10 sm6 md5
+              :class="card2Classes">
+        <v-card disabled
+                class="elevation-12">
           <v-card-media
             src="../../../static/engine-2.jpg"
             :height="cardMediaHeight"
@@ -116,8 +120,10 @@
       <!-- CARD 2 -->
 
       <!-- CARD 3 -->
-      <v-flex xs10 sm6 md5 :class="card3Classes">
-        <v-card disabled class="elevation-12">
+      <v-flex xs10 sm6 md5
+              :class="card3Classes">
+        <v-card disabled
+                class="elevation-12">
           <v-card-media
             src="../../../static/engine-3.jpg"
             :height="cardMediaHeight"
@@ -149,8 +155,10 @@
       <!-- CARD 3 -->
 
       <!-- CARD 4 -->
-      <v-flex xs10 sm6 md5 :class="card4Classes">
-        <v-card disabled class="elevation-12">
+      <v-flex xs10 sm6 md5
+              :class="card4Classes">
+        <v-card disabled
+                class="elevation-12">
           <v-card-media
             src="../../../static/engine-4.jpg"
             :height="cardMediaHeight"
