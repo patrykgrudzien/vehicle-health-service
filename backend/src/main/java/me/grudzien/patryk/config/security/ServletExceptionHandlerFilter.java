@@ -6,9 +6,7 @@ import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import lombok.extern.log4j.Log4j2;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,24 +18,24 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
-import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
-
 import me.grudzien.patryk.domain.dto.responses.ExceptionResponse;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesHelper;
 
+import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
+import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
+
+/**
+ * Filters CANNOT be managed by Spring explicitly !!!
+ * It's NOT ALLOWED to mark them using (@Component) annotation !!!
+ * In other case Spring Security does not work properly and does not ignore specified paths.
+ * Another filter:
+ * {@link me.grudzien.patryk.config.security.JwtAuthorizationTokenFilter}
+ */
 @Log4j2
-@Component
 public class ServletExceptionHandlerFilter extends OncePerRequestFilter {
 
-	private final ObjectMapper objectMapper;
-	private final LocaleMessagesHelper localeMessagesHelper;
-
-	@Autowired
-	public ServletExceptionHandlerFilter(final ObjectMapper objectMapper, final LocaleMessagesHelper localeMessagesHelper) {
-		this.objectMapper = objectMapper;
-		this.localeMessagesHelper = localeMessagesHelper;
-	}
+	private final ObjectMapper objectMapper = new ObjectMapper();
+	private final LocaleMessagesHelper localeMessagesHelper = LocaleMessagesHelper.getINSTANCE();
 
 	@Override
 	protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response, final FilterChain filterChain)
