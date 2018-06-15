@@ -2,9 +2,16 @@
   <v-app id="inspire" dark>
 
     <!-- NAVIGATION DRAWER -->
-    <v-navigation-drawer app clipped temporary v-model="sideNavigation">
+    <v-navigation-drawer app
+                         clipped
+                         temporary
+                         v-model="sideNavigation">
       <v-list dense>
-        <v-list-tile ripple v-for="item in menuItems" :key="item.title" router :to="item.link">
+        <v-list-tile ripple
+                     v-for="item in menuItems"
+                     :key="item.title"
+                     router
+                     :to="item.link">
           <v-list-tile-action>
             <v-icon>{{ item.icon }}</v-icon>
           </v-list-tile-action>
@@ -14,7 +21,8 @@
         </v-list-tile>
 
         <!-- PRINCIPAL USER (AVATAR) -->
-        <v-list-tile ripple v-if="isLogged === 1 && getPrincipalUserFirstName !== null">
+        <v-list-tile ripple
+                     v-if="isLogged === 1 && getPrincipalUserFirstName !== null">
           <v-list-tile-action>
             <v-icon left>account_circle</v-icon>
           </v-list-tile-action>
@@ -29,7 +37,9 @@
         <!-- PRINCIPAL USER (AVATAR) -->
 
         <!-- LOGOUT -->
-        <v-list-tile ripple v-if="isLogged === 1" @click="logout">
+        <v-list-tile ripple
+                     v-if="isLogged === 1"
+                     @click="logout">
           <v-list-tile-action>
             <v-icon left>lock_outline</v-icon>
           </v-list-tile-action>
@@ -149,7 +159,7 @@
     <!-- TOOLBAR -->
 
     <!-- CONTENT (ROUTES) -->
-    <v-content style="position: static">
+    <v-content>
       <transition name="fade"
                   mode="out-in">
         <router-view :key="$route.fullPath" />
