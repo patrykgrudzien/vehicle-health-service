@@ -3,7 +3,8 @@
     <v-layout row align-center justify-center>
       <v-flex xs12 sm8 md8>
         <!-- SERVER NOT RUNNING -->
-        <my-alert dismissible
+        <my-alert id="server-not-running-alert"
+                  dismissible
                   @dismissed="setServerRunning"
                   type="error"
                   v-if="!isServerRunning"
@@ -11,7 +12,8 @@
         <!-- SERVER NOT RUNNING -->
 
         <!-- ERROR ALERT (only message from server) -->
-        <my-alert dismissible
+        <my-alert id="message-from-server-alert"
+                  dismissible
                   @dismissed="clearServerExceptionResponse"
                   type="error"
                   v-if="getServerExceptionResponse && !getServerExceptionResponseErrors"
@@ -20,7 +22,8 @@
         <!-- ERROR ALERT (only message from server) -->
 
         <!-- ERROR ALERT -->
-        <my-alert dismissible
+        <my-alert id="validation-errors-alert"
+                  dismissible
                   @dismissed="clearServerExceptionResponse"
                   type="error"
                   v-if="getServerExceptionResponse && getServerExceptionResponseErrors"
@@ -29,7 +32,8 @@
         <!-- ERROR ALERT -->
 
         <!-- SUCCESS ALERT -->
-        <my-alert dismissible
+        <my-alert id="success-alert"
+                  dismissible
                   @dismissed="clearServerSuccessResponse"
                   type="success"
                   v-if="getServerSuccessResponse"
@@ -37,7 +41,8 @@
         <!-- SUCCESS ALERT -->
 
         <!-- FORM FILLED INCORRECTLY ALERT -->
-        <my-alert dismissible
+        <my-alert id="form-filled-incorrectly-alert"
+                  dismissible
                   @dismissed="clearServerExceptionResponse"
                   type="error"
                   v-if="formFilledIncorrectlyMessage !== null && formFilledIncorrectlyMessage !== '' &&
