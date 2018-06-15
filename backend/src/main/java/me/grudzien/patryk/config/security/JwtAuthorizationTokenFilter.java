@@ -19,10 +19,10 @@ import java.io.IOException;
 
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.service.security.MyUserDetailsService;
-import me.grudzien.patryk.utils.log.LogMarkers;
 import me.grudzien.patryk.utils.security.JwtTokenUtil;
 
 import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
+import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 
 /**
  * Filters CANNOT be managed by Spring explicitly !!!
@@ -39,16 +39,18 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
 
 	public JwtAuthorizationTokenFilter(@Qualifier(MyUserDetailsService.BEAN_NAME) final UserDetailsService userDetailsService,
 	                                   final CustomApplicationProperties customApplicationProperties) {
+		log.info(FLOW_MARKER, "Inside >>>> {} constructor", this.getClass().getSimpleName());
 		this.userDetailsService = userDetailsService;
 		this.tokenHeader = customApplicationProperties.getJwt().getHeader();
-		log.info(LogMarkers.FLOW_MARKER, "Inside >>>> JwtAuthorizationTokenFilter()");
-		log.info(LogMarkers.FLOW_MARKER, "Token Header >>>> {}", tokenHeader);
+		log.info(FLOW_MARKER, "Token Header >>>> {}", tokenHeader);
 	}
 
 	@Override
 	protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response,
 	                                final FilterChain filterChain) throws ServletException, IOException {
-		log.info(LogMarkers.FLOW_MARKER, "Processing authentication for ({}), request method ({})", request.getRequestURL(), request.getMethod());
+
+		log.info(FLOW_MARKER, "Inside >>>> {}", this.getClass().getSimpleName());
+		log.info(FLOW_MARKER, "Processing authentication for ({}), request method ({})", request.getRequestURL(), request.getMethod());
 
 		final String requestHeader = request.getHeader(this.tokenHeader);
 
@@ -61,9 +63,9 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
 			log.warn(EXCEPTION_MARKER, "Couldn't find bearer string, will ignore the header");
 		}
 
-		log.info(LogMarkers.FLOW_MARKER, "Checking authentication for user email {}.", email);
+		log.info(FLOW_MARKER, "Checking authentication for user email {}.", email);
 		if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-			log.debug(LogMarkers.FLOW_MARKER, "Security context was null, so authorizating user");
+			log.debug(FLOW_MARKER, "Security context was null, starting authenticating the user...");
 
 			/*
 			 * It is not compelling necessary to load the use details from the database. You could also store the information
@@ -97,7 +99,7 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
 				 * an "HttpServletRequest" object.
 				 */
 				authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-				log.info(LogMarkers.FLOW_MARKER, "Authorized user '{}', setting security context.", email);
+				log.info(FLOW_MARKER, "Authorized user '{}', setting security context.", email);
 				SecurityContextHolder.getContext().setAuthentication(authentication);
 			}
 		}

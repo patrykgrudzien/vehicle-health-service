@@ -18,13 +18,13 @@ import javax.mail.internet.MimeMessage;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
-import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
-
 import me.grudzien.patryk.domain.dto.registration.EmailDto;
 import me.grudzien.patryk.domain.entities.registration.CustomUser;
 import me.grudzien.patryk.domain.entities.registration.EmailVerificationToken;
 import me.grudzien.patryk.repository.registration.EmailVerificationTokenRepository;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesHelper;
+
+import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 
 @Log4j2
 @Service
@@ -69,7 +69,7 @@ public class EmailServiceImpl implements EmailService {
 		context.setVariables(emailDto.getTemplatePlaceholders());
 
 		// we process the HTML Thymeleaf Email Template by calling process() method
-		final String htmlTemplate = templateEngine.process("email-template_" + localeMessagesHelper.getLocale(), context);
+		final String htmlTemplate = templateEngine.process("email-template_" + LocaleMessagesHelper.getLocale(), context);
 
 		final MimeMessage message = javaMailSender.createMimeMessage();
 		try {

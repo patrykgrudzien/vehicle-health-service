@@ -29,8 +29,7 @@ public final class LocaleMessagesHelper implements InitializingBean {
 
 	@Getter
 	@Setter
-	private Locale locale = Locale.getDefault();
-
+	private static Locale locale = Locale.getDefault();
 	private static String messagesLanguageHeader;
 
 	@Getter
@@ -60,12 +59,13 @@ public final class LocaleMessagesHelper implements InitializingBean {
 	}
 
 	private <T> void buildLocale(final T request) {
+		final String languageHeaderFromRequest = getLanguageHeaderFromRequest(request);
 		if (request instanceof WebRequest) {
-			locale = StringUtils.isEmpty(getLanguageHeaderFromRequest(request)) ? Locale.getDefault() :
-					         new Locale(Objects.requireNonNull(getLanguageHeaderFromRequest(request)));
+			setLocale(StringUtils.isEmpty(languageHeaderFromRequest) ? Locale.getDefault() :
+					          new Locale(Objects.requireNonNull(languageHeaderFromRequest)));
 		} else if (request instanceof HttpServletRequest) {
-			locale = StringUtils.isEmpty(getLanguageHeaderFromRequest(request)) ? Locale.getDefault() :
-					         new Locale(Objects.requireNonNull(getLanguageHeaderFromRequest(request)));
+			setLocale(StringUtils.isEmpty(languageHeaderFromRequest) ? Locale.getDefault() :
+					          new Locale(Objects.requireNonNull(languageHeaderFromRequest)));
 		}
 	}
 
@@ -75,11 +75,11 @@ public final class LocaleMessagesHelper implements InitializingBean {
 
 	/**
 	 * This method is called in
-	 * {@link me.grudzien.patryk.config.security.ServletExceptionHandlerFilter#doFilterInternal(javax.servlet.http.HttpServletRequest,
-	 * javax.servlet.http.HttpServletResponse, javax.servlet.FilterChain)} method
-	 * which is the first filter in the chain and locale is set based on the header coming from UI.
+	 * {@link me.grudzien.patryk.config.i18n.LocaleDeterminerFilter#doFilterInternal(javax.servlet.http.HttpServletRequest,
+	 * javax.servlet.http.HttpServletResponse, javax.servlet.FilterChain)} method which is the filter run on each request in
+	 * the chain and locale is set based on the header coming from UI.
 	 *
-	 * Filters' order is specified in:
+	 * Filters' order with appropriate comments is specified in:
 	 * {@link me.grudzien.patryk.config.security.SecurityConfig#configure(org.springframework.security.config.annotation.web.builders.HttpSecurity)}
 	 *
 	 * Later subsequent calls to {@link me.grudzien.patryk.utils.i18n.LocaleMessagesCreator#buildLocaleMessage(String)} related methods
