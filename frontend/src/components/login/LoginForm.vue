@@ -3,7 +3,8 @@
     <v-layout row align-center justify-center>
       <v-flex xs12 sm8 md6>
         <!-- CONFIRMATION REGISTRATION ALERT -->
-        <my-alert dismissible
+        <my-alert id="confirmation-registration-alert"
+                  dismissible
                   @dismissed="dismissDialog()"
                   type="success"
                   v-if="showDialog"
@@ -11,7 +12,8 @@
         <!-- CONFIRMATION REGISTRATION ALERT -->
 
         <!-- SERVER NOT RUNNING -->
-        <my-alert dismissible
+        <my-alert id="server-not-running-alert"
+                  dismissible
                   @dismissed="setServerRunning"
                   type="error"
                   v-if="!isServerRunning"
@@ -19,7 +21,8 @@
         <!-- SERVER NOT RUNNING -->
 
         <!-- ERROR ALERT (only message from server) -->
-        <my-alert dismissible
+        <my-alert id="message-from-server-alert"
+                  dismissible
                   @dismissed="clearServerExceptionResponse"
                   type="error"
                   v-if="getServerExceptionResponse && !getServerExceptionResponseErrors"
@@ -28,7 +31,8 @@
         <!-- ERROR ALERT (only message from server) -->
 
         <!-- ERROR ALERT -->
-        <my-alert dismissible
+        <my-alert id="validation-errors-alert"
+                  dismissible
                   @dismissed="clearServerExceptionResponse"
                   type="error"
                   v-if="getServerExceptionResponse && getServerExceptionResponseErrors"
@@ -37,7 +41,8 @@
         <!-- ERROR ALERT -->
 
         <!-- SUCCESS ALERT -->
-        <my-alert dismissible
+        <my-alert id="success-alert"
+                  dismissible
                   @dismissed="clearServerSuccessResponse"
                   type="success"
                   v-if="getServerSuccessResponse"
@@ -45,21 +50,24 @@
         <!-- SUCCESS ALERT -->
 
         <!-- LOGOUT SUCCESSFUL ALERT -->
-        <my-alert :dismissible="false"
+        <my-alert id="logout-successful-alert"
+                  :dismissible="false"
                   type="success"
                   v-if="urlContainsLogoutSuccessfulTrue"
                   :message="$t('logout-successful-message')"/>
         <!-- LOGOUT SUCCESSFUL ALERT -->
 
         <!-- AUTHENTICATION REQUIRED ALERT (SECURED RESOURCE -> "/main-board" without token") -->
-        <my-alert :dismissible="false"
+        <my-alert id="authentication-required-alert"
+                  :dismissible="false"
                   type="error"
                   v-if="urlContainsAuthenticationRequired"
                   :message="$t('authentication-required-message')"/>
         <!-- AUTHENTICATION REQUIRED ALERT (SECURED RESOURCE -> "/main-board" without token") -->
 
         <!-- FORM FILLED INCORRECTLY ALERT -->
-        <my-alert dismissible
+        <my-alert id="form-filled-incorrectly-alert"
+                  dismissible
                   @dismissed="clearServerExceptionResponse"
                   type="error"
                   v-if="formFilledIncorrectlyMessage !== null && formFilledIncorrectlyMessage !== '' &&
