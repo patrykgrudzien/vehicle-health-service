@@ -101,8 +101,7 @@ public class SpringBootVueJsApplication implements CommandLineRunner {
 
 		} else {
 			log.info("------------------------------------------------------------------------------------------------");
-			//noinspection ConstantConditions
-			log.info(FLOW_MARKER, "Nothing additional to be run after application startup. Active Spring profile: ({})", activeSpringProfile.get());
+			log.info(FLOW_MARKER, "Nothing additional to be run after application startup.");
 			log.info("------------------------------------------------------------------------------------------------");
 		}
 	}
