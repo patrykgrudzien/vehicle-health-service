@@ -25,17 +25,17 @@ public class LocaleMessagesCreator {
 	}
 
 	public String buildLocaleMessage(final String messageCode) {
-		return messageSource.getMessage(messageCode, new Object[]{}, DEFAULT_MESSAGE, localeMessagesHelper.getLocale());
+		return messageSource.getMessage(messageCode, new Object[]{}, DEFAULT_MESSAGE, LocaleMessagesHelper.getLocale());
 	}
 
 	public String buildLocaleMessageWithParam(final String messageCode, @Nullable final Object param) {
 		return localeMessagesHelper.removeSquareBracketsFromMessage(messageSource.getMessage(messageCode, new Object[]{param}, DEFAULT_MESSAGE,
-		                                                                                     localeMessagesHelper.getLocale()));
+		                                                                                     LocaleMessagesHelper.getLocale()));
 	}
 
 	@SafeVarargs
 	public final String buildLocaleMessageWithParams(final String messageCode, @Nullable final List<Object>... params) {
 		return localeMessagesHelper.removeSquareBracketsFromMessage(messageSource.getMessage(messageCode, params, DEFAULT_MESSAGE,
-		                                                                                     localeMessagesHelper.getLocale()));
+		                                                                                     LocaleMessagesHelper.getLocale()));
 	}
 }

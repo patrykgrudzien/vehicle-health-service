@@ -106,7 +106,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		final ServletExceptionHandlerFilter servletExceptionHandlerFilter = new ServletExceptionHandlerFilter();
 		httpSecurity.addFilterBefore(servletExceptionHandlerFilter, JwtAuthorizationTokenFilter.class);
 
-		httpSecurity.headers().frameOptions().sameOrigin().cacheControl();
+		/**
+		 * There is also another filter {@link me.grudzien.patryk.config.i18n.LocaleDeterminerFilter} which is marked as
+		 * Spring @Component (in such case there is no need to register it here before one of any existing filter) ->
+		 * It's incorrect behavior and not managed by Spring Security but it's done by purpose because some resources do not
+		 * require Security check like: "/auth", "/registration" and no filter will be invoked but "Locale" needs to be determined
+		 * to create appropriate message inside:
+		 * {@link me.grudzien.patryk.utils.i18n.LocaleMessagesCreator#buildLocaleMessage(String)} or to take right email
+		 * template inside:
+		 * {@link me.grudzien.patryk.service.registration.EmailServiceImpl#sendMessageUsingTemplate(me.grudzien.patryk.domain.dto.registration.EmailDto)}
+		 * that's why {@link me.grudzien.patryk.config.i18n.LocaleDeterminerFilter} will be invoked on each request.
+		 */
 	}
 
 	@Override
