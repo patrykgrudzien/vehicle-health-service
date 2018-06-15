@@ -8,7 +8,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -25,8 +24,14 @@ import me.grudzien.patryk.utils.security.JwtTokenUtil;
 
 import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
 
+/**
+ * Filters CANNOT be managed by Spring explicitly !!!
+ * It's NOT ALLOWED to mark them using (@Component) annotation !!!
+ * In other case Spring Security does not work properly and does not ignore specified paths.
+ * Another filter:
+ * {@link me.grudzien.patryk.config.security.ServletExceptionHandlerFilter}
+ */
 @Log4j2
-@Component
 public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
 
 	private final String tokenHeader;

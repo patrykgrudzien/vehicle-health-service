@@ -33,18 +33,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private final UserDetailsService userDetailsService;
 	private final CustomApplicationProperties customApplicationProperties;
 	private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
-	private final ServletExceptionHandlerFilter servletExceptionHandlerFilter;
 
 	@Autowired
 	public SecurityConfig(@Qualifier(MyUserDetailsService.BEAN_NAME) final UserDetailsService userDetailsService,
 	                      final CustomApplicationProperties customApplicationProperties,
-	                      final CustomAuthenticationEntryPoint customAuthenticationEntryPoint,
-	                      final ServletExceptionHandlerFilter servletExceptionHandlerFilter) {
+	                      final CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
 
 		this.userDetailsService = userDetailsService;
 		this.customApplicationProperties = customApplicationProperties;
 		this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
-		this.servletExceptionHandlerFilter = servletExceptionHandlerFilter;
 	}
 
 	@Bean
@@ -106,7 +103,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 		// ServletExceptionHandlerFilter (it is first and allows JwtAuthorizationTokenFilter to process).
 		// Catches exceptions thrown by JwtAuthorizationTokenFilter.
+		final ServletExceptionHandlerFilter servletExceptionHandlerFilter = new ServletExceptionHandlerFilter();
 		httpSecurity.addFilterBefore(servletExceptionHandlerFilter, JwtAuthorizationTokenFilter.class);
+
+		httpSecurity.headers().frameOptions().sameOrigin().cacheControl();
 	}
 
 	@Override

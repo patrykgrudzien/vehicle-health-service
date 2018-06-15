@@ -2,8 +2,11 @@ package me.grudzien.patryk.utils.i18n;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.log4j.Log4j2;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.WebRequest;
@@ -15,18 +18,31 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 
-@Component
-public final class LocaleMessagesHelper {
+import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 
-	@Value("${custom.properties.messages-language.header}")
-	private String messagesLanguageHeader;
+@Log4j2
+@Component
+public final class LocaleMessagesHelper implements InitializingBean {
+
+	@Autowired
+	private Environment environment;
 
 	@Getter
 	@Setter
 	private Locale locale = Locale.getDefault();
 
-	// cannot throw new UnsupportedOperationException("Creating object of this class is not allowed!") here -> Spring requires it!
+	private static String messagesLanguageHeader;
+
+	@Getter
+	private static final LocaleMessagesHelper INSTANCE = new LocaleMessagesHelper();
+
 	private LocaleMessagesHelper() {}
+
+	@Override
+	public void afterPropertiesSet() {
+		messagesLanguageHeader = environment.getProperty("custom.properties.messages-language.header");
+		log.info(FLOW_MARKER, "Language header loaded from property file -> {}", messagesLanguageHeader);
+	}
 
 	public String removeSquareBracketsFromMessage(@NotNull final String message) {
 		return !StringUtils.isEmpty(message) && (message.contains("[") || message.contains("]")) ?
