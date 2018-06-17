@@ -10,7 +10,14 @@ export default {
     commit('setLoading', true);
     commit('clearServerExceptionResponse');
     commit('clearServerSuccessResponse');
-    Vue.axios.post(serverEndpoints.registration.registerUserAccount, form)
+    Vue.axios.post(serverEndpoints.registration.registerUserAccount, {
+      firstName: window.btoa(form.firstName),
+      lastName: window.btoa(form.lastName),
+      email: form.email,
+      confirmedEmail: form.confirmedEmail,
+      password: window.btoa(form.password),
+      confirmedPassword: window.btoa(form.confirmedPassword)
+    })
       .then(response => {
         commit('setLoading', false);
         commit('setServerSuccessResponse', response.data);

@@ -11,9 +11,9 @@ export default {
   logoutSuccessfulWildcard: '/logout**',
   logoutSuccessful: '/logout?successful=true',
   mainBoard: '/main-board',
-  engine: '/main-board/vehicle/:ownerId/engine',
-  fluids: '/main-board/vehicle/:ownerId/fluids',
-  tires: '/main-board/vehicle/:ownerId/tires',
-  maintenanceCosts: '/main-board/vehicle/:ownerId/maintenance-costs',
+  engine: '/main-board/vehicle/engine',
+  fluids: '/main-board/vehicle/fluids',
+  tires: '/main-board/vehicle/tires',
+  maintenanceCosts: '/main-board/vehicle/maintenance-costs',
   authenticationRequired: '/authentication-required'
 }

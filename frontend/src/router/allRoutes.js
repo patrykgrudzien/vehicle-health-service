@@ -2,7 +2,7 @@ import Home                from '../components/home/Home';
 import ServerCheck         from '../components/ServerCheck';
 import AboutMe             from '../components/AboutMe';
 import RegistrationForm    from '../components/registration/RegistrationForm';
-import ConfirmRegistration from '../components/login/ConfirmRegistration';
+import ConfirmRegistration from '../components/registration/ConfirmRegistration';
 import LoginForm           from '../components/login/LoginForm';
 import MainBoard           from '../components/home/MainBoard';
 import Engine              from '../components/vehicle/Engine';
