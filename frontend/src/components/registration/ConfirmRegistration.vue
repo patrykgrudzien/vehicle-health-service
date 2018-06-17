@@ -6,7 +6,7 @@
 </template>
 
 <script>
-  import LoginForm from './LoginForm';
+  import LoginForm              from '../login/LoginForm';
   import {getMessageFromLocale} from "../../main";
 
   export default {

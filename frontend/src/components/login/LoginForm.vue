@@ -271,7 +271,7 @@
                )
                   ||
                (
-                  (this.email !== '' || this.email) && (this.password !== '' || this.password) &&
+                  (this.email === '' || this.email) && (this.password === '' || this.password) &&
                   (this.isLoading === true || this.isLoading)
                );
       },

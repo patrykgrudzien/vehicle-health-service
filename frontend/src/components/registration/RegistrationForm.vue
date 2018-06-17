@@ -377,9 +377,9 @@
                )
                   ||
                (
-                  (this.firstName !== '' || this.firstName) && (this.lastName !== '' || this.lastName) &&
-                  (this.email !== '' || this.email) && (this.confirmedEmail !== '' || this.confirmedEmail) &&
-                  (this.password !== '' || this.password) && (this.confirmedPassword !== '' || this.confirmedPassword) &&
+                  (this.firstName === '' || this.firstName) && (this.lastName === '' || this.lastName) &&
+                  (this.email === '' || this.email) && (this.confirmedEmail === '' || this.confirmedEmail) &&
+                  (this.password === '' || this.password) && (this.confirmedPassword === '' || this.confirmedPassword) &&
                   (this.isLoading === true || this.isLoading)
                );
       },
