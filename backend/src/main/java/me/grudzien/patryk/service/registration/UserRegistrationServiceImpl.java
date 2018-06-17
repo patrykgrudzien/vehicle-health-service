@@ -43,6 +43,7 @@ import me.grudzien.patryk.repository.registration.CustomUserRepository;
 import me.grudzien.patryk.repository.registration.EmailVerificationTokenRepository;
 import me.grudzien.patryk.repository.vehicle.VehicleRepository;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
+import me.grudzien.patryk.utils.web.RequestsDecoder;
 
 @Log4j2
 @Service
@@ -58,6 +59,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 	private final LocaleMessagesCreator localeMessagesCreator;
 	private final EngineRepository engineRepository;
 	private final VehicleRepository vehicleRepository;
+	private final RequestsDecoder requestsDecoder;
 
 	@Autowired
 	public UserRegistrationServiceImpl(final CustomUserRepository customUserRepository, final BCryptPasswordEncoder passwordEncoder,
@@ -65,7 +67,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 	                                   final EmailVerificationTokenRepository emailVerificationTokenRepository,
 	                                   final HttpResponseHandler httpResponseHandler, final EmailService emailService,
 	                                   final LocaleMessagesCreator localeMessagesCreator, final EngineRepository engineRepository,
-	                                   final VehicleRepository vehicleRepository) {
+	                                   final VehicleRepository vehicleRepository, final RequestsDecoder requestsDecoder) {
 
 		Preconditions.checkNotNull(customUserRepository, "customUserRepository cannot be null!");
 		Preconditions.checkNotNull(passwordEncoder, "passwordEncoder cannot be null!");
@@ -76,6 +78,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 		Preconditions.checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
 		Preconditions.checkNotNull(engineRepository, "engineRepository cannot be null!");
 		Preconditions.checkNotNull(vehicleRepository, "carRepository cannot be null!");
+		Preconditions.checkNotNull(requestsDecoder, "requestsDecoder cannot be null!");
 
 		this.customUserRepository = customUserRepository;
 		this.passwordEncoder = passwordEncoder;
@@ -86,24 +89,30 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 		this.localeMessagesCreator = localeMessagesCreator;
 		this.engineRepository = engineRepository;
 		this.vehicleRepository = vehicleRepository;
+		this.requestsDecoder = requestsDecoder;
 	}
 
 	@Override
 	public void registerNewCustomUserAccount(final UserRegistrationDto userRegistrationDto, final BindingResult bindingResult,
 	                                         final WebRequest webRequest) {
 
-		if (doesEmailExist(userRegistrationDto.getEmail())) {
-			log.error(EXCEPTION_MARKER, "User with specified email {} already exists.", userRegistrationDto.getEmail());
-			throw new UserAlreadyExistsException(localeMessagesCreator.buildLocaleMessageWithParam("user-already-exists",
-			                                                                                       userRegistrationDto.getEmail()));
+		final String decodedFirstName = requestsDecoder.decodeStringParam(userRegistrationDto.getFirstName());
+		final String decodedLastName = requestsDecoder.decodeStringParam(userRegistrationDto.getLastName());
+		final String decodedPassword = requestsDecoder.decodeStringParam(userRegistrationDto.getPassword());
+		// (email) & (confirmedEmail) fields are not encoded on UI side because they must be validated by @ValidEmail annotation
+		final String email = userRegistrationDto.getEmail();
+
+		if (doesEmailExist(email)) {
+			log.error(EXCEPTION_MARKER, "User with specified email {} already exists.", email);
+			throw new UserAlreadyExistsException(localeMessagesCreator.buildLocaleMessageWithParam("user-already-exists", email));
 		}
 		if (!bindingResult.hasErrors()) {
 			log.info("No validation errors during user registration.");
 			final CustomUser customUser = CustomUser.Builder()
-			                                        .firstName(userRegistrationDto.getFirstName())
-			                                        .lastName(userRegistrationDto.getLastName())
-			                                        .email(userRegistrationDto.getEmail())
-			                                        .password(passwordEncoder.encode(userRegistrationDto.getPassword()))
+			                                        .firstName(decodedFirstName)
+			                                        .lastName(decodedLastName)
+			                                        .email(email)
+			                                        .password(passwordEncoder.encode(decodedPassword))
 			                                        .roles(Collections.singleton(new Role(RoleName.ROLE_ADMIN)))
 			                                        .createdDate(new Date())
 			                                        .build();
