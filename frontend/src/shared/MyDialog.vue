@@ -26,6 +26,7 @@
               @change="onChangeEvent"
               @input="onInputEvent"
               @keyup.enter.native="onEnterClicked"
+              @keyup.esc.native="onEscClicked"
               class="ma-0 pa-0 notSelectable"
               type="text"
               :hint="$t(`${hint}`)"
@@ -117,7 +118,12 @@
         this.$emit('onInputEvent', payload);
       },
       onEnterClicked(payload) {
-        this.$emit('onEnterClicked', payload);
+        if (payload.target.value !== '') {
+          this.$emit('onEnterClicked', payload);
+        }
+      },
+      onEscClicked(payload) {
+        this.$emit('onEscClicked', payload);
       }
     },
     computed: {

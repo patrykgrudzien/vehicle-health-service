@@ -36,6 +36,7 @@
                    @onChangeEvent="catchChangeEvent"
                    @onInputEvent="catchInputEvent"
                    @onEnterClicked="updateCurrentMileage"
+                   @onEscClicked="toggleDialogWindow"
                    :hint="'update-mileage-text-field-hint'"
                    dialog-title="update-mileage-dialog-title"
                    agree-button-text="mileage-agree-button-text"
@@ -75,7 +76,7 @@
             <v-btn flat
                    color="primary"
                    router
-                   :to="`${'/main-board/vehicle/' + ownerId + '/engine'}`"
+                   :to="enginePath"
                    ripple >
               {{ $t('details-button') }}
             </v-btn>
@@ -110,7 +111,7 @@
             <v-btn flat
                    color="primary"
                    router
-                   :to="`${'/main-board/vehicle/' + ownerId + '/fluids'}`"
+                   :to="fluidsPath"
                    ripple >
               {{ $t('details-button') }}
             </v-btn>
@@ -145,7 +146,7 @@
             <v-btn flat
                    color="primary"
                    router
-                   :to="`${'/main-board/vehicle/' + ownerId + '/tires'}`"
+                   :to="tiresPath"
                    ripple >
               {{ $t('details-button') }}
             </v-btn>
@@ -180,7 +181,7 @@
             <v-btn flat
                    color="primary"
                    router
-                   :to="`${'/main-board/vehicle/' + ownerId + '/maintenance-costs'}`"
+                   :to="maintenanceCostsPath"
                    ripple >
               {{ $t('details-button') }}
             </v-btn>
@@ -213,6 +214,7 @@
 
 <script>
   import {mapGetters} from 'vuex';
+  import componentsPaths from '../../componentsPaths';
 
   export default {
     data() {
@@ -225,7 +227,11 @@
         ownerEmailAddress: null,
         ownerId: null,
         dialogInputFieldValue: null,
-        inputFieldAutofocus: false
+        inputFieldAutofocus: false,
+        enginePath: componentsPaths.engine,
+        fluidsPath: componentsPaths.fluids,
+        tiresPath: componentsPaths.tires,
+        maintenanceCostsPath: componentsPaths.maintenanceCosts
       }
     },
     methods: {
