@@ -36,7 +36,7 @@
                    @onChangeEvent="catchChangeEvent"
                    @onInputEvent="catchInputEvent"
                    @onEnterClicked="updateCurrentMileage"
-                   @onEscClicked="toggleDialogWindow"
+                   @onEscClicked="closeDialogAndRevertTemporaryValue"
                    :hint="'update-mileage-text-field-hint'"
                    dialog-title="update-mileage-dialog-title"
                    agree-button-text="mileage-agree-button-text"
@@ -191,24 +191,18 @@
       <!-- CARD 4 -->
     </v-layout>
 
-    <!-- SNACKBAR -->
-    <v-snackbar
-      :timeout="0"
-      :bottom="true"
-      color="secondary"
-      class="notSelectable"
-      :value="snackbarVisibility">
-      <span class="centerSpanInsideDiv">{{ $t('main-board-snackbar-text') }}</span>
-      <v-btn flat
-             ripple
-             @click.native="toggleDialogWindow"
-             color="background"
-             class="ml-3 notSelectable"
-             v-if="mileage.editMode === false">
-        {{ $t('snackbar-button-text') }}
-      </v-btn>
-    </v-snackbar>
-    <!-- SNACKBAR -->
+    <!-- MY SNACKBAR -->
+    <my-snackbar id="mileage-empty-snackbar"
+                 :timeout="0"
+                 bottom
+                 color="secondary"
+                 :snackbar-visibility="snackbarVisibility"
+                 snackbarSpanText="main-board-snackbar-text"
+                 :snackbarButtonFunction="toggleDialogWindow"
+                 :snackbarButtonVisibility="mileage.editMode === false"
+                 snackbarButtonText="snackbar-button-text" />
+    <!-- MY SNACKBAR -->
+
   </v-container>
 </template>
 
@@ -243,8 +237,9 @@
         this.mileage.new = this.dialogInputFieldValue;
       },
       catchInputEvent(payload) {
-        this.dialogInputFieldValue = payload;
-        this.mileage.new = payload;
+        this.dialogInputFieldValue = parseInt(payload);
+        // noinspection JSValidateTypes
+        this.mileage.new = parseInt(payload);
       },
       closeDialogAndRevertTemporaryValue() {
         this.toggleDialogWindow();
@@ -261,6 +256,7 @@
               .then(response => {
                 this.mileage.current = response.data;
                 this.mileage.new = this.mileage.current;
+                this.dialogInputFieldValue = this.mileage.current;
               })
               .catch(error => {
                 console.log(error.response);
@@ -284,9 +280,9 @@
         'isLogged'
       ]),
       snackbarVisibility() {
-        return (this.mileage.current === null || !this.mileage.current || this.mileage.current === '') ||
-          (this.mileage.new === null || !this.mileage.new || this.mileage.new === '') ||
-          (this.dialogInputFieldValue !== null && !this.dialogInputFieldValue && this.dialogInputFieldValue === '');
+        return (this.mileage.current < 0 || isNaN(this.mileage.current)) ||
+          (this.mileage.new < 0 || isNaN(this.mileage.new)) ||
+          (this.dialogInputFieldValue < 0 || isNaN(this.dialogInputFieldValue));
       },
       card1Classes () {
         if (this.$vuetify.breakpoint.lgAndUp) {
@@ -392,6 +388,7 @@
                 .then(response => {
                   this.mileage.current = response.data;
                   this.mileage.new = this.mileage.current;
+                  this.dialogInputFieldValue = this.mileage.current;
                 })
                 .catch(error => {
                   console.log(error.response);
