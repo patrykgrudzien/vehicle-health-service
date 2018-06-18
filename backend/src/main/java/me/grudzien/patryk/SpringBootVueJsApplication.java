@@ -88,7 +88,7 @@ public class SpringBootVueJsApplication implements CommandLineRunner {
 			                               .vehicleType(VehicleType.CAR)
 			                               .engine(engine)
 			                               .build();
-			vehicle.setMileage(210999L);
+			vehicle.setMileage(0L);
 			vehicle.setCustomUser(testUser);
 			testUser.setVehicles(Lists.newArrayList(vehicle));
 

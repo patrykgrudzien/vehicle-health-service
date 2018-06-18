@@ -15,6 +15,7 @@ import com.google.common.base.Preconditions;
 import me.grudzien.patryk.domain.dto.vehicle.VehicleDto;
 import me.grudzien.patryk.service.vehicle.VehicleService;
 import me.grudzien.patryk.utils.log.LogMarkers;
+import me.grudzien.patryk.utils.web.RequestsDecoder;
 
 @Log4j2
 @RestController
@@ -22,11 +23,14 @@ import me.grudzien.patryk.utils.log.LogMarkers;
 public class VehicleController {
 
 	private final VehicleService vehicleService;
+	private final RequestsDecoder requestsDecoder;
 
 	@Autowired
-	public VehicleController(final VehicleService vehicleService) {
+	public VehicleController(final VehicleService vehicleService, final RequestsDecoder requestsDecoder) {
 		Preconditions.checkNotNull(vehicleService, "vehicleService cannot be null!");
+		Preconditions.checkNotNull(requestsDecoder, "requestsDecoder cannot be null!");
 		this.vehicleService = vehicleService;
+		this.requestsDecoder = requestsDecoder;
 	}
 
 	@GetMapping("/vehicle/{ownerEmailAddress}")
@@ -42,7 +46,8 @@ public class VehicleController {
 	@PutMapping("/vehicle/update-current-mileage/{ownerEmailAddress}")
 	public void updateVehicleCurrentMileage(@RequestBody final VehicleDto vehicleDto,
 	                                        @PathVariable("ownerEmailAddress") final String ownerEmailAddress) {
-		log.info(LogMarkers.FLOW_MARKER, "updateVehicleCurrentMileage() -> ownerEmailAddress = ({})", ownerEmailAddress);
+		log.info(LogMarkers.FLOW_MARKER, "updateVehicleCurrentMileage() -> ownerEmailAddress = ({})",
+		         requestsDecoder.decodeStringParam(ownerEmailAddress));
 		vehicleService.updateCurrentMileage(vehicleDto.getEncodedMileage(), ownerEmailAddress);
 	}
 }
