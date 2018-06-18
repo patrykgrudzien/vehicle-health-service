@@ -11,8 +11,8 @@ export default {
     commit('clearServerExceptionResponse');
     commit('clearServerSuccessResponse');
     Vue.axios.post(serverEndpoints.registration.registerUserAccount, {
-      firstName: window.btoa(form.firstName),
-      lastName: window.btoa(form.lastName),
+      firstName: form.firstName,
+      lastName: form.lastName,
       email: form.email,
       confirmedEmail: form.confirmedEmail,
       password: window.btoa(form.password),
