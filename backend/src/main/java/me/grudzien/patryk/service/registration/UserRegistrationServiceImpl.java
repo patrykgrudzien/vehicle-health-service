@@ -21,8 +21,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.stream.Collectors;
 
-import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
-
 import me.grudzien.patryk.domain.dto.registration.UserRegistrationDto;
 import me.grudzien.patryk.domain.entities.engine.Engine;
 import me.grudzien.patryk.domain.entities.registration.CustomUser;
@@ -44,6 +42,8 @@ import me.grudzien.patryk.repository.registration.EmailVerificationTokenReposito
 import me.grudzien.patryk.repository.vehicle.VehicleRepository;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.web.RequestsDecoder;
+
+import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
 
 @Log4j2
 @Service
@@ -96,8 +96,9 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 	public void registerNewCustomUserAccount(final UserRegistrationDto userRegistrationDto, final BindingResult bindingResult,
 	                                         final WebRequest webRequest) {
 
-		final String decodedFirstName = requestsDecoder.decodeStringParam(userRegistrationDto.getFirstName());
-		final String decodedLastName = requestsDecoder.decodeStringParam(userRegistrationDto.getLastName());
+		// (firstName) & (lastName) are not encoded because (firstName) goes to confirmation email as variable in template
+		final String firstName = userRegistrationDto.getFirstName();
+		final String lastName = userRegistrationDto.getLastName();
 		final String decodedPassword = requestsDecoder.decodeStringParam(userRegistrationDto.getPassword());
 		// (email) & (confirmedEmail) fields are not encoded on UI side because they must be validated by @ValidEmail annotation
 		final String email = userRegistrationDto.getEmail();
@@ -109,8 +110,8 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 		if (!bindingResult.hasErrors()) {
 			log.info("No validation errors during user registration.");
 			final CustomUser customUser = CustomUser.Builder()
-			                                        .firstName(decodedFirstName)
-			                                        .lastName(decodedLastName)
+			                                        .firstName(firstName)
+			                                        .lastName(lastName)
 			                                        .email(email)
 			                                        .password(passwordEncoder.encode(decodedPassword))
 			                                        .roles(Collections.singleton(new Role(RoleName.ROLE_ADMIN)))
