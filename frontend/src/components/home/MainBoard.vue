@@ -76,7 +76,7 @@
             <v-btn flat
                    color="primary"
                    router
-                   :to="enginePath"
+                   :to.native="enginePath"
                    ripple >
               {{ $t('details-button') }}
             </v-btn>
@@ -111,7 +111,7 @@
             <v-btn flat
                    color="primary"
                    router
-                   :to="fluidsPath"
+                   :to.native="fluidsPath"
                    ripple >
               {{ $t('details-button') }}
             </v-btn>
@@ -146,7 +146,7 @@
             <v-btn flat
                    color="primary"
                    router
-                   :to="tiresPath"
+                   :to.native="tiresPath"
                    ripple >
               {{ $t('details-button') }}
             </v-btn>
@@ -181,7 +181,7 @@
             <v-btn flat
                    color="primary"
                    router
-                   :to="maintenanceCostsPath"
+                   :to.native="maintenanceCostsPath"
                    ripple >
               {{ $t('details-button') }}
             </v-btn>
