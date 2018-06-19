@@ -15,6 +15,7 @@ custom:
         confirmed: /registration-confirmed
         confirmed-token-not-found: /registration-confirmed?error=tokenNotFound
         confirmed-token-expired: /registration-confirmed?error=tokenExpired
+        user-already-enabled: /registration-confirmed?info=userAlreadyEnabled
         resend-email-verification-token: /resend-verification-token?token=
       authentication:
         root: /auth
@@ -157,5 +158,5 @@ spring:
   jpa:
     show-sql: false
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     database-platform: org.hibernate.dialect.PostgreSQL94Dialect
