@@ -44,6 +44,7 @@ import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.web.RequestsDecoder;
 
 import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
+import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 
 @Log4j2
 @Service
@@ -121,7 +122,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 			// TODO: temporary (test purposes)
 			final Engine engine = Engine.Builder().engineType(EngineType.DIESEL).build();
 			final Vehicle vehicle = Vehicle.Builder().vehicleType(VehicleType.CAR).engine(engine).build();
-			vehicle.setMileage(210999L);
+			vehicle.setMileage(0L);
 			vehicle.setCustomUser(customUser);
 			engineRepository.save(engine);
 			vehicleRepository.save(vehicle);
@@ -151,25 +152,32 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 	@Override
 	public void confirmRegistration(final String emailVerificationToken, final HttpServletResponse response) {
 		final EmailVerificationToken token = emailService.getEmailVerificationToken(emailVerificationToken);
-		if (token == null) {
-			// TODO: check additional case if user is already enabled when token is still VALID
-			log.error("No verification token found.");
+		if (token != null) {
+			final CustomUser customUser = token.getCustomUser();
+			if (customUser.isEnabled()) {
+				log.info(FLOW_MARKER, "User account with e-mail address ({}) has been already enabled.", customUser.getEmail());
+				httpResponseHandler.redirectUserToAccountAlreadyEnabledUrl(response);
+			} else {
+				final Calendar calendar = Calendar.getInstance();
+				if (token.getExpiryDate().compareTo(calendar.getTime()) < 0) {
+					log.error("Verification token has expired.");
+					httpResponseHandler.redirectUserToEmailTokenExpiredUrl(response);
+					throw new TokenExpiredException(localeMessagesCreator.buildLocaleMessage("verification-token-expired"));
+				}
+				customUser.setEnabled(Boolean.TRUE);
+				saveRegisteredCustomUser(customUser);
+				log.info("User account has been activated.");
+
+				emailVerificationTokenRepository.delete(token);
+				log.info("Token confirmed and deleted from database.");
+
+				httpResponseHandler.redirectUserToConfirmedUrl(response);
+			}
+		} else {
+			log.error("No verification token found in the database. Some error occurred during registration process.");
 			httpResponseHandler.redirectUserToEmailTokenNotFoundUrl(response);
 			throw new TokenNotFoundException(localeMessagesCreator.buildLocaleMessage("verification-token-not-found"));
 		}
-		final Calendar calendar = Calendar.getInstance();
-		if (token.getExpiryDate().compareTo(calendar.getTime()) < 0) {
-			log.error("Verification token has expired.");
-			httpResponseHandler.redirectUserToEmailTokenExpiredUrl(response);
-			throw new TokenExpiredException(localeMessagesCreator.buildLocaleMessage("verification-token-expired"));
-		}
-		final CustomUser user = token.getCustomUser();
-		user.setEnabled(Boolean.TRUE);
-		saveRegisteredCustomUser(user);
-		log.info("User account has been activated.");
-
-		emailVerificationTokenRepository.delete(token);
-		log.info("Token confirmed and deleted from database.");
 	}
 
 	@Override

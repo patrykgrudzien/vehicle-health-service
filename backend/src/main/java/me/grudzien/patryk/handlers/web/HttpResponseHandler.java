@@ -36,6 +36,17 @@ public class HttpResponseHandler {
 		this.localeMessagesCreator = localeMessagesCreator;
 	}
 
+	public void redirectUserToAccountAlreadyEnabledUrl(final HttpServletResponse response) {
+		try {
+			response.sendRedirect(herokuAppEndpointResolver.determineBaseAppUrlForUserAlreadyEnabled() +
+			                      customApplicationProperties.getEndpoints().getRegistration().getUserAlreadyEnabled());
+			log.info("User successfully redirected to (user already enabled) url.");
+		} catch (final IOException exception) {
+			log.error(LogMarkers.EXCEPTION_MARKER, "Cannot redirect user to (user already enabled) url.");
+			throw new RedirectionException(localeMessagesCreator.buildLocaleMessage("cannot-redirect-to-user-already-enabled-url"));
+		}
+	}
+
 	public void redirectUserToEmailTokenExpiredUrl(final HttpServletResponse response) {
 		try {
 			response.sendRedirect(herokuAppEndpointResolver.determineBaseAppUrlForConfirmRegistration() +

@@ -92,7 +92,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.antMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getAuthentication().getRoot() + "/**").permitAll()
 			        // /registration/**  (/register-user-account)
 			        .antMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getRegistration().getRoot() + "/**").permitAll()
-					// /registration/**  (/confirm)
+					// /registration/**
 					.antMatchers(HttpMethod.GET, customApplicationProperties.getEndpoints().getRegistration().getRoot() + "/**").permitAll()
 			        // require authentication via JWT
 					.anyRequest().authenticated();
@@ -142,7 +142,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getRegistration().getRoot() + "/**")
 					.and()
 			.ignoring()
-		        // /registration/**  (/confirm)
+		        // /registration/**
 				.antMatchers(HttpMethod.GET, customApplicationProperties.getEndpoints().getRegistration().getRoot() + "/**")
 					.and()
 			.ignoring()
@@ -164,6 +164,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				             "/about-me",
 				             "/registration-form",
 				             "/registration-confirmed",
+				             "/registration-confirmed/**",
 				             "/server-health",
 				             "/login",
 				             "/main-board",

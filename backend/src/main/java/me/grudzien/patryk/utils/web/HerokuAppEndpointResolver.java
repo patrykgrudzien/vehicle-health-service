@@ -44,6 +44,22 @@ public class HerokuAppEndpointResolver implements InitializingBean {
 	}
 
 	/**
+	 * Method which creates base app URL for
+	 * {@link me.grudzien.patryk.service.registration.UserRegistrationServiceImpl#confirmRegistration(String, javax.servlet.http.HttpServletResponse)}
+	 * based on active spring profile.
+	 *
+	 * @return base app URL which is used to redirect user to (user already enabled) screen on UI.
+	 */
+	public String determineBaseAppUrlForUserAlreadyEnabled() {
+		if (ACTIVE_SPRING_PROFILE.equals(SpringAppProfiles.HEROKU_DEPLOYMENT.getYmlName())) {
+			return getHerokuAppBaseUrl();
+		} else {
+			log.info(LogMarkers.METHOD_INVOCATION_MARKER, "Created user already enabled URL for LOCAL env.");
+			return customApplicationProperties.getCorsOrigins().getFrontEndModule();
+		}
+	}
+
+	/**
 	 * Method which creates base app URL for createVerificationTokenAndSendEmail() method in RegistrationCompleteListener
 	 * based on active spring profile.
 	 *
