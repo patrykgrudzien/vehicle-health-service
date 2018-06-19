@@ -36,19 +36,16 @@ public class EmailServiceImpl implements EmailService {
 	private final JavaMailSender javaMailSender;
 	private final SpringTemplateEngine templateEngine;
 	private final EmailVerificationTokenRepository emailVerificationTokenRepository;
-	private final LocaleMessagesHelper localeMessagesHelper;
 
 	// JavaMailSender will be automatically autowired by spring boot if it finds configuration in application.yml file
 	@SuppressWarnings("SpringJavaAutowiringInspection")
 	@Autowired
 	public EmailServiceImpl(final JavaMailSender javaMailSender, final SpringTemplateEngine templateEngine,
-	                        final EmailVerificationTokenRepository emailVerificationTokenRepository,
-	                        final LocaleMessagesHelper localeMessagesHelper) {
+	                        final EmailVerificationTokenRepository emailVerificationTokenRepository) {
 
 		this.javaMailSender = javaMailSender;
 		this.templateEngine = templateEngine;
 		this.emailVerificationTokenRepository = emailVerificationTokenRepository;
-		this.localeMessagesHelper = localeMessagesHelper;
 	}
 
 	@Override
