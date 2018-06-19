@@ -24,7 +24,7 @@
       return {
         name: 'Patryk',
         lastName: 'Grudzień',
-        profession: 'Junior Software Engineer'
+        profession: 'Software Engineer'
       }
     }
   }
