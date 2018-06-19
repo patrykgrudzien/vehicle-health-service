@@ -102,6 +102,11 @@
           {{ $t('place-for-app-title') }}
         </router-link>
       </v-toolbar-title>
+      <v-icon class="ml-2 notSelectable"
+              medium
+              style="cursor: pointer;"
+              @click="homeIconClicked"
+              v-if="showHomeVisibility">home</v-icon>
       <v-spacer/>
       <v-toolbar-items class="hidden-sm-and-down">
 
@@ -223,6 +228,9 @@
       },
       switchSideNavigation(value) {
         this.$store.commit('setSideNavigation', value);
+      },
+      homeIconClicked() {
+        this.$router.push(this.determineHomeLink);
       }
     },
     computed: {
@@ -281,6 +289,9 @@
       },
       determineHomeLink() {
         return this.isLogged === 1 ? componentsPaths.mainBoard : componentsPaths.home;
+      },
+      showHomeVisibility() {
+        return this.$route.name !== 'Home' && this.$route.name !== 'MainBoard';
       }
     },
     created() {
