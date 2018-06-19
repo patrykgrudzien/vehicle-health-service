@@ -71,6 +71,7 @@ public class CustomApplicationProperties {
 			private String confirmed;
 			private String confirmedTokenNotFound;
 			private String confirmedTokenExpired;
+			private String userAlreadyEnabled;
 
 			public String getRootRegisterUserAccount() {
 				return getRoot() + getRegisterUserAccount();
