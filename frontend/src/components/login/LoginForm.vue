@@ -2,12 +2,21 @@
   <v-container fluid fill-height>
     <v-layout row align-center justify-center>
       <v-flex xs12 sm8 md6>
+        <!-- USER ALREADY ENABLED ALERT -->
+        <my-alert id="user-already-enabled-alert"
+                  dismissible
+                  @dismissed="dismissDialog()"
+                  type="info"
+                  v-if="showDialog && this.$route.fullPath.includes('userAlreadyEnabled')"
+                  :message="confirmationMessage()"/>
+        <!-- USER ALREADY ENABLED ALERT -->
+
         <!-- CONFIRMATION REGISTRATION ALERT -->
         <my-alert id="confirmation-registration-alert"
                   dismissible
                   @dismissed="dismissDialog()"
                   type="success"
-                  v-if="showDialog"
+                  v-if="showDialog && !this.$route.fullPath.includes('userAlreadyEnabled')"
                   :message="confirmationMessage()"/>
         <!-- CONFIRMATION REGISTRATION ALERT -->
 
