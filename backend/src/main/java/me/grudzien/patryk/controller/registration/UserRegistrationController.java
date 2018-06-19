@@ -17,15 +17,14 @@ import org.springframework.web.context.request.WebRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import static me.grudzien.patryk.utils.log.LogMarkers.CONTROLLER_MARKER;
-
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.domain.dto.registration.UserRegistrationDto;
 import me.grudzien.patryk.domain.dto.responses.CustomResponse;
 import me.grudzien.patryk.domain.dto.responses.SuccessResponse;
-import me.grudzien.patryk.handlers.web.HttpResponseHandler;
 import me.grudzien.patryk.service.registration.UserRegistrationService;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
+
+import static me.grudzien.patryk.utils.log.LogMarkers.CONTROLLER_MARKER;
 
 @Log4j2
 @RestController
@@ -34,18 +33,15 @@ public class UserRegistrationController {
 
 	private final UserRegistrationService userRegistrationService;
 	private final CustomApplicationProperties customApplicationProperties;
-	private final HttpResponseHandler httpResponseHandler;
 	private final LocaleMessagesCreator localeMessagesCreator;
 
 	@Autowired
 	public UserRegistrationController(final UserRegistrationService userRegistrationService,
 	                                  final CustomApplicationProperties endpointsProperties,
-	                                  final HttpResponseHandler httpResponseHandler,
 	                                  final LocaleMessagesCreator localeMessagesCreator) {
 
 		this.userRegistrationService = userRegistrationService;
 		this.customApplicationProperties = endpointsProperties;
-		this.httpResponseHandler = httpResponseHandler;
 		this.localeMessagesCreator = localeMessagesCreator;
 	}
 
@@ -62,7 +58,6 @@ public class UserRegistrationController {
 	public ResponseEntity<CustomResponse> confirmRegistration(@RequestParam("token") final String token, final HttpServletResponse response) {
 		log.info(CONTROLLER_MARKER, "Inside: {}", customApplicationProperties.getEndpoints().getRegistration().getRootConfirmRegistration());
 		userRegistrationService.confirmRegistration(token, response);
-		httpResponseHandler.redirectUserToConfirmedUrl(response);
 		final String message = localeMessagesCreator.buildLocaleMessage("confirm-registration");
 		return new ResponseEntity<>(new SuccessResponse(message), HttpStatus.OK);
 	}
