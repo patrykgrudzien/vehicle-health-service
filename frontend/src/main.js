@@ -14,17 +14,23 @@ import i18n            from './lang/i18n';
 import cookieHelper    from './cookieHelper';
 import NavigationGuard from './router/NavigationGuard';
 
-// --------- AXIOS ---------
-// PRODUCTION
-// Vue.use(VueAxios, axios);
+import coreSettings from './coreSettings';
 
-// DEVELOPMENT
-Vue.use(VueAxios, axios.create({
-  baseURL: `http://localhost:8088`,
-  headers: {
-    'Access-Control-Allow-Origin': 'http://localhost:8080'
-  }
-}));
+
+if (coreSettings && coreSettings.mode === 'PROD') {
+  // --------- AXIOS ---------
+// PRODUCTION
+  Vue.use(VueAxios, axios);
+} else {
+  // DEVELOPMENT
+  Vue.use(VueAxios, axios.create({
+    baseURL: `http://localhost:8088`,
+    headers: {
+      'Access-Control-Allow-Origin': 'http://localhost:8080'
+    }
+  }));
+}
+
 
 // Interceptor for HTTP requests (adding Authorization header with JWT token to each request)
 Vue.axios.interceptors.request.use(config => {
