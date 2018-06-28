@@ -3,7 +3,6 @@ package me.grudzien.patryk.config.i18n;
 import lombok.extern.log4j.Log4j2;
 
 import org.springframework.http.HttpMethod;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -19,12 +18,12 @@ import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 
 @Log4j2
 /**
+ * TODO: update this comment
  * Marking this filter as Spring @Component is done by purpose ->
  * {@link LocaleDeterminerFilter#doFilterInternal(javax.servlet.http.HttpServletRequest,
  * javax.servlet.http.HttpServletResponse, javax.servlet.FilterChain)}
  * will be called on each request.
  */
-@Component
 public class LocaleDeterminerFilter extends OncePerRequestFilter {
 
 	private final LocaleMessagesHelper localeMessagesHelper = LocaleMessagesHelper.getINSTANCE();
