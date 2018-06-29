@@ -13,16 +13,12 @@ import MySnackbar        from './shared/MySnackbar';
 import i18n            from './lang/i18n';
 import cookieHelper    from './cookieHelper';
 import NavigationGuard from './router/NavigationGuard';
+import appSettings from './appSettings';
 
-import coreSettings from './coreSettings';
-
-
-if (coreSettings && coreSettings.mode === 'PROD') {
-  // --------- AXIOS ---------
-// PRODUCTION
+// AXIOS settings
+if (appSettings && appSettings.deploymentMode === 'PROD') {
   Vue.use(VueAxios, axios);
 } else {
-  // DEVELOPMENT
   Vue.use(VueAxios, axios.create({
     baseURL: `http://localhost:8088`,
     headers: {
@@ -30,7 +26,6 @@ if (coreSettings && coreSettings.mode === 'PROD') {
     }
   }));
 }
-
 
 // Interceptor for HTTP requests (adding Authorization header with JWT token to each request)
 Vue.axios.interceptors.request.use(config => {
