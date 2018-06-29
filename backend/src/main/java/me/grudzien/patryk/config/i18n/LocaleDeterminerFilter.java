@@ -12,18 +12,17 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-import me.grudzien.patryk.utils.i18n.LocaleMessagesHelper;
-
 import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 
-@Log4j2
+import me.grudzien.patryk.utils.i18n.LocaleMessagesHelper;
+
 /**
- * TODO: update this comment
- * Marking this filter as Spring @Component is done by purpose ->
- * {@link LocaleDeterminerFilter#doFilterInternal(javax.servlet.http.HttpServletRequest,
- * javax.servlet.http.HttpServletResponse, javax.servlet.FilterChain)}
- * will be called on each request.
+ * This filter is registered in {@link me.grudzien.patryk.config.filters.registry.FiltersRegistryConfig}
+ * and configured to be fired on specific URL's.
+ * See:
+ * {@link me.grudzien.patryk.config.filters.registry.FiltersRegistryConfig#registerLocaleDeterminerFilter()}
  */
+@Log4j2
 public class LocaleDeterminerFilter extends OncePerRequestFilter {
 
 	private final LocaleMessagesHelper localeMessagesHelper = LocaleMessagesHelper.getINSTANCE();

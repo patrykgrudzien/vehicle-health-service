@@ -51,7 +51,7 @@ spring:
   # = JavaMail Configuration
   # ===============================
   mail:
-    default-encoding: utf-8
+    default-encoding: UTF-8
     host: smtp.gmail.com
     username: vehicle.health.service@gmail.com
     password: Pg91tmsecretHdvhs
