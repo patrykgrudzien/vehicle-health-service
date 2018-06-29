@@ -12,19 +12,24 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
+import com.google.common.base.Preconditions;
+
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
+
+import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
+import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 
 import me.grudzien.patryk.domain.dto.registration.EmailDto;
 import me.grudzien.patryk.domain.entities.registration.CustomUser;
 import me.grudzien.patryk.domain.entities.registration.EmailVerificationToken;
 import me.grudzien.patryk.repository.registration.EmailVerificationTokenRepository;
+import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesHelper;
-
-import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 
 @Log4j2
 @Service
@@ -36,16 +41,24 @@ public class EmailServiceImpl implements EmailService {
 	private final JavaMailSender javaMailSender;
 	private final SpringTemplateEngine templateEngine;
 	private final EmailVerificationTokenRepository emailVerificationTokenRepository;
+	private final LocaleMessagesCreator localeMessagesCreator;
 
 	// JavaMailSender will be automatically autowired by spring boot if it finds configuration in application.yml file
 	@SuppressWarnings("SpringJavaAutowiringInspection")
 	@Autowired
 	public EmailServiceImpl(final JavaMailSender javaMailSender, final SpringTemplateEngine templateEngine,
-	                        final EmailVerificationTokenRepository emailVerificationTokenRepository) {
+	                        final EmailVerificationTokenRepository emailVerificationTokenRepository,
+	                        final LocaleMessagesCreator localeMessagesCreator) {
+
+		Preconditions.checkNotNull(javaMailSender, "javaMailSender cannot be null!");
+		Preconditions.checkNotNull(templateEngine, "templateEngine cannot be null!");
+		Preconditions.checkNotNull(emailVerificationTokenRepository, "emailVerificationTokenRepository cannot be null!");
+		Preconditions.checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
 
 		this.javaMailSender = javaMailSender;
 		this.templateEngine = templateEngine;
 		this.emailVerificationTokenRepository = emailVerificationTokenRepository;
+		this.localeMessagesCreator = localeMessagesCreator;
 	}
 
 	@Override
@@ -76,11 +89,15 @@ public class EmailServiceImpl implements EmailService {
 			messageHelper.setSubject(emailDto.getSubject());
 			messageHelper.setText(htmlTemplate, Boolean.TRUE);
 			messageHelper.setTo(emailDto.getTo());
-			messageHelper.setFrom(senderEmailAddress);
+			messageHelper.setFrom(senderEmailAddress, localeMessagesCreator.buildLocaleMessage("registration-email-personal-from-address"));
 
 			javaMailSender.send(message);
 		} catch (final MessagingException messagingException) {
-			log.error(messagingException);
+			log.error(EXCEPTION_MARKER, "MessagingException thrown inside sendMessageUsingTemplate(), error message -> {}",
+			          messagingException.getMessage());
+		} catch (UnsupportedEncodingException unsupportedEncodingException) {
+			log.error(EXCEPTION_MARKER, "UnsupportedEncodingException thrown inside sendMessageUsingTemplate(), error message -> {}",
+			          unsupportedEncodingException.getMessage());
 		}
 	}
 

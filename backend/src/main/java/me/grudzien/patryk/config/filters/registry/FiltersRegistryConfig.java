@@ -19,12 +19,21 @@ public class FiltersRegistryConfig {
 	}
 
 	@Bean
-	public FilterRegistrationBean<LocaleDeterminerFilter> localeDeterminerFilter() {
+	public FilterRegistrationBean<LocaleDeterminerFilter> registerLocaleDeterminerFilter() {
 
 		final FilterRegistrationBean<LocaleDeterminerFilter> registrationBean = new FilterRegistrationBean<>();
 		registrationBean.setFilter(new LocaleDeterminerFilter());
-		// TODO: provide all required paths
-		registrationBean.addUrlPatterns(customApplicationProperties.getEndpoints().getAuthentication().getRoot());
+		registrationBean.addUrlPatterns(
+				// -> /auth
+				customApplicationProperties.getEndpoints().getAuthentication().getRoot(),
+				// -> /registration
+				customApplicationProperties.getEndpoints().getRegistration().getRoot(),
+				// -> /register-user-account
+				customApplicationProperties.getEndpoints().getRegistration().getRegisterUserAccount(),
+				// -> /registration/register-user-account
+				customApplicationProperties.getEndpoints().getRegistration().getRoot() +
+				customApplicationProperties.getEndpoints().getRegistration().getRegisterUserAccount()
+		);
 		return registrationBean;
 	}
 }
