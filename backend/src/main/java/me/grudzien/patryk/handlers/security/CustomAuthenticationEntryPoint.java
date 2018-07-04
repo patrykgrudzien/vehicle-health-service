@@ -14,15 +14,18 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
+import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
+
 import me.grudzien.patryk.domain.dto.login.AuthenticationEntryPointResponse;
 import me.grudzien.patryk.handlers.web.HttpResponseHandler;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
-import me.grudzien.patryk.utils.log.LogMarkers;
 
 /**
  * IMPORTANT NOTE:
  * {@link me.grudzien.patryk.handlers.exception.ExceptionHandlingController} only handles exceptions come from @Controller classes that's
  * why all exceptions which come from JWT will be omitted (they are specific to Servlet itself) !!!
+ *
+ * Exceptions come from JWT are handled by {@link me.grudzien.patryk.config.security.ServletExceptionHandlerFilter}
  */
 @Log4j2
 @Component
@@ -41,7 +44,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 	public void commence(final HttpServletRequest request, final HttpServletResponse response,
 	                     final AuthenticationException authException) throws IOException {
 
-		log.info(LogMarkers.FLOW_MARKER, "User wanted to get secured resource but needs to be authenticated.");
+		log.info(FLOW_MARKER, authException.getMessage());
 
 		// notify client of response body content type
 		response.addHeader(HttpResponseHandler.CONTENT_TYPE_KEY, HttpResponseHandler.CONTENT_TYPE_VALUE);
