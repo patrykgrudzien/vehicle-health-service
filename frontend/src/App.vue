@@ -301,6 +301,27 @@
 </script>
 
 <style>
+  /* STYLING SCROLLBARS */
+  body::-webkit-scrollbar {
+    width: 2.5px;
+    height: 2.5px;
+  }
+
+  body::-webkit-scrollbar-track {
+    background-color: #303030;
+    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.8);
+  }
+
+  body::-webkit-scrollbar-corner {
+    background-color: #303030;
+  }
+
+  body::-webkit-scrollbar-thumb {
+    background-color: #0097A7;
+    border-radius: 25px;
+  }
+  /* STYLING SCROLLBARS */
+
   a {
     text-decoration: none;
   }
