@@ -34,6 +34,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private final CustomApplicationProperties customApplicationProperties;
 	private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
+	/**
+	 * @Qualifier for {@link org.springframework.security.core.userdetails.UserDetailsService} is used here because there is also
+	 * {@link org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration} available and Spring
+	 * does not know that I want to use my custom implementation.
+	 */
 	@Autowired
 	public SecurityConfig(@Qualifier(MyUserDetailsService.BEAN_NAME) final UserDetailsService userDetailsService,
 	                      final CustomApplicationProperties customApplicationProperties,
