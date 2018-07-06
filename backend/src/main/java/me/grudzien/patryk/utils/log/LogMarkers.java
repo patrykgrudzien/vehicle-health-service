@@ -17,4 +17,5 @@ public final class LogMarkers {
 	public static final Marker CONTROLLER_MARKER = MarkerManager.getMarker("CONTROLLER");
 	public static final Marker METHOD_INVOCATION_MARKER = MarkerManager.getMarker("METHOD_INVOCATION");
 	public static final Marker EXCEPTION_MARKER = MarkerManager.getMarker("EXCEPTION");
+	public static final Marker ASPECT_MARKER = MarkerManager.getMarker("ASPECT");
 }
