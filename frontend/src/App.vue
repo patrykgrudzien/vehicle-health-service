@@ -21,7 +21,9 @@
         </v-list-tile>
 
         <!-- PRINCIPAL USER (AVATAR) -->
-        <v-list-tile ripple
+        <v-list-tile id="avatar"
+                     ripple
+                     inactive
                      v-if="isLogged === 1 && getPrincipalUserFirstName !== null">
           <v-list-tile-action>
             <v-icon left>account_circle</v-icon>
