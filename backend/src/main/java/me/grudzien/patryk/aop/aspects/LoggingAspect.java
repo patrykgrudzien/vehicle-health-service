@@ -7,8 +7,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.AfterThrowing;
+import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 
@@ -53,5 +55,18 @@ public class LoggingAspect {
 		log.info("----------------------------------------------");
 		log.info(ASPECT_MARKER, "----- Exception message =====> {}", exception.getMessage());
 		log.info("----------------------------------------------");
+	}
+
+	@Around("me.grudzien.patryk.aop.pointcuts.LoggingAspectPointcuts.loadUserByUsername()")
+	public Object aroundLoadUserByUsername(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+
+		log.info("----------------------------------------------");
+		final long begin = System.currentTimeMillis();
+		final Object result = proceedingJoinPoint.proceed();
+		final long end = System.currentTimeMillis();
+		log.info(ASPECT_MARKER, "----- Around advice, process duration =====> {} seconds.", ((end - begin) / 1000.0));
+		log.info("----------------------------------------------");
+
+		return result;
 	}
 }
