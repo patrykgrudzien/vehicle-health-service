@@ -37,8 +37,6 @@ public class MyUserDetailsService implements UserDetailsService {
 	@Override
 	@Cacheable(value = "principal-user", key = "#email")
 	public UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException {
-		log.info(FLOW_MARKER, "loadUserByUsername() inside >>>> MyUserDetailsService >>>> Spring Security");
-
 		final CustomUser customUser = customUserRepository.findByEmail(email);
 		if (customUser == null) {
 			log.error(EXCEPTION_MARKER, "No user found for specified email: {}", email);
