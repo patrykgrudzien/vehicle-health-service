@@ -9,13 +9,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.WebRequest;
 
 import com.google.common.base.Preconditions;
 
 import me.grudzien.patryk.domain.dto.vehicle.VehicleDto;
 import me.grudzien.patryk.service.vehicle.VehicleService;
-import me.grudzien.patryk.utils.log.LogMarkers;
-import me.grudzien.patryk.utils.web.RequestsDecoder;
 
 @Log4j2
 @RestController
@@ -23,31 +22,29 @@ import me.grudzien.patryk.utils.web.RequestsDecoder;
 public class VehicleController {
 
 	private final VehicleService vehicleService;
-	private final RequestsDecoder requestsDecoder;
 
 	@Autowired
-	public VehicleController(final VehicleService vehicleService, final RequestsDecoder requestsDecoder) {
+	public VehicleController(final VehicleService vehicleService) {
 		Preconditions.checkNotNull(vehicleService, "vehicleService cannot be null!");
-		Preconditions.checkNotNull(requestsDecoder, "requestsDecoder cannot be null!");
 		this.vehicleService = vehicleService;
-		this.requestsDecoder = requestsDecoder;
 	}
 
 	@GetMapping("/vehicle/{ownerEmailAddress}")
-	public VehicleDto getVehicleDtoForOwnerEmailAddress(@PathVariable("ownerEmailAddress") final String ownerEmailAddress) {
+	public VehicleDto getVehicleDtoForOwnerEmailAddress(@PathVariable("ownerEmailAddress") final String ownerEmailAddress,
+	                                                    @SuppressWarnings("unused") final WebRequest webRequest) {
 		return vehicleService.findDtoByOwnerEmailAddress(ownerEmailAddress);
 	}
 
 	@GetMapping("/vehicle/get-current-mileage/{ownerEmailAddress}")
-	public Long getVehicleCurrentMileage(@PathVariable("ownerEmailAddress") final String ownerEmailAddress) {
+	public Long getVehicleCurrentMileage(@PathVariable("ownerEmailAddress") final String ownerEmailAddress,
+	                                     @SuppressWarnings("unused") final WebRequest webRequest) {
 		return vehicleService.findDtoByOwnerEmailAddress(ownerEmailAddress).getMileage();
 	}
 
 	@PutMapping("/vehicle/update-current-mileage/{ownerEmailAddress}")
 	public void updateVehicleCurrentMileage(@RequestBody final VehicleDto vehicleDto,
-	                                        @PathVariable("ownerEmailAddress") final String ownerEmailAddress) {
-		log.info(LogMarkers.FLOW_MARKER, "updateVehicleCurrentMileage() -> ownerEmailAddress = ({})",
-		         requestsDecoder.decodeStringParam(ownerEmailAddress));
+	                                        @PathVariable("ownerEmailAddress") final String ownerEmailAddress,
+	                                        @SuppressWarnings("unused") final WebRequest webRequest) {
 		vehicleService.updateCurrentMileage(vehicleDto.getEncodedMileage(), ownerEmailAddress);
 	}
 }
