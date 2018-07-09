@@ -23,7 +23,7 @@ public class LoggingAspect {
 	 * This advice is executed before:
 	 * {@link me.grudzien.patryk.service.security.MyUserDetailsService#loadUserByUsername(String)}
 	 */
-	@Before("me.grudzien.patryk.aop.pointcuts.LoggingAspectPointcuts.loadUserByUsername()")
+	@Before("me.grudzien.patryk.aop.pointcuts.LoggingAspectPointcuts.executionLoadUserByUsername()")
 	public void beforeLoadUserByUsername(final JoinPoint joinPoint) {
 		log.info(ASPECT_MARKER, "----- Method -----> {}", joinPoint.getSignature().toShortString());
 		Stream.of(joinPoint.getArgs()).forEach(arg -> {
