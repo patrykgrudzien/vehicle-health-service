@@ -39,17 +39,15 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
 
 	public JwtAuthorizationTokenFilter(@Qualifier(MyUserDetailsService.BEAN_NAME) final UserDetailsService userDetailsService,
 	                                   final CustomApplicationProperties customApplicationProperties) {
-		log.info(FLOW_MARKER, "Inside >>>> {} constructor", this.getClass().getSimpleName());
 		this.userDetailsService = userDetailsService;
 		this.tokenHeader = customApplicationProperties.getJwt().getHeader();
-		log.info(FLOW_MARKER, "Token Header >>>> {}", tokenHeader);
 	}
 
 	@Override
 	protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response,
 	                                final FilterChain filterChain) throws ServletException, IOException {
 
-		log.info(FLOW_MARKER, "Inside >>>> {}", this.getClass().getSimpleName());
+		log.info(FLOW_MARKER, "(FILTER) -----> {}", this.getClass().getSimpleName());
 		log.info(FLOW_MARKER, "Processing authentication for ({}), request method ({})", request.getRequestURL(), request.getMethod());
 
 		final String requestHeader = request.getHeader(this.tokenHeader);

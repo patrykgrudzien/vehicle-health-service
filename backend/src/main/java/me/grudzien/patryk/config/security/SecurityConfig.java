@@ -73,8 +73,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(final HttpSecurity httpSecurity) throws Exception {
-		log.info(LogMarkers.FLOW_MARKER, "Inside Spring Security >>>> HttpSecurity configuration.");
-
 		httpSecurity
 				// don't need CSRF because JWT token is invulnerable
 				.csrf().disable()
@@ -126,8 +124,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	public void configure(final WebSecurity web) {
-		log.info(LogMarkers.FLOW_MARKER, "Inside Spring Security >>>> WebSecurity ignoring() configuration.");
-
 		// AuthenticationTokenFilter will ignore the below paths
 		web.ignoring()
 		        // allow calls for request methods of "OPTIONS" type -> (CORS purpose) without checking JWT token
