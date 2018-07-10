@@ -11,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,9 +21,11 @@ import java.util.Optional;
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.domain.entities.engine.Engine;
 import me.grudzien.patryk.domain.entities.registration.CustomUser;
+import me.grudzien.patryk.domain.entities.registration.Privilege;
 import me.grudzien.patryk.domain.entities.registration.Role;
 import me.grudzien.patryk.domain.entities.vehicle.Vehicle;
-import me.grudzien.patryk.domain.enums.RoleName;
+import me.grudzien.patryk.domain.enums.registration.PrivilegeName;
+import me.grudzien.patryk.domain.enums.registration.RoleName;
 import me.grudzien.patryk.domain.enums.SpringAppProfiles;
 import me.grudzien.patryk.domain.enums.engine.EngineType;
 import me.grudzien.patryk.domain.enums.vehicle.VehicleType;
@@ -72,7 +75,12 @@ public class SpringBootVueJsApplication implements CommandLineRunner {
 			                                        .lastName("Grudzien")
 			                                        .email("jurik99.pg@gmail.com")
 			                                        .password(passwordEncoder.encode("admin"))
-			                                        .roles(Collections.singleton(new Role(RoleName.ROLE_ADMIN)))
+			                                        .roles(Collections.singleton(Role.Builder()
+			                                                                         .roleName(RoleName.ROLE_ADMIN)
+			                                                                         .privileges(Sets.newHashSet(Privilege.Builder()
+			                                                                                                              .privilegeName(PrivilegeName.CAN_DO_EVERYTHING)
+			                                                                                                              .build()))
+			                                                                         .build()))
 			                                        .isEnabled(Boolean.TRUE)
 			                                        .createdDate(new Date())
 			                                        .build();
