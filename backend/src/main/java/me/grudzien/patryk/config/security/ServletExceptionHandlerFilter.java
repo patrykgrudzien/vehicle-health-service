@@ -18,10 +18,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-import me.grudzien.patryk.domain.dto.responses.ExceptionResponse;
-
 import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
 import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
+
+import me.grudzien.patryk.domain.dto.responses.ExceptionResponse;
 
 /**
  * Filters CANNOT be managed by Spring explicitly !!!
@@ -39,7 +39,7 @@ public class ServletExceptionHandlerFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response, final FilterChain filterChain)
 			throws ServletException, IOException {
 
-		log.info(FLOW_MARKER, "(FILTER) -----> {}", this.getClass().getSimpleName());
+		log.info(FLOW_MARKER, "(FILTER) -----> {} ({})", this.getClass().getSimpleName(), request.getMethod());
 		log.info(FLOW_MARKER, "(FILTER Path) -----> {}", request.getRequestURL());
 
 		try {

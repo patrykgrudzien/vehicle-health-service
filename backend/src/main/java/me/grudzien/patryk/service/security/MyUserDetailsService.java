@@ -10,13 +10,14 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
+import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
+import static me.grudzien.patryk.utils.log.LogMarkers.METHOD_INVOCATION_MARKER;
+
 import me.grudzien.patryk.domain.entities.registration.CustomUser;
 import me.grudzien.patryk.repository.registration.CustomUserRepository;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.security.JwtUserFactory;
-
-import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
-import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 
 @Log4j2
 @Service
@@ -35,8 +36,9 @@ public class MyUserDetailsService implements UserDetailsService {
 	}
 
 	@Override
-	@Cacheable(value = "principal-user", key = "#email", condition = "email != null && email.length() > 0")
+	@Cacheable(value = "principal-user", key = "#email", condition = "#email != null && #email.length() > 0")
 	public UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException {
+		log.info(METHOD_INVOCATION_MARKER, "(NO CACHE FOUND) => method execution...");
 		final CustomUser customUser = customUserRepository.findByEmail(email);
 		if (customUser == null) {
 			log.error(EXCEPTION_MARKER, "No user found for specified email: {}", email);
