@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -13,14 +14,17 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import java.util.List;
+import java.util.Set;
 
-import me.grudzien.patryk.domain.enums.RoleName;
+import me.grudzien.patryk.domain.enums.registration.RoleName;
 
 @Entity
 @Table(name = "ROLE")
@@ -44,7 +48,13 @@ public class Role {
 	@ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
 	private List<CustomUser> users;
 
-	public Role(final RoleName roleName) {
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@JoinTable(name = "ROLES_PRIVILEGES",
+			joinColumns = @JoinColumn(name = "ROLE_ID", referencedColumnName = "ID"),
+			inverseJoinColumns = @JoinColumn(name = "PRIVILEGE_ID", referencedColumnName = "ID"))
+	private Set<Privilege> privileges;
+
+	public Role(@NotNull final RoleName roleName) {
 		this.roleName = roleName;
 	}
 }

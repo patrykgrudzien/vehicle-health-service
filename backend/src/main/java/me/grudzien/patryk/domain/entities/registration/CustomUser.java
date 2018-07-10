@@ -26,9 +26,9 @@ import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import me.grudzien.patryk.domain.entities.vehicle.Vehicle;
 
@@ -83,7 +83,7 @@ public class CustomUser {
 	@JoinTable(name = "USERS_ROLES",
 	           joinColumns = @JoinColumn(name = "CUSTOM_USER_ID", referencedColumnName = "ID"),
 	           inverseJoinColumns = @JoinColumn(name = "ROLE_ID", referencedColumnName = "ID"))
-	private Collection<Role> roles;
+	private Set<Role> roles;
 
 	@OneToMany(mappedBy = "customUser", cascade = CascadeType.ALL)
 	@JsonBackReference
