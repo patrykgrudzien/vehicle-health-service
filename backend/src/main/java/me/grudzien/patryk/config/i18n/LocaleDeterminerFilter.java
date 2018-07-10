@@ -12,9 +12,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-import me.grudzien.patryk.utils.i18n.LocaleMessagesHelper;
-
 import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
+
+import me.grudzien.patryk.utils.i18n.LocaleMessagesHelper;
 
 /**
  * This filter is registered in {@link me.grudzien.patryk.config.filters.registry.FiltersRegistryConfig}
@@ -31,7 +31,7 @@ public class LocaleDeterminerFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response, final FilterChain filterChain)
 			throws IOException, ServletException {
 
-		log.info(FLOW_MARKER, "(FILTER) -----> {}", this.getClass().getSimpleName());
+		log.info(FLOW_MARKER, "(FILTER) -----> {} ({})", this.getClass().getSimpleName(), request.getMethod());
 		log.info(FLOW_MARKER, "(FILTER Path) -----> {}", request.getRequestURL());
 
 		/**
