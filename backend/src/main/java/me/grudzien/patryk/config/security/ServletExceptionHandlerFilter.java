@@ -40,7 +40,7 @@ public class ServletExceptionHandlerFilter extends OncePerRequestFilter {
 			throws ServletException, IOException {
 
 		log.info(FLOW_MARKER, "(FILTER) -----> {} ({})", this.getClass().getSimpleName(), request.getMethod());
-		log.info(FLOW_MARKER, "(FILTER Path) -----> {}", request.getRequestURL());
+		log.info(FLOW_MARKER, "(FILTER Path) -----> {}", request.getRequestURI());
 
 		try {
 			filterChain.doFilter(request, response);

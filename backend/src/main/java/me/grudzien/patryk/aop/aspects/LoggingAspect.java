@@ -3,7 +3,6 @@ package me.grudzien.patryk.aop.aspects;
 import lombok.extern.log4j.Log4j2;
 
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.ServletWebRequest;
 
 import org.aspectj.lang.JoinPoint;
@@ -44,12 +43,7 @@ public class LoggingAspect {
 	@Before("me.grudzien.patryk.aop.pointcuts.LoggingAspectPointcuts.executionMethodsAnnotatedByCacheableAnnotation() || "
 	        + "me.grudzien.patryk.aop.pointcuts.LoggingAspectPointcuts.executionMethodsAnnotatedByCachePutAnnotation() || "
 	        + "me.grudzien.patryk.aop.pointcuts.LoggingAspectPointcuts.executionMethodsAnnotatedByCacheEvictAnnotation()")
-	public void beforeMethodsAnnotatedWithCacheAnnotations(final JoinPoint joinPoint) {
-		log.info(ASPECT_MARKER, "----- Method -----> {}", joinPoint.getSignature().toShortString());
-		Stream.of(joinPoint.getArgs()).forEach(arg -> {
-			if (!StringUtils.isEmpty(arg)) {
-				log.info(ASPECT_MARKER, "----- Method parameter(s) -----> {}", arg);
-			}
-		});
+	public void beforeMethodsAnnotatedWithCacheAnnotations() {
+		log.info(ASPECT_MARKER, "=====> Checking cache...");
 	}
 }
