@@ -23,7 +23,8 @@ import java.util.function.Function;
 
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.domain.dto.login.JwtUser;
-import me.grudzien.patryk.utils.log.LogMarkers;
+
+import static me.grudzien.patryk.utils.log.LogMarkers.METHOD_INVOCATION_MARKER;
 
 @Log4j2
 @Component
@@ -75,13 +76,9 @@ public class JwtTokenUtil implements Serializable {
 
 	@PostConstruct
 	public void init() {
-		log.info(LogMarkers.FLOW_MARKER, "init() inside >>>> JwtTokenUtil");
-
 		tokenSecret = customApplicationProperties.getJwt().getSecret();
 		tokenHeader = customApplicationProperties.getJwt().getHeader();
 		tokenExpiration = customApplicationProperties.getJwt().getExpiration();
-
-		log.info(LogMarkers.FLOW_MARKER, "Token tokenExpiration >>>> {}", tokenExpiration);
 	}
 
 	public static class Retriever {
@@ -134,7 +131,7 @@ public class JwtTokenUtil implements Serializable {
 		private static String doGenerateToken(final Map<String, Object> claims, final String userEmail, final String audience) {
 			final Date expirationDate = calculateExpirationDate(new Date());
 
-			log.info(LogMarkers.METHOD_INVOCATION_MARKER, "JWT token generated inside >>>> doGenerateToken() >>>> JwtTokenUtil");
+			log.info(METHOD_INVOCATION_MARKER, "(JWT) -----> {}.{}", Creator.class.getCanonicalName(), "doGenerateToken()");
 
 			return Jwts.builder().setClaims(claims).setSubject(userEmail).setAudience(audience).setIssuedAt(new Date())
 			           .setExpiration(expirationDate).signWith(SignatureAlgorithm.HS512, tokenSecret).compact();

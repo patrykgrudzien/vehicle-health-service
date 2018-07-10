@@ -39,7 +39,8 @@ public class ServletExceptionHandlerFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response, final FilterChain filterChain)
 			throws ServletException, IOException {
 
-		log.info(FLOW_MARKER, "Inside >>>> {}", this.getClass().getSimpleName());
+		log.info(FLOW_MARKER, "(FILTER) -----> {}", this.getClass().getSimpleName());
+		log.info(FLOW_MARKER, "(FILTER Path) -----> {}", request.getRequestURL());
 
 		try {
 			filterChain.doFilter(request, response);
