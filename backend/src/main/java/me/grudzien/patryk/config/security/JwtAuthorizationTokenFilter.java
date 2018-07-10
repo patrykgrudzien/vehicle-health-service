@@ -48,7 +48,7 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
 	                                final FilterChain filterChain) throws ServletException, IOException {
 
 		log.info(FLOW_MARKER, "(FILTER) -----> {} ({})", this.getClass().getSimpleName(), request.getMethod());
-		log.info(FLOW_MARKER, "Processing authentication for ({})", request.getRequestURL());
+		log.info(FLOW_MARKER, "Processing authentication for -----> {}", request.getRequestURI());
 
 		final String requestHeader = request.getHeader(this.tokenHeader);
 

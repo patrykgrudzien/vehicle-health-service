@@ -32,7 +32,7 @@ public class LocaleDeterminerFilter extends OncePerRequestFilter {
 			throws IOException, ServletException {
 
 		log.info(FLOW_MARKER, "(FILTER) -----> {} ({})", this.getClass().getSimpleName(), request.getMethod());
-		log.info(FLOW_MARKER, "(FILTER Path) -----> {}", request.getRequestURL());
+		log.info(FLOW_MARKER, "(FILTER Path) -----> {}", request.getRequestURI());
 
 		/**
 		 * Method {@link me.grudzien.patryk.utils.i18n.LocaleMessagesHelper#determineApplicationLocale(Object)} must be called in the first
