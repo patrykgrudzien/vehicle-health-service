@@ -14,5 +14,7 @@ public interface VehicleService {
 
 	VehicleDto findDtoByOwnerEmailAddress(String ownerEmailAddress);
 
+	Long getVehicleCurrentMileage(String ownerEmailAddress);
+
 	void updateCurrentMileage(String currentMileage, String ownerEmailAddress);
 }

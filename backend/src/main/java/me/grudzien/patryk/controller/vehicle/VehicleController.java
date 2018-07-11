@@ -42,8 +42,7 @@ public class VehicleController {
 	public Long getVehicleCurrentMileage(@PathVariable("ownerEmailAddress") final String ownerEmailAddress,
 	                                     @SuppressWarnings("unused") final WebRequest webRequest) {
 		log.info(METHOD_INVOCATION_MARKER, "(NO CACHE FOUND) => method execution...");
-		return vehicleService.findDtoByOwnerEmailAddress(ownerEmailAddress)
-		                     .getMileage();
+		return vehicleService.getVehicleCurrentMileage(ownerEmailAddress);
 	}
 
 	@PutMapping("/vehicle/update-current-mileage/{ownerEmailAddress}")
