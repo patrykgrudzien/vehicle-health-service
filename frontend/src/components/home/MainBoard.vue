@@ -19,12 +19,21 @@
             </span>
           </v-flex>
           <v-flex :class="mileageValueClasses">
-            <span id="mileage-field"
+            <span v-if="isLoading === false"
+                  id="mileage-field"
                   class="headline primary--text notSelectable"
                   @click="toggleDialogWindow">
             {{ mileage.current }}
             </span>
-            <span class="headline notSelectable">km</span>
+            <v-progress-circular v-else
+                                 :size="30"
+                                 color="primary"
+                                 indeterminate>
+            </v-progress-circular>
+            <span class="headline notSelectable"
+                  v-if="isLoading === false">
+              km
+            </span>
           </v-flex>
         </v-layout>
         <!-- MILEAGE TITLE, CURRENT STATE, KM -->
@@ -252,23 +261,28 @@
         }).then(() => {
           this.toggleDialogWindow();
           // --- CURRENT MILEAGE --- //
+          this.$store.commit('setLoading', true);
           this.axios.get(`/vehicles/vehicle/get-current-mileage/${window.btoa(this.ownerEmailAddress)}`)
               .then(response => {
+                this.$store.commit('setLoading', false);
                 this.mileage.current = response.data;
                 this.mileage.new = this.mileage.current;
                 this.dialogInputFieldValue = this.mileage.current;
               })
               .catch(error => {
+				this.$store.commit('setLoading', false);
                 console.log(error.response);
                 console.log('ERROR -> /vehicles/vehicle/get-current-mileage');
               });
           // --- CURRENT MILEAGE --- //
         }).catch(error => {
+		  this.$store.commit('setLoading', false);
           console.log(error.response);
           console.log('ERROR -> /vehicles/vehicle/update-current-mileage');
           // --- TOKEN EXPIRED --- //
           this.$store.dispatch('logout')
               .then(() => {
+				this.$store.commit('setLoading', false);
                 console.log('User logged out successfully.')
               });
           // --- TOKEN EXPIRED --- //
@@ -277,7 +291,8 @@
     },
     computed: {
       ...mapGetters([
-        'isLogged'
+        'isLogged',
+        'isLoading'
       ]),
       snackbarVisibility() {
         return (this.mileage.current < 0 || isNaN(this.mileage.current)) ||
@@ -377,6 +392,7 @@
       if (this.isLogged === 1) {
         // --- PAGE REFRESH EVENT --- //
         this.$router.onReady(() => {
+          this.$store.commit('setLoading', true);
           this.axios.get('/principal-user')
             .then(response => {
               this.$store.commit('setPrincipalUserFirstName', response.data.firstname);
@@ -386,11 +402,13 @@
               this.ownerId = response.data.id;
               this.axios.get(`/vehicles/vehicle/get-current-mileage/${window.btoa(this.ownerEmailAddress)}`)
                 .then(response => {
+                  this.$store.commit('setLoading', false);
                   this.mileage.current = response.data;
                   this.mileage.new = this.mileage.current;
                   this.dialogInputFieldValue = this.mileage.current;
                 })
                 .catch(error => {
+				  this.$store.commit('setLoading', false);
                   console.log(error.response);
                   console.log('ERROR -> /vehicles/vehicle/get-current-mileage');
                 });
@@ -398,11 +416,13 @@
 
             })
             .catch(error => {
+			  this.$store.commit('setLoading', false);
               console.log(error.response);
               console.log('ERROR -> /principal-user');
               // --- TOKEN EXPIRED --- //
               this.$store.dispatch('logout')
                   .then(() => {
+					this.$store.commit('setLoading', false);
                     console.log('User logged out successfully.')
                   });
               // --- TOKEN EXPIRED --- //
