@@ -20,9 +20,12 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 	       + "FROM Vehicle v WHERE v.customUser.email = :ownerEmailAddress")
 	VehicleDto findDtoByOwnerEmailAddress(@Param("ownerEmailAddress") String ownerEmailAddress);
 
+	@Query("SELECT v.mileage FROM Vehicle v WHERE v.customUser = (SELECT u.id FROM CustomUser u WHERE u.email = :ownerEmailAddress)")
+	Long getVehicleCurrentMileage(@Param("ownerEmailAddress") String ownerEmailAddress);
+
 	@Modifying
 	@Transactional
 	@Query("UPDATE Vehicle v SET v.mileage = :currentMileage WHERE v.customUser = "
 	       + "(SELECT u.id FROM CustomUser u WHERE u.email = :ownerEmailAddress)")
-	void updateCurrentMileage(@Param("currentMileage") Long currentMileage, @Param("ownerEmailAddress") String 	ownerEmailAddress);
+	void updateCurrentMileage(@Param("currentMileage") Long currentMileage, @Param("ownerEmailAddress") String ownerEmailAddress);
 }
