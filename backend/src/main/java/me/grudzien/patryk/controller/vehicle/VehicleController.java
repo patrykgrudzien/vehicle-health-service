@@ -15,8 +15,7 @@ import com.google.common.base.Preconditions;
 
 import me.grudzien.patryk.domain.dto.vehicle.VehicleDto;
 import me.grudzien.patryk.service.vehicle.VehicleService;
-
-import static me.grudzien.patryk.utils.log.LogMarkers.METHOD_INVOCATION_MARKER;
+import me.grudzien.patryk.utils.web.RequestsDecoder;
 
 @Log4j2
 @RestController
@@ -24,24 +23,25 @@ import static me.grudzien.patryk.utils.log.LogMarkers.METHOD_INVOCATION_MARKER;
 public class VehicleController {
 
 	private final VehicleService vehicleService;
+	private final RequestsDecoder requestsDecoder;
 
 	@Autowired
-	public VehicleController(final VehicleService vehicleService) {
+	public VehicleController(final VehicleService vehicleService, final RequestsDecoder requestsDecoder) {
 		Preconditions.checkNotNull(vehicleService, "vehicleService cannot be null!");
+		Preconditions.checkNotNull(requestsDecoder, "requestsDecoder cannot be null!");
 		this.vehicleService = vehicleService;
+		this.requestsDecoder = requestsDecoder;
 	}
 
 	@GetMapping("/vehicle/{ownerEmailAddress}")
 	public VehicleDto getVehicleDtoForOwnerEmailAddress(@PathVariable("ownerEmailAddress") final String ownerEmailAddress,
 	                                                    @SuppressWarnings("unused") final WebRequest webRequest) {
-		log.info(METHOD_INVOCATION_MARKER, "(NO CACHE FOUND) => method execution...");
 		return vehicleService.findDtoByOwnerEmailAddress(ownerEmailAddress);
 	}
 
 	@GetMapping("/vehicle/get-current-mileage/{ownerEmailAddress}")
 	public Long getVehicleCurrentMileage(@PathVariable("ownerEmailAddress") final String ownerEmailAddress,
 	                                     @SuppressWarnings("unused") final WebRequest webRequest) {
-		log.info(METHOD_INVOCATION_MARKER, "(NO CACHE FOUND) => method execution...");
 		return vehicleService.getVehicleCurrentMileage(ownerEmailAddress);
 	}
 
@@ -49,7 +49,12 @@ public class VehicleController {
 	public void updateVehicleCurrentMileage(@RequestBody final VehicleDto vehicleDto,
 	                                        @PathVariable("ownerEmailAddress") final String ownerEmailAddress,
 	                                        @SuppressWarnings("unused") final WebRequest webRequest) {
-		log.info(METHOD_INVOCATION_MARKER, "(NO CACHE FOUND) => method execution...");
-		vehicleService.updateCurrentMileage(vehicleDto.getEncodedMileage(), ownerEmailAddress);
+		/**
+		 * Need to decode "newMileage" here (not in service as it was previously) - cache purpose.
+		 * Look at -> {@link me.grudzien.patryk.service.vehicle.VehicleServiceImpl#updateCurrentMileage(String, String)} and
+		 * "condition" attribute inside {@link org.springframework.cache.annotation.CachePut}
+		 */
+		final String decodedNewMileage = requestsDecoder.decodeStringParam(vehicleDto.getEncodedMileage());
+		vehicleService.updateCurrentMileage(decodedNewMileage, ownerEmailAddress);
 	}
 }

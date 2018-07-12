@@ -16,5 +16,5 @@ public interface VehicleService {
 
 	Long getVehicleCurrentMileage(String ownerEmailAddress);
 
-	void updateCurrentMileage(String currentMileage, String ownerEmailAddress);
+	void updateCurrentMileage(String newMileage, String ownerEmailAddress);
 }
