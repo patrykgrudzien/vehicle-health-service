@@ -336,6 +336,11 @@
             <artifactId>spring-boot-starter-mobile</artifactId>
             <version>${spring-boot-starter-mobile.version}</version>
         </dependency>
+        <!-- Ehcache 2 -->
+        <dependency>
+            <groupId>net.sf.ehcache</groupId>
+            <artifactId>ehcache</artifactId>
+        </dependency>
     </dependencies>
 
 </project>
