@@ -85,9 +85,9 @@ public class VehicleServiceImpl implements VehicleService {
 
 	@Override
 	@Caching(
+		evict = {@CacheEvict(allEntries = true)},
 		put = {@CachePut(key = "#root.target.VEHICLE_MILEAGE_CACHE_KEY",
-		                 condition = "#newMileage != null && #newMileage.equals(\"\") && !#newMileage.equals(#root.target.VEHICLE_MILEAGE_CACHE_KEY)")},
-		evict = {@CacheEvict(allEntries = true)}
+		                 condition = "#newMileage != null && #newMileage.equals(\"\") && !#newMileage.equals(#root.target.VEHICLE_MILEAGE_CACHE_KEY)")}
 	)
 	public void updateCurrentMileage(final String newMileage, final String ownerEmailAddress) {
 		final String decodedOwnerEmailAddress = requestsDecoder.decodeStringParam(ownerEmailAddress);
