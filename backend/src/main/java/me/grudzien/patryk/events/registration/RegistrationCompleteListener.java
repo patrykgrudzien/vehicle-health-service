@@ -10,14 +10,15 @@ import com.google.common.collect.ImmutableMap;
 
 import java.util.UUID;
 
-import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
-
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.domain.dto.registration.EmailDto;
 import me.grudzien.patryk.domain.entities.registration.CustomUser;
 import me.grudzien.patryk.service.registration.EmailService;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.web.HerokuAppEndpointResolver;
+
+import static me.grudzien.patryk.domain.enums.BaseAppActions.VERIFICATION_TOKEN_CREATION;
+import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 
 /**
  * That listener is going to handle {@link OnRegistrationCompleteEvent} which is published by
@@ -71,7 +72,7 @@ public class RegistrationCompleteListener implements ApplicationListener<OnRegis
 					                                                 builder()
 					                                                .put("userFirstName", userBeingRegistered.getFirstName())
 			                                                        .put("confirmationUrl",
-			                                                             herokuAppEndpointResolver.determineBaseAppUrlForVerificationToken() + confirmationUrl)
+			                                                             herokuAppEndpointResolver.determineBaseAppUrlForAction(VERIFICATION_TOKEN_CREATION) + confirmationUrl)
 			                                                        .build())
 		                                              .build());
 		log.info(FLOW_MARKER, "Registration confirmation email has been sent to {}", recipientAddress);
