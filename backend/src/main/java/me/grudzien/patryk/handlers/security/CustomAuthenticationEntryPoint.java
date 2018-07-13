@@ -8,17 +8,18 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Preconditions;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
-
 import me.grudzien.patryk.domain.dto.login.AuthenticationEntryPointResponse;
 import me.grudzien.patryk.handlers.web.HttpResponseHandler;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
+
+import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 
 /**
  * IMPORTANT NOTE:
@@ -36,6 +37,9 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
 	@Autowired
 	public CustomAuthenticationEntryPoint(final ObjectMapper objectMapper, final LocaleMessagesCreator localeMessagesCreator) {
+		Preconditions.checkNotNull(objectMapper, "objectMapper cannot be null!");
+		Preconditions.checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
+
 		this.objectMapper = objectMapper;
 		this.localeMessagesCreator = localeMessagesCreator;
 	}
