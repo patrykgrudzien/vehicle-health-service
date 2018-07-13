@@ -11,9 +11,12 @@ import java.io.IOException;
 
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.exceptions.RedirectionException;
-import me.grudzien.patryk.utils.web.HerokuAppEndpointResolver;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.log.LogMarkers;
+import me.grudzien.patryk.utils.web.HerokuAppEndpointResolver;
+
+import static me.grudzien.patryk.domain.enums.BaseAppActions.CONFIRM_REGISTRATION;
+import static me.grudzien.patryk.domain.enums.BaseAppActions.USER_ALREADY_ENABLED;
 
 @Log4j2
 @Component
@@ -38,7 +41,7 @@ public class HttpResponseHandler {
 
 	public void redirectUserToAccountAlreadyEnabledUrl(final HttpServletResponse response) {
 		try {
-			response.sendRedirect(herokuAppEndpointResolver.determineBaseAppUrlForUserAlreadyEnabled() +
+			response.sendRedirect(herokuAppEndpointResolver.determineBaseAppUrlForAction(USER_ALREADY_ENABLED) +
 			                      customApplicationProperties.getEndpoints().getRegistration().getUserAlreadyEnabled());
 			log.info("User successfully redirected to (user already enabled) url.");
 		} catch (final IOException exception) {
@@ -49,7 +52,7 @@ public class HttpResponseHandler {
 
 	public void redirectUserToEmailTokenExpiredUrl(final HttpServletResponse response) {
 		try {
-			response.sendRedirect(herokuAppEndpointResolver.determineBaseAppUrlForConfirmRegistration() +
+			response.sendRedirect(herokuAppEndpointResolver.determineBaseAppUrlForAction(CONFIRM_REGISTRATION) +
 			                      customApplicationProperties.getEndpoints().getRegistration().getConfirmedTokenExpired());
 			log.info("User successfully redirected to registration confirmed token expired url.");
 		} catch (final IOException exception) {
@@ -60,7 +63,7 @@ public class HttpResponseHandler {
 
 	public void redirectUserToConfirmedUrl(final HttpServletResponse response) {
 		try {
-			response.sendRedirect(herokuAppEndpointResolver.determineBaseAppUrlForConfirmRegistration() +
+			response.sendRedirect(herokuAppEndpointResolver.determineBaseAppUrlForAction(CONFIRM_REGISTRATION) +
 			                      customApplicationProperties.getEndpoints().getRegistration().getConfirmed());
 			log.info("User successfully redirected to registration confirmed url.");
 		} catch (final IOException exception) {
@@ -71,7 +74,7 @@ public class HttpResponseHandler {
 
 	public void redirectUserToEmailTokenNotFoundUrl(final HttpServletResponse response) {
 		try {
-			response.sendRedirect(herokuAppEndpointResolver.determineBaseAppUrlForConfirmRegistration() +
+			response.sendRedirect(herokuAppEndpointResolver.determineBaseAppUrlForAction(CONFIRM_REGISTRATION) +
 			                      customApplicationProperties.getEndpoints().getRegistration().getConfirmedTokenNotFound());
 			log.info("User successfully redirected to registration confirmed token not found url.");
 		} catch (final IOException exception) {
