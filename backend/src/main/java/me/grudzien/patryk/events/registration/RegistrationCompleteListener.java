@@ -17,7 +17,7 @@ import me.grudzien.patryk.service.registration.EmailService;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.web.HerokuAppEndpointResolver;
 
-import static me.grudzien.patryk.domain.enums.BaseAppActions.VERIFICATION_TOKEN_CREATION;
+import static me.grudzien.patryk.domain.enums.AppFLow.VERIFICATION_TOKEN_CREATION;
 import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 
 /**
@@ -72,7 +72,7 @@ public class RegistrationCompleteListener implements ApplicationListener<OnRegis
 					                                                 builder()
 					                                                .put("userFirstName", userBeingRegistered.getFirstName())
 			                                                        .put("confirmationUrl",
-			                                                             herokuAppEndpointResolver.determineBaseAppUrlForAction(VERIFICATION_TOKEN_CREATION) + confirmationUrl)
+			                                                             herokuAppEndpointResolver.determineBaseAppUrl(VERIFICATION_TOKEN_CREATION) + confirmationUrl)
 			                                                        .build())
 		                                              .build());
 		log.info(FLOW_MARKER, "Registration confirmation email has been sent to {}", recipientAddress);

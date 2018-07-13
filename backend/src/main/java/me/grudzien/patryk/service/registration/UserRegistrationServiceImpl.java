@@ -46,6 +46,10 @@ import me.grudzien.patryk.repository.vehicle.VehicleRepository;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.web.RequestsDecoder;
 
+import static me.grudzien.patryk.domain.enums.AppFLow.ACCOUNT_ALREADY_ENABLED;
+import static me.grudzien.patryk.domain.enums.AppFLow.CONFIRM_REGISTRATION;
+import static me.grudzien.patryk.domain.enums.AppFLow.VERIFICATION_TOKEN_EXPIRED;
+import static me.grudzien.patryk.domain.enums.AppFLow.VERIFICATION_TOKEN_NOT_FOUND;
 import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
 import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 
@@ -132,8 +136,6 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 			final Vehicle vehicle = Vehicle.Builder().vehicleType(VehicleType.CAR).engine(engine).build();
 			vehicle.setMileage(0L);
 			vehicle.setCustomUser(customUser);
-			engineRepository.save(engine);
-			vehicleRepository.save(vehicle);
 			customUser.setVehicles(Lists.newArrayList(vehicle));
 			// TODO: temporary (test purposes)
 
@@ -164,12 +166,12 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 			final CustomUser customUser = token.getCustomUser();
 			if (customUser.isEnabled()) {
 				log.info(FLOW_MARKER, "User account with e-mail address ({}) has been already enabled.", customUser.getEmail());
-				httpResponseHandler.redirectUserToAccountAlreadyEnabledUrl(response);
+				httpResponseHandler.redirectUserTo(ACCOUNT_ALREADY_ENABLED, response);
 			} else {
 				final Calendar calendar = Calendar.getInstance();
 				if (token.getExpiryDate().compareTo(calendar.getTime()) < 0) {
 					log.error("Verification token has expired.");
-					httpResponseHandler.redirectUserToEmailTokenExpiredUrl(response);
+					httpResponseHandler.redirectUserTo(VERIFICATION_TOKEN_EXPIRED, response);
 					throw new TokenExpiredException(localeMessagesCreator.buildLocaleMessage("verification-token-expired"));
 				}
 				customUser.setEnabled(Boolean.TRUE);
@@ -179,11 +181,11 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 				emailVerificationTokenRepository.delete(token);
 				log.info("Token confirmed and deleted from database.");
 
-				httpResponseHandler.redirectUserToConfirmedUrl(response);
+				httpResponseHandler.redirectUserTo(CONFIRM_REGISTRATION, response);
 			}
 		} else {
 			log.error("No verification token found in the database. Some error occurred during registration process.");
-			httpResponseHandler.redirectUserToEmailTokenNotFoundUrl(response);
+			httpResponseHandler.redirectUserTo(VERIFICATION_TOKEN_NOT_FOUND, response);
 			throw new TokenNotFoundException(localeMessagesCreator.buildLocaleMessage("verification-token-not-found"));
 		}
 	}

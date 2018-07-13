@@ -14,12 +14,12 @@ import com.google.common.base.Preconditions;
 import java.util.Arrays;
 
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
-import me.grudzien.patryk.domain.enums.BaseAppActions;
+import me.grudzien.patryk.domain.enums.AppFLow;
 import me.grudzien.patryk.domain.enums.SpringAppProfiles;
 
-import static me.grudzien.patryk.domain.enums.BaseAppActions.CONFIRM_REGISTRATION;
-import static me.grudzien.patryk.domain.enums.BaseAppActions.USER_ALREADY_ENABLED;
-import static me.grudzien.patryk.domain.enums.BaseAppActions.VERIFICATION_TOKEN_CREATION;
+import static me.grudzien.patryk.domain.enums.AppFLow.CONFIRM_REGISTRATION;
+import static me.grudzien.patryk.domain.enums.AppFLow.ACCOUNT_ALREADY_ENABLED;
+import static me.grudzien.patryk.domain.enums.AppFLow.VERIFICATION_TOKEN_CREATION;
 import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
 import static me.grudzien.patryk.utils.log.LogMarkers.METHOD_INVOCATION_MARKER;
 
@@ -50,41 +50,28 @@ public class HerokuAppEndpointResolver implements InitializingBean {
 		      .ifPresent(activeProfile -> ACTIVE_SPRING_PROFILE = activeProfile);
 	}
 
-	public String determineBaseAppUrlForAction(final BaseAppActions baseAppActions) {
+	public String determineBaseAppUrl(final AppFLow appFLow) {
 		if (SpringAppProfiles.HEROKU_DEPLOYMENT.getYmlName().equals(ACTIVE_SPRING_PROFILE)) {
 			return getHerokuAppBaseUrl();
 		} else {
-			switch (baseAppActions) {
-				case USER_ALREADY_ENABLED:
-					/**
-					 * Creating base app URL for:
-					 * {@link me.grudzien.patryk.service.registration.UserRegistrationServiceImpl#confirmRegistration(String, javax.servlet.http.HttpServletResponse)}
-					 *
-					 * @return Base app URL which is used to redirect user to (user already enabled) screen on UI.
-					 */
-					log.info(METHOD_INVOCATION_MARKER, USER_ALREADY_ENABLED.getLogInfoMessage());
+			switch (appFLow) {
+				case ACCOUNT_ALREADY_ENABLED:
+					log.info(METHOD_INVOCATION_MARKER, ACCOUNT_ALREADY_ENABLED.getDetermineUrlLogInfoMessage());
 					return customApplicationProperties.getCorsOrigins().getFrontEndModule();
 				case VERIFICATION_TOKEN_CREATION:
 					/**
 					 * Creating base app URL for:
 					 * {@link me.grudzien.patryk.events.registration.RegistrationCompleteListener#createVerificationTokenAndSendEmail(me.grudzien.patryk.events.registration.OnRegistrationCompleteEvent)}
-					 * createVerificationTokenAndSendEmail() method in RegistrationCompleteListener
 					 *
-					 * @return base app URL which is used in (exception-mail) sent to the user.
+					 * @return base app URL which is used to redirect user to specific screen on UI.
 					 */
-					log.info(METHOD_INVOCATION_MARKER, VERIFICATION_TOKEN_CREATION.getLogInfoMessage());
+					log.info(METHOD_INVOCATION_MARKER, VERIFICATION_TOKEN_CREATION.getDetermineUrlLogInfoMessage());
 					return customApplicationProperties.getCorsOrigins().getBackEndModule();
 				case CONFIRM_REGISTRATION:
-					/**
-					 * Creating base app URL for:
-					 * {@link me.grudzien.patryk.controller.registration.UserRegistrationController#confirmRegistration(String, javax.servlet.http.HttpServletResponse, org.springframework.web.context.request.WebRequest)}
-					 *
-					 * @return base app URL which is used to redirect user to (confirmation screen) on UI.
-					 */
-					log.info(METHOD_INVOCATION_MARKER, CONFIRM_REGISTRATION.getLogInfoMessage());
+					log.info(METHOD_INVOCATION_MARKER, CONFIRM_REGISTRATION.getDetermineUrlLogInfoMessage());
 					return customApplicationProperties.getCorsOrigins().getFrontEndModule();
 				default:
-					log.error(EXCEPTION_MARKER, "Unknown action... Cannot determine app url where user will be redirected...");
+					log.error(EXCEPTION_MARKER, "Unknown flow... Cannot determine app url where user will be redirected...");
 					return null;
 			}
 		}
