@@ -28,10 +28,6 @@ import me.grudzien.patryk.utils.web.HerokuAppEndpointResolver;
 @Component
 public class HttpResponseHandler {
 
-	public static final String SECURED_RESOURCE_CODE = "Unauthenticated";
-	public static final String CONTENT_TYPE_KEY = "Content-Type";
-	public static final String CONTENT_TYPE_VALUE = "application/json;charset=UTF-8";
-
 	private final HerokuAppEndpointResolver herokuAppEndpointResolver;
 	private final CustomApplicationProperties customApplicationProperties;
 	private final LocaleMessagesCreator localeMessagesCreator;
