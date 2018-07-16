@@ -16,7 +16,7 @@ import com.google.common.base.Preconditions;
 import me.grudzien.patryk.domain.entities.registration.CustomUser;
 import me.grudzien.patryk.repository.registration.CustomUserRepository;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
-import me.grudzien.patryk.utils.security.JwtUserFactory;
+import me.grudzien.patryk.utils.jwt.JwtUserFactory;
 
 import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
 import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;

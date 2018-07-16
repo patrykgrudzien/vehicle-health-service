@@ -1,4 +1,4 @@
-package me.grudzien.patryk.config.security;
+package me.grudzien.patryk.config.filters;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -28,7 +28,7 @@ import me.grudzien.patryk.domain.dto.responses.ExceptionResponse;
  * It's NOT ALLOWED to mark them using (@Component) annotation !!!
  * In other case Spring Security does not work properly and does not ignore specified paths.
  * Another filter:
- * {@link me.grudzien.patryk.config.security.JwtAuthorizationTokenFilter}
+ * {@link JwtAuthorizationTokenFilter}
  */
 @Log4j2
 public class ServletExceptionHandlerFilter extends OncePerRequestFilter {

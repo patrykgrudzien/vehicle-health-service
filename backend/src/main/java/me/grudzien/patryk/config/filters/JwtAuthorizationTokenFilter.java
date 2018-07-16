@@ -1,4 +1,4 @@
-package me.grudzien.patryk.config.security;
+package me.grudzien.patryk.config.filters;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -22,14 +22,14 @@ import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.service.security.MyUserDetailsService;
-import me.grudzien.patryk.utils.security.JwtTokenUtil;
+import me.grudzien.patryk.utils.jwt.JwtTokenUtil;
 
 /**
  * Filters CANNOT be managed by Spring explicitly !!!
  * It's NOT ALLOWED to mark them using (@Component) annotation !!!
  * In other case Spring Security does not work properly and does not ignore specified paths.
  * Another filter:
- * {@link me.grudzien.patryk.config.security.ServletExceptionHandlerFilter}
+ * {@link me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter}
  */
 @Log4j2
 public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
