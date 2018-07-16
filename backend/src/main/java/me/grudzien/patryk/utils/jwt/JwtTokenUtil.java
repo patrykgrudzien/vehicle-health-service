@@ -1,4 +1,4 @@
-package me.grudzien.patryk.utils.security;
+package me.grudzien.patryk.utils.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

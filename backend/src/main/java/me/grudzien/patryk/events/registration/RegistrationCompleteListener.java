@@ -6,9 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 
 import java.util.UUID;
+
+import static me.grudzien.patryk.domain.enums.AppFLow.VERIFICATION_TOKEN_CREATION;
+import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.domain.dto.registration.EmailDto;
@@ -16,9 +20,6 @@ import me.grudzien.patryk.domain.entities.registration.CustomUser;
 import me.grudzien.patryk.service.registration.EmailService;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.web.HerokuAppEndpointResolver;
-
-import static me.grudzien.patryk.domain.enums.AppFLow.VERIFICATION_TOKEN_CREATION;
-import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 
 /**
  * That listener is going to handle {@link OnRegistrationCompleteEvent} which is published by
@@ -37,11 +38,15 @@ public class RegistrationCompleteListener implements ApplicationListener<OnRegis
 	public RegistrationCompleteListener(final EmailService emailService, final CustomApplicationProperties customApplicationProperties,
 	                                    final HerokuAppEndpointResolver herokuAppEndpointResolver,
 	                                    final LocaleMessagesCreator localeMessagesCreator) {
+		Preconditions.checkNotNull(emailService, "emailService cannot be null!");
+		Preconditions.checkNotNull(customApplicationProperties, "customApplicationProperties cannot be null!");
+		Preconditions.checkNotNull(herokuAppEndpointResolver, "herokuAppEndpointResolver cannot be null!");
+		Preconditions.checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
+
 		this.emailService = emailService;
 		this.customApplicationProperties = customApplicationProperties;
 		this.herokuAppEndpointResolver = herokuAppEndpointResolver;
 		this.localeMessagesCreator = localeMessagesCreator;
-		log.info(FLOW_MARKER, "{} bean injected.", HerokuAppEndpointResolver.class);
 	}
 
 	@Override
@@ -72,7 +77,7 @@ public class RegistrationCompleteListener implements ApplicationListener<OnRegis
 					                                                 builder()
 					                                                .put("userFirstName", userBeingRegistered.getFirstName())
 			                                                        .put("confirmationUrl",
-			                                                             herokuAppEndpointResolver.determineBaseAppUrl(VERIFICATION_TOKEN_CREATION) + confirmationUrl)
+			                                                             herokuAppEndpointResolver.determineAppUrlFor(VERIFICATION_TOKEN_CREATION) + confirmationUrl)
 			                                                        .build())
 		                                              .build());
 		log.info(FLOW_MARKER, "Registration confirmation email has been sent to {}", recipientAddress);

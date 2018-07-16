@@ -22,7 +22,7 @@ import me.grudzien.patryk.exceptions.login.UserDisabledAuthenticationException;
 import me.grudzien.patryk.service.security.MyUserDetailsService;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.log.LogMarkers;
-import me.grudzien.patryk.utils.security.JwtTokenUtil;
+import me.grudzien.patryk.utils.jwt.JwtTokenUtil;
 import me.grudzien.patryk.utils.web.RequestsDecoder;
 
 @Log4j2

@@ -11,18 +11,18 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-import me.grudzien.patryk.config.custom.CustomApplicationProperties;
-import me.grudzien.patryk.domain.enums.AppFLow;
-import me.grudzien.patryk.exceptions.RedirectionException;
-import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
-import me.grudzien.patryk.utils.web.HerokuAppEndpointResolver;
-
 import static me.grudzien.patryk.domain.enums.AppFLow.ACCOUNT_ALREADY_ENABLED;
 import static me.grudzien.patryk.domain.enums.AppFLow.CONFIRM_REGISTRATION;
 import static me.grudzien.patryk.domain.enums.AppFLow.VERIFICATION_TOKEN_EXPIRED;
 import static me.grudzien.patryk.domain.enums.AppFLow.VERIFICATION_TOKEN_NOT_FOUND;
 import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
 import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
+
+import me.grudzien.patryk.config.custom.CustomApplicationProperties;
+import me.grudzien.patryk.domain.enums.AppFLow;
+import me.grudzien.patryk.exceptions.RedirectionException;
+import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
+import me.grudzien.patryk.utils.web.HerokuAppEndpointResolver;
 
 @Log4j2
 @Component
@@ -60,7 +60,7 @@ public class HttpResponseHandler {
 			case ACCOUNT_ALREADY_ENABLED:
 				final String userAlreadyEnabledUrl = customApplicationProperties.getEndpoints().getRegistration().getUserAlreadyEnabled();
 				try {
-					response.sendRedirect(herokuAppEndpointResolver.determineBaseAppUrl(ACCOUNT_ALREADY_ENABLED) + userAlreadyEnabledUrl);
+					response.sendRedirect(herokuAppEndpointResolver.determineAppUrlFor(ACCOUNT_ALREADY_ENABLED) + userAlreadyEnabledUrl);
 					log.info(FLOW_MARKER, ACCOUNT_ALREADY_ENABLED.getSuccessfulRedirectionLogInfoMessage(), userAlreadyEnabledUrl);
 				} catch (final IOException exception) {
 					log.error(EXCEPTION_MARKER, ACCOUNT_ALREADY_ENABLED.getRedirectionExceptionLogErrorMessage(), userAlreadyEnabledUrl);
@@ -70,7 +70,7 @@ public class HttpResponseHandler {
 			case CONFIRM_REGISTRATION:
 				final String registrationConfirmedUrl = customApplicationProperties.getEndpoints().getRegistration().getConfirmed();
 				try {
-					response.sendRedirect(herokuAppEndpointResolver.determineBaseAppUrl(CONFIRM_REGISTRATION) + registrationConfirmedUrl);
+					response.sendRedirect(herokuAppEndpointResolver.determineAppUrlFor(CONFIRM_REGISTRATION) + registrationConfirmedUrl);
 					log.info(FLOW_MARKER, CONFIRM_REGISTRATION.getSuccessfulRedirectionLogInfoMessage(), registrationConfirmedUrl);
 				} catch (final IOException exception) {
 					log.error(EXCEPTION_MARKER, CONFIRM_REGISTRATION.getRedirectionExceptionLogErrorMessage(), registrationConfirmedUrl);
@@ -80,7 +80,7 @@ public class HttpResponseHandler {
 			case VERIFICATION_TOKEN_NOT_FOUND:
 				final String confirmedTokenNotFoundUrl = customApplicationProperties.getEndpoints().getRegistration().getConfirmedTokenNotFound();
 				try {
-					response.sendRedirect(herokuAppEndpointResolver.determineBaseAppUrl(CONFIRM_REGISTRATION) + confirmedTokenNotFoundUrl);
+					response.sendRedirect(herokuAppEndpointResolver.determineAppUrlFor(CONFIRM_REGISTRATION) + confirmedTokenNotFoundUrl);
 					log.info(FLOW_MARKER, VERIFICATION_TOKEN_NOT_FOUND.getSuccessfulRedirectionLogInfoMessage(), confirmedTokenNotFoundUrl);
 				} catch (final IOException exception) {
 					log.error(EXCEPTION_MARKER, VERIFICATION_TOKEN_NOT_FOUND.getRedirectionExceptionLogErrorMessage(), confirmedTokenNotFoundUrl);
@@ -90,7 +90,7 @@ public class HttpResponseHandler {
 			case VERIFICATION_TOKEN_EXPIRED:
 				final String confirmedTokenExpired = customApplicationProperties.getEndpoints().getRegistration().getConfirmedTokenExpired();
 				try {
-					response.sendRedirect(herokuAppEndpointResolver.determineBaseAppUrl(CONFIRM_REGISTRATION) + confirmedTokenExpired);
+					response.sendRedirect(herokuAppEndpointResolver.determineAppUrlFor(CONFIRM_REGISTRATION) + confirmedTokenExpired);
 					log.info(FLOW_MARKER, VERIFICATION_TOKEN_EXPIRED.getSuccessfulRedirectionLogInfoMessage(), confirmedTokenExpired);
 				} catch (final IOException exception) {
 					log.error(EXCEPTION_MARKER, VERIFICATION_TOKEN_EXPIRED.getRedirectionExceptionLogErrorMessage(), confirmedTokenExpired);

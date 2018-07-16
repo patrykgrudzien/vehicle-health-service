@@ -20,7 +20,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
-import me.grudzien.patryk.handlers.security.CustomAuthenticationEntryPoint;
+import me.grudzien.patryk.config.filters.JwtAuthorizationTokenFilter;
+import me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter;
 import me.grudzien.patryk.service.security.MyUserDetailsService;
 import me.grudzien.patryk.utils.log.LogMarkers;
 

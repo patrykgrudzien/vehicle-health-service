@@ -13,15 +13,15 @@ import com.google.common.base.Preconditions;
 
 import java.util.Arrays;
 
-import me.grudzien.patryk.config.custom.CustomApplicationProperties;
-import me.grudzien.patryk.domain.enums.AppFLow;
-import me.grudzien.patryk.domain.enums.SpringAppProfiles;
-
-import static me.grudzien.patryk.domain.enums.AppFLow.CONFIRM_REGISTRATION;
 import static me.grudzien.patryk.domain.enums.AppFLow.ACCOUNT_ALREADY_ENABLED;
+import static me.grudzien.patryk.domain.enums.AppFLow.CONFIRM_REGISTRATION;
 import static me.grudzien.patryk.domain.enums.AppFLow.VERIFICATION_TOKEN_CREATION;
 import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
 import static me.grudzien.patryk.utils.log.LogMarkers.METHOD_INVOCATION_MARKER;
+
+import me.grudzien.patryk.config.custom.CustomApplicationProperties;
+import me.grudzien.patryk.domain.enums.AppFLow;
+import me.grudzien.patryk.domain.enums.SpringAppProfiles;
 
 @Log4j2
 @Component
@@ -50,7 +50,7 @@ public class HerokuAppEndpointResolver implements InitializingBean {
 		      .ifPresent(activeProfile -> ACTIVE_SPRING_PROFILE = activeProfile);
 	}
 
-	public String determineBaseAppUrl(final AppFLow appFLow) {
+	public String determineAppUrlFor(final AppFLow appFLow) {
 		if (SpringAppProfiles.HEROKU_DEPLOYMENT.getYmlName().equals(ACTIVE_SPRING_PROFILE)) {
 			return getHerokuAppBaseUrl();
 		} else {

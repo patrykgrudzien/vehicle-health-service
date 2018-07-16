@@ -1,4 +1,4 @@
-package me.grudzien.patryk.config.security;
+package me.grudzien.patryk.utils.jwt;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * This configuration needs to be present for AUDIENCE claim in JWT generation.
  * Take a look into:
- * {@link me.grudzien.patryk.utils.security.JwtTokenUtil.Creator#generateAudience(org.springframework.mobile.device.Device)}
+ * {@link me.grudzien.patryk.utils.jwt.JwtTokenUtil.Creator#generateAudience(org.springframework.mobile.device.Device)}
  */
 @Configuration
 public class JwtAudienceDeviceResolver implements WebMvcConfigurer {
