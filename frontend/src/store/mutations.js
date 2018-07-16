@@ -92,5 +92,10 @@ export default {
   },
   clearPrincipalUserFirstName(state) {
     state.principalUserFirstName = null;
+  },
+
+  // -------------- JWT TOKEN EXPIRED -------------- //
+  setJwtTokenExpired(state, payload) {
+    state.jwtTokenExpired = payload;
   }
 }

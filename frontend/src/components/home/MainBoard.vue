@@ -276,15 +276,16 @@
               });
           // --- CURRENT MILEAGE --- //
         }).catch(error => {
-		  this.$store.commit('setLoading', false);
+          this.$store.commit('setLoading', false);
           console.log(error.response);
           console.log('ERROR -> /vehicles/vehicle/update-current-mileage');
+          this.$store.commit('setJwtTokenExpired', true);
           // --- TOKEN EXPIRED --- //
-          this.$store.dispatch('logout')
-              .then(() => {
-				this.$store.commit('setLoading', false);
-                console.log('User logged out successfully.')
-              });
+          // this.$store.dispatch('logout')
+          //   .then(() => {
+          //     this.$store.commit('setLoading', false);
+          //     console.log('User logged out successfully.')
+          //   });
           // --- TOKEN EXPIRED --- //
         })
       }
@@ -408,7 +409,7 @@
                   this.dialogInputFieldValue = this.mileage.current;
                 })
                 .catch(error => {
-				  this.$store.commit('setLoading', false);
+                  this.$store.commit('setLoading', false);
                   console.log(error.response);
                   console.log('ERROR -> /vehicles/vehicle/get-current-mileage');
                 });
@@ -416,15 +417,16 @@
 
             })
             .catch(error => {
-			  this.$store.commit('setLoading', false);
+              this.$store.commit('setLoading', false);
               console.log(error.response);
               console.log('ERROR -> /principal-user');
+              this.$store.commit('setJwtTokenExpired', true);
               // --- TOKEN EXPIRED --- //
-              this.$store.dispatch('logout')
-                  .then(() => {
-					this.$store.commit('setLoading', false);
-                    console.log('User logged out successfully.')
-                  });
+              // this.$store.dispatch('logout')
+              //   .then(() => {
+              //     this.$store.commit('setLoading', false);
+              //     console.log('User logged out successfully.')
+              //   });
               // --- TOKEN EXPIRED --- //
             });
         });
