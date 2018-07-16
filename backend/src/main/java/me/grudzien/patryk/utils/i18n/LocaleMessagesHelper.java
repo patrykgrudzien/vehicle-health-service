@@ -18,8 +18,6 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 
-import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
-
 @Log4j2
 @Component
 public final class LocaleMessagesHelper implements InitializingBean {
@@ -40,7 +38,6 @@ public final class LocaleMessagesHelper implements InitializingBean {
 	@Override
 	public void afterPropertiesSet() {
 		messagesLanguageHeader = environment.getProperty("custom.properties.messages-language.header");
-		log.info(FLOW_MARKER, "Language header loaded from property file -> {}", messagesLanguageHeader);
 	}
 
 	public String removeSquareBracketsFromMessage(@NotNull final String message) {
