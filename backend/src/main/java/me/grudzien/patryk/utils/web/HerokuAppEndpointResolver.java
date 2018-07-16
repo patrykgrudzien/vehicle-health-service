@@ -43,7 +43,6 @@ public class HerokuAppEndpointResolver implements InitializingBean {
 
 	@Override
 	public void afterPropertiesSet() {
-		log.info(METHOD_INVOCATION_MARKER, "{} method called.", "afterPropertiesSet()");
 		Arrays.stream(environment.getActiveProfiles())
 		      .findFirst()
 		      // taking active spring profile
