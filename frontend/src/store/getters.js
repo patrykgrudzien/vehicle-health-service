@@ -9,5 +9,6 @@ export default {
   getLoginForm: state => state.loginForm,
   getRegistrationForm: state => state.registrationForm,
   getSideNavigation: state => state.sideNavigation,
-  getPrincipalUserFirstName: state => state.principalUserFirstName
+  getPrincipalUserFirstName: state => state.principalUserFirstName,
+  isJwtTokenExpired: state => state.jwtTokenExpired
 };

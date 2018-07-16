@@ -3,6 +3,7 @@
 
     <!-- NAVIGATION DRAWER -->
     <v-navigation-drawer app
+                         id="my-nav-drawer"
                          clipped
                          temporary
                          v-model="sideNavigation">
@@ -90,13 +91,15 @@
 
     <!-- TOOLBAR -->
     <v-toolbar app
+               id="my-toolbar"
                fixed
                clipped-left
                class="primary"
                dense
                scroll-off-screen
                :scroll-threshold="75">
-      <v-toolbar-side-icon @click.stop="switchSideNavigation(!sideNavigation)" class="hidden-md-and-up"/>
+      <v-toolbar-side-icon @click.stop="switchSideNavigation(!sideNavigation)"
+                           class="hidden-md-and-up"/>
       <v-toolbar-title class="hidden-xs notSelectable">
         <router-link :to="determineHomeLink"
                      tag="span"
@@ -104,39 +107,54 @@
           {{ $t('place-for-app-title') }}
         </router-link>
       </v-toolbar-title>
-      <v-icon class="ml-2 notSelectable"
-              medium
-              style="cursor: pointer;"
-              @click="homeIconClicked"
-              v-if="showHomeVisibility">home</v-icon>
+
+      <!-- HOME ICON -->
+      <v-btn flat
+             v-if="showHomeVisibility"
+             icon
+             @click="homeIconClicked">
+        <v-icon medium
+                class="notSelectable">
+          home
+        </v-icon>
+      </v-btn>
+      <!-- HOME ICON -->
+
       <v-spacer/>
-      <v-toolbar-items class="hidden-sm-and-down">
-
-        <!-- PRINCIPAL USER (AVATAR) -->
-        <v-btn flat
-               ripple
-               v-if="isLogged === 1 && getPrincipalUserFirstName !== null">
-          <span>{{ $t('welcome-principal-user') }}</span>
-          <span class="ml-1"></span>
-          <span>{{ getPrincipalUserFirstName }}</span>
-          <v-icon right dark>
-            account_circle
-          </v-icon>
-        </v-btn>
-        <!-- PRINCIPAL USER (AVATAR) -->
-
+      <!-- MENU ITEMS -->
+      <v-toolbar-items id="toolbar-items"
+                       class="hidden-sm-and-down">
         <v-btn
           flat
           v-for="item in menuItems"
-          :key="item.title"
+          :id="item.title"
           router
           :to="item.link"
-          ripple>
+          ripple
+          :key="item.title">
           <v-icon left>
             {{ item.icon }}
           </v-icon>
           {{ $t(`${item.title}`) }}
         </v-btn>
+        <!-- MENU ITEMS -->
+
+        <!-- PRINCIPAL USER (AVATAR) -->
+        <v-btn flat
+               disabled
+               style="color: white !important;"
+               ripple
+               v-if="isLogged === 1 && getPrincipalUserFirstName !== null">
+          <span>{{ $t('welcome-principal-user') }}</span>
+          <span class="ml-1"></span>
+          <span>{{ getPrincipalUserFirstName }}</span>
+          <v-icon right
+                  style="color: white !important;"
+                  dark>
+            account_circle
+          </v-icon>
+        </v-btn>
+        <!-- PRINCIPAL USER (AVATAR) -->
 
         <!-- LOGOUT -->
         <v-btn flat v-if="isLogged === 1" @click="logout">
@@ -162,6 +180,7 @@
         <!-- LANGUAGES -->
 
       </v-toolbar-items>
+      <!-- MENU ITEMS -->
     </v-toolbar>
     <!-- TOOLBAR -->
 
@@ -183,6 +202,12 @@
       <span class="notSelectable">&copy; {{ $t('footer-text') }}</span>
     </v-footer>
     <!-- FOOTER -->
+
+    <my-dialog :visibility="isJwtTokenExpired && isLogged === 1"
+               dialog-title="token-window-title"
+               dialog-text="token-window-text"
+               agree-button-text="token-window-agree-button-text"
+               disagree-button-text="token-window-disagree-button-text" />
 
   </v-app>
 </template>
@@ -215,12 +240,11 @@
           this.$route.path.includes('/logout') ||
           this.$route.fullPath.includes(componentsPaths.logoutSuccessful)) {
 
-          this.$router.app.$emit('open-dialog-and-send-lang',
-            {
-              showDialog: true,
-              lang: lang
-            }
-          );
+          this.$router.app.$emit('open-dialog-and-send-lang', {
+            showDialog: true,
+            lang: lang
+          });
+
         } else {
           this.$store.dispatch('setLang', lang)
             .then(() => {
@@ -239,12 +263,13 @@
       ...mapGetters([
         'getSideNavigation',
         'isLogged',
-        'getPrincipalUserFirstName'
+        'getPrincipalUserFirstName',
+        'isJwtTokenExpired'
       ]),
       menuItems() {
         if (this.isLogged) {
           return [
-            // FOR NOW THERE ARE ONLY "LOGOUT" AND "LANGUAGE" BUTTONS
+            // FOR NOW THERE ARE ONLY "LOGOUT", "LANGUAGE" AND "PRINCIPAL USER (AVATAR)" BUTTONS
           ]
         } else {
           return [

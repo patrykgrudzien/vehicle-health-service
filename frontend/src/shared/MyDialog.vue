@@ -3,7 +3,7 @@
             persistent
             max-width="450">
 
-    <v-card class="text-xs-center">
+    <v-card class="text-xs-center notSelectable">
       <v-card-title id="dialog-title"
                     class="headline notSelectable">
         {{ $t(`${dialogTitle}`) }}

@@ -67,5 +67,9 @@
   "authentication-required-message": "Musisz być zalogowany!",
   "mileage-agree-button-text": "Zapisz",
   "mileage-disagree-button-text": "Anuluj",
-  "welcome-principal-user": "Witaj,"
+  "welcome-principal-user": "Witaj,",
+  "token-window-title": "Długo Cię nie było :(",
+  "token-window-text": "System zauważył dłuższą nieaktywność, dlatego dbając o bezpieczeństwo Twoich danych, co chcesz zrobić dalej?",
+  "token-window-agree-button-text": "Pozostań",
+  "token-window-disagree-button-text": "Wyloguj"
 }

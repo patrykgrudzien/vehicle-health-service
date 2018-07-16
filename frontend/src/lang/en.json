@@ -67,5 +67,9 @@
   "authentication-required-message": "You must be logged in!",
   "mileage-agree-button-text": "Save",
   "mileage-disagree-button-text": "Cancel",
-  "welcome-principal-user": "Welcome,"
+  "welcome-principal-user": "Welcome,",
+  "token-window-title": "You've been gone a long time :(",
+  "token-window-text": "System noticed a longer inactivity, so taking care of the security of your data, what do you want to do next?",
+  "token-window-agree-button-text": "Stay here",
+  "token-window-disagree-button-text": "Log out"
 }
