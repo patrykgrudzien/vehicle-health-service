@@ -27,5 +27,13 @@ public class ExceptionResponse extends CustomResponse {
 		                        .message(exception.getMessage())
 		                        .build();
 	}
+
+	public static <T extends RuntimeException> ExceptionResponse buildMessageWithExceptionCode(final T exception,
+	                                                                                           final CustomResponse.Codes code) {
+		return ExceptionResponse.Builder()
+		                        .message(exception.getMessage())
+		                        .code(code.getCodeMessage())
+		                        .build();
+	}
 }
 

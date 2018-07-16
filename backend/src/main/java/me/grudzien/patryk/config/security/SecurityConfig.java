@@ -19,6 +19,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.google.common.base.Preconditions;
+
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.config.filters.JwtAuthorizationTokenFilter;
 import me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter;
@@ -44,6 +46,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	public SecurityConfig(@Qualifier(MyUserDetailsService.BEAN_NAME) final UserDetailsService userDetailsService,
 	                      final CustomApplicationProperties customApplicationProperties,
 	                      final CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
+
+		Preconditions.checkNotNull(userDetailsService, "userDetailsService cannot be null!");
+		Preconditions.checkNotNull(customApplicationProperties, "customApplicationProperties cannot be null!");
+		Preconditions.checkNotNull(customAuthenticationEntryPoint, "customAuthenticationEntryPoint cannot be null!");
 
 		this.userDetailsService = userDetailsService;
 		this.customApplicationProperties = customApplicationProperties;
