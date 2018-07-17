@@ -44,39 +44,39 @@ export default {
       email: window.btoa(credentials.email),
       password: window.btoa(credentials.password)
     })
-      .then(response => {
-        commit('setLoading', false);
-        if (response.data.message) {
-          commit('setServerExceptionResponse', response.data);
-          myRouter.push({path: componentsPaths.loginFailed});
-          window.scrollTo(0, 0);
-        } else {
-          localStorage.setItem('token', response.data.token);
-          commit(types.LOGIN);
-          commit('clearServerExceptionResponse');
-          commit('clearLoginForm');
-          myRouter.push({path: componentsPaths.mainBoard});
-          window.scrollTo(0 ,0);
-        }
-      })
-      .catch(error => {
-        if (!error.response) {
-          commit('setServerRunning', false);
-          commit('setLoading', false);
-          commit('clearPrincipalUserFirstName');
-          window.scrollTo(0, 0);
-        } else {
-          commit('setLoading', false);
-          commit('setServerExceptionResponse', error.response.data);
-          commit('clearServerSuccessResponse');
-          commit('clearPrincipalUserFirstName');
-          window.scrollTo(0, 0);
-        }
-      });
-  },
+       .then(response => {
+         commit('setLoading', false);
+         if (response.data.message) {
+           commit('setServerExceptionResponse', response.data);
+           myRouter.push({path: componentsPaths.loginFailed});
+           window.scrollTo(0, 0);
+         } else {
+           localStorage.setItem('accessToken', response.data.accessToken);
+           commit(types.LOGIN);
+           commit('clearServerExceptionResponse');
+           commit('clearLoginForm');
+           myRouter.push({path: componentsPaths.mainBoard});
+           window.scrollTo(0 ,0);
+         }
+       })
+       .catch(error => {
+         if (!error.response) {
+           commit('setServerRunning', false);
+           commit('setLoading', false);
+           commit('clearPrincipalUserFirstName');
+           window.scrollTo(0, 0);
+         } else {
+           commit('setLoading', false);
+           commit('setServerExceptionResponse', error.response.data);
+           commit('clearServerSuccessResponse');
+           commit('clearPrincipalUserFirstName');
+           window.scrollTo(0, 0);
+         }
+       });
+    },
 
   logout({commit}) {
-    localStorage.removeItem('token');
+    localStorage.removeItem('accessToken');
     commit(types.LOGOUT);
     commit('clearServerExceptionResponse');
     commit('clearServerSuccessResponse');
@@ -103,7 +103,39 @@ export default {
     commit('clearServerSuccessResponse');
   },
 
-  setPrincipalUserFirstName({commit}, payload) {
-    commit('setPrincipalUserFirstName', payload);
+  stayLogIn({commit}) {
+    Vue.axios.get(serverEndpoints.authentication.refreshToken)
+       .then(response => {
+         commit('setJwtTokenExpired', false);
+         window.scrollTo(0, 0);
+       })
+       .catch(() => {
+         commit('setJwtTokenExpired', true);
+         window.scrollTo(0, 0);
+       });
+  },
+
+  getPrincipalUserFirstName({commit}) {
+    // returning response to component which calls this action
+    return Vue.axios.get(serverEndpoints.authentication.principalUser)
+              .then(response => {
+                commit('setLoading', false);
+                commit('setPrincipalUserFirstName', response.data.firstname);
+                window.scrollTo(0, 0);
+                // returning response to component which calls this action
+                return response;
+              });
+  },
+
+  getCurrentMileage({commit}, pathVariable) {
+    // returning response to component which calls this action
+    return Vue.axios.get(`${serverEndpoints.vehiclesController.getCurrentMileage}/${pathVariable}`)
+              .then(response => {
+                commit('setLoading', false);
+                commit('setServerSuccessResponse', response.data);
+                window.scrollTo(0, 0);
+                // returning response to component which calls this action
+                return response;
+              });
   }
 }
