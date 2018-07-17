@@ -51,7 +51,8 @@ export default {
            myRouter.push({path: componentsPaths.loginFailed});
            window.scrollTo(0, 0);
          } else {
-           localStorage.setItem('accessToken', response.data.accessToken);
+           localStorage.setItem('access_token', response.data.accessToken);
+           localStorage.setItem('refresh_token', response.data.refreshToken);
            commit(types.LOGIN);
            commit('clearServerExceptionResponse');
            commit('clearLoginForm');
@@ -76,7 +77,8 @@ export default {
     },
 
   logout({commit}) {
-    localStorage.removeItem('accessToken');
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
     commit(types.LOGOUT);
     commit('clearServerExceptionResponse');
     commit('clearServerSuccessResponse');
@@ -104,15 +106,18 @@ export default {
   },
 
   stayLogIn({commit}) {
-    Vue.axios.get(serverEndpoints.authentication.refreshToken)
-       .then(response => {
-         commit('setJwtTokenExpired', false);
-         window.scrollTo(0, 0);
-       })
-       .catch(() => {
-         commit('setJwtTokenExpired', true);
-         window.scrollTo(0, 0);
-       });
+    Vue.axios.post(serverEndpoints.authentication.refreshToken, {
+      refreshToken: localStorage.getItem('refresh_token')
+    })
+      .then((response) => {
+        commit('setJwtTokenExpired', false);
+        localStorage.setItem('access_token', response.data.accessToken);
+        window.scrollTo(0, 0);
+      })
+      .catch(() => {
+        commit('setJwtTokenExpired', true);
+        window.scrollTo(0, 0);
+      });
   },
 
   getPrincipalUserFirstName({commit}) {

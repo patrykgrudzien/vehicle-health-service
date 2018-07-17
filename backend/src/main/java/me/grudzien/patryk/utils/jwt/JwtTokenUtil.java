@@ -21,10 +21,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
+import static me.grudzien.patryk.utils.log.LogMarkers.METHOD_INVOCATION_MARKER;
+
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.domain.dto.login.JwtUser;
-
-import static me.grudzien.patryk.utils.log.LogMarkers.METHOD_INVOCATION_MARKER;
 
 @Log4j2
 @Component
@@ -126,17 +126,23 @@ public class JwtTokenUtil implements Serializable {
 
 	public static class Creator {
 
-		public static String generateToken(final JwtUser jwtUser, final Device device) {
-			final Map<String, Object> claims = new HashMap<>();
-			claims.put("ROLES", jwtUser.getRoles());
-			return doGenerateToken(claims, jwtUser.getEmail(), generateAudience(device));
+		private enum TOKEN_CLAIMS {
+			ROLES
 		}
 
-		private static String doGenerateToken(final Map<String, Object> claims, final String userEmail, final String audience) {
+		public static String generateAccessToken(final JwtUser jwtUser, final Device device) {
+			final Map<String, Object> claims = new HashMap<>();
+			claims.put(TOKEN_CLAIMS.ROLES.name(), jwtUser.getRoles());
+			return buildAccessToken(claims, jwtUser.getEmail(), generateAudience(device));
+		}
+
+		public static String generateRefreshToken(final JwtUser jwtUser) {
+			return buildRefreshToken(jwtUser.getEmail());
+		}
+
+		private static String buildAccessToken(final Map<String, Object> claims, final String userEmail, final String audience) {
 			final Date expirationDate = calculateExpirationDate(new Date());
-
-			log.info(METHOD_INVOCATION_MARKER, "(JWT) -----> {}.{}", Creator.class.getCanonicalName(), "doGenerateToken()");
-
+			log.info(METHOD_INVOCATION_MARKER, "(JWT) -----> {}.{}", Creator.class.getCanonicalName(), "buildAccessToken()");
 			return Jwts.builder()
 			           .setClaims(claims)
 			           .setSubject(userEmail)
@@ -147,9 +153,16 @@ public class JwtTokenUtil implements Serializable {
 			           .compact();
 		}
 
-		public static String refreshToken(final String token) {
-			final Claims claims = Retriever.getAllClaimsFromToken(token);
+		private static String buildRefreshToken(final String userEmail) {
+			log.info(METHOD_INVOCATION_MARKER, "(JWT) -----> {}.{}", Creator.class.getCanonicalName(), "buildRefreshToken()");
+			return Jwts.builder()
+			           .setSubject(userEmail)
+			           .signWith(SignatureAlgorithm.HS512, tokenSecret)
+			           .compact();
+		}
 
+		public static String refreshAccessToken(final String token) {
+			final Claims claims = Retriever.getAllClaimsFromToken(token);
 			final Date newExpirationDate = calculateExpirationDate(claims.getExpiration());
 			claims.setIssuedAt(new Date());
 			claims.setExpiration(newExpirationDate);
@@ -185,18 +198,8 @@ public class JwtTokenUtil implements Serializable {
 			return expiration.before(new Date());
 		}
 
-		public static Boolean ignoreTokenExpiration(final String token) {
-			final String audience = Retriever.getAudienceFromToken(token);
-			return (AUDIENCE_TABLET.equals(audience) || AUDIENCE_MOBILE.equals(audience));
-		}
-
 		public static Boolean isCreatedBeforeLastPasswordReset(final Date created, final Date lastPasswordReset) {
 			return (lastPasswordReset != null && created.before(lastPasswordReset));
-		}
-
-		public static Boolean canTokenBeRefreshed(final String token, final Date lastPasswordReset) {
-			final Date created = Retriever.getIssuedAtDateFromToken(token);
-			return !isCreatedBeforeLastPasswordReset(created, lastPasswordReset) && (!isTokenExpired(token) || ignoreTokenExpiration(token));
 		}
 
 		public static Boolean validateToken(final String token, final UserDetails userDetails) {
