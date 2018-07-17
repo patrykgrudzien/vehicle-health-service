@@ -13,21 +13,26 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.base.Preconditions;
 
+import javax.servlet.http.HttpServletRequest;
+
 import java.util.Objects;
 
+import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
 import me.grudzien.patryk.domain.dto.login.JwtUser;
 import me.grudzien.patryk.exceptions.login.BadCredentialsAuthenticationException;
 import me.grudzien.patryk.exceptions.login.UserDisabledAuthenticationException;
 import me.grudzien.patryk.service.security.MyUserDetailsService;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
-import me.grudzien.patryk.utils.log.LogMarkers;
 import me.grudzien.patryk.utils.jwt.JwtTokenUtil;
+import me.grudzien.patryk.utils.log.LogMarkers;
 import me.grudzien.patryk.utils.web.RequestsDecoder;
 
 @Log4j2
 @Service
 public class UserAuthenticationServiceImpl implements UserAuthenticationService {
+
+	private final String tokenHeader;
 
 	private final UserDetailsService userDetailsService;
 	private final AuthenticationManager authenticationManager;
@@ -37,17 +42,20 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 	public UserAuthenticationServiceImpl(@Qualifier(MyUserDetailsService.BEAN_NAME) final UserDetailsService userDetailsService,
 	                                     final AuthenticationManager authenticationManager,
 	                                     final LocaleMessagesCreator localeMessagesCreator,
-	                                     final RequestsDecoder requestsDecoder) {
+	                                     final RequestsDecoder requestsDecoder,
+	                                     final CustomApplicationProperties customApplicationProperties) {
 
 		Preconditions.checkNotNull(userDetailsService, "userDetailsService cannot be null!");
 		Preconditions.checkNotNull(authenticationManager, "authenticationManager cannot be null!");
 		Preconditions.checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
 		Preconditions.checkNotNull(requestsDecoder, "requestsDecoder cannot be null!");
+		Preconditions.checkNotNull(customApplicationProperties, "customApplicationProperties cannot be null!");
 
 		this.userDetailsService = userDetailsService;
 		this.authenticationManager = authenticationManager;
 		this.localeMessagesCreator = localeMessagesCreator;
 		this.requestsDecoder = requestsDecoder;
+		this.tokenHeader = customApplicationProperties.getJwt().getHeader();
 	}
 
 	/**
@@ -89,5 +97,11 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 			// it is checked in (AbstractUserDetailsAuthenticationProvider)
 			throw new BadCredentialsAuthenticationException(localeMessagesCreator.buildLocaleMessage("bad-credentials-exception"));
 		}
+	}
+
+	@Override
+	public String refreshAuthenticationToken(final HttpServletRequest request) {
+		final String authToken = JwtTokenUtil.Retriever.getJwtTokenFromRequest(request);
+		return JwtTokenUtil.Creator.refreshToken(authToken);
 	}
 }
