@@ -87,15 +87,18 @@ export default {
   },
   // -------------- REGISTRATION FORM -------------- //
 
+  // -------------- PRINCIPAL USER FIRST NAME -------------- //
   setPrincipalUserFirstName(state, payload) {
     state.principalUserFirstName = payload;
   },
   clearPrincipalUserFirstName(state) {
     state.principalUserFirstName = null;
   },
+  // -------------- PRINCIPAL USER FIRST NAME -------------- //
 
   // -------------- JWT TOKEN EXPIRED -------------- //
   setJwtTokenExpired(state, payload) {
     state.jwtTokenExpired = payload;
   }
+  // -------------- JWT TOKEN EXPIRED -------------- //
 }

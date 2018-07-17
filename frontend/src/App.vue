@@ -203,11 +203,15 @@
     </v-footer>
     <!-- FOOTER -->
 
+    <!-- JWT TOKEN EXPIRED WINDOW -->
     <my-dialog :visibility="isJwtTokenExpired && isLogged === 1"
                dialog-title="token-window-title"
                dialog-text="token-window-text"
                agree-button-text="token-window-agree-button-text"
-               disagree-button-text="token-window-disagree-button-text" />
+               disagree-button-text="token-window-disagree-button-text"
+               :agree-button-function="stayLogInButtonClicked"
+               :disagree-button-function="logoutButtonClicked" />
+    <!-- JWT TOKEN EXPIRED WINDOW -->
 
   </v-app>
 </template>
@@ -257,6 +261,16 @@
       },
       homeIconClicked() {
         this.$router.push(this.determineHomeLink);
+      },
+      stayLogInButtonClicked() {
+        this.$store.dispatch('stayLogIn');
+      },
+      logoutButtonClicked() {
+        this.logout()
+            .then(() => {
+              this.$store.commit('setLoading', false);
+              this.$store.commit('setJwtTokenExpired', false);
+            });
       }
     },
     computed: {

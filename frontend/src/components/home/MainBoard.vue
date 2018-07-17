@@ -280,13 +280,6 @@
           console.log(error.response);
           console.log('ERROR -> /vehicles/vehicle/update-current-mileage');
           this.$store.commit('setJwtTokenExpired', true);
-          // --- TOKEN EXPIRED --- //
-          // this.$store.dispatch('logout')
-          //   .then(() => {
-          //     this.$store.commit('setLoading', false);
-          //     console.log('User logged out successfully.')
-          //   });
-          // --- TOKEN EXPIRED --- //
         })
       }
     },
@@ -394,42 +387,34 @@
         // --- PAGE REFRESH EVENT --- //
         this.$router.onReady(() => {
           this.$store.commit('setLoading', true);
-          this.axios.get('/principal-user')
-            .then(response => {
-              this.$store.commit('setPrincipalUserFirstName', response.data.firstname);
-
-              // --- CURRENT MILEAGE --- //
-              this.ownerEmailAddress = response.data.email;
-              this.ownerId = response.data.id;
-              this.axios.get(`/vehicles/vehicle/get-current-mileage/${window.btoa(this.ownerEmailAddress)}`)
-                .then(response => {
-                  this.$store.commit('setLoading', false);
-                  this.mileage.current = response.data;
-                  this.mileage.new = this.mileage.current;
-                  this.dialogInputFieldValue = this.mileage.current;
-                })
-                .catch(error => {
-                  this.$store.commit('setLoading', false);
-                  console.log(error.response);
-                  console.log('ERROR -> /vehicles/vehicle/get-current-mileage');
-                });
-              // --- CURRENT MILEAGE --- //
-
+          // --- PRINCIPAL USER --- //
+          this.$store.dispatch('getPrincipalUserFirstName')
+              .then(response => {
+                this.ownerEmailAddress = response.data.email;
+                this.ownerId = response.data.id;
+                // --- CURRENT MILEAGE --- //
+                this.$store.dispatch('getCurrentMileage', window.btoa(this.ownerEmailAddress))
+                    .then(response => {
+                      this.mileage.current = response.data;
+                      this.mileage.new = this.mileage.current;
+                      this.dialogInputFieldValue = this.mileage.current;
+                    })
+                    // need to catch() here, not in (actions.js) because I'm setting some component properties
+                    .catch(() => {
+                      this.$store.commit('setLoading', false);
+                      this.$store.commit('setJwtTokenExpired', true);
+                      window.scrollTo(0, 0);
+                    });
+                // --- CURRENT MILEAGE --- //
+              })
+              // need to catch() here, not in (actions.js) because I'm setting some component properties
+              .catch(() => {
+                this.$store.commit('setLoading', false);
+                this.$store.commit('setJwtTokenExpired', true);
+                window.scrollTo(0, 0);
+              });
+          // --- PRINCIPAL USER --- //
             })
-            .catch(error => {
-              this.$store.commit('setLoading', false);
-              console.log(error.response);
-              console.log('ERROR -> /principal-user');
-              this.$store.commit('setJwtTokenExpired', true);
-              // --- TOKEN EXPIRED --- //
-              // this.$store.dispatch('logout')
-              //   .then(() => {
-              //     this.$store.commit('setLoading', false);
-              //     console.log('User logged out successfully.')
-              //   });
-              // --- TOKEN EXPIRED --- //
-            });
-        });
         // --- PAGE REFRESH EVENT --- //
       }
     }

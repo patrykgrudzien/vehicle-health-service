@@ -27,10 +27,10 @@ if (appSettings && appSettings.deploymentMode === 'PROD') {
   }));
 }
 
-// Interceptor for HTTP requests (adding Authorization header with JWT token to each request)
+// Interceptor for HTTP requests (adding Authorization header with JWT accessToken to each request)
 Vue.axios.interceptors.request.use(config => {
-  if (localStorage.getItem('token')) {
-    config.headers.Authorization = 'Bearer ' + localStorage.getItem("token");
+  if (localStorage.getItem('accessToken')) {
+    config.headers.Authorization = 'Bearer ' + localStorage.getItem("accessToken");
   }
   if (cookieHelper.getCookie('lang') !== '') {
     config.headers.Language = cookieHelper.getCookie('lang');
