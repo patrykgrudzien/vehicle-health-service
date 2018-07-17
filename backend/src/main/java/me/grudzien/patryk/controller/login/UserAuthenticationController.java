@@ -15,7 +15,8 @@ import org.springframework.web.context.request.WebRequest;
 
 import com.google.common.base.Preconditions;
 
-import javax.servlet.http.HttpServletRequest;
+import static me.grudzien.patryk.domain.enums.jwt.TokenTypes.ACCESS_TOKEN;
+import static me.grudzien.patryk.domain.enums.jwt.TokenTypes.REFRESH_TOKEN;
 
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationResponse;
@@ -35,16 +36,22 @@ public class UserAuthenticationController {
 	}
 
 	@PostMapping("${custom.properties.endpoints.authentication.root}")
-	public ResponseEntity<?> createAuthenticationToken(@RequestBody final JwtAuthenticationRequest authenticationRequest, final Device device,
-	                                                   @SuppressWarnings("unused") final WebRequest webRequest) {
-		final String accessToken = userAuthenticationService.authenticateAndGenerateToken(authenticationRequest, device);
-		return ResponseEntity.ok(JwtAuthenticationResponse.Builder().accessToken(accessToken).build());
+	public ResponseEntity<?> createAuthenticationTokens(@RequestBody final JwtAuthenticationRequest authenticationRequest, final Device device,
+	                                                    @SuppressWarnings("unused") final WebRequest webRequest) {
+		final String accessToken = userAuthenticationService.authenticateAndGenerateToken(ACCESS_TOKEN, authenticationRequest, device);
+		final String refreshToken = userAuthenticationService.authenticateAndGenerateToken(REFRESH_TOKEN, authenticationRequest, device);
+		return ResponseEntity.ok(JwtAuthenticationResponse.Builder()
+		                                                  .accessToken(accessToken)
+		                                                  .refreshToken(refreshToken)
+		                                                  .build());
 	}
 
-	@GetMapping("${custom.properties.endpoints.authentication.refresh-token}")
-	public ResponseEntity<?> refreshAuthenticationToken(final HttpServletRequest request) {
-		final String refreshedToken = userAuthenticationService.refreshAuthenticationToken(request);
-		return ResponseEntity.ok(JwtAuthenticationResponse.Builder().accessToken(refreshedToken).build());
+	@PostMapping("${custom.properties.endpoints.authentication.refresh-token}")
+	public ResponseEntity<?> refreshAuthenticationAccessToken(@RequestBody final JwtAuthenticationRequest authenticationRequest, final Device device) {
+		final String newAccessToken = userAuthenticationService.refreshAuthenticationAccessToken(authenticationRequest, device);
+		return ResponseEntity.ok(JwtAuthenticationResponse.Builder()
+		                                                  .accessToken(newAccessToken)
+		                                                  .build());
 	}
 
 	@GetMapping("${custom.properties.endpoints.authentication.principal-user}")

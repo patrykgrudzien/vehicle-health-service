@@ -48,7 +48,7 @@ export default new Vuex.Store({
         } else {
           state.lang = 'pl';
         }
-        if (localStorage.getItem('accessToken')) {
+        if (localStorage.getItem('access_token')) {
           state.logged = 1;
         }
       },
