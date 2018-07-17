@@ -104,6 +104,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			        .antMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getRegistration().getRoot() + "/**").permitAll()
 					// /registration/**
 					.antMatchers(HttpMethod.GET, customApplicationProperties.getEndpoints().getRegistration().getRoot() + "/**").permitAll()
+					// /refresh-token
+					.antMatchers(HttpMethod.GET, "/refresh-token").permitAll()
 			        // require authentication via JWT
 					.anyRequest().authenticated();
 
@@ -153,6 +155,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		        // /registration/**
 				.antMatchers(HttpMethod.GET, customApplicationProperties.getEndpoints().getRegistration().getRoot() + "/**")
 					.and()
+		   .ignoring()
+		        .antMatchers(HttpMethod.GET, "/refresh-token")
+		            .and()
 			.ignoring()
                 .antMatchers(HttpMethod.GET,
                              "/",
