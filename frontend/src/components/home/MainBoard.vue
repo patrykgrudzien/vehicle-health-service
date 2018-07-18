@@ -267,6 +267,8 @@
                 this.mileage.current = response.data;
                 this.mileage.new = this.mileage.current;
                 this.dialogInputFieldValue = this.mileage.current;
+
+                this.$store.commit('setLoading', false);
               })
               // need to catch() here, not in (actions.js) because I'm setting some component properties above
               .catch(() => {
@@ -276,11 +278,11 @@
               });
       },
       updateCurrentMileage() {
+        this.toggleDialogWindow();
         this.$store.commit('setLoading', true);
         this.axios.put(`${serverEndpoints.vehiclesController.updateCurrentMileage}/${window.btoa(this.ownerEmailAddress)}`, {
           encodedMileage: window.btoa(this.mileage.new)
         }).then(() => {
-          this.toggleDialogWindow();
           // --- CURRENT MILEAGE --- //
           this.getCurrentMileage();
           // --- CURRENT MILEAGE --- //
@@ -396,6 +398,7 @@
       if (this.isLogged === 1) {
         // --- PAGE REFRESH EVENT --- //
         this.$router.onReady(() => {
+          this.$store.commit('setLoading', true);
           // --- PRINCIPAL USER --- //
           this.$store.dispatch('getPrincipalUserFirstName')
               .then(response => {

@@ -121,11 +121,9 @@ export default {
   },
 
   getPrincipalUserFirstName({commit}) {
-    commit('setLoading', true);
     // returning response to component which calls this action
     return Vue.axios.get(serverEndpoints.authentication.principalUser)
               .then(response => {
-                commit('setLoading', false);
                 commit('setPrincipalUserFirstName', response.data.firstname);
                 window.scrollTo(0, 0);
                 // returning response to component which calls this action
@@ -134,11 +132,9 @@ export default {
   },
 
   getCurrentMileage({commit}, pathVariable) {
-    commit('setLoading', true);
     // returning response to component which calls this action
     return Vue.axios.get(`${serverEndpoints.vehiclesController.getCurrentMileage}/${pathVariable}`)
               .then(response => {
-                commit('setLoading', false);
                 commit('setServerSuccessResponse', response.data);
                 window.scrollTo(0, 0);
                 // returning response to component which calls this action
