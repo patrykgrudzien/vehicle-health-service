@@ -71,5 +71,6 @@
   "token-window-title": "You've been gone a long time :(",
   "token-window-text": "System noticed a longer inactivity, so taking care of the security of your data, what do you want to do next?",
   "token-window-agree-button-text": "Stay here",
-  "token-window-disagree-button-text": "Log out"
+  "token-window-disagree-button-text": "Log out",
+  "loading-dialog-title": "Loading..."
 }

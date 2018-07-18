@@ -213,6 +213,10 @@
                :disagree-button-function="logoutButtonClicked" />
     <!-- JWT TOKEN EXPIRED WINDOW -->
 
+    <!-- LOADING DIALOG WINDOW -->
+    <loading-dialog :visibility="isLoading" />
+    <!-- LOADING DIALOG WINDOW -->
+
   </v-app>
 </template>
 
@@ -278,7 +282,8 @@
         'getSideNavigation',
         'isLogged',
         'getPrincipalUserFirstName',
-        'isJwtAccessTokenExpired'
+        'isJwtAccessTokenExpired',
+        'isLoading'
       ]),
       menuItems() {
         if (this.isLogged) {

@@ -71,5 +71,6 @@
   "token-window-title": "Długo Cię nie było :(",
   "token-window-text": "System zauważył dłuższą nieaktywność, dlatego dbając o bezpieczeństwo Twoich danych, co chcesz zrobić dalej?",
   "token-window-agree-button-text": "Pozostań",
-  "token-window-disagree-button-text": "Wyloguj"
+  "token-window-disagree-button-text": "Wyloguj",
+  "loading-dialog-title": "Ładowanie..."
 }
