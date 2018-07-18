@@ -218,6 +218,7 @@
 <script>
   import {mapGetters} from 'vuex';
   import componentsPaths from '../../componentsPaths';
+  import serverEndpoints from '../../serverEndpoints';
 
   export default {
     data() {
@@ -255,32 +256,36 @@
         this.mileage.new = this.mileage.current;
         this.dialogInputFieldValue = this.mileage.current;
       },
-      updateCurrentMileage() {
-        this.axios.put(`/vehicles/vehicle/update-current-mileage/${window.btoa(this.ownerEmailAddress)}`, {
-          encodedMileage: window.btoa(this.mileage.new)
-        }).then(() => {
-          this.toggleDialogWindow();
-          // --- CURRENT MILEAGE --- //
-          this.$store.commit('setLoading', true);
-          this.axios.get(`/vehicles/vehicle/get-current-mileage/${window.btoa(this.ownerEmailAddress)}`)
+      getCurrentMileage() {
+        this.$store.dispatch('getCurrentMileage', window.btoa(this.ownerEmailAddress))
               .then(response => {
-                this.$store.commit('setLoading', false);
                 this.mileage.current = response.data;
                 this.mileage.new = this.mileage.current;
                 this.dialogInputFieldValue = this.mileage.current;
               })
-              .catch(error => {
-				this.$store.commit('setLoading', false);
-                console.log(error.response);
-                console.log('ERROR -> /vehicles/vehicle/get-current-mileage');
+              // need to catch() here, not in (actions.js) because I'm setting some component properties above
+              .catch(() => {
+                this.$store.commit('setLoading', false);
+                this.$store.commit('setJwtAccessTokenExpired', true);
+                window.scrollTo(0, 0);
               });
+      },
+      updateCurrentMileage() {
+        this.axios.put(`${serverEndpoints.vehiclesController.updateCurrentMileage}/${window.btoa(this.ownerEmailAddress)}`, {
+          encodedMileage: window.btoa(this.mileage.new)
+        }).then(() => {
+          this.toggleDialogWindow();
+          this.$store.commit('setLoading', true);
           // --- CURRENT MILEAGE --- //
-        }).catch(error => {
-          this.$store.commit('setLoading', false);
-          console.log(error.response);
-          console.log('ERROR -> /vehicles/vehicle/update-current-mileage');
-          this.$store.commit('setJwtTokenExpired', true);
-        })
+          this.getCurrentMileage();
+          // --- CURRENT MILEAGE --- //
+          })
+          // need to catch() here, not in (actions.js) because I'm setting some component properties above
+          .catch(() => {
+            this.$store.commit('setLoading', false);
+            this.$store.commit('setJwtAccessTokenExpired', true);
+            window.scrollTo(0, 0);
+          })
       }
     },
     computed: {
@@ -393,24 +398,13 @@
                 this.ownerEmailAddress = response.data.email;
                 this.ownerId = response.data.id;
                 // --- CURRENT MILEAGE --- //
-                this.$store.dispatch('getCurrentMileage', window.btoa(this.ownerEmailAddress))
-                    .then(response => {
-                      this.mileage.current = response.data;
-                      this.mileage.new = this.mileage.current;
-                      this.dialogInputFieldValue = this.mileage.current;
-                    })
-                    // need to catch() here, not in (actions.js) because I'm setting some component properties
-                    .catch(() => {
-                      this.$store.commit('setLoading', false);
-                      this.$store.commit('setJwtTokenExpired', true);
-                      window.scrollTo(0, 0);
-                    });
+                this.getCurrentMileage();
                 // --- CURRENT MILEAGE --- //
               })
-              // need to catch() here, not in (actions.js) because I'm setting some component properties
+              // need to catch() here, not in (actions.js) because I'm setting some component properties above
               .catch(() => {
                 this.$store.commit('setLoading', false);
-                this.$store.commit('setJwtTokenExpired', true);
+                this.$store.commit('setJwtAccessTokenExpired', true);
                 window.scrollTo(0, 0);
               });
           // --- PRINCIPAL USER --- //

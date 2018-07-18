@@ -9,6 +9,7 @@ export default {
     registerUserAccount: '/registration/register-user-account'
   },
   vehiclesController: {
-    getCurrentMileage: `/vehicles/vehicle/get-current-mileage`
+    getCurrentMileage: '/vehicles/vehicle/get-current-mileage',
+    updateCurrentMileage: '/vehicles/vehicle/update-current-mileage'
   }
 }

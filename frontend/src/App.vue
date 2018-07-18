@@ -204,7 +204,7 @@
     <!-- FOOTER -->
 
     <!-- JWT TOKEN EXPIRED WINDOW -->
-    <my-dialog :visibility="isJwtTokenExpired && isLogged === 1"
+    <my-dialog :visibility="isJwtAccessTokenExpired && isLogged === 1"
                dialog-title="token-window-title"
                dialog-text="token-window-text"
                agree-button-text="token-window-agree-button-text"
@@ -269,7 +269,7 @@
         this.logout()
             .then(() => {
               this.$store.commit('setLoading', false);
-              this.$store.commit('setJwtTokenExpired', false);
+              this.$store.commit('setJwtAccessTokenExpired', false);
             });
       }
     },
@@ -278,7 +278,7 @@
         'getSideNavigation',
         'isLogged',
         'getPrincipalUserFirstName',
-        'isJwtTokenExpired'
+        'isJwtAccessTokenExpired'
       ]),
       menuItems() {
         if (this.isLogged) {
