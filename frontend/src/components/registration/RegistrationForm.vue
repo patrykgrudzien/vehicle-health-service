@@ -208,6 +208,10 @@
                    :disagree-button-function="hideDialogWindow"/>
         <!-- MY DIALOG WINDOW -->
 
+        <!-- LOADING DIALOG WINDOW -->
+        <loading-dialog :visibility="isLoading" />
+        <!-- LOADING DIALOG WINDOW -->
+
       </v-flex>
     </v-layout>
   </v-container>

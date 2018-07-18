@@ -9,6 +9,7 @@ import Vuetify         from 'vuetify';
 import 'vuetify/dist/vuetify.min.css';
 import MyAlert         from './shared/MyAlert';
 import MyDialog        from './shared/MyDialog';
+import LoadingDialog        from './shared/LoadingDialog';
 import MySnackbar        from './shared/MySnackbar';
 import i18n            from './lang/i18n';
 import cookieHelper    from './cookieHelper';
@@ -67,6 +68,8 @@ Vue.use(Vuetify, {
 Vue.component('my-alert', MyAlert);
 // --------- REGISTER GLOBAL "MyDialog" component ---------
 Vue.component('my-dialog', MyDialog);
+// --------- REGISTER GLOBAL "LoadingDialog" component ---------
+Vue.component('loading-dialog', LoadingDialog);
 // --------- REGISTER GLOBAL "MySnackbar" component ---------
 Vue.component('my-snackbar', MySnackbar);
 

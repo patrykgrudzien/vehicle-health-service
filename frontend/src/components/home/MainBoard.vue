@@ -56,6 +56,11 @@
                    :disagree-button-disabled-condition="false"
                    :inputFieldAutofocus="inputFieldAutofocus" />
         <!-- MY DIALOG WINDOW WITH MILEAGE INPUT FIELD -->
+
+        <!-- LOADING DIALOG WINDOW -->
+        <loading-dialog :visibility="isLoading" />
+        <!-- LOADING DIALOG WINDOW -->
+
       </v-flex>
       <!-- MILEAGE FLEX -->
 
@@ -271,11 +276,11 @@
               });
       },
       updateCurrentMileage() {
+        this.$store.commit('setLoading', true);
         this.axios.put(`${serverEndpoints.vehiclesController.updateCurrentMileage}/${window.btoa(this.ownerEmailAddress)}`, {
           encodedMileage: window.btoa(this.mileage.new)
         }).then(() => {
           this.toggleDialogWindow();
-          this.$store.commit('setLoading', true);
           // --- CURRENT MILEAGE --- //
           this.getCurrentMileage();
           // --- CURRENT MILEAGE --- //
@@ -391,7 +396,6 @@
       if (this.isLogged === 1) {
         // --- PAGE REFRESH EVENT --- //
         this.$router.onReady(() => {
-          this.$store.commit('setLoading', true);
           // --- PRINCIPAL USER --- //
           this.$store.dispatch('getPrincipalUserFirstName')
               .then(response => {
