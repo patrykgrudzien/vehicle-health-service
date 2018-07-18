@@ -32,7 +32,7 @@ const state = {
   },
   sideNavigation: false,
   principalUserFirstName: null,
-  jwtTokenExpired: false
+  jwtAccessTokenExpired: false
 };
 
 export default new Vuex.Store({

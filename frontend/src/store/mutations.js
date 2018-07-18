@@ -97,8 +97,8 @@ export default {
   // -------------- PRINCIPAL USER FIRST NAME -------------- //
 
   // -------------- JWT TOKEN EXPIRED -------------- //
-  setJwtTokenExpired(state, payload) {
-    state.jwtTokenExpired = payload;
+  setJwtAccessTokenExpired(state, payload) {
+    state.jwtAccessTokenExpired = payload;
   }
   // -------------- JWT TOKEN EXPIRED -------------- //
 }

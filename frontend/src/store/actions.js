@@ -110,12 +110,12 @@ export default {
       refreshToken: localStorage.getItem('refresh_token')
     })
       .then((response) => {
-        commit('setJwtTokenExpired', false);
+        commit('setJwtAccessTokenExpired', false);
         localStorage.setItem('access_token', response.data.accessToken);
         window.scrollTo(0, 0);
       })
       .catch(() => {
-        commit('setJwtTokenExpired', true);
+        commit('setJwtAccessTokenExpired', true);
         window.scrollTo(0, 0);
       });
   },

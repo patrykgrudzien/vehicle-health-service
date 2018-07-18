@@ -10,5 +10,5 @@ export default {
   getRegistrationForm: state => state.registrationForm,
   getSideNavigation: state => state.sideNavigation,
   getPrincipalUserFirstName: state => state.principalUserFirstName,
-  isJwtTokenExpired: state => state.jwtTokenExpired
+  isJwtAccessTokenExpired: state => state.jwtAccessTokenExpired
 };
