@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="visibility"
             persistent
-            max-width="300">
+            :max-width="determineResponsiveMaxWidth">
     <v-card class="text-xs-center notSelectable">
       <v-container fluid
                    class="pb-0">
@@ -12,12 +12,12 @@
           <v-flex xs8>
             <v-progress-circular color="primary"
                                  indeterminate
-                                 size="75"/>
+                                 :size="determineResponsiveSize"/>
           </v-flex>
         </v-layout>
       </v-container>
       <v-card-title id="dialog-title"
-                    class="headline notSelectable"
+                    :class="determineResponsiveClasses"
                     v-if="dialogTitle && dialogTitle !== ''">
         {{ $t(`${dialogTitle}`) }}
       </v-card-title>
@@ -35,6 +35,34 @@
       dialogTitle: {
         default: 'loading-dialog-title',
         type: String
+      }
+    },
+    computed: {
+      determineResponsiveSize() {
+        if (this.$vuetify.breakpoint.lgAndUp) {
+          return 75;
+        } else {
+          return 50;
+        }
+      },
+      determineResponsiveMaxWidth() {
+        if (this.$vuetify.breakpoint.lgAndUp) {
+          return 300;
+        } else {
+          return 225;
+        }
+      },
+      determineResponsiveClasses() {
+        if (this.$vuetify.breakpoint.lgAndUp) {
+          return {
+            'headline': true,
+            'notSelectable': true
+          };
+        } else {
+          return {
+            'notSelectable': true
+          };
+        }
       }
     }
   }
