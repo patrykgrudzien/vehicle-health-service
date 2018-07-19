@@ -11,6 +11,7 @@ import com.google.common.io.Files;
 import java.io.IOException;
 import java.util.List;
 
+import static me.grudzien.patryk.domain.enums.SpringAppProfiles.HEROKU_DEPLOYMENT;
 import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 
 /**
@@ -22,7 +23,6 @@ public class CreateFileOnActiveHerokuProfile {
 
 	private static final String FRONTEND_MODULE = "frontend";
 	private static final String BACKEND_MODULE = "backend";
-	private static final String HEROKU_DEPLOYMENT = "heroku-deployment";
 	private static final String GO_DIRECTORY_UP = "../";
 	private static final String HOME = "/";
 	private static final String ENABLED = "-enabled";
@@ -38,7 +38,7 @@ public class CreateFileOnActiveHerokuProfile {
 			     // taking only active profile name after ": " character
 			     .map(line -> line.substring(line.indexOf(':') + 1).trim())
 			     // create files only for "heroku-deployment" profile
-			     .filter(profileName -> profileName.equals(HEROKU_DEPLOYMENT))
+			     .filter(profileName -> profileName.equals(HEROKU_DEPLOYMENT.name()))
 			.findFirst()
 			// if present generate files which will fire Heroku Maven Plugin and appropriate profiles
 			.ifPresent(CreateFileOnActiveHerokuProfile::createFile);
