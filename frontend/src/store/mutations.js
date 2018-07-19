@@ -99,6 +99,19 @@ export default {
   // -------------- JWT TOKEN EXPIRED -------------- //
   setJwtAccessTokenExpired(state, payload) {
     state.jwtAccessTokenExpired = payload;
-  }
+  },
   // -------------- JWT TOKEN EXPIRED -------------- //
+
+  setLastRequestedPath(state, payload) {
+    state.lastRequestedPath = payload;
+  },
+  clearLastRequestedPath(state) {
+    state.lastRequestedPath = null;
+  },
+  setLastRequestMethod(state, payload) {
+    state.lastRequestMethod = payload;
+  },
+  clearLastRequestMethod(state) {
+    state.lastRequestMethod = null;
+  }
 }

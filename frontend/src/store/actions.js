@@ -38,6 +38,12 @@ export default {
   },
 
   login({commit}, credentials) {
+    if (localStorage.getItem('access_token')) {
+      localStorage.removeItem('access_token');
+    }
+    if (localStorage.getItem('refresh_token')) {
+      localStorage.removeItem('refresh_token')
+    }
     commit('setLoading', true);
     commit('clearServerExceptionResponse');
     Vue.axios.post(serverEndpoints.authentication.root, {
@@ -83,6 +89,8 @@ export default {
     commit('clearServerExceptionResponse');
     commit('clearServerSuccessResponse');
     commit('clearPrincipalUserFirstName');
+    commit('clearLastRequestedPath');
+    commit('clearLastRequestMethod');
     myRouter.push({path: componentsPaths.logoutSuccessful});
     window.scrollTo(0, 0);
   },
@@ -105,13 +113,23 @@ export default {
     commit('clearServerSuccessResponse');
   },
 
-  stayLogIn({commit}) {
+  stayLogIn({commit, state}) {
     Vue.axios.post(serverEndpoints.authentication.refreshToken, {
       refreshToken: localStorage.getItem('refresh_token')
     })
       .then((response) => {
         commit('setJwtAccessTokenExpired', false);
         localStorage.setItem('access_token', response.data.accessToken);
+
+        console.log('stayLogIn()');
+        console.log(state.lastRequestMethod);
+        console.log(state.lastRequestedPath);
+        if (state.lastRequestMethod === 'GET' && state.lastRequestedPath === '/principal-user') {
+          console.log('TRYING TO CALL getPrincipalUserFirstName() action');
+          // TODO: not working !!!
+          Vue.$store.dispatch('getPrincipalUserFirstName');
+        }
+
         window.scrollTo(0, 0);
       })
       .catch(() => {
@@ -128,6 +146,10 @@ export default {
                 window.scrollTo(0, 0);
                 // returning response to component which calls this action
                 return response;
+              })
+              .catch(error => {
+                commit('setLastRequestedPath', error.response.data.lastRequestedPath);
+                commit('setLastRequestMethod', error.response.data.lastRequestMethod);
               });
   },
 
@@ -141,4 +163,6 @@ export default {
                 return response;
               });
   }
+
+  // updateCurrentMileage({commit}, payload) {}
 }
