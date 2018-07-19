@@ -18,8 +18,8 @@ public class ExceptionResponse extends CustomResponse {
 	private List<String> errors;
 
 	@Builder(builderMethodName = "Builder")
-	public ExceptionResponse(final String message, final String code, final String lastRequestedPath, final List<String> errors) {
-		super(message, code, lastRequestedPath);
+	public ExceptionResponse(final String message, final String code, final String lastRequestedPath, final String lastRequestMethod, final List<String> errors) {
+		super(message, code, lastRequestedPath, lastRequestMethod);
 		this.errors = errors;
 	}
 
@@ -37,11 +37,12 @@ public class ExceptionResponse extends CustomResponse {
 	}
 
 	public static <T extends RuntimeException> ExceptionResponse buildBodyMessage(final T exception, final CustomResponse.Codes code,
-	                                                                              final String lastRequestedPath) {
+	                                                                              final String lastRequestedPath, final String lastRequestMethod) {
 		return ExceptionResponse.Builder()
 		                        .message(exception.getMessage())
 		                        .code(code.getCodeMessage())
 		                        .lastRequestedPath(lastRequestedPath)
+		                        .lastRequestMethod(lastRequestMethod)
 		                        .build();
 	}
 }
