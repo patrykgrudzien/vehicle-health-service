@@ -38,7 +38,7 @@ custom:
     jwt:
       header: Authorization
       secret: super-secret-authorization-token-password
-      expiration: 60000
+      expiration: 900_000 #60_000
     messages-language:
       header: Language
 
