@@ -9,5 +9,5 @@ public interface UserAuthenticationService {
 
 	String authenticateAndGenerateToken(final TokenTypes tokenType, final JwtAuthenticationRequest authenticationRequest, final Device device);
 
-	String refreshAuthenticationAccessToken(final JwtAuthenticationRequest authenticationRequest, final Device device);
+	String createRefreshedAuthAccessToken(final JwtAuthenticationRequest authenticationRequest, final Device device);
 }

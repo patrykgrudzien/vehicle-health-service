@@ -21,10 +21,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
-import static me.grudzien.patryk.utils.log.LogMarkers.METHOD_INVOCATION_MARKER;
-
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.domain.dto.login.JwtUser;
+
+import static me.grudzien.patryk.utils.log.LogMarkers.METHOD_INVOCATION_MARKER;
 
 @Log4j2
 @Component
@@ -95,22 +95,24 @@ public class JwtTokenUtil implements Serializable {
 			return getClaimFromToken(token, Claims::getExpiration);
 		}
 
+		@SuppressWarnings("unused")
 		public static String getAudienceFromToken(final String token) {
 			return getClaimFromToken(token, Claims::getAudience);
 		}
 
-		public static <T> T getClaimFromToken(final String token, final Function<Claims, T> claimsResolver) {
+		private static <T> T getClaimFromToken(final String token, final Function<Claims, T> claimsResolver) {
 			final Claims claims = getAllClaimsFromToken(token);
 			return claimsResolver.apply(claims);
 		}
 
-		public static Claims getAllClaimsFromToken(final String token) {
+		private static Claims getAllClaimsFromToken(final String token) {
 			return Jwts.parser()
 			           .setSigningKey(tokenSecret)
 			           .parseClaimsJws(token)
 			           .getBody();
 		}
 
+		@SuppressWarnings("unused")
 		public static <T> String getJwtTokenFromRequest(final T request) {
 			if (request instanceof WebRequest) {
 				return Objects.requireNonNull(((WebRequest) request).getHeader(tokenHeader), "NO \"Authorization\" header found!")
@@ -119,7 +121,7 @@ public class JwtTokenUtil implements Serializable {
 				return Objects.requireNonNull(((HttpServletRequest) request).getHeader(tokenHeader), "NO \"Authorization\" header found!")
 				              .substring(JWT_TOKEN_BEGIN_INDEX);
 			} else {
-				return "No JWT Token found!";
+				return null;
 			}
 		}
 	}
@@ -161,24 +163,12 @@ public class JwtTokenUtil implements Serializable {
 			           .compact();
 		}
 
-		public static String refreshAccessToken(final String token) {
-			final Claims claims = Retriever.getAllClaimsFromToken(token);
-			final Date newExpirationDate = calculateExpirationDate(claims.getExpiration());
-			claims.setIssuedAt(new Date());
-			claims.setExpiration(newExpirationDate);
-
-			return Jwts.builder()
-			           .setClaims(claims)
-			           .signWith(SignatureAlgorithm.HS512, tokenSecret)
-			           .compact();
-		}
-
-		public static Date calculateExpirationDate(final Date createdDate) {
+		private static Date calculateExpirationDate(final Date createdDate) {
 			// token will be valid for 15 minutes (900 000 milliseconds)
 			return new Date(createdDate.getTime() + tokenExpiration);
 		}
 
-		public static String generateAudience(final Device device) {
+		private static String generateAudience(final Device device) {
 			String audience = AUDIENCE_UNKNOWN;
 			if (device.isNormal()) {
 				audience = AUDIENCE_WEB;
@@ -193,12 +183,12 @@ public class JwtTokenUtil implements Serializable {
 
 	public static class Validator {
 
-		public static Boolean isTokenExpired(final String token) {
+		private static Boolean isTokenExpired(final String token) {
 			final Date expiration = Retriever.getExpirationDateFromToken(token);
 			return expiration.before(new Date());
 		}
 
-		public static Boolean isCreatedBeforeLastPasswordReset(final Date created, final Date lastPasswordReset) {
+		private static Boolean isCreatedBeforeLastPasswordReset(final Date created, final Date lastPasswordReset) {
 			return (lastPasswordReset != null && created.before(lastPasswordReset));
 		}
 

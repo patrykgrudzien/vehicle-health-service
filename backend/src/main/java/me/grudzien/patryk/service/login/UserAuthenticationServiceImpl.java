@@ -103,7 +103,7 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 	}
 
 	@Override
-	public String refreshAuthenticationAccessToken(final JwtAuthenticationRequest authenticationRequest, final Device device) {
+	public String createRefreshedAuthAccessToken(final JwtAuthenticationRequest authenticationRequest, final Device device) {
 		final String refreshToken = authenticationRequest.getRefreshToken();
 		final String email = JwtTokenUtil.Retriever.getUserEmailFromToken(refreshToken);
 		final JwtUser jwtUser = (JwtUser) userDetailsService.loadUserByUsername(email);
