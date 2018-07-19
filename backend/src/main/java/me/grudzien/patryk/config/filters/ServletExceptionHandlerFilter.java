@@ -52,7 +52,7 @@ public class ServletExceptionHandlerFilter extends OncePerRequestFilter {
 			log.error(EXCEPTION_MARKER, "An error occurred during getting email from token, message -> {}", exception.getMessage());
 		} catch (final ExpiredJwtException exception) {
 			log.error(EXCEPTION_MARKER, "The JWT token is expired and not valid anymore, message -> {}", exception.getMessage());
-			customizeHttpResponse(response, UNAUTHORIZED, buildBodyMessage(exception, JWT_TOKEN_EXPIRED, request.getRequestURI()));
+			customizeHttpResponse(response, UNAUTHORIZED, buildBodyMessage(exception, JWT_TOKEN_EXPIRED, request.getRequestURI(), request.getMethod()));
 		} catch (final UnsupportedJwtException exception) {
 			log.error(EXCEPTION_MARKER, "UnsupportedJwtException message -> {}", exception.getMessage());
 		} catch (final MalformedJwtException exception) {
