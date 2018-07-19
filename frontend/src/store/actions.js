@@ -48,7 +48,7 @@ export default {
          commit('setLoading', false);
          if (response.data.message) {
            commit('setServerExceptionResponse', response.data);
-           myRouter.push({path: componentsPaths.loginFailed});
+           myRouter.replace(componentsPaths.loginFailed);
            window.scrollTo(0, 0);
          } else {
            localStorage.setItem('access_token', response.data.accessToken);
