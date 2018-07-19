@@ -17,12 +17,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
-import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
-
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.service.security.MyUserDetailsService;
 import me.grudzien.patryk.utils.jwt.JwtTokenUtil;
+
+import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
+import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 
 /**
  * Filters CANNOT be managed by Spring explicitly !!!
@@ -53,10 +53,10 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
 		final String requestHeader = request.getHeader(this.tokenHeader);
 
 		String email = null;
-		String authToken = null;
+		String accessToken = null;
 		if (requestHeader != null && requestHeader.startsWith(JwtTokenUtil.BEARER)) {
-			authToken = requestHeader.substring(JwtTokenUtil.JWT_TOKEN_BEGIN_INDEX);
-			email = JwtTokenUtil.Retriever.getUserEmailFromToken(authToken);
+			accessToken = requestHeader.substring(JwtTokenUtil.JWT_TOKEN_BEGIN_INDEX);
+			email = JwtTokenUtil.Retriever.getUserEmailFromToken(accessToken);
 		} else {
 			log.warn(EXCEPTION_MARKER, "Couldn't find bearer string, will ignore the header");
 		}
@@ -74,7 +74,7 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
 			 * For simple validation it is completely sufficient to just check the token integrity. You don't have to call
 			 * the database compellingly.
 			 */
-			if (JwtTokenUtil.Validator.validateToken(authToken, userDetails)) {
+			if (JwtTokenUtil.Validator.validateToken(accessToken, userDetails)) {
 				/*
 				 * UsernamePasswordAuthenticationToken- an {@link org.springframework.security.core.Authentication} implementation that is
 				 * designed for simple presentation of a username and password.
