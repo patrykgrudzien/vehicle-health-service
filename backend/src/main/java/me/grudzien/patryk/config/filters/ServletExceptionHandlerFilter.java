@@ -1,5 +1,7 @@
 package me.grudzien.patryk.config.filters;
 
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
@@ -16,11 +18,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import static me.grudzien.patryk.domain.dto.responses.CustomResponse.Codes.JWT_TOKEN_EXPIRED;
-import static me.grudzien.patryk.domain.dto.responses.ExceptionResponse.buildMessageWithExceptionCode;
+import static me.grudzien.patryk.domain.dto.responses.ExceptionResponse.buildBodyMessage;
 import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
 import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
-import static me.grudzien.patryk.utils.web.CustomResponseCreator.customizeHttpResponse;
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import static me.grudzien.patryk.utils.web.HttpResponseCustomizer.customizeHttpResponse;
 
 /**
  * Filters CANNOT be managed by Spring explicitly !!!
@@ -51,7 +52,7 @@ public class ServletExceptionHandlerFilter extends OncePerRequestFilter {
 			log.error(EXCEPTION_MARKER, "An error occurred during getting email from token, message -> {}", exception.getMessage());
 		} catch (final ExpiredJwtException exception) {
 			log.error(EXCEPTION_MARKER, "The JWT token is expired and not valid anymore, message -> {}", exception.getMessage());
-			customizeHttpResponse(response, UNAUTHORIZED, buildMessageWithExceptionCode(exception, JWT_TOKEN_EXPIRED));
+			customizeHttpResponse(response, UNAUTHORIZED, buildBodyMessage(exception, JWT_TOKEN_EXPIRED, request.getRequestURI()));
 		} catch (final UnsupportedJwtException exception) {
 			log.error(EXCEPTION_MARKER, "UnsupportedJwtException message -> {}", exception.getMessage());
 		} catch (final MalformedJwtException exception) {

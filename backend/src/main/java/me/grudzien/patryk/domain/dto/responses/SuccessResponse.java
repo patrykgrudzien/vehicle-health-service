@@ -1,24 +1,25 @@
 package me.grudzien.patryk.domain.dto.responses;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-@Getter
-@Setter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder(builderMethodName = "Builder")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SuccessResponse extends CustomResponse {
 
-	private String message;
+	@Builder(builderMethodName = "Builder")
+	public SuccessResponse(final String message) {
+		super(message);
+	}
 
-	public static SuccessResponse buildMessage(final String successMessage) {
+	@Builder(builderMethodName = "FullBuilder")
+	public SuccessResponse(final String message, final String code, final String lastRequestedPath) {
+		super(message, code, lastRequestedPath);
+	}
+
+	public static SuccessResponse buildBodyMessage(final String successMessage) {
 		return SuccessResponse.Builder()
 		                      .message(successMessage)
 		                      .build();

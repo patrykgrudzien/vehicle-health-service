@@ -16,7 +16,7 @@ import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
 import me.grudzien.patryk.domain.dto.responses.CustomResponse;
 
 @Log4j2
-public abstract class CustomResponseCreator {
+public abstract class HttpResponseCustomizer {
 
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -32,7 +32,7 @@ public abstract class CustomResponseCreator {
 			// commit the response
 			response.flushBuffer();
 		} catch (final IOException exception) {
-			log.error(EXCEPTION_MARKER, "Exception occurred in ({}) on getting output stream from response.", CustomResponseCreator.class.getSimpleName());
+			log.error(EXCEPTION_MARKER, "Exception occurred in ({}) on getting output stream from response.", HttpResponseCustomizer.class.getSimpleName());
 			throw new RuntimeException(exception.getMessage());
 		}
 	}
