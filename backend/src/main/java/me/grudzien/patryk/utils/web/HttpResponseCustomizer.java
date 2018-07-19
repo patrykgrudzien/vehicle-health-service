@@ -2,7 +2,10 @@ package me.grudzien.patryk.utils.web;
 
 import lombok.extern.log4j.Log4j2;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -10,15 +13,25 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
 
 import java.io.IOException;
+import java.util.stream.Stream;
 
+import static me.grudzien.patryk.domain.enums.SpringAppProfiles.DEV_HOME;
+import static me.grudzien.patryk.domain.enums.SpringAppProfiles.DEV_OFFICE;
 import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
 
 import me.grudzien.patryk.domain.dto.responses.CustomResponse;
 
 @Log4j2
-public abstract class HttpResponseCustomizer {
+@Component
+public class HttpResponseCustomizer {
 
+	private static Environment environment;
 	private static final ObjectMapper objectMapper = new ObjectMapper();
+
+	@Autowired
+	public HttpResponseCustomizer(final Environment environment) {
+		HttpResponseCustomizer.environment = environment;
+	}
 
 	public static <T extends CustomResponse> void customizeHttpResponse(@NotNull final HttpServletResponse response, final HttpStatus status,
 	                                                                    final T bodyMessage) {
@@ -27,6 +40,12 @@ public abstract class HttpResponseCustomizer {
 			response.setStatus(status.value());
 			// notify client of response body content type
 			response.addHeader(CustomResponse.CONTENT_TYPE_KEY, CustomResponse.CONTENT_TYPE_VALUE);
+			// CORS - if the header below is not specified during development, JSON created by this method cannot be displayed in the Client
+			Stream.of(environment.getActiveProfiles()).forEach(activeProfile -> {
+				if (DEV_HOME.getYmlName().equals(activeProfile) || DEV_OFFICE.getYmlName().equals(activeProfile)) {
+					response.addHeader(CustomResponse.CORS_KEY, CustomResponse.CORS_VALUE);
+				}
+			});
 			// write the custom response body
 			objectMapper.writeValue(response.getOutputStream(), bodyMessage);
 			// commit the response
