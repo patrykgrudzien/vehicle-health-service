@@ -1,7 +1,5 @@
 package me.grudzien.patryk.config.security;
 
-import static org.springframework.http.HttpStatus.OK;
-
 import lombok.extern.log4j.Log4j2;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,12 +12,13 @@ import com.google.common.base.Preconditions;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
+
 import static me.grudzien.patryk.domain.dto.responses.AuthenticationEntryPointResponse.buildLocaleMessageWithExceptionCode;
 import static me.grudzien.patryk.domain.dto.responses.CustomResponse.Codes.SECURED_RESOURCE_CODE;
 import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 import static me.grudzien.patryk.utils.web.CustomResponseCreator.customizeHttpResponse;
-
-import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
+import static org.springframework.http.HttpStatus.OK;
 
 /**
  * IMPORTANT NOTE:
@@ -40,6 +39,10 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 		this.localeMessagesCreator = localeMessagesCreator;
 	}
 
+	/**
+	 * This method is called as fallback when user wants to retrieve secured information but does not provide (access_token) at all.
+	 * @param authException exception when user does not provide (access_token) at all.
+	 */
 	@Override
 	public void commence(final HttpServletRequest request, final HttpServletResponse response,
 	                     final AuthenticationException authException) {

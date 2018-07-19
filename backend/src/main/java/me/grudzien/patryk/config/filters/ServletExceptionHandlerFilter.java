@@ -1,7 +1,5 @@
 package me.grudzien.patryk.config.filters;
 
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
-
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
@@ -22,6 +20,7 @@ import static me.grudzien.patryk.domain.dto.responses.ExceptionResponse.buildMes
 import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
 import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 import static me.grudzien.patryk.utils.web.CustomResponseCreator.customizeHttpResponse;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 /**
  * Filters CANNOT be managed by Spring explicitly !!!
@@ -29,6 +28,12 @@ import static me.grudzien.patryk.utils.web.CustomResponseCreator.customizeHttpRe
  * In other case Spring Security does not work properly and does not ignore specified paths.
  * Another filter:
  * {@link JwtAuthorizationTokenFilter}
+ *
+ * This filter is used in case of unsuccessful JWT operations which are performed in:
+ * {@link me.grudzien.patryk.utils.jwt.JwtTokenUtil.Retriever}
+ * e.g. when token is expired there is no option to
+ * {@link me.grudzien.patryk.utils.jwt.JwtTokenUtil.Retriever#getAllClaimsFromToken(String)}.
+ * In such case one of the exceptions listed below is thrown.
  */
 @Log4j2
 public class ServletExceptionHandlerFilter extends OncePerRequestFilter {
