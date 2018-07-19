@@ -28,50 +28,50 @@ public class ExceptionHandlingController {
 
 	@ExceptionHandler(UsernameNotFoundException.class)
 	public ResponseEntity<ExceptionResponse> userNotFoundForEmail(final UsernameNotFoundException exception) {
-		return new ResponseEntity<>(ExceptionResponse.buildMessage(exception), HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), HttpStatus.NOT_FOUND);
 	}
 
 	@ExceptionHandler(UserAlreadyExistsException.class)
 	public ResponseEntity<ExceptionResponse> userAlreadyExists(final UserAlreadyExistsException exception) {
-		return new ResponseEntity<>(ExceptionResponse.buildMessage(exception), HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(CustomUserValidationException.class)
 	public ResponseEntity<ExceptionResponse> customUserFieldsValidationException(final CustomUserValidationException exception) {
-		final ExceptionResponse response = ExceptionResponse.buildMessage(exception);
+		final ExceptionResponse response = ExceptionResponse.buildBodyMessage(exception);
 		response.setErrors(exception.getValidationErrors());
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(TokenNotFoundException.class)
 	public ResponseEntity<ExceptionResponse> tokenNotFoundException(final TokenNotFoundException exception) {
-		return new ResponseEntity<>(ExceptionResponse.buildMessage(exception), HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(TokenExpiredException.class)
 	public ResponseEntity<ExceptionResponse> tokenExpiredException(final TokenExpiredException exception) {
-		return new ResponseEntity<>(ExceptionResponse.buildMessage(exception), HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(RedirectionException.class)
 	public ResponseEntity<ExceptionResponse> cannotRedirectUser(final RedirectionException exception) {
-		return new ResponseEntity<>(ExceptionResponse.buildMessage(exception), HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(UserDisabledAuthenticationException.class)
 	public ResponseEntity<ExceptionResponse> userIsDisabled(final UserDisabledAuthenticationException exception) {
 		// returning 200 OK status just to catch error message and display it on UI
-		return new ResponseEntity<>(ExceptionResponse.buildMessage(exception), HttpStatus.OK);
+		return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), HttpStatus.OK);
 	}
 
 	@ExceptionHandler(BadCredentialsAuthenticationException.class)
 	public ResponseEntity<ExceptionResponse> badCredentials(final BadCredentialsAuthenticationException exception) {
 		// returning 200 OK status just to catch error message and display it on UI
-		return new ResponseEntity<>(ExceptionResponse.buildMessage(exception), HttpStatus.OK);
+		return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), HttpStatus.OK);
 	}
 
 	@ExceptionHandler(VehicleNotFoundException.class)
 	public ResponseEntity<ExceptionResponse> vehicleNotFoundException(final VehicleNotFoundException exception) {
-		return new ResponseEntity<>(ExceptionResponse.buildMessage(exception), HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), HttpStatus.BAD_REQUEST);
 	}
 }
