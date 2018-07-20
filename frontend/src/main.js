@@ -17,15 +17,21 @@ import NavigationGuard from './router/NavigationGuard';
 import appSettings from './appSettings';
 
 // AXIOS settings
-if (appSettings && appSettings.deploymentMode === 'PROD') {
+if (appSettings && appSettings.deploymentModes[0].PROD.active) {
+  console.log(appSettings.deploymentModes[0].PROD.description);
+  // apply plugin
   Vue.use(VueAxios, axios);
-} else {
+  // apply plugin
+} else if (appSettings && appSettings.deploymentModes[1].DEV.active) {
+  console.log(appSettings.deploymentModes[1].DEV.description);
+  // apply plugin
   Vue.use(VueAxios, axios.create({
     baseURL: `http://localhost:8088`,
     headers: {
       'Access-Control-Allow-Origin': 'http://localhost:8080'
     }
   }));
+  // apply plugin
 }
 
 // Interceptor for HTTP requests (adding Authorization header with JWT accessToken to each request)
@@ -76,6 +82,9 @@ Vue.component('my-snackbar', MySnackbar);
 export function getMessageFromLocale(key) {
   return `${i18n.getLocaleMessage(i18n.locale)[key]}`
 }
+
+// --------- EVENT BUS ---------
+export const eventBus = new Vue();
 
 // --------- APP ---------
 export const app = new Vue({
