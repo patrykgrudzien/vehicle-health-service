@@ -221,9 +221,10 @@
 </template>
 
 <script>
-  import {mapGetters} from 'vuex';
+  import {mapGetters}    from 'vuex';
   import componentsPaths from '../../componentsPaths';
   import serverEndpoints from '../../serverEndpoints';
+  import {eventBus}      from '../../main';
 
   export default {
     data() {
@@ -418,6 +419,27 @@
             })
         // --- PAGE REFRESH EVENT --- //
       }
+    },
+    created() {
+      eventBus.$on('stayLogInEvent', () => {
+        this.$store.commit('setLoading', true);
+        // --- PRINCIPAL USER --- //
+        this.$store.dispatch('getPrincipalUserFirstName')
+            .then(response => {
+              this.ownerEmailAddress = response.data.email;
+              this.ownerId = response.data.id;
+              // --- CURRENT MILEAGE --- //
+              this.getCurrentMileage();
+              // --- CURRENT MILEAGE --- //
+            })
+            // need to catch() here, not in (actions.js) because I'm setting some component properties above
+            .catch(() => {
+              this.$store.commit('setLoading', false);
+              this.$store.commit('setJwtAccessTokenExpired', true);
+              window.scrollTo(0, 0);
+            });
+        // --- PRINCIPAL USER --- //
+      });
     }
   }
 </script>

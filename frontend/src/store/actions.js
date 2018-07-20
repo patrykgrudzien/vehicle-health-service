@@ -1,8 +1,10 @@
-import Vue from 'vue';
-import {myRouter} from '../main';
-import types from './types';
-import serverEndpoints from '../serverEndpoints';
-import componentsPaths from '../componentsPaths';
+import Vue                  from 'vue';
+import {myRouter}           from '../main';
+import types                from './types';
+import serverEndpoints      from '../serverEndpoints';
+import componentsPaths      from '../componentsPaths';
+import {eventBus}           from '../main';
+import RequestDetailsHelper from '../classes/RequestDetailsHelper';
 
 export default {
 
@@ -46,6 +48,9 @@ export default {
     }
     commit('setLoading', true);
     commit('clearServerExceptionResponse');
+
+    const login = new RequestDetailsHelper((serverEndpoints.authentication.root), 'login');
+
     Vue.axios.post(serverEndpoints.authentication.root, {
       email: window.btoa(credentials.email),
       password: window.btoa(credentials.password)
@@ -113,7 +118,7 @@ export default {
     commit('clearServerSuccessResponse');
   },
 
-  stayLogIn({commit, state}) {
+  stayLogIn({commit}) {
     Vue.axios.post(serverEndpoints.authentication.refreshToken, {
       refreshToken: localStorage.getItem('refresh_token')
     })
@@ -121,14 +126,9 @@ export default {
         commit('setJwtAccessTokenExpired', false);
         localStorage.setItem('access_token', response.data.accessToken);
 
-        console.log('stayLogIn()');
-        console.log(state.lastRequestMethod);
-        console.log(state.lastRequestedPath);
-        if (state.lastRequestMethod === 'GET' && state.lastRequestedPath === '/principal-user') {
-          console.log('TRYING TO CALL getPrincipalUserFirstName() action');
-          // TODO: not working !!!
-          Vue.$store.dispatch('getPrincipalUserFirstName');
-        }
+        // -------------------------------------------------------------------------------------------------------------
+        eventBus.$emit('stayLogInEvent');
+        // -------------------------------------------------------------------------------------------------------------
 
         window.scrollTo(0, 0);
       })
@@ -148,6 +148,7 @@ export default {
                 return response;
               })
               .catch(error => {
+                const test = new RequestDetailsHelper(serverEndpoints.authentication.principalUser, 'getPrincipalUserFirstName');
                 commit('setLastRequestedPath', error.response.data.lastRequestedPath);
                 commit('setLastRequestMethod', error.response.data.lastRequestMethod);
               });
