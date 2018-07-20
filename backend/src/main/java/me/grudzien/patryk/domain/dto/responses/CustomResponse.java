@@ -19,11 +19,6 @@ public abstract class CustomResponse {
 	private String lastRequestedPath;
 	private String lastRequestMethod;
 
-	public static final String CONTENT_TYPE_KEY = "Content-Type";
-	public static final String CONTENT_TYPE_VALUE = "application/json;charset=UTF-8";
-	public static final String CORS_KEY = "Access-Control-Allow-Origin";
-	public static final String CORS_VALUE = "http://localhost:8080";
-
 	CustomResponse(final String message) {
 		this.message = message;
 	}
@@ -36,5 +31,16 @@ public abstract class CustomResponse {
 		SECURED_RESOURCE_CODE("Unauthenticated");
 
 		private String codeMessage;
+	}
+
+	@Getter
+	@AllArgsConstructor
+	public enum Headers {
+
+		CONTENT_TYPE("Content-Type", "application/json;charset=UTF-8"),
+		ACCESS_CONTROL_ALLOW_ORIGIN("Access-Control-Allow-Origin", "http://localhost:8080");
+
+		private String key;
+		private String value;
 	}
 }

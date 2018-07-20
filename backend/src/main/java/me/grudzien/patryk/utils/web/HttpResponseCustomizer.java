@@ -15,11 +15,11 @@ import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.stream.Stream;
 
+import me.grudzien.patryk.domain.dto.responses.CustomResponse;
+
 import static me.grudzien.patryk.domain.enums.SpringAppProfiles.DEV_HOME;
 import static me.grudzien.patryk.domain.enums.SpringAppProfiles.DEV_OFFICE;
 import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
-
-import me.grudzien.patryk.domain.dto.responses.CustomResponse;
 
 @Log4j2
 @Component
@@ -39,11 +39,11 @@ public class HttpResponseCustomizer {
 			// response status
 			response.setStatus(status.value());
 			// notify client of response body content type
-			response.addHeader(CustomResponse.CONTENT_TYPE_KEY, CustomResponse.CONTENT_TYPE_VALUE);
+			response.addHeader(CustomResponse.Headers.CONTENT_TYPE.getKey(), CustomResponse.Headers.CONTENT_TYPE.getValue());
 			// CORS - if the header below is not specified during development, JSON created by this method cannot be displayed in the Client
 			Stream.of(environment.getActiveProfiles()).forEach(activeProfile -> {
 				if (DEV_HOME.getYmlName().equals(activeProfile) || DEV_OFFICE.getYmlName().equals(activeProfile)) {
-					response.addHeader(CustomResponse.CORS_KEY, CustomResponse.CORS_VALUE);
+					response.addHeader(CustomResponse.Headers.ACCESS_CONTROL_ALLOW_ORIGIN.getKey(), CustomResponse.Headers.ACCESS_CONTROL_ALLOW_ORIGIN.getValue());
 				}
 			});
 			// write the custom response body
