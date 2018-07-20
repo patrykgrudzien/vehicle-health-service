@@ -38,7 +38,7 @@ public class CreateFileOnActiveHerokuProfile {
 			     // taking only active profile name after ": " character
 			     .map(line -> line.substring(line.indexOf(':') + 1).trim())
 			     // create files only for "heroku-deployment" profile
-			     .filter(profileName -> profileName.equals(HEROKU_DEPLOYMENT.name()))
+			     .filter(profileName -> profileName.equals(HEROKU_DEPLOYMENT.getYmlName()))
 			.findFirst()
 			// if present generate files which will fire Heroku Maven Plugin and appropriate profiles
 			.ifPresent(CreateFileOnActiveHerokuProfile::createFile);
