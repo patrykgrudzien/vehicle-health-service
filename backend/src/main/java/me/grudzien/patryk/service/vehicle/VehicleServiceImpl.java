@@ -85,7 +85,7 @@ public class VehicleServiceImpl implements VehicleService {
 
 	@Override
 	@Caching(
-		evict = {@CacheEvict(allEntries = true)},
+		evict = {@CacheEvict(key = "#root.target.VEHICLE_MILEAGE_CACHE_KEY")},
 		put = {@CachePut(key = "#root.target.VEHICLE_MILEAGE_CACHE_KEY",
 		                 condition = "#newMileage != null && #newMileage.equals(\"\") && !#newMileage.equals(#root.target.VEHICLE_MILEAGE_CACHE_KEY)")}
 	)
