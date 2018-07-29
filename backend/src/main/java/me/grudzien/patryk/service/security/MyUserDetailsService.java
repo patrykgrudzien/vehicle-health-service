@@ -5,6 +5,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.lang.NonNull;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -45,7 +46,7 @@ public class MyUserDetailsService implements UserDetailsService {
 
 	@Override
 	@Cacheable(key = "#email", condition = "#email != null && !#email.equals(\"\")")
-	public UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException {
+	public @NonNull UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException {
 		log.info(METHOD_INVOCATION_MARKER, "(NO CACHE FOUND) => method execution...");
 		final CustomUser customUser = customUserRepository.findByEmail(email);
 		if (customUser == null) {
