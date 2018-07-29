@@ -13,20 +13,20 @@ import com.google.common.base.Preconditions;
 
 import java.util.Arrays;
 
+import me.grudzien.patryk.config.custom.CustomApplicationProperties;
+import me.grudzien.patryk.domain.enums.AppFLow;
+import me.grudzien.patryk.domain.enums.SpringAppProfiles;
+
 import static me.grudzien.patryk.domain.enums.AppFLow.ACCOUNT_ALREADY_ENABLED;
 import static me.grudzien.patryk.domain.enums.AppFLow.CONFIRM_REGISTRATION;
 import static me.grudzien.patryk.domain.enums.AppFLow.VERIFICATION_TOKEN_CREATION;
 import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
 import static me.grudzien.patryk.utils.log.LogMarkers.METHOD_INVOCATION_MARKER;
 
-import me.grudzien.patryk.config.custom.CustomApplicationProperties;
-import me.grudzien.patryk.domain.enums.AppFLow;
-import me.grudzien.patryk.domain.enums.SpringAppProfiles;
-
 @Log4j2
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class HerokuAppEndpointResolver implements InitializingBean {
+public class AppUrlsResolver implements InitializingBean {
 
 	private static String ACTIVE_SPRING_PROFILE;
 
@@ -34,7 +34,7 @@ public class HerokuAppEndpointResolver implements InitializingBean {
 	private final CustomApplicationProperties customApplicationProperties;
 
 	@Autowired
-	public HerokuAppEndpointResolver(final Environment environment, final CustomApplicationProperties customApplicationProperties) {
+	public AppUrlsResolver(final Environment environment, final CustomApplicationProperties customApplicationProperties) {
 		Preconditions.checkNotNull(environment, "environment cannot be null!");
 		Preconditions.checkNotNull(customApplicationProperties, "customApplicationProperties cannot be null!");
 		this.environment = environment;
