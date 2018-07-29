@@ -4,7 +4,7 @@ import types                from './types';
 import serverEndpoints      from '../serverEndpoints';
 import componentsPaths      from '../componentsPaths';
 import {eventBus}           from '../main';
-import RequestDetailsHelper from '../classes/RequestDetailsHelper';
+import RequestDetailsHelper from '../classes/utils/RequestDetailsHelper';
 
 export default {
 
