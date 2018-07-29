@@ -64,7 +64,9 @@ public class ServletExceptionHandlerFilter extends OncePerRequestFilter {
 			    Case($(instanceOf(MalformedJwtException.class)), MalformedJwtException -> run(() ->
 					log.error(EXCEPTION_MARKER, "MalformedJwtException message -> {}", MalformedJwtException.getMessage()))),
 			    Case($(instanceOf(SignatureException.class)), SignatureException -> run(() ->
-					log.error(EXCEPTION_MARKER, "SignatureException message -> {}", SignatureException.getMessage())))
+					log.error(EXCEPTION_MARKER, "SignatureException message -> {}", SignatureException.getMessage()))),
+			    // if any other exception
+			    Case($(), () -> new RuntimeException("No specific exception caught inside ServletExceptionHandlerFilter.doFilterInternal()..."))
 		   ));
 	}
 }
