@@ -347,6 +347,12 @@
             <artifactId>vavr</artifactId>
             <version>${vavr.version}</version>
         </dependency>
+        <!-- OAuth 2 -->
+        <dependency>
+            <groupId>org.springframework.security.oauth.boot</groupId>
+            <artifactId>spring-security-oauth2-autoconfigure</artifactId>
+            <version>RELEASE</version>
+        </dependency>
     </dependencies>
 
 </project>
