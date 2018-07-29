@@ -69,8 +69,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	/**
 	 * This method is overriden to expose the {@link org.springframework.security.authentication.AuthenticationManager} bean from
-	 * {@link org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter#configure
-	 * (org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder)}
+	 * {@link WebSecurityConfigurerAdapter#configure(org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder)}
 	 */
 	@Bean
 	@Override
