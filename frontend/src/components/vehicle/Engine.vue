@@ -4,22 +4,85 @@
               justify-center
               class="mt-2">
       <v-flex xs12>
-        <v-data-table
-          :headers="headers"
-          :items="desserts"
-          hide-actions
-          class="elevation-1">
-          <template slot="items" slot-scope="{ item }">
-            <td>{{ item.name }}</td>
-            <td class="text-xs-right">{{ item.calories }}</td>
-            <td class="text-xs-right">{{ item.fat }}</td>
-            <td class="text-xs-right">{{ item.carbs }}</td>
-            <td class="text-xs-right">{{ item.protein }}</td>
-            <td class="text-xs-right">{{ item.iron }}</td>
-          </template>
-        </v-data-table>
+
+        <v-card>
+
+          <v-card-title>
+            Search:
+            <v-spacer />
+            <v-text-field v-model="search"
+                          append-icon="search"
+                          label="Search"
+                          single-line
+                          hide-details >
+            </v-text-field>
+          </v-card-title>
+
+          <v-data-table
+            :headers="headers"
+            :items="desserts"
+            v-model="selected"
+            select-all
+            :search="search"
+            class="elevation-1">
+
+            <template slot="items" slot-scope="props">
+              <td>
+                <v-checkbox v-model="props.selected"
+                            primary
+                            hide-details />
+              </td>
+
+              <td>
+                <v-edit-dialog
+                  :return-value.sync="props.item.name"
+                  lazy
+                  @save="save"
+                  @cancel="cancel"
+                  @open="open"
+                  @close="close"
+                > {{ props.item.name }}
+                  <v-text-field
+                    slot="input"
+                    v-model="props.item.name"
+                    :rules="[max25chars]"
+                    label="Edit"
+                    single-line
+                    counter
+                  ></v-text-field>
+                </v-edit-dialog>
+              </td>
+
+              <td class="text-xs-right">{{ props.item.calories }}</td>
+              <td class="text-xs-right">{{ props.item.fat }}</td>
+              <td class="text-xs-right">{{ props.item.carbs }}</td>
+              <td class="text-xs-right">{{ props.item.protein }}</td>
+              <td class="text-xs-right">{{ props.item.iron }}</td>
+            </template>
+
+            <template slot="headerCell" slot-scope="props">
+              <v-tooltip bottom>
+              <span slot="activator">
+                {{ props.header.text }}
+              </span>
+                <span>
+                {{ props.header.text }}
+              </span>
+              </v-tooltip>
+            </template>
+
+          </v-data-table>
+
+        </v-card>
+
       </v-flex>
     </v-layout>
+
+    <v-snackbar v-model="snack" :timeout="3000" :color="snackColor">
+      {{ snackText }}
+      <v-btn flat @click="snack = false">Close</v-btn>
+    </v-snackbar>
+
   </v-container>
 </template>
 
@@ -27,6 +90,11 @@
   export default {
     data() {
       return {
+        snack: true,
+        snackColor: '',
+        snackText: '',
+        max25chars: (v) => v.length <= 25 || 'Input too long!',
+        search: '',
         headers: [
           {
             text: 'Dessert (100g serving)',
@@ -55,6 +123,7 @@
             value: 'iron'
           }
         ],
+        selected: [],
         desserts: [
           {
             value: false,
@@ -147,6 +216,29 @@
             iron: '6%'
           }
         ]
+      }
+    },
+    methods: {
+      save () {
+        console.log('save()');
+        this.snack = true;
+        this.snackColor = 'success';
+        this.snackText = 'Data saved';
+      },
+      cancel () {
+        console.log('cancel()');
+        this.snack = true;
+        this.snackColor = 'error';
+        this.snackText = 'Canceled';
+      },
+      open () {
+        console.log('open()');
+        this.snack = true;
+        this.snackColor = 'info';
+        this.snackText = 'Dialog opened';
+      },
+      close () {
+        console.log('Dialog closed');
       }
     }
   }
