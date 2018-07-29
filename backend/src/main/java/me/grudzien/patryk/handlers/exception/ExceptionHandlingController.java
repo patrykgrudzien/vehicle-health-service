@@ -2,6 +2,7 @@ package me.grudzien.patryk.handlers.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -73,5 +74,16 @@ public class ExceptionHandlingController {
 	@ExceptionHandler(VehicleNotFoundException.class)
 	public ResponseEntity<ExceptionResponse> vehicleNotFoundException(final VehicleNotFoundException exception) {
 		return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), HttpStatus.BAD_REQUEST);
+	}
+
+	/**
+	 * This handler is used when
+	 * {@link me.grudzien.patryk.utils.web.security.RequestParamPathVariableGuard#isUserEmailAuthenticated(String)} returns false and
+	 * Spring Security forbids to execute methods annotated with e.g.
+	 * {@link @{@link org.springframework.security.access.prepost.PreAuthorize}}
+	 */
+	@ExceptionHandler(AccessDeniedException.class)
+	public ResponseEntity<ExceptionResponse> accessDeniedException(final AccessDeniedException exception) {
+		return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), HttpStatus.FORBIDDEN);
 	}
 }
