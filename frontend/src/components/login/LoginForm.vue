@@ -130,6 +130,25 @@
             <v-btn color="primary" @click="submit" :disabled="loginButtonDisabled" :loading="isLoading">
               {{ $t('login-button') }}
             </v-btn>
+            <!-- Google -->
+            <v-btn icon
+                   color="green"
+                   large
+                   ripple
+                   @click="googleButtonClicked">
+              G
+            </v-btn>
+            <!-- Google -->
+
+            <!-- Facebook -->
+            <v-btn icon
+                   color="blue"
+                   large
+                   ripple
+                   @click="facebookButtonClicked">
+              F
+            </v-btn>
+            <!-- Facebook -->
             <v-btn color="error" @click="clearFormFields" :disabled="clearButtonDisabled" left>
               {{ $t('clear-button') }}
             </v-btn>
@@ -227,6 +246,13 @@
       },
       setServerRunning() {
         this.$store.commit('setServerRunning', true);
+      },
+      googleButtonClicked() {
+        console.log('googleButtonClicked');
+        this.axios.get('/sso/google');
+      },
+      facebookButtonClicked() {
+        console.log('facebookButtonClicked');
       }
     },
     created() {
