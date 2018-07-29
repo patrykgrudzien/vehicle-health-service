@@ -1,5 +1,5 @@
 # ===============================
-# = CUSTOM CONFIGURATION
+# = (CUSTOM CONFIGURATION)
 # ===============================
 custom:
   properties:
@@ -43,14 +43,12 @@ custom:
       header: Language
 
 # ===============================
-# = SPRING
+# = (SPRING)
 # ===============================
 spring:
   profiles:
     active: dev-home
-  # ===============================
-  # = JavaMail Configuration
-  # ===============================
+  # -----> JavaMail Configuration
   mail:
     default-encoding: UTF-8
     host: smtp.gmail.com
@@ -65,6 +63,7 @@ spring:
           starttls:
             enable: true
     test-connection: false
+  # -----> JPA configurations
   jpa:
     properties:
       hibernate:
@@ -75,15 +74,13 @@ spring:
 ---
 
 # ===============================================================
-# = dev-home PROFILE
+# = (dev-home) PROFILE
 # ===============================================================
 server:
   port: 8088
 spring:
   profiles: dev-home
-# ===============================
-# = Hibernate datasource
-# ===============================
+  # -----> Hibernate datasource
   datasource:
     url: jdbc:postgresql://localhost:5432/full-stack-web-app-db
     username: postgres
@@ -96,27 +93,39 @@ spring:
       pool-name: VehicleHealthServiceConnectionPool
       max-lifetime: 2000000
       connection-timeout: 60000
-# ===============================
-# = JPA configurations
-# ===============================
+  # -----> JPA configurations
   jpa:
     show-sql: true
     hibernate:
       ddl-auto: create-drop
     database-platform: org.hibernate.dialect.PostgreSQL94Dialect
+  # -----> OAuth 2
+#  security:
+#    oauth2:
+#      google:
+#        client:
+#          clientId: 289764469472-iai5kgpta7nofavbt7c11qio93tb3r6c.apps.googleusercontent.com
+#          clientSecret: WTVtIHyf6_908WDtHMfnh5pc
+#          accessTokenUri: https://www.googleapis.com/oauth2/v3/token
+#          userAuthorizationUri: https://accounts.google.com/o/oauth2/auth
+#          tokenName: oauth_token
+#          authenticationScheme: query
+#          clientAuthenticationScheme: form
+#          scope: profile
+#        resource:
+#          userInfoUri: https://www.googleapis.com/userinfo/v2/me
+#          preferTokenInfo: false
 
 ---
 
 # ===============================================================
-# = dev-office PROFILE
+# = (dev-office) PROFILE
 # ===============================================================
 server:
   port: 8088
 spring:
   profiles: dev-office
-# ===============================
-# = Hibernate datasource
-# ===============================
+  # -----> Hibernate datasource
   datasource:
     url: jdbc:postgresql://localhost:5432/full-stack-web-app-db
     username: postgres
@@ -129,9 +138,7 @@ spring:
       pool-name: VehicleHealthServiceConnectionPool
       max-lifetime: 2000000
       connection-timeout: 60000
-# ===============================
-# = JPA configurations
-# ===============================
+  # -----> JPA configurations
   jpa:
     show-sql: true
     hibernate:
@@ -141,12 +148,13 @@ spring:
 ---
 
 # ===============================================================
-# = heroku-deployment PROFILE
+# = (heroku-deployment) PROFILE
 # ===============================================================
 server:
   port: ${PORT:8088}
 spring:
   profiles: heroku-deployment
+  # -----> Hibernate datasource
   datasource:
     driver-class-name: org.postgresql.Driver
     hikari:
@@ -156,6 +164,7 @@ spring:
       pool-name: VehicleHealthServiceConnectionPool
       max-lifetime: 2000000
       connection-timeout: 60000
+  # -----> JPA configurations
   jpa:
     show-sql: false
     hibernate:
