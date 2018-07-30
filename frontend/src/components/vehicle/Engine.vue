@@ -2,7 +2,7 @@
   <v-container fluid>
     <v-layout align-center
               justify-center
-              class="mt-2">
+              class="mt-2 notSelectable">
       <v-flex xs12>
 
         <v-card>
@@ -24,6 +24,7 @@
             v-model="selected"
             select-all
             :search="search"
+            item-key="name"
             class="elevation-1">
 
             <template slot="items" slot-scope="props">
@@ -36,20 +37,17 @@
               <td>
                 <v-edit-dialog
                   :return-value.sync="props.item.name"
-                  lazy
-                  @save="save"
-                  @cancel="cancel"
-                  @open="open"
-                  @close="close"
-                > {{ props.item.name }}
+                  lazy>
+
+                  {{ props.item.name }}
+
                   <v-text-field
                     slot="input"
                     v-model="props.item.name"
                     :rules="[max25chars]"
                     label="Edit"
                     single-line
-                    counter
-                  ></v-text-field>
+                    counter/>
                 </v-edit-dialog>
               </td>
 
@@ -78,11 +76,6 @@
       </v-flex>
     </v-layout>
 
-    <v-snackbar v-model="snack" :timeout="3000" :color="snackColor">
-      {{ snackText }}
-      <v-btn flat @click="snack = false">Close</v-btn>
-    </v-snackbar>
-
   </v-container>
 </template>
 
@@ -90,9 +83,6 @@
   export default {
     data() {
       return {
-        snack: true,
-        snackColor: '',
-        snackText: '',
         max25chars: (v) => v.length <= 25 || 'Input too long!',
         search: '',
         headers: [
@@ -216,29 +206,6 @@
             iron: '6%'
           }
         ]
-      }
-    },
-    methods: {
-      save () {
-        console.log('save()');
-        this.snack = true;
-        this.snackColor = 'success';
-        this.snackText = 'Data saved';
-      },
-      cancel () {
-        console.log('cancel()');
-        this.snack = true;
-        this.snackColor = 'error';
-        this.snackText = 'Canceled';
-      },
-      open () {
-        console.log('open()');
-        this.snack = true;
-        this.snackColor = 'info';
-        this.snackText = 'Dialog opened';
-      },
-      close () {
-        console.log('Dialog closed');
       }
     }
   }
