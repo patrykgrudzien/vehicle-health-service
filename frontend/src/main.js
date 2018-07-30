@@ -9,12 +9,12 @@ import Vuetify         from 'vuetify';
 import 'vuetify/dist/vuetify.min.css';
 import MyAlert         from './shared/MyAlert';
 import MyDialog        from './shared/MyDialog';
-import LoadingDialog        from './shared/LoadingDialog';
-import MySnackbar        from './shared/MySnackbar';
+import LoadingDialog   from './shared/LoadingDialog';
+import MySnackbar      from './shared/MySnackbar';
 import i18n            from './lang/i18n';
 import cookieHelper    from './cookieHelper';
 import NavigationGuard from './router/NavigationGuard';
-import appSettings from './appSettings';
+import appSettings     from './appSettings';
 
 // AXIOS settings
 if (appSettings && appSettings.deploymentModes[0].PROD.active) {
