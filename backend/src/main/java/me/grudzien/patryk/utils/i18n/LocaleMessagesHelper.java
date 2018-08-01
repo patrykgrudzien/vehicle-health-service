@@ -22,7 +22,6 @@ import java.util.Optional;
 @Component
 public final class LocaleMessagesHelper implements InitializingBean {
 
-	@Autowired
 	private Environment environment;
 
 	@Getter
@@ -34,6 +33,11 @@ public final class LocaleMessagesHelper implements InitializingBean {
 	private static final LocaleMessagesHelper INSTANCE = new LocaleMessagesHelper();
 
 	private LocaleMessagesHelper() {}
+
+	@Autowired
+	public void setEnvironment(final Environment environment) {
+		this.environment = environment;
+	}
 
 	@Override
 	public void afterPropertiesSet() {
