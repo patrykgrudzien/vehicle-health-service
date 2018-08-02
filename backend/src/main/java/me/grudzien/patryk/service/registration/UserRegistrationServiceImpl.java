@@ -22,6 +22,13 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.stream.Collectors;
 
+import static me.grudzien.patryk.domain.enums.AppFLow.ACCOUNT_ALREADY_ENABLED;
+import static me.grudzien.patryk.domain.enums.AppFLow.CONFIRM_REGISTRATION;
+import static me.grudzien.patryk.domain.enums.AppFLow.VERIFICATION_TOKEN_EXPIRED;
+import static me.grudzien.patryk.domain.enums.AppFLow.VERIFICATION_TOKEN_NOT_FOUND;
+import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
+import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
+
 import me.grudzien.patryk.domain.dto.registration.UserRegistrationDto;
 import me.grudzien.patryk.domain.entities.engine.Engine;
 import me.grudzien.patryk.domain.entities.registration.CustomUser;
@@ -39,19 +46,10 @@ import me.grudzien.patryk.exceptions.registration.TokenExpiredException;
 import me.grudzien.patryk.exceptions.registration.TokenNotFoundException;
 import me.grudzien.patryk.exceptions.registration.UserAlreadyExistsException;
 import me.grudzien.patryk.handlers.web.HttpResponseHandler;
-import me.grudzien.patryk.repository.engine.EngineRepository;
 import me.grudzien.patryk.repository.registration.CustomUserRepository;
 import me.grudzien.patryk.repository.registration.EmailVerificationTokenRepository;
-import me.grudzien.patryk.repository.vehicle.VehicleRepository;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.web.RequestsDecoder;
-
-import static me.grudzien.patryk.domain.enums.AppFLow.ACCOUNT_ALREADY_ENABLED;
-import static me.grudzien.patryk.domain.enums.AppFLow.CONFIRM_REGISTRATION;
-import static me.grudzien.patryk.domain.enums.AppFLow.VERIFICATION_TOKEN_EXPIRED;
-import static me.grudzien.patryk.domain.enums.AppFLow.VERIFICATION_TOKEN_NOT_FOUND;
-import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
-import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 
 @Log4j2
 @Service
@@ -65,17 +63,13 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 	private final HttpResponseHandler httpResponseHandler;
 	private final EmailService emailService;
 	private final LocaleMessagesCreator localeMessagesCreator;
-	private final EngineRepository engineRepository;
-	private final VehicleRepository vehicleRepository;
 	private final RequestsDecoder requestsDecoder;
 
 	@Autowired
 	public UserRegistrationServiceImpl(final CustomUserRepository customUserRepository, final BCryptPasswordEncoder passwordEncoder,
-	                                   final ApplicationEventPublisher eventPublisher,
-	                                   final EmailVerificationTokenRepository emailVerificationTokenRepository,
+	                                   final ApplicationEventPublisher eventPublisher, final EmailVerificationTokenRepository emailVerificationTokenRepository,
 	                                   final HttpResponseHandler httpResponseHandler, final EmailService emailService,
-	                                   final LocaleMessagesCreator localeMessagesCreator, final EngineRepository engineRepository,
-	                                   final VehicleRepository vehicleRepository, final RequestsDecoder requestsDecoder) {
+	                                   final LocaleMessagesCreator localeMessagesCreator, final RequestsDecoder requestsDecoder) {
 
 		Preconditions.checkNotNull(customUserRepository, "customUserRepository cannot be null!");
 		Preconditions.checkNotNull(passwordEncoder, "passwordEncoder cannot be null!");
@@ -84,8 +78,6 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 		Preconditions.checkNotNull(httpResponseHandler, "httpResponseHandler cannot be null!");
 		Preconditions.checkNotNull(emailService, "emailService cannot be null!");
 		Preconditions.checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
-		Preconditions.checkNotNull(engineRepository, "engineRepository cannot be null!");
-		Preconditions.checkNotNull(vehicleRepository, "carRepository cannot be null!");
 		Preconditions.checkNotNull(requestsDecoder, "requestsDecoder cannot be null!");
 
 		this.customUserRepository = customUserRepository;
@@ -95,8 +87,6 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 		this.httpResponseHandler = httpResponseHandler;
 		this.emailService = emailService;
 		this.localeMessagesCreator = localeMessagesCreator;
-		this.engineRepository = engineRepository;
-		this.vehicleRepository = vehicleRepository;
 		this.requestsDecoder = requestsDecoder;
 	}
 
