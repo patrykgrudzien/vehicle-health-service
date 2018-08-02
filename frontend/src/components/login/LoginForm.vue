@@ -132,21 +132,19 @@
             </v-btn>
             <!-- Google -->
             <v-btn icon
-                   color="green"
                    large
                    ripple
                    @click="googleButtonClicked">
-              G
+              <v-icon>fab fa-google</v-icon>
             </v-btn>
             <!-- Google -->
 
             <!-- Facebook -->
             <v-btn icon
-                   color="blue"
                    large
                    ripple
                    @click="facebookButtonClicked">
-              F
+              <v-icon>fab fa-facebook-f</v-icon>
             </v-btn>
             <!-- Facebook -->
             <v-btn color="error" @click="clearFormFields" :disabled="clearButtonDisabled" left>
