@@ -8,7 +8,7 @@
         <v-card>
 
           <v-card-title>
-            Search:
+            <div class="title">Elementy silnika:</div>
             <v-spacer />
             <v-text-field v-model="search"
                           append-icon="search"
@@ -21,9 +21,10 @@
           <v-data-table
             :headers="headers"
             :items="desserts"
+            :search="search"
             v-model="selected"
             select-all
-            :search="search"
+            rows-per-page-text="Wierszy na stronę"
             item-key="name"
             class="elevation-1">
 
@@ -33,40 +34,41 @@
                             primary
                             hide-details />
               </td>
-
-              <td>
-                <v-edit-dialog
-                  :return-value.sync="props.item.name"
-                  lazy>
-
-                  {{ props.item.name }}
-
-                  <v-text-field
-                    slot="input"
-                    v-model="props.item.name"
-                    :rules="[max25chars]"
-                    label="Edit"
-                    single-line
-                    counter/>
-                </v-edit-dialog>
-              </td>
-
-              <td class="text-xs-right">{{ props.item.calories }}</td>
-              <td class="text-xs-right">{{ props.item.fat }}</td>
-              <td class="text-xs-right">{{ props.item.carbs }}</td>
-              <td class="text-xs-right">{{ props.item.protein }}</td>
-              <td class="text-xs-right">{{ props.item.iron }}</td>
+              <td class="hover-cell" @click="props.expanded = !props.expanded">{{ props.item.name }}</td>
+              <td class="hover-cell" @click="props.expanded = !props.expanded">{{ props.item.calories }}</td>
+              <td class="hover-cell" @click="props.expanded = !props.expanded">{{ props.item.fat }}</td>
+              <td class="hover-cell" @click="props.expanded = !props.expanded">{{ props.item.carbs }}</td>
+              <td class="hover-cell" @click="props.expanded = !props.expanded">{{ props.item.protein }}</td>
+              <td class="hover-cell" @click="props.expanded = !props.expanded">{{ props.item.iron }}</td>
             </template>
+
+            <template slot="expand" slot-scope="props">
+              <v-container>
+                <v-layout>
+                  <v-flex>TEST</v-flex>
+                </v-layout>
+              </v-container>
+            </template>
+
+            <v-alert slot="no-results" :value="true" color="error" icon="warning">
+              Brak rezultatów dla "{{ search }}"...
+            </v-alert>
 
             <template slot="headerCell" slot-scope="props">
               <v-tooltip bottom>
-              <span slot="activator">
-                {{ props.header.text }}
-              </span>
-                <span>
-                {{ props.header.text }}
-              </span>
+                <span slot="activator" id="header-inside-tooltip-activator-slot">
+                  {{ props.header.text }}
+                </span>
+                  <span id="tooltip">
+                  {{ props.header.text }}
+                </span>
               </v-tooltip>
+            </template>
+
+            <template slot="footer">
+              <td colspan="100%">
+                <em>* Kliknij w daną komórkę aby rozwinąć detale</em>
+              </td>
             </template>
 
           </v-data-table>
@@ -212,5 +214,8 @@
 </script>
 
 <style scoped>
-
+  .hover-cell:hover {
+    cursor: pointer;
+    color: #0097A7;
+  }
 </style>
