@@ -6,10 +6,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
-import me.grudzien.patryk.config.i18n.LocaleDeterminerFilter;
+import me.grudzien.patryk.config.filters.LocaleDeterminerFilter;
 
 /**
- * This configuration determines on which endpoint {@link me.grudzien.patryk.config.i18n.LocaleDeterminerFilter} is applied.
+ * This configuration determines on which endpoint {@link me.grudzien.patryk.config.filters.LocaleDeterminerFilter} is applied.
  */
 @Configuration
 public class FiltersRegistryConfig {

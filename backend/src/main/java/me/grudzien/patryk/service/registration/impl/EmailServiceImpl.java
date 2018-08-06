@@ -1,4 +1,4 @@
-package me.grudzien.patryk.service.registration;
+package me.grudzien.patryk.service.registration.impl;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -28,6 +28,7 @@ import me.grudzien.patryk.domain.dto.registration.EmailDto;
 import me.grudzien.patryk.domain.entities.registration.CustomUser;
 import me.grudzien.patryk.domain.entities.registration.EmailVerificationToken;
 import me.grudzien.patryk.repository.registration.EmailVerificationTokenRepository;
+import me.grudzien.patryk.service.registration.EmailService;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesHelper;
 

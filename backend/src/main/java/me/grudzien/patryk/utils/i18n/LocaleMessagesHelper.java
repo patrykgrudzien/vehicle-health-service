@@ -76,7 +76,7 @@ public final class LocaleMessagesHelper implements InitializingBean {
 
 	/**
 	 * This method is called in
-	 * {@link me.grudzien.patryk.config.i18n.LocaleDeterminerFilter#doFilterInternal(javax.servlet.http.HttpServletRequest,
+	 * {@link me.grudzien.patryk.config.filters.LocaleDeterminerFilter#doFilterInternal(javax.servlet.http.HttpServletRequest,
 	 * javax.servlet.http.HttpServletResponse, javax.servlet.FilterChain)} method which is the filter run on each request in
 	 * the chain and locale is set based on the header coming from UI.
 	 *

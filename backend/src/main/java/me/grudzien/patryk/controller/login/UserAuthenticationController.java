@@ -20,9 +20,6 @@ import me.grudzien.patryk.domain.dto.login.JwtAuthenticationResponse;
 import me.grudzien.patryk.domain.dto.login.JwtUser;
 import me.grudzien.patryk.service.login.UserAuthenticationService;
 
-import static me.grudzien.patryk.domain.enums.jwt.TokenTypes.ACCESS_TOKEN;
-import static me.grudzien.patryk.domain.enums.jwt.TokenTypes.REFRESH_TOKEN;
-
 @Log4j2
 @RestController
 public class UserAuthenticationController {
@@ -36,14 +33,10 @@ public class UserAuthenticationController {
 	}
 
 	@PostMapping("${custom.properties.endpoints.authentication.root}")
-	public ResponseEntity<?> authenticateUserAndGenerateTokens(@RequestBody final JwtAuthenticationRequest authenticationRequest, final Device device,
-	                                                           @SuppressWarnings("unused") final WebRequest webRequest) {
-		final String accessToken = userAuthenticationService.authenticateAndGenerateToken(ACCESS_TOKEN, authenticationRequest, device);
-		final String refreshToken = userAuthenticationService.authenticateAndGenerateToken(REFRESH_TOKEN, authenticationRequest, device);
-		return ResponseEntity.ok(JwtAuthenticationResponse.Builder()
-		                                                  .accessToken(accessToken)
-		                                                  .refreshToken(refreshToken)
-		                                                  .build());
+	public ResponseEntity<?> login(@RequestBody final JwtAuthenticationRequest authenticationRequest, final Device device,
+	                               @SuppressWarnings("unused") final WebRequest webRequest) {
+		final JwtAuthenticationResponse authenticationResponse = userAuthenticationService.login(authenticationRequest, device);
+		return authenticationResponse.isSuccessful() ? ResponseEntity.ok(authenticationResponse) : ResponseEntity.noContent().build();
 	}
 
 	@PostMapping("${custom.properties.endpoints.authentication.refresh-token}")

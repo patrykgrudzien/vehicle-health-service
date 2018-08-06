@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import me.grudzien.patryk.service.security.MyUserDetailsService;
-import me.grudzien.patryk.service.vehicle.VehicleServiceImpl;
+import me.grudzien.patryk.service.vehicle.impl.VehicleServiceImpl;
 
 @Configuration
 @EnableCaching

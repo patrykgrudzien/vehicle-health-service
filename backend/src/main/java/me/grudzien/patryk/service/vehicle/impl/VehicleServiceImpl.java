@@ -1,4 +1,4 @@
-package me.grudzien.patryk.service.vehicle;
+package me.grudzien.patryk.service.vehicle.impl;
 
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
@@ -19,6 +19,7 @@ import me.grudzien.patryk.domain.dto.vehicle.VehicleDto;
 import me.grudzien.patryk.domain.entities.vehicle.Vehicle;
 import me.grudzien.patryk.exceptions.vehicle.VehicleNotFoundException;
 import me.grudzien.patryk.repository.vehicle.VehicleRepository;
+import me.grudzien.patryk.service.vehicle.VehicleService;
 import me.grudzien.patryk.utils.web.RequestsDecoder;
 
 import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
