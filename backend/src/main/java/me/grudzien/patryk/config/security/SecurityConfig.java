@@ -118,12 +118,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		httpSecurity.addFilterBefore(servletExceptionHandlerFilter, JwtAuthorizationTokenFilter.class);
 
 		/**
-		 * There is also another filter {@link me.grudzien.patryk.config.i18n.LocaleDeterminerFilter} which is registered in
+		 * There is also another filter {@link me.grudzien.patryk.config.filters.LocaleDeterminerFilter} which is registered in
 		 * {@link me.grudzien.patryk.config.filters.registry.FiltersRegistryConfig#registerLocaleDeterminerFilter()}
 		 * to disable Spring Security on some endpoints like: "/auth", "/registration".
 		 * This filter is required to determine "Locale" which is needed to create appropriate messages using:
 		 * {@link me.grudzien.patryk.utils.i18n.LocaleMessagesCreator#buildLocaleMessage(String)} or to take right email template inside:
-		 * {@link me.grudzien.patryk.service.registration.EmailServiceImpl#sendMessageUsingTemplate(me.grudzien.patryk.domain.dto.registration.EmailDto)}.
+		 * {@link me.grudzien.patryk.service.registration.impl.EmailServiceImpl#sendMessageUsingTemplate(me.grudzien.patryk.domain.dto.registration.EmailDto)}.
 		 */
 	}
 

@@ -48,7 +48,7 @@ public class HttpResponseHandler {
 	public void redirectUserTo(final AppFLow appFLow, final HttpServletResponse response) {
 		/**
 		 * Creating base app URLs for:
-		 * {@link me.grudzien.patryk.service.registration.UserRegistrationServiceImpl#confirmRegistration(String, javax.servlet.http.HttpServletResponse)}
+		 * {@link me.grudzien.patryk.service.registration.impl.UserRegistrationServiceImpl#confirmRegistration(String, javax.servlet.http.HttpServletResponse)}
 		 *
 		 * @return Base app URls which are used to redirect user to specific screens on UI.
 		 */

@@ -1,4 +1,4 @@
-package me.grudzien.patryk.service.registration;
+package me.grudzien.patryk.service.registration.impl;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -22,13 +22,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.stream.Collectors;
 
-import static me.grudzien.patryk.domain.enums.AppFLow.ACCOUNT_ALREADY_ENABLED;
-import static me.grudzien.patryk.domain.enums.AppFLow.CONFIRM_REGISTRATION;
-import static me.grudzien.patryk.domain.enums.AppFLow.VERIFICATION_TOKEN_EXPIRED;
-import static me.grudzien.patryk.domain.enums.AppFLow.VERIFICATION_TOKEN_NOT_FOUND;
-import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
-import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
-
 import me.grudzien.patryk.domain.dto.registration.UserRegistrationDto;
 import me.grudzien.patryk.domain.entities.engine.Engine;
 import me.grudzien.patryk.domain.entities.registration.CustomUser;
@@ -48,8 +41,17 @@ import me.grudzien.patryk.exceptions.registration.UserAlreadyExistsException;
 import me.grudzien.patryk.handlers.web.HttpResponseHandler;
 import me.grudzien.patryk.repository.registration.CustomUserRepository;
 import me.grudzien.patryk.repository.registration.EmailVerificationTokenRepository;
+import me.grudzien.patryk.service.registration.EmailService;
+import me.grudzien.patryk.service.registration.UserRegistrationService;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.web.RequestsDecoder;
+
+import static me.grudzien.patryk.domain.enums.AppFLow.ACCOUNT_ALREADY_ENABLED;
+import static me.grudzien.patryk.domain.enums.AppFLow.CONFIRM_REGISTRATION;
+import static me.grudzien.patryk.domain.enums.AppFLow.VERIFICATION_TOKEN_EXPIRED;
+import static me.grudzien.patryk.domain.enums.AppFLow.VERIFICATION_TOKEN_NOT_FOUND;
+import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
+import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 
 @Log4j2
 @Service
@@ -136,7 +138,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 			eventPublisher.publishEvent(new OnRegistrationCompleteEvent(customUser, webRequest.getContextPath()));
 		} else {
 			log.error("Validation errors present during user registration.");
-			throw new CustomUserValidationException(localeMessagesCreator.buildLocaleMessage("form-validation-errors"),
+			throw new CustomUserValidationException(localeMessagesCreator.buildLocaleMessage("registration-form-validation-errors"),
 			                                        bindingResult.getAllErrors()
 			                                                     .stream()
 			                                                     .map(DefaultMessageSourceResolvable::getDefaultMessage)

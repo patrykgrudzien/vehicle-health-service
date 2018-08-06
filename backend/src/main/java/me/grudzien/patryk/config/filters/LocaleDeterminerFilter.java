@@ -1,4 +1,4 @@
-package me.grudzien.patryk.config.i18n;
+package me.grudzien.patryk.config.filters;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -12,9 +12,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
-
 import me.grudzien.patryk.utils.i18n.LocaleMessagesHelper;
+
+import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 
 /**
  * This filter is registered in {@link me.grudzien.patryk.config.filters.registry.FiltersRegistryConfig}

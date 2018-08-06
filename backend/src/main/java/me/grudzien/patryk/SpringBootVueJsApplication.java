@@ -71,9 +71,9 @@ public class SpringBootVueJsApplication implements CommandLineRunner {
 
 			log.info(FLOW_MARKER, "Creating test user...");
 			final CustomUser testUser = CustomUser.Builder()
-			                                        .firstName("Patryk")
-			                                        .lastName("Grudzien")
-			                                        .email("jurik99.pg@gmail.com")
+			                                        .firstName("Admin")
+			                                        .lastName("Root")
+			                                        .email("admin.root@gmail.com")
 			                                        .password(passwordEncoder.encode("admin"))
 			                                        .roles(Collections.singleton(Role.Builder()
 			                                                                         .roleName(RoleName.ROLE_ADMIN)

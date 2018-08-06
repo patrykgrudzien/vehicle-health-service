@@ -53,7 +53,7 @@ public class VehicleController {
 	                                        @SuppressWarnings("unused") final WebRequest webRequest) {
 		/**
 		 * Need to decode "newMileage" here (not in service as it was previously) - cache purpose.
-		 * Look at -> {@link me.grudzien.patryk.service.vehicle.VehicleServiceImpl#updateCurrentMileage(String, String)} and
+		 * Look at -> {@link me.grudzien.patryk.service.vehicle.impl.VehicleServiceImpl#updateCurrentMileage(String, String)} and
 		 * "condition" attribute inside {@link org.springframework.cache.annotation.CachePut}
 		 */
 		final String decodedNewMileage = requestsDecoder.decodeStringParam(vehicleDto.getEncodedMileage());

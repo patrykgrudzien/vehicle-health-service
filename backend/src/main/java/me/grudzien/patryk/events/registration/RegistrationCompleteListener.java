@@ -23,7 +23,7 @@ import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 
 /**
  * That listener is going to handle {@link OnRegistrationCompleteEvent} which is published by
- * {@link CustomUser} object in {@link me.grudzien.patryk.service.registration.UserRegistrationServiceImpl} after saving new user to database.
+ * {@link CustomUser} object in {@link me.grudzien.patryk.service.registration.impl.UserRegistrationServiceImpl} after saving new user to database.
  */
 @Log4j2
 @Component
