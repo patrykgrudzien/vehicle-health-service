@@ -22,6 +22,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static me.grudzien.patryk.domain.enums.jwt.TokenTypes.ACCESS_TOKEN;
+import static me.grudzien.patryk.domain.enums.jwt.TokenTypes.REFRESH_TOKEN;
+import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
+
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationResponse;
 import me.grudzien.patryk.domain.dto.login.JwtUser;
@@ -36,10 +40,6 @@ import me.grudzien.patryk.utils.jwt.JwtTokenUtil;
 import me.grudzien.patryk.utils.log.LogMarkers;
 import me.grudzien.patryk.utils.validators.ValidatorCreator;
 import me.grudzien.patryk.utils.web.RequestsDecoder;
-
-import static me.grudzien.patryk.domain.enums.jwt.TokenTypes.ACCESS_TOKEN;
-import static me.grudzien.patryk.domain.enums.jwt.TokenTypes.REFRESH_TOKEN;
-import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 
 @Log4j2
 @Service
@@ -71,7 +71,7 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 	public JwtAuthenticationResponse login(final JwtAuthenticationRequest authenticationRequest, final Device device) {
 		final JwtAuthenticationResponse emptyResponse = new JwtAuthenticationResponse();
 		final String email = requestsDecoder.decodeStringParam(authenticationRequest.getEmail());
-		final Set<ConstraintViolation<JwtAuthenticationRequest>> validation = ValidatorCreator.getDefaultValidator().validate(authenticationRequest);
+		final Set<ConstraintViolation<String>> validation = ValidatorCreator.getDefaultValidator().validate(email);
 		if (!validation.isEmpty()) {
 			log.error("Validation errors present during login.");
 			throw new CustomUserValidationException(localeMessagesCreator.buildLocaleMessage("login-form-validation-errors"),
