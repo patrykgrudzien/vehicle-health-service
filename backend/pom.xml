@@ -281,6 +281,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
             <optional>true</optional>
         </dependency>
         <!-- MAIL -->
@@ -299,12 +300,6 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>${postgre.sql.version}</version>
-        </dependency>
-        <!-- H2 (for now until Postgres will be configured on Heroku) -->
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>${h2database.version}</version>
         </dependency>
         <!-- BEAN UTILS -->
         <dependency>
