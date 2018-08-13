@@ -222,7 +222,7 @@
 
 <script>
   import {mapGetters}    from 'vuex';
-  import componentsPaths from '../../componentsPaths';
+  import componentsDetails from '../../componentsDetails';
   import serverEndpoints from '../../serverEndpoints';
   import {eventBus}      from '../../main';
 
@@ -238,10 +238,10 @@
         ownerId: null,
         dialogInputFieldValue: null,
         inputFieldAutofocus: false,
-        enginePath: componentsPaths.engine,
-        fluidsPath: componentsPaths.fluids,
-        tiresPath: componentsPaths.tires,
-        maintenanceCostsPath: componentsPaths.maintenanceCosts
+        enginePath: componentsDetails.engine.path,
+        fluidsPath: componentsDetails.fluids.path,
+        tiresPath: componentsDetails.tires.path,
+        maintenanceCostsPath: componentsDetails.maintenanceCosts.path
       }
     },
     methods: {

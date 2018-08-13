@@ -1,4 +1,4 @@
-import paths from "../componentsPaths";
+import paths from "../componentsDetails";
 import store from "../store/store";
 
 export default (to, from, next) => {
