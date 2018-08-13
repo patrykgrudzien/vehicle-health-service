@@ -1,37 +1,34 @@
-import Vue             from 'vue';
-import VueRouter       from 'vue-router';
-import allRoutes       from './router/allRoutes';
-import axios           from 'axios';
-import VueAxios        from 'vue-axios';
-import App             from './App';
-import store           from './store/store';
-import Vuetify         from 'vuetify';
+import Vue                from 'vue';
+import VueRouter          from 'vue-router';
+import allRoutes          from './router/allRoutes';
+import axios              from 'axios';
+import VueAxios           from 'vue-axios';
+import App                from './App';
+import store              from './store/store';
+import Vuetify            from 'vuetify';
 import 'vuetify/dist/vuetify.min.css';
-import MyAlert         from './shared/MyAlert';
-import MyDialog        from './shared/MyDialog';
-import LoadingDialog   from './shared/LoadingDialog';
-import MySnackbar      from './shared/MySnackbar';
-import i18n            from './lang/i18n';
-import cookieHelper    from './cookieHelper';
-import NavigationGuard from './router/NavigationGuard';
-import appSettings     from './appSettings';
+import MyAlert            from './shared/MyAlert';
+import MyDialog           from './shared/MyDialog';
+import LoadingDialog      from './shared/LoadingDialog';
+import MySnackbar         from './shared/MySnackbar';
+import i18n               from './lang/i18n';
+import cookieHelper       from './cookieHelper';
+import NavigationGuard    from './router/NavigationGuard';
+import AppSettingsHelper  from "./classes/utils/AppSettingsHelper";
+import {DEPLOYMENT_MODES} from './Constants';
+
+const appSettingsHelper = new AppSettingsHelper();
 
 // AXIOS settings
-if (appSettings && appSettings.deploymentModes[0].PROD.active) {
-  console.log(appSettings.deploymentModes[0].PROD.description);
-  // apply plugin
+if (appSettingsHelper.isModeActive(DEPLOYMENT_MODES.PROD)) {
   Vue.use(VueAxios, axios);
-  // apply plugin
-} else if (appSettings && appSettings.deploymentModes[1].DEV.active) {
-  console.log(appSettings.deploymentModes[1].DEV.description);
-  // apply plugin
+} else if (appSettingsHelper.isModeActive(DEPLOYMENT_MODES.DEV)) {
   Vue.use(VueAxios, axios.create({
     baseURL: `http://localhost:8088`,
     headers: {
       'Access-Control-Allow-Origin': 'http://localhost:8080'
     }
   }));
-  // apply plugin
 }
 
 // Interceptor for HTTP requests (adding Authorization header with JWT accessToken to each request)

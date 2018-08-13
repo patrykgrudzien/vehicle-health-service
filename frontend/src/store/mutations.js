@@ -1,20 +1,21 @@
-import types from './types';
-import {app} from '../main';
+import {MUTATIONS} from '../Constants';
+import {app}       from '../main';
 
 export default {
-  [types.LOGIN](state) {
+
+  [MUTATIONS.LOGIN] (state) {
     state.logged = 1;
   },
 
-  [types.LOGOUT](state) {
+  [MUTATIONS.LOGOUT] (state) {
     state.logged = 0;
   },
 
-  setLoading: (state, payload) => {
+  [MUTATIONS.SET_LOADING] (state, payload) {
     state.loading = payload;
   },
 
-  setServerRunning: (state, payload) => {
+  [MUTATIONS.SET_SERVER_RUNNING] (state, payload) {
     state.serverRunning = payload;
   },
 
@@ -26,7 +27,7 @@ export default {
     state.serverSuccessResponse = payload;
   },
 
-  clearServerExceptionResponse: state => {
+  [MUTATIONS.CLEAR_SERVER_EXCEPTION_RESPONSE] (state) {
     state.serverExceptionResponse = null;
   },
 
@@ -34,7 +35,7 @@ export default {
     state.serverSuccessResponse = null;
   },
 
-  [types.SET_LANG](state, payload) {
+  [MUTATIONS.SET_LANG](state, payload) {
     app.$i18n.locale = payload;
     state.lang = payload;
   },

@@ -221,10 +221,11 @@
 </template>
 
 <script>
-  import {mapGetters}    from 'vuex';
-  import componentsPaths from '../../componentsPaths';
-  import serverEndpoints from '../../serverEndpoints';
-  import {eventBus}      from '../../main';
+  import {mapGetters}      from 'vuex';
+  import componentsDetails from '../../componentsDetails';
+  import serverEndpoints   from '../../serverEndpoints';
+  import {eventBus}        from '../../main';
+  import {MUTATIONS}       from '../../Constants';
 
   export default {
     data() {
@@ -238,10 +239,10 @@
         ownerId: null,
         dialogInputFieldValue: null,
         inputFieldAutofocus: false,
-        enginePath: componentsPaths.engine,
-        fluidsPath: componentsPaths.fluids,
-        tiresPath: componentsPaths.tires,
-        maintenanceCostsPath: componentsPaths.maintenanceCosts
+        enginePath: componentsDetails.engine.path,
+        fluidsPath: componentsDetails.fluids.path,
+        tiresPath: componentsDetails.tires.path,
+        maintenanceCostsPath: componentsDetails.maintenanceCosts.path
       }
     },
     methods: {
@@ -269,18 +270,18 @@
                 this.mileage.new = this.mileage.current;
                 this.dialogInputFieldValue = this.mileage.current;
 
-                this.$store.commit('setLoading', false);
+                this.$store.commit(MUTATIONS.SET_LOADING, false);
               })
               // need to catch() here, not in (actions.js) because I'm setting some component properties above
               .catch(() => {
-                this.$store.commit('setLoading', false);
+                this.$store.commit(MUTATIONS.SET_LOADING, false);
                 this.$store.commit('setJwtAccessTokenExpired', true);
                 window.scrollTo(0, 0);
               });
       },
       updateCurrentMileage() {
         this.toggleDialogWindow();
-        this.$store.commit('setLoading', true);
+        this.$store.commit(MUTATIONS.SET_LOADING, true);
         this.axios.put(`${serverEndpoints.vehiclesController.updateCurrentMileage}/${window.btoa(this.ownerEmailAddress)}`, {
           encodedMileage: window.btoa(this.mileage.new)
         }).then(() => {
@@ -290,7 +291,7 @@
           })
           // need to catch() here, not in (actions.js) because I'm setting some component properties above
           .catch(() => {
-            this.$store.commit('setLoading', false);
+            this.$store.commit(MUTATIONS.SET_LOADING, false);
             this.$store.commit('setJwtAccessTokenExpired', true);
             window.scrollTo(0, 0);
           })
@@ -399,7 +400,7 @@
       if (this.isLogged === 1) {
         // --- PAGE REFRESH EVENT --- //
         this.$router.onReady(() => {
-          this.$store.commit('setLoading', true);
+          this.$store.commit(MUTATIONS.SET_LOADING, true);
           // --- PRINCIPAL USER --- //
           this.$store.dispatch('getPrincipalUserFirstName')
               .then(response => {
@@ -411,7 +412,7 @@
               })
               // need to catch() here, not in (actions.js) because I'm setting some component properties above
               .catch(() => {
-                this.$store.commit('setLoading', false);
+                this.$store.commit(MUTATIONS.SET_LOADING, false);
                 this.$store.commit('setJwtAccessTokenExpired', true);
                 window.scrollTo(0, 0);
               });
@@ -422,7 +423,7 @@
     },
     created() {
       eventBus.$on('stayLogInEvent', () => {
-        this.$store.commit('setLoading', true);
+        this.$store.commit(MUTATIONS.SET_LOADING, true);
         // --- PRINCIPAL USER --- //
         this.$store.dispatch('getPrincipalUserFirstName')
             .then(response => {
@@ -434,7 +435,7 @@
             })
             // need to catch() here, not in (actions.js) because I'm setting some component properties above
             .catch(() => {
-              this.$store.commit('setLoading', false);
+              this.$store.commit(MUTATIONS.SET_LOADING, false);
               this.$store.commit('setJwtAccessTokenExpired', true);
               window.scrollTo(0, 0);
             });

@@ -7,11 +7,13 @@ export default class {
   }
 
   isModeActive(modeName) {
-    return this.appSettings.deploymentModes.forEach(mode => {
+    let found = false;
+    this.appSettings.deploymentModes.forEach(mode => {
       if (mode.name === modeName && mode.active) {
         console.log(mode.description);
-        return true;
+        found = true;
       }
     });
+    return found;
   }
 }
