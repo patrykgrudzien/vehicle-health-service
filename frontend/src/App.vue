@@ -221,9 +221,10 @@
 </template>
 
 <script>
-  import {mapGetters}    from 'vuex';
-  import {mapActions}    from 'vuex';
+  import {mapGetters}      from 'vuex';
+  import {mapActions}      from 'vuex';
   import componentsDetails from './componentsDetails';
+  import {MUTATIONS}       from './Constants';
 
   export default {
     data() {
@@ -272,7 +273,7 @@
       logoutButtonClicked() {
         this.logout()
             .then(() => {
-              this.$store.commit('setLoading', false);
+              this.$store.commit(MUTATIONS.SET_LOADING, false);
               this.$store.commit('setJwtAccessTokenExpired', false);
             });
       }

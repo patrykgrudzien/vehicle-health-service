@@ -1,16 +1,16 @@
 import Vue                  from 'vue';
 import {myRouter}           from '../main';
-import types                from './types';
 import serverEndpoints      from '../serverEndpoints';
 import componentsDetails    from '../componentsDetails';
 import {eventBus}           from '../main';
 import RequestDetailsHelper from '../classes/utils/RequestDetailsHelper';
+import {MUTATIONS}          from '../Constants';
 
 export default {
 
   registerUserAccount({commit}, form) {
-    commit('setLoading', true);
-    commit('clearServerExceptionResponse');
+    commit(MUTATIONS.SET_LOADING, true);
+    commit(MUTATIONS.CLEAR_SERVER_EXCEPTION_RESPONSE);
     commit('clearServerSuccessResponse');
     Vue.axios.post(serverEndpoints.registration.registerUserAccount, {
       firstName: form.firstName,
@@ -21,17 +21,17 @@ export default {
       confirmedPassword: window.btoa(form.confirmedPassword)
     })
       .then(response => {
-        commit('setLoading', false);
+        commit(MUTATIONS.SET_LOADING, false);
         commit('setServerSuccessResponse', response.data);
         window.scrollTo(0, 0);
       })
       .catch(error => {
         if (!error.response) {
-          commit('setServerRunning', false);
-          commit('setLoading', false);
+          commit(MUTATIONS.SET_SERVER_RUNNING, false);
+          commit(MUTATIONS.SET_LOADING, false);
           window.scrollTo(0, 0);
         } else {
-          commit('setLoading', false);
+          commit(MUTATIONS.SET_LOADING, false);
           commit('setServerExceptionResponse', error.response.data);
           commit('clearServerSuccessResponse');
           window.scrollTo(0, 0);
@@ -46,8 +46,8 @@ export default {
     if (localStorage.getItem('refresh_token')) {
       localStorage.removeItem('refresh_token')
     }
-    commit('setLoading', true);
-    commit('clearServerExceptionResponse');
+    commit(MUTATIONS.SET_LOADING, true);
+    commit(MUTATIONS.CLEAR_SERVER_EXCEPTION_RESPONSE);
 
     const login = new RequestDetailsHelper((serverEndpoints.authentication.root), 'login');
 
@@ -56,7 +56,7 @@ export default {
       password: window.btoa(credentials.password)
     })
        .then(response => {
-         commit('setLoading', false);
+         commit(MUTATIONS.SET_LOADING, false);
          if (response.data.message) {
            commit('setServerExceptionResponse', response.data);
            myRouter.replace(componentsDetails.loginFailed.path);
@@ -64,8 +64,8 @@ export default {
          } else {
            localStorage.setItem('access_token', response.data.accessToken);
            localStorage.setItem('refresh_token', response.data.refreshToken);
-           commit(types.LOGIN);
-           commit('clearServerExceptionResponse');
+           commit(MUTATIONS.LOGIN);
+           commit(MUTATIONS.CLEAR_SERVER_EXCEPTION_RESPONSE);
            commit('clearLoginForm');
            myRouter.push({path: componentsDetails.mainBoard.path});
            window.scrollTo(0 ,0);
@@ -73,12 +73,12 @@ export default {
        })
        .catch(error => {
          if (!error.response) {
-           commit('setServerRunning', false);
-           commit('setLoading', false);
+           commit(MUTATIONS.SET_SERVER_RUNNING, false);
+           commit(MUTATIONS.SET_LOADING, false);
            commit('clearPrincipalUserFirstName');
            window.scrollTo(0, 0);
          } else {
-           commit('setLoading', false);
+           commit(MUTATIONS.SET_LOADING, false);
            commit('setServerExceptionResponse', error.response.data);
            commit('clearServerSuccessResponse');
            commit('clearPrincipalUserFirstName');
@@ -90,8 +90,8 @@ export default {
   logout({commit}) {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
-    commit(types.LOGOUT);
-    commit('clearServerExceptionResponse');
+    commit(MUTATIONS.LOGOUT);
+    commit(MUTATIONS.CLEAR_SERVER_EXCEPTION_RESPONSE);
     commit('clearServerSuccessResponse');
     commit('clearPrincipalUserFirstName');
     commit('clearLastRequestedPath');
@@ -100,21 +100,13 @@ export default {
     window.scrollTo(0, 0);
   },
 
-  setServerRunning({commit}, payload) {
-    commit('setServerRunning', payload);
-  },
-
-  clearServerExceptionResponse({commit}) {
-    commit('clearServerExceptionResponse');
-  },
-
   clearServerSuccessResponse({commit}) {
     commit('clearServerSuccessResponse');
   },
 
   setLang({commit}, payload) {
-    commit(types.SET_LANG, payload);
-    commit('clearServerExceptionResponse');
+    commit(MUTATIONS.SET_LANG, payload);
+    commit(MUTATIONS.CLEAR_SERVER_EXCEPTION_RESPONSE);
     commit('clearServerSuccessResponse');
   },
 
