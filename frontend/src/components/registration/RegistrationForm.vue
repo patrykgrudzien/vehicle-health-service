@@ -218,9 +218,9 @@
 </template>
 
 <script>
-  import {getMessageFromLocale} from '../../main';
-  import {mapGetters}           from 'vuex';
-  import {mapActions}           from 'vuex';
+  import {getMessageFromLocale}                 from '../../main';
+  import {mapGetters, mapMutations, mapActions} from 'vuex';
+  import {MUTATIONS}                            from '../../Constants';
 
   export default {
     data() {
@@ -264,10 +264,11 @@
     },
     methods: {
       ...mapActions([
-        'clearServerExceptionResponse',
-        'clearServerSuccessResponse',
-        ''
+        'clearServerSuccessResponse'
       ]),
+      ...mapMutations({
+        clearServerExceptionResponse: MUTATIONS.CLEAR_SERVER_EXCEPTION_RESPONSE
+      }),
       submit() {
         if (this.$refs.myRegistrationForm.validate()) {
           this.$store.dispatch('registerUserAccount', this.getRegistrationForm);
@@ -293,15 +294,15 @@
           this.$store.dispatch('setLang', this.tempLanguage)
             .then(() => {
               this.clearFormFields();
-              this.$store.commit('setServerRunning', true);
+              this.$store.commit(MUTATIONS.SET_SERVER_RUNNING, true);
               this.$store.commit('setSideNavigation', false);
-              this.$store.commit('clearServerExceptionResponse');
+              this.$store.commit(MUTATIONS.CLEAR_SERVER_EXCEPTION_RESPONSE);
               this.$store.commit('clearServerSuccessResponse');
             });
         }, 200);
       },
       setServerRunning() {
-        this.$store.commit('setServerRunning', true);
+        this.$store.commit(MUTATIONS.SET_SERVER_RUNNING, true);
       }
     },
     created() {
