@@ -221,9 +221,10 @@
 </template>
 
 <script>
-  import {mapGetters}    from 'vuex';
-  import {mapActions}    from 'vuex';
-  import componentsPaths from './componentsPaths';
+  import {mapGetters}      from 'vuex';
+  import {mapActions}      from 'vuex';
+  import componentsDetails from './componentsDetails';
+  import {MUTATIONS}       from './Constants';
 
   export default {
     data() {
@@ -242,11 +243,11 @@
       ]),
       showModalAndSendLang: function (lang) {
 
-        if (this.$route.path.includes(componentsPaths.loginForm) ||
-          this.$route.path.includes(componentsPaths.registrationForm) ||
-          this.$route.path.includes(componentsPaths.confirmRegistration) ||
+        if (this.$route.path.includes(componentsDetails.loginForm.path) ||
+          this.$route.path.includes(componentsDetails.registrationForm.path) ||
+          this.$route.path.includes(componentsDetails.confirmRegistration.path) ||
           this.$route.path.includes('/logout') ||
-          this.$route.fullPath.includes(componentsPaths.logoutSuccessful)) {
+          this.$route.fullPath.includes(componentsDetails.logoutSuccessful.path)) {
 
           this.$router.app.$emit('open-dialog-and-send-lang', {
             showDialog: true,
@@ -272,7 +273,7 @@
       logoutButtonClicked() {
         this.logout()
             .then(() => {
-              this.$store.commit('setLoading', false);
+              this.$store.commit(MUTATIONS.SET_LOADING, false);
               this.$store.commit('setJwtAccessTokenExpired', false);
             });
       }
@@ -295,17 +296,17 @@
             {
               icon: 'face',
               title: 'sign-up-menu-button',
-              link: componentsPaths.registrationForm
+              link: componentsDetails.registrationForm.path
             },
             {
               icon: 'lock_open',
               title: 'sign-in-menu-button',
-              link: componentsPaths.loginForm
+              link: componentsDetails.loginForm.path
             },
             {
               icon: 'person',
               title: 'about-me-menu-button',
-              link: componentsPaths.aboutMe
+              link: componentsDetails.aboutMe.path
             }
           ]
         }
@@ -334,7 +335,7 @@
         }
       },
       determineHomeLink() {
-        return this.isLogged === 1 ? componentsPaths.mainBoard : componentsPaths.home;
+        return this.isLogged === 1 ? componentsDetails.mainBoard.path : componentsDetails.home.path;
       },
       showHomeVisibility() {
         return this.$route.name !== 'Home' && this.$route.name !== 'MainBoard';

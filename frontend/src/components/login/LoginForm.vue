@@ -127,7 +127,7 @@
 
           </v-card-text>
           <v-card-actions class="pl-3">
-            <v-btn color="primary" @click="submit" :disabled="loginButtonDisabled" :loading="isLoading">
+            <v-btn color="primary" @click="submit"  :loading="isLoading">
               {{ $t('login-button') }}
             </v-btn>
             <!-- Google -->
@@ -180,10 +180,10 @@
 </template>
 
 <script>
-  import {getMessageFromLocale} from "../../main";
-  import {mapGetters}           from 'vuex';
-  import {mapActions}           from 'vuex';
-  import componentsPaths from '../../componentsPaths';
+  import {getMessageFromLocale}                 from "../../main";
+  import {mapGetters, mapMutations, mapActions} from 'vuex';
+  import componentsDetails                      from '../../componentsDetails';
+  import {MUTATIONS}                            from '../../Constants';
 
   export default {
     props: ['confirmationMessage', 'dismissDialog', 'showDialog', 'type'],
@@ -207,9 +207,11 @@
     },
     methods: {
       ...mapActions([
-        'clearServerExceptionResponse',
         'clearServerSuccessResponse'
       ]),
+      ...mapMutations({
+        clearServerExceptionResponse: MUTATIONS.CLEAR_SERVER_EXCEPTION_RESPONSE
+      }),
       submit() {
         if (this.$refs.myLoginForm.validate()) {
           this.$store.dispatch('login', this.getLoginForm);
@@ -235,15 +237,15 @@
           this.$store.dispatch('setLang', this.tempLanguage)
             .then(() => {
               this.clearFormFields();
-              this.$store.commit('setServerRunning', true);
+              this.$store.commit(MUTATIONS.SET_SERVER_RUNNING, true);
               this.$store.commit('setSideNavigation', false);
-              this.$store.commit('clearServerExceptionResponse');
+              this.$store.commit(MUTATIONS.CLEAR_SERVER_EXCEPTION_RESPONSE);
               this.$store.commit('clearServerSuccessResponse');
             });
         }, 200);
       },
       setServerRunning() {
-        this.$store.commit('setServerRunning', true);
+        this.$store.commit(MUTATIONS.SET_SERVER_RUNNING, true);
       },
       googleButtonClicked() {
         console.log('googleButtonClicked');
@@ -280,10 +282,10 @@
         return this.getServerSuccessResponse.message;
       },
       urlContainsLogoutSuccessfulTrue() {
-        return this.$route.fullPath.includes(componentsPaths.logoutSuccessful);
+        return this.$route.fullPath.includes(componentsDetails.logoutSuccessful.path.path);
       },
       urlContainsAuthenticationRequired() {
-        return this.$route.fullPath.includes(componentsPaths.authenticationRequired);
+        return this.$route.fullPath.includes(componentsDetails.authenticationRequired.path);
       },
       email: {
         get() {return this.$store.getters.getLoginForm.email;},

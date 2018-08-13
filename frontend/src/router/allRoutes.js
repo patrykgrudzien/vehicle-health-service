@@ -1,5 +1,4 @@
 import Home                from '../components/home/Home';
-import ServerCheck         from '../components/ServerCheck';
 import AboutMe             from '../components/AboutMe';
 import RegistrationForm    from '../components/registration/RegistrationForm';
 import ConfirmRegistration from '../components/registration/ConfirmRegistration';
@@ -9,81 +8,76 @@ import Engine              from '../components/vehicle/Engine';
 import Fluids              from '../components/vehicle/Fluids';
 import Tires               from '../components/vehicle/Tires';
 import MaintenanceCosts    from '../components/vehicle/MaintenanceCosts';
-import componentsPaths     from '../componentsPaths';
+import componentsDetails   from '../componentsDetails';
 
 export default [
   {
-    name: 'Home',
-    path: componentsPaths.home,
+    name: componentsDetails.home.name,
+    path: componentsDetails.home.path,
     component: Home
   },
   {
-    name: 'ServerCheck',
-    path: componentsPaths.serverCheck,
-    component: ServerCheck
-  },
-  {
-    name: 'AboutMe',
-    path: componentsPaths.aboutMe,
+    name: componentsDetails.aboutMe.name,
+    path: componentsDetails.aboutMe.path,
     component: AboutMe
   },
   {
-    name: 'RegistrationForm',
-    path: componentsPaths.registrationForm,
+    name: componentsDetails.registrationForm.name,
+    path: componentsDetails.registrationForm.path,
     component: RegistrationForm
   },
   {
-    name: 'ConfirmRegistration',
-    path: componentsPaths.confirmRegistration,
+    name: componentsDetails.confirmRegistration.name,
+    path: componentsDetails.confirmRegistration.path,
     component: ConfirmRegistration
   },
   {
-    name: 'LoginForm',
-    path: componentsPaths.loginForm,
+    name: componentsDetails.loginForm.name,
+    path: componentsDetails.loginForm.path,
     component: LoginForm
   },
   {
-    name: 'LoginForm-login-failed',
-    path: componentsPaths.loginFailed,
+    name: componentsDetails.loginFailed.name,
+    path: componentsDetails.loginFailed.path,
     component: LoginForm
   },
   {
-    name: 'LoginForm-logout-successful-wildcard',
-    path: componentsPaths.logoutSuccessfulWildcard,
+    name: componentsDetails.logoutSuccessfulWildcard.name,
+    path: componentsDetails.logoutSuccessfulWildcard.path,
     component: LoginForm
   },
   {
-    name: 'LoginForm-secured-resource-authentication-required',
-    path: componentsPaths.authenticationRequired,
+    name: componentsDetails.authenticationRequired.name,
+    path: componentsDetails.authenticationRequired.path,
     component: LoginForm
   },
   {
-    name: 'MainBoard',
-    path: componentsPaths.mainBoard,
+    name: componentsDetails.mainBoard.name,
+    path: componentsDetails.mainBoard.path,
     component: MainBoard,
     meta: {requiresAuth: true}
   },
   {
-    name: 'Engine',
-    path: componentsPaths.engine,
+    name: componentsDetails.engine.name,
+    path: componentsDetails.engine.path,
     component: Engine,
     meta: {requiresAuth: true}
   },
   {
-    name: 'Fluids',
-    path: componentsPaths.fluids,
+    name: componentsDetails.fluids.name,
+    path: componentsDetails.fluids.path,
     component: Fluids,
     meta: {requiresAuth: true}
   },
   {
-    name: 'Tires',
-    path: componentsPaths.tires,
+    name: componentsDetails.tires.name,
+    path: componentsDetails.tires.path,
     component: Tires,
     meta: {requiresAuth: true}
   },
   {
-    name: 'Maintenance-Costs',
-    path: componentsPaths.maintenanceCosts,
+    name: componentsDetails.maintenanceCosts.name,
+    path: componentsDetails.maintenanceCosts.path,
     component: MaintenanceCosts,
     meta: {requiresAuth: true}
   }
