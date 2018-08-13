@@ -33,7 +33,6 @@ public class CustomApplicationProperties {
 	@Setter
 	public static class Endpoints {
 
-		private Server server = new Server();
 		private Registration registration = new Registration();
 		private Authentication authentication = new Authentication();
 		private Logout logout = new Logout();
@@ -47,17 +46,6 @@ public class CustomApplicationProperties {
 			private String getVehicle;
 			private String getCurrentMileage;
 			private String updateCurrentMileage;
-		}
-
-		@Getter
-		@Setter
-		public static class Server {
-			private String root;
-			private String healthCheck;
-
-			public String getRootHealthCheck() {
-				return getRoot() + getHealthCheck();
-			}
 		}
 
 		@Getter
