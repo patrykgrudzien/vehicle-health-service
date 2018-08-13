@@ -95,6 +95,13 @@ export default {
   clearPrincipalUserFirstName(state) {
     state.principalUserFirstName = null;
   },
+
+  setLoginUser(state, payload) {
+    state.loginUser = payload;
+  },
+  clearLoginUser(state) {
+    state.loginUser = null;
+  },
   // -------------- PRINCIPAL USER FIRST NAME -------------- //
 
   // -------------- JWT TOKEN EXPIRED -------------- //

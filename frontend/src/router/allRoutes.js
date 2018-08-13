@@ -3,6 +3,7 @@ import AboutMe             from '../components/AboutMe';
 import RegistrationForm    from '../components/registration/RegistrationForm';
 import ConfirmRegistration from '../components/registration/ConfirmRegistration';
 import LoginForm           from '../components/login/LoginForm';
+import Wrapper             from '../components/Wrapper';
 import MainBoard           from '../components/home/MainBoard';
 import Engine              from '../components/vehicle/Engine';
 import Fluids              from '../components/vehicle/Fluids';
@@ -11,6 +12,11 @@ import MaintenanceCosts    from '../components/vehicle/MaintenanceCosts';
 import componentsDetails   from '../componentsDetails';
 
 export default [
+  {
+    name: 'Wildcard',
+    path: '*',
+    component: Home
+  },
   {
     name: componentsDetails.home.name,
     path: componentsDetails.home.path,
@@ -51,6 +57,27 @@ export default [
     path: componentsDetails.authenticationRequired.path,
     component: LoginForm
   },
+  /*
+   * {
+    // WrapperForMainBoardAndChildren
+    path: componentsDetails.mainBoard.path, // after login I want to have main-board as main URL
+    component: Wrapper,
+    children: [
+      {
+        name: componentsDetails.mainBoard.name,
+        path: '',
+        component: MainBoard,
+        meta: {requiresLoginUser: true}
+      },
+      {
+        name: 'Engine',
+        path: componentsDetails.engine,
+        component: Engine,
+        meta: {requiresLoginUser: true}
+      }
+    ]
+  }
+   */
   {
     name: componentsDetails.mainBoard.name,
     path: componentsDetails.mainBoard.path,

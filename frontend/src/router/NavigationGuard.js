@@ -2,21 +2,18 @@ import paths from "../componentsDetails";
 import store from "../store/store";
 
 export default (to, from, next) => {
-  // user NOT logged in
-  if (store.getters.isLogged === null) {
-    if (to.path === paths.mainBoard && to.meta.requiresAuth) {
-      // PRODUCTION
-      next(paths.authenticationRequired);
-      // DEVELOPMENT
-      // next();
-      return;
-    }
-    // must be called in other scenarios
-    next();
-  }
-  // user LOGGED
-  else if (store.getters.isLogged !== null) {
-    // must be called in other scenarios
-    next();
-  }
+  const { isLogged } = store.getters;
+
+  // if (!isLogged || isLogged === null) {
+  //   next(paths.authenticationRequired);
+  // } else {
+  //   const { getLoginUser } = store.getters;
+  //   if (to.meta.requiresLoginUser && to.path !== paths.mainBoard.path && (!getLoginUser || getLoginUser === null)) {
+  //     next(paths.authenticationRequired);
+  //   } else {
+  //     next();
+  //   }
+  // }
+
+  next();
 };
