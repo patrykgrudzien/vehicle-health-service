@@ -4,9 +4,6 @@
 custom:
   properties:
     endpoints:
-      server:
-        root: /server
-        health-check: /health-check
       registration:
         root: /registration
         register-user-account: /register-user-account
