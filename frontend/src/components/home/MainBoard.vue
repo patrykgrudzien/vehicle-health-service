@@ -300,7 +300,8 @@
     computed: {
       ...mapGetters([
         'isLogged',
-        'isLoading'
+        'isLoading',
+        'getLoginUser'
       ]),
       snackbarVisibility() {
         return (this.mileage.current < 0 || isNaN(this.mileage.current)) ||
@@ -406,6 +407,9 @@
               .then(response => {
                 this.ownerEmailAddress = response.data.email;
                 this.ownerId = response.data.id;
+
+                this.$store.commit('setLoginUser', response.data);
+
                 // --- CURRENT MILEAGE --- //
                 this.getCurrentMileage();
                 // --- CURRENT MILEAGE --- //

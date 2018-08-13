@@ -31,6 +31,7 @@ const state = {
     valid: true,
   },
   sideNavigation: false,
+  loginUser: null,
   principalUserFirstName: null,
   jwtAccessTokenExpired: false,
   lastRequestedPath: null,

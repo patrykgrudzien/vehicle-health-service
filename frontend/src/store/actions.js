@@ -93,6 +93,9 @@ export default {
     commit(MUTATIONS.LOGOUT);
     commit(MUTATIONS.CLEAR_SERVER_EXCEPTION_RESPONSE);
     commit('clearServerSuccessResponse');
+
+    commit('clearLoginUser');
+
     commit('clearPrincipalUserFirstName');
     commit('clearLastRequestedPath');
     commit('clearLastRequestMethod');

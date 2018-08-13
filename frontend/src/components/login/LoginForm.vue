@@ -127,7 +127,7 @@
 
           </v-card-text>
           <v-card-actions class="pl-3">
-            <v-btn color="primary" @click="submit"  :loading="isLoading">
+            <v-btn color="primary" @click="submit" :disabled="loginButtonDisabled" :loading="isLoading">
               {{ $t('login-button') }}
             </v-btn>
             <!-- Google -->
