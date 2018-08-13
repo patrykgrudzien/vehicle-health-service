@@ -183,7 +183,7 @@
   import {getMessageFromLocale} from "../../main";
   import {mapGetters}           from 'vuex';
   import {mapActions}           from 'vuex';
-  import componentsPaths from '../../componentsPaths';
+  import componentsDetails from '../../componentsDetails';
 
   export default {
     props: ['confirmationMessage', 'dismissDialog', 'showDialog', 'type'],
@@ -280,10 +280,10 @@
         return this.getServerSuccessResponse.message;
       },
       urlContainsLogoutSuccessfulTrue() {
-        return this.$route.fullPath.includes(componentsPaths.logoutSuccessful);
+        return this.$route.fullPath.includes(componentsDetails.logoutSuccessful.path.path);
       },
       urlContainsAuthenticationRequired() {
-        return this.$route.fullPath.includes(componentsPaths.authenticationRequired);
+        return this.$route.fullPath.includes(componentsDetails.authenticationRequired.path);
       },
       email: {
         get() {return this.$store.getters.getLoginForm.email;},

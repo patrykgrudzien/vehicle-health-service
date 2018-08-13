@@ -2,7 +2,7 @@ import Vue                  from 'vue';
 import {myRouter}           from '../main';
 import types                from './types';
 import serverEndpoints      from '../serverEndpoints';
-import componentsPaths      from '../componentsPaths';
+import componentsDetails    from '../componentsDetails';
 import {eventBus}           from '../main';
 import RequestDetailsHelper from '../classes/utils/RequestDetailsHelper';
 
@@ -59,7 +59,7 @@ export default {
          commit('setLoading', false);
          if (response.data.message) {
            commit('setServerExceptionResponse', response.data);
-           myRouter.replace(componentsPaths.loginFailed);
+           myRouter.replace(componentsDetails.loginFailed.path);
            window.scrollTo(0, 0);
          } else {
            localStorage.setItem('access_token', response.data.accessToken);
@@ -67,7 +67,7 @@ export default {
            commit(types.LOGIN);
            commit('clearServerExceptionResponse');
            commit('clearLoginForm');
-           myRouter.push({path: componentsPaths.mainBoard});
+           myRouter.push({path: componentsDetails.mainBoard.path});
            window.scrollTo(0 ,0);
          }
        })
@@ -96,7 +96,7 @@ export default {
     commit('clearPrincipalUserFirstName');
     commit('clearLastRequestedPath');
     commit('clearLastRequestMethod');
-    myRouter.push({path: componentsPaths.logoutSuccessful});
+    myRouter.push({path: componentsDetails.logoutSuccessful.path});
     window.scrollTo(0, 0);
   },
 
