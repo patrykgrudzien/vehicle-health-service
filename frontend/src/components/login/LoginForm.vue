@@ -180,10 +180,10 @@
 </template>
 
 <script>
-  import {getMessageFromLocale}                 from "../../main";
-  import {mapGetters, mapMutations, mapActions} from 'vuex';
-  import componentsDetails                      from '../../componentsDetails';
-  import {MUTATIONS}                            from '../../Constants';
+  import {getMessageFromLocale}       from "../../main";
+  import {mapGetters, mapMutations}   from 'vuex';
+  import componentsDetails            from '../../componentsDetails';
+  import {MUTATIONS, ACTIONS, EVENTS} from '../../Constants';
 
   export default {
     props: ['confirmationMessage', 'dismissDialog', 'showDialog', 'type'],
@@ -206,26 +206,24 @@
       }
     },
     methods: {
-      ...mapActions([
-        'clearServerSuccessResponse'
-      ]),
       ...mapMutations({
-        clearServerExceptionResponse: MUTATIONS.CLEAR_SERVER_EXCEPTION_RESPONSE
+        clearServerExceptionResponse: MUTATIONS.CLEAR_SERVER_EXCEPTION_RESPONSE,
+        clearServerSuccessResponse: MUTATIONS.CLEAR_SERVER_SUCCESS_RESPONSE
       }),
       submit() {
         if (this.$refs.myLoginForm.validate()) {
-          this.$store.dispatch('login', this.getLoginForm);
+          this.$store.dispatch(ACTIONS.LOGIN, this.getLoginForm);
         } else {
-          this.$store.commit('setServerExceptionResponse', 'Form filled incorrectly!');
+          this.$store.commit(MUTATIONS.SET_SERVER_EXCEPTION_RESPONSE, 'Form filled incorrectly!');
           window.scrollTo(0, 0);
         }
       },
       clearFormFields() {
         this.$refs.myLoginForm.reset();
-        this.$store.commit('setLoginFormValid', true);
+        this.$store.commit(MUTATIONS.SET_LOGIN_FORM_VALID, true);
         // without that code below it does not work
         this.$nextTick(() => {
-          this.$store.commit('setLoginFormValid', true);
+          this.$store.commit(MUTATIONS.SET_LOGIN_FORM_VALID, true);
         });
       },
       hideDialogWindow() {
@@ -234,12 +232,12 @@
       changeLanguageAndHideDialog() {
         this.tempDialogWindowActive = false;
         setTimeout(() => {
-          this.$store.dispatch('setLang', this.tempLanguage)
+          this.$store.dispatch(ACTIONS.SET_LANG, this.tempLanguage)
             .then(() => {
               this.clearFormFields();
               this.$store.commit(MUTATIONS.SET_SERVER_RUNNING, true);
-              this.$store.commit('setSideNavigation', false);
-              this.$store.commit(MUTATIONS.CLEAR_SERVER_EXCEPTION_RESPONSE);
+              this.$store.commit(MUTATIONS.SET_SIDE_NAVIGATION, false);
+              this.$store.commit('clearServerExceptionResponse');
               this.$store.commit('clearServerSuccessResponse');
             });
         }, 200);
@@ -256,7 +254,7 @@
       }
     },
     created() {
-      this.$router.app.$on('open-dialog-and-send-lang', (payload) => {
+      this.$router.app.$on(EVENTS.OPEN_DIALOG_AND_SEND_LANG_EVENT, (payload) => {
         this.tempDialogWindowActive = payload.showDialog;
         this.tempLanguage = payload.lang;
       })
@@ -289,15 +287,15 @@
       },
       email: {
         get() {return this.$store.getters.getLoginForm.email;},
-        set(value) {this.$store.commit('setLoginFormEmail', value);}
+        set(value) {this.$store.commit(MUTATIONS.SET_LOGIN_FORM_EMAIL, value);}
       },
       password: {
         get() {return this.$store.getters.getLoginForm.password;},
-        set(value) {this.$store.commit('setLoginFormPassword', value);}
+        set(value) {this.$store.commit(MUTATIONS.SET_LOGIN_FORM_PASSWORD, value);}
       },
       valid: {
         get() {return this.$store.getters.getLoginForm.valid;},
-        set(value) {this.$store.commit('setLoginFormValid', value);}
+        set(value) {this.$store.commit(MUTATIONS.SET_LOGIN_FORM_VALID, value);}
       },
       loginButtonDisabled() {
         return this.email === '' || !this.email || this.password === '' || !this.password

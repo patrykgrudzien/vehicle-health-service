@@ -19,11 +19,11 @@ export default {
     state.serverRunning = payload;
   },
 
-  setServerExceptionResponse: (state, payload) => {
+  [MUTATIONS.SET_SERVER_EXCEPTION_RESPONSE] (state, payload) {
     state.serverExceptionResponse = payload;
   },
 
-  setServerSuccessResponse: (state, payload) => {
+  [MUTATIONS.SET_SERVER_SUCCESS_RESPONSE] (state, payload) {
     state.serverSuccessResponse = payload;
   },
 
@@ -31,7 +31,7 @@ export default {
     state.serverExceptionResponse = null;
   },
 
-  clearServerSuccessResponse: state => {
+  [MUTATIONS.CLEAR_SERVER_SUCCESS_RESPONSE] (state) {
     state.serverSuccessResponse = null;
   },
 
@@ -41,85 +41,85 @@ export default {
   },
 
   // -------------- LOGIN FORM -------------- //
-  setLoginFormEmail(state, payload) {
+  [MUTATIONS.SET_LOGIN_FORM_EMAIL] (state, payload) {
     state.loginForm.email = payload;
   },
 
-  setLoginFormPassword(state, payload) {
+  [MUTATIONS.SET_LOGIN_FORM_PASSWORD] (state, payload) {
     state.loginForm.password = payload;
   },
 
-  setLoginFormValid(state, payload) {
+  [MUTATIONS.SET_LOGIN_FORM_VALID] (state, payload) {
     state.loginForm.valid = payload;
   },
 
-  clearLoginForm(state) {
+  [MUTATIONS.CLEAR_LOGIN_FORM] (state) {
     state.loginForm.email = '';
     state.loginForm.password = '';
     state.loginForm.valid = true;
   },
   // -------------- LOGIN FORM -------------- //
 
-  setSideNavigation(state, payload) {
+  [MUTATIONS.SET_SIDE_NAVIGATION] (state, payload) {
     state.sideNavigation = payload;
   },
 
   // -------------- REGISTRATION FORM -------------- //
-  setRegistrationFormFirstName(state, payload) {
+  [MUTATIONS.SET_REGISTRATION_FORM_FIRST_NAME] (state, payload) {
     state.registrationForm.firstName = payload;
   },
-  setRegistrationFormLastName(state, payload) {
+  [MUTATIONS.SET_REGISTRATION_FORM_LAST_NAME] (state, payload) {
     state.registrationForm.lastName = payload;
   },
-  setRegistrationFormEmail(state, payload) {
+  [MUTATIONS.SET_REGISTRATION_FORM_EMAIL] (state, payload) {
     state.registrationForm.email = payload;
   },
-  setRegistrationFormConfirmedEmail(state, payload) {
+  [MUTATIONS.SET_REGISTRATION_FORM_CONFIRMED_EMAIL] (state, payload) {
     state.registrationForm.confirmedEmail = payload;
   },
-  setRegistrationFormPassword(state, payload) {
+  [MUTATIONS.SET_REGISTRATION_FORM_PASSWORD] (state, payload) {
     state.registrationForm.password = payload;
   },
-  setRegistrationFormConfirmedPassword(state, payload) {
+  [MUTATIONS.SET_REGISTRATION_FORM_CONFIRMED_PASSWORD] (state, payload) {
     state.registrationForm.confirmedPassword = payload;
   },
-  setRegistrationFormValid(state, payload) {
+  [MUTATIONS.SET_REGISTRATION_FORM_VALID] (state, payload) {
     state.registrationForm.valid = payload;
   },
   // -------------- REGISTRATION FORM -------------- //
 
   // -------------- PRINCIPAL USER FIRST NAME -------------- //
-  setPrincipalUserFirstName(state, payload) {
+  [MUTATIONS.SET_PRINCIPAL_USER_FIRST_NAME] (state, payload) {
     state.principalUserFirstName = payload;
   },
-  clearPrincipalUserFirstName(state) {
+  [MUTATIONS.CLEAR_PRINCIPAL_USER_FIRST_NAME] (state) {
     state.principalUserFirstName = null;
   },
 
-  setLoginUser(state, payload) {
+  [MUTATIONS.SET_LOGIN_USER] (state, payload) {
     state.loginUser = payload;
   },
-  clearLoginUser(state) {
+  [MUTATIONS.CLEAR_LOGIN_USER] (state) {
     state.loginUser = null;
   },
   // -------------- PRINCIPAL USER FIRST NAME -------------- //
 
   // -------------- JWT TOKEN EXPIRED -------------- //
-  setJwtAccessTokenExpired(state, payload) {
+  [MUTATIONS.SET_JWT_ACCESS_TOKEN_EXPIRED] (state, payload) {
     state.jwtAccessTokenExpired = payload;
   },
   // -------------- JWT TOKEN EXPIRED -------------- //
 
-  setLastRequestedPath(state, payload) {
+  [MUTATIONS.SET_LAST_REQUESTED_PATH] (state, payload) {
     state.lastRequestedPath = payload;
   },
-  clearLastRequestedPath(state) {
+  [MUTATIONS.CLEAR_LAST_REQUESTED_PATH] (state) {
     state.lastRequestedPath = null;
   },
-  setLastRequestMethod(state, payload) {
+  [MUTATIONS.SET_LAST_REQUEST_METHOD] (state, payload) {
     state.lastRequestMethod = payload;
   },
-  clearLastRequestMethod(state) {
+  [MUTATIONS.CLEAR_LAST_REQUEST_METHOD] (state) {
     state.lastRequestMethod = null;
   }
 }

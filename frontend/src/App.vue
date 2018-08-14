@@ -221,10 +221,10 @@
 </template>
 
 <script>
-  import {mapGetters}      from 'vuex';
-  import {mapActions}      from 'vuex';
-  import componentsDetails from './componentsDetails';
-  import {MUTATIONS}       from './Constants';
+  import {mapGetters}                 from 'vuex';
+  import {mapActions}                 from 'vuex';
+  import componentsDetails            from './componentsDetails';
+  import {MUTATIONS, ACTIONS, EVENTS} from './Constants';
 
   export default {
     data() {
@@ -238,9 +238,9 @@
       }
     },
     methods: {
-      ...mapActions([
-        'logout'
-      ]),
+      ...mapActions({
+        logout: ACTIONS.LOGOUT
+      }),
       showModalAndSendLang: function (lang) {
 
         if (this.$route.path.includes(componentsDetails.loginForm.path) ||
@@ -249,32 +249,32 @@
           this.$route.path.includes('/logout') ||
           this.$route.fullPath.includes(componentsDetails.logoutSuccessful.path)) {
 
-          this.$router.app.$emit('open-dialog-and-send-lang', {
+          this.$router.app.$emit(EVENTS.OPEN_DIALOG_AND_SEND_LANG_EVENT, {
             showDialog: true,
             lang: lang
           });
 
         } else {
-          this.$store.dispatch('setLang', lang)
-            .then(() => {
-              this.$store.commit('setSideNavigation', false);
-            });
+          this.$store.dispatch(ACTIONS.SET_LANG, lang)
+              .then(() => {
+                this.$store.commit(MUTATIONS.SET_SIDE_NAVIGATION, false);
+              });
         }
       },
       switchSideNavigation(value) {
-        this.$store.commit('setSideNavigation', value);
+        this.$store.commit(MUTATIONS.SET_SIDE_NAVIGATION, value);
       },
       homeIconClicked() {
         this.$router.push(this.determineHomeLink);
       },
       stayLogInButtonClicked() {
-        this.$store.dispatch('stayLogIn');
+        this.$store.dispatch(ACTIONS.STAY_LOG_IN);
       },
       logoutButtonClicked() {
         this.logout()
             .then(() => {
               this.$store.commit(MUTATIONS.SET_LOADING, false);
-              this.$store.commit('setJwtAccessTokenExpired', false);
+              this.$store.commit(MUTATIONS.SET_JWT_ACCESS_TOKEN_EXPIRED, false);
             });
       }
     },
@@ -313,7 +313,7 @@
       },
       sideNavigation: {
         get() {return this.$store.getters.getSideNavigation;},
-        set(value) {this.$store.commit('setSideNavigation', value);}
+        set(value) {this.$store.commit(MUTATIONS.SET_SIDE_NAVIGATION, value);}
       },
       languages() {
         if (this.$store.getters.getLang === 'pl') {

@@ -1,17 +1,17 @@
-import Vue                  from 'vue';
-import {myRouter}           from '../main';
-import serverEndpoints      from '../serverEndpoints';
-import componentsDetails    from '../componentsDetails';
-import {eventBus}           from '../main';
-import RequestDetailsHelper from '../classes/utils/RequestDetailsHelper';
-import {MUTATIONS}          from '../Constants';
+import Vue                          from 'vue';
+import {myRouter}                   from '../main';
+import serverEndpoints              from '../serverEndpoints';
+import componentsDetails            from '../componentsDetails';
+import {eventBus}                   from '../main';
+import RequestDetailsHelper         from '../classes/utils/RequestDetailsHelper';
+import {MUTATIONS, ACTIONS, EVENTS} from '../Constants';
 
 export default {
 
-  registerUserAccount({commit}, form) {
+  [ACTIONS.REGISTER_USER_ACCOUNT] ({commit}, form) {
     commit(MUTATIONS.SET_LOADING, true);
     commit(MUTATIONS.CLEAR_SERVER_EXCEPTION_RESPONSE);
-    commit('clearServerSuccessResponse');
+    commit(MUTATIONS.CLEAR_SERVER_SUCCESS_RESPONSE);
     Vue.axios.post(serverEndpoints.registration.registerUserAccount, {
       firstName: form.firstName,
       lastName: form.lastName,
@@ -22,7 +22,7 @@ export default {
     })
       .then(response => {
         commit(MUTATIONS.SET_LOADING, false);
-        commit('setServerSuccessResponse', response.data);
+        commit(MUTATIONS.SET_SERVER_SUCCESS_RESPONSE, response.data);
         window.scrollTo(0, 0);
       })
       .catch(error => {
@@ -32,14 +32,14 @@ export default {
           window.scrollTo(0, 0);
         } else {
           commit(MUTATIONS.SET_LOADING, false);
-          commit('setServerExceptionResponse', error.response.data);
-          commit('clearServerSuccessResponse');
+          commit(MUTATIONS.SET_SERVER_EXCEPTION_RESPONSE, error.response.data);
+          commit(MUTATIONS.CLEAR_SERVER_SUCCESS_RESPONSE);
           window.scrollTo(0, 0);
         }
       });
   },
 
-  login({commit}, credentials) {
+  [ACTIONS.LOGIN] ({commit}, credentials) {
     if (localStorage.getItem('access_token')) {
       localStorage.removeItem('access_token');
     }
@@ -58,7 +58,7 @@ export default {
        .then(response => {
          commit(MUTATIONS.SET_LOADING, false);
          if (response.data.message) {
-           commit('setServerExceptionResponse', response.data);
+           commit(MUTATIONS.SET_SERVER_EXCEPTION_RESPONSE, response.data);
            myRouter.replace(componentsDetails.loginFailed.path);
            window.scrollTo(0, 0);
          } else {
@@ -66,7 +66,7 @@ export default {
            localStorage.setItem('refresh_token', response.data.refreshToken);
            commit(MUTATIONS.LOGIN);
            commit(MUTATIONS.CLEAR_SERVER_EXCEPTION_RESPONSE);
-           commit('clearLoginForm');
+           commit(MUTATIONS.CLEAR_LOGIN_FORM);
            myRouter.push({path: componentsDetails.mainBoard.path});
            window.scrollTo(0 ,0);
          }
@@ -75,85 +75,81 @@ export default {
          if (!error.response) {
            commit(MUTATIONS.SET_SERVER_RUNNING, false);
            commit(MUTATIONS.SET_LOADING, false);
-           commit('clearPrincipalUserFirstName');
+           commit(MUTATIONS.CLEAR_PRINCIPAL_USER_FIRST_NAME);
            window.scrollTo(0, 0);
          } else {
            commit(MUTATIONS.SET_LOADING, false);
-           commit('setServerExceptionResponse', error.response.data);
-           commit('clearServerSuccessResponse');
-           commit('clearPrincipalUserFirstName');
+           commit(MUTATIONS.SET_SERVER_EXCEPTION_RESPONSE, error.response.data);
+           commit(MUTATIONS.CLEAR_SERVER_SUCCESS_RESPONSE);
+           commit(MUTATIONS.CLEAR_PRINCIPAL_USER_FIRST_NAME);
            window.scrollTo(0, 0);
          }
        });
     },
 
-  logout({commit}) {
+  [ACTIONS.LOGOUT] ({commit}) {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     commit(MUTATIONS.LOGOUT);
     commit(MUTATIONS.CLEAR_SERVER_EXCEPTION_RESPONSE);
-    commit('clearServerSuccessResponse');
+    commit(MUTATIONS.CLEAR_SERVER_SUCCESS_RESPONSE);
 
-    commit('clearLoginUser');
+    commit(MUTATIONS.CLEAR_LOGIN_USER);
 
-    commit('clearPrincipalUserFirstName');
-    commit('clearLastRequestedPath');
-    commit('clearLastRequestMethod');
+    commit(MUTATIONS.CLEAR_PRINCIPAL_USER_FIRST_NAME);
+    commit(MUTATIONS.CLEAR_LAST_REQUESTED_PATH);
+    commit(MUTATIONS.CLEAR_LAST_REQUEST_METHOD);
     myRouter.push({path: componentsDetails.logoutSuccessful.path});
     window.scrollTo(0, 0);
   },
 
-  clearServerSuccessResponse({commit}) {
-    commit('clearServerSuccessResponse');
-  },
-
-  setLang({commit}, payload) {
+  [ACTIONS.SET_LANG] ({commit}, payload) {
     commit(MUTATIONS.SET_LANG, payload);
     commit(MUTATIONS.CLEAR_SERVER_EXCEPTION_RESPONSE);
-    commit('clearServerSuccessResponse');
+    commit(MUTATIONS.CLEAR_SERVER_SUCCESS_RESPONSE);
   },
 
-  stayLogIn({commit}) {
+  [ACTIONS.STAY_LOG_IN] ({commit}) {
     Vue.axios.post(serverEndpoints.authentication.refreshToken, {
       refreshToken: localStorage.getItem('refresh_token')
     })
       .then((response) => {
-        commit('setJwtAccessTokenExpired', false);
+        commit(MUTATIONS.SET_JWT_ACCESS_TOKEN_EXPIRED, false);
         localStorage.setItem('access_token', response.data.accessToken);
 
         // -------------------------------------------------------------------------------------------------------------
-        eventBus.$emit('stayLogInEvent');
+        eventBus.$emit(EVENTS.STAY_LOG_IN_EVENT);
         // -------------------------------------------------------------------------------------------------------------
 
         window.scrollTo(0, 0);
       })
       .catch(() => {
-        commit('setJwtAccessTokenExpired', true);
+        commit(MUTATIONS.SET_JWT_ACCESS_TOKEN_EXPIRED, true);
         window.scrollTo(0, 0);
       });
   },
 
-  getPrincipalUserFirstName({commit}) {
+  [ACTIONS.GET_PRINCIPAL_USER_FIRST_NAME] ({commit}) {
     // returning response to component which calls this action
     return Vue.axios.get(serverEndpoints.authentication.principalUser)
               .then(response => {
-                commit('setPrincipalUserFirstName', response.data.firstname);
+                commit(MUTATIONS.SET_PRINCIPAL_USER_FIRST_NAME, response.data.firstname);
                 window.scrollTo(0, 0);
                 // returning response to component which calls this action
                 return response;
               })
               .catch(error => {
                 const test = new RequestDetailsHelper(serverEndpoints.authentication.principalUser, 'getPrincipalUserFirstName');
-                commit('setLastRequestedPath', error.response.data.lastRequestedPath);
-                commit('setLastRequestMethod', error.response.data.lastRequestMethod);
+                commit(MUTATIONS.SET_LAST_REQUESTED_PATH, error.response.data.lastRequestedPath);
+                commit(MUTATIONS.SET_LAST_REQUEST_METHOD, error.response.data.lastRequestMethod);
               });
   },
 
-  getCurrentMileage({commit}, pathVariable) {
+  [ACTIONS.GET_CURRENT_MILEAGE] ({commit}, pathVariable) {
     // returning response to component which calls this action
     return Vue.axios.get(`${serverEndpoints.vehiclesController.getCurrentMileage}/${pathVariable}`)
               .then(response => {
-                commit('setServerSuccessResponse', response.data);
+                commit(MUTATIONS.SET_SERVER_SUCCESS_RESPONSE, response.data);
                 window.scrollTo(0, 0);
                 // returning response to component which calls this action
                 return response;
