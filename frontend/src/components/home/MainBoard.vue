@@ -221,11 +221,11 @@
 </template>
 
 <script>
-  import {mapGetters}      from 'vuex';
-  import componentsDetails from '../../componentsDetails';
-  import serverEndpoints   from '../../serverEndpoints';
-  import {eventBus}        from '../../main';
-  import {MUTATIONS}       from '../../Constants';
+  import {mapGetters}                 from 'vuex';
+  import componentsDetails            from '../../componentsDetails';
+  import serverEndpoints              from '../../serverEndpoints';
+  import {eventBus}                   from '../../main';
+  import {MUTATIONS, ACTIONS, EVENTS} from '../../Constants';
 
   export default {
     data() {
@@ -264,7 +264,7 @@
         this.dialogInputFieldValue = this.mileage.current;
       },
       getCurrentMileage() {
-        this.$store.dispatch('getCurrentMileage', window.btoa(this.ownerEmailAddress))
+        this.$store.dispatch(ACTIONS.GET_CURRENT_MILEAGE, window.btoa(this.ownerEmailAddress))
               .then(response => {
                 this.mileage.current = response.data;
                 this.mileage.new = this.mileage.current;
@@ -275,7 +275,7 @@
               // need to catch() here, not in (actions.js) because I'm setting some component properties above
               .catch(() => {
                 this.$store.commit(MUTATIONS.SET_LOADING, false);
-                this.$store.commit('setJwtAccessTokenExpired', true);
+                this.$store.commit(MUTATIONS.SET_JWT_ACCESS_TOKEN_EXPIRED, true);
                 window.scrollTo(0, 0);
               });
       },
@@ -292,7 +292,7 @@
           // need to catch() here, not in (actions.js) because I'm setting some component properties above
           .catch(() => {
             this.$store.commit(MUTATIONS.SET_LOADING, false);
-            this.$store.commit('setJwtAccessTokenExpired', true);
+            this.$store.commit(MUTATIONS.SET_JWT_ACCESS_TOKEN_EXPIRED, true);
             window.scrollTo(0, 0);
           })
       }
@@ -403,12 +403,12 @@
         this.$router.onReady(() => {
           this.$store.commit(MUTATIONS.SET_LOADING, true);
           // --- PRINCIPAL USER --- //
-          this.$store.dispatch('getPrincipalUserFirstName')
+          this.$store.dispatch(ACTIONS.GET_PRINCIPAL_USER_FIRST_NAME)
               .then(response => {
                 this.ownerEmailAddress = response.data.email;
                 this.ownerId = response.data.id;
 
-                this.$store.commit('setLoginUser', response.data);
+                this.$store.commit(MUTATIONS.SET_LOGIN_USER, response.data);
 
                 // --- CURRENT MILEAGE --- //
                 this.getCurrentMileage();
@@ -417,7 +417,7 @@
               // need to catch() here, not in (actions.js) because I'm setting some component properties above
               .catch(() => {
                 this.$store.commit(MUTATIONS.SET_LOADING, false);
-                this.$store.commit('setJwtAccessTokenExpired', true);
+                this.$store.commit(MUTATIONS.SET_JWT_ACCESS_TOKEN_EXPIRED, true);
                 window.scrollTo(0, 0);
               });
           // --- PRINCIPAL USER --- //
@@ -426,10 +426,10 @@
       }
     },
     created() {
-      eventBus.$on('stayLogInEvent', () => {
+      eventBus.$on(EVENTS.STAY_LOG_IN_EVENT, () => {
         this.$store.commit(MUTATIONS.SET_LOADING, true);
         // --- PRINCIPAL USER --- //
-        this.$store.dispatch('getPrincipalUserFirstName')
+        this.$store.dispatch(ACTIONS.GET_PRINCIPAL_USER_FIRST_NAME)
             .then(response => {
               this.ownerEmailAddress = response.data.email;
               this.ownerId = response.data.id;
@@ -440,7 +440,7 @@
             // need to catch() here, not in (actions.js) because I'm setting some component properties above
             .catch(() => {
               this.$store.commit(MUTATIONS.SET_LOADING, false);
-              this.$store.commit('setJwtAccessTokenExpired', true);
+              this.$store.commit(MUTATIONS.SET_JWT_ACCESS_TOKEN_EXPIRED, true);
               window.scrollTo(0, 0);
             });
         // --- PRINCIPAL USER --- //

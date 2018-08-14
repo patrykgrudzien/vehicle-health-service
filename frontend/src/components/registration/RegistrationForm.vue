@@ -218,9 +218,9 @@
 </template>
 
 <script>
-  import {getMessageFromLocale}                 from '../../main';
-  import {mapGetters, mapMutations, mapActions} from 'vuex';
-  import {MUTATIONS}                            from '../../Constants';
+  import {getMessageFromLocale}       from '../../main';
+  import {mapGetters, mapMutations}   from 'vuex';
+  import {MUTATIONS, ACTIONS, EVENTS} from '../../Constants';
 
   export default {
     data() {
@@ -263,26 +263,24 @@
       }
     },
     methods: {
-      ...mapActions([
-        'clearServerSuccessResponse'
-      ]),
       ...mapMutations({
-        clearServerExceptionResponse: MUTATIONS.CLEAR_SERVER_EXCEPTION_RESPONSE
+        clearServerExceptionResponse: MUTATIONS.CLEAR_SERVER_EXCEPTION_RESPONSE,
+        clearServerSuccessResponse: MUTATIONS.CLEAR_SERVER_SUCCESS_RESPONSE
       }),
       submit() {
         if (this.$refs.myRegistrationForm.validate()) {
-          this.$store.dispatch('registerUserAccount', this.getRegistrationForm);
+          this.$store.dispatch(ACTIONS.REGISTER_USER_ACCOUNT, this.getRegistrationForm);
         } else {
-          this.$store.commit('setServerExceptionResponse', 'Form filled incorrectly!');
+          this.$store.commit(MUTATIONS.SET_SERVER_EXCEPTION_RESPONSE, 'Form filled incorrectly!');
           window.scrollTo(0, 0);
         }
       },
       clearFormFields() {
         this.$refs.myRegistrationForm.reset();
-        this.$store.commit('setRegistrationFormValid', true);
+        this.$store.commit(MUTATIONS.SET_REGISTRATION_FORM_VALID, true);
         // without that code below it does not work
         this.$nextTick(() => {
-          this.$store.commit('setRegistrationFormValid', true);
+          this.$store.commit(MUTATIONS.SET_REGISTRATION_FORM_VALID, true);
         });
       },
       hideDialogWindow() {
@@ -291,12 +289,12 @@
       changeLanguageAndHideDialog() {
         this.tempDialogWindowActive = false;
         setTimeout(() => {
-          this.$store.dispatch('setLang', this.tempLanguage)
+          this.$store.dispatch(ACTIONS.SET_LANG, this.tempLanguage)
             .then(() => {
               this.clearFormFields();
               this.$store.commit(MUTATIONS.SET_SERVER_RUNNING, true);
-              this.$store.commit('setSideNavigation', false);
-              this.$store.commit(MUTATIONS.CLEAR_SERVER_EXCEPTION_RESPONSE);
+              this.$store.commit(MUTATIONS.SET_SIDE_NAVIGATION, false);
+              this.$store.commit('clearServerExceptionResponse');
               this.$store.commit('clearServerSuccessResponse');
             });
         }, 200);
@@ -306,7 +304,7 @@
       }
     },
     created() {
-      this.$router.app.$on('open-dialog-and-send-lang', (payload) => {
+      this.$router.app.$on(EVENTS.OPEN_DIALOG_AND_SEND_LANG_EVENT, (payload) => {
         this.tempDialogWindowActive = payload.showDialog;
         this.tempLanguage = payload.lang;
       })
@@ -340,31 +338,31 @@
       },
       firstName: {
         get() {return this.$store.getters.getRegistrationForm.firstName;},
-        set(value) {this.$store.commit('setRegistrationFormFirstName', value);}
+        set(value) {this.$store.commit(MUTATIONS.SET_REGISTRATION_FORM_FIRST_NAME, value);}
       },
       lastName: {
         get() {return this.$store.getters.getRegistrationForm.lastName;},
-        set(value) {this.$store.commit('setRegistrationFormLastName', value);}
+        set(value) {this.$store.commit(MUTATIONS.SET_REGISTRATION_FORM_LAST_NAME, value);}
       },
       email: {
         get() {return this.$store.getters.getRegistrationForm.email;},
-        set(value) {this.$store.commit('setRegistrationFormEmail', value);}
+        set(value) {this.$store.commit(MUTATIONS.SET_REGISTRATION_FORM_EMAIL, value);}
       },
       confirmedEmail: {
         get() {return this.$store.getters.getRegistrationForm.confirmedEmail;},
-        set(value) {this.$store.commit('setRegistrationFormConfirmedEmail', value);}
+        set(value) {this.$store.commit(MUTATIONS.SET_REGISTRATION_FORM_CONFIRMED_EMAIL, value);}
       },
       password: {
         get() {return this.$store.getters.getRegistrationForm.password;},
-        set(value) {this.$store.commit('setRegistrationFormPassword', value);}
+        set(value) {this.$store.commit(MUTATIONS.SET_REGISTRATION_FORM_PASSWORD, value);}
       },
       confirmedPassword: {
         get() {return this.$store.getters.getRegistrationForm.confirmedPassword;},
-        set(value) {this.$store.commit('setRegistrationFormConfirmedPassword', value);}
+        set(value) {this.$store.commit(MUTATIONS.SET_REGISTRATION_FORM_CONFIRMED_PASSWORD, value);}
       },
       valid: {
         get() {return this.$store.getters.getRegistrationForm.valid;},
-        set(value) {this.$store.commit('setRegistrationFormValid', value);}
+        set(value) {this.$store.commit(MUTATIONS.SET_REGISTRATION_FORM_VALID, value);}
       },
       registerButtonDisabled() {
         return this.firstName === '' || !this.firstName || this.lastName === '' || !this.lastName ||
