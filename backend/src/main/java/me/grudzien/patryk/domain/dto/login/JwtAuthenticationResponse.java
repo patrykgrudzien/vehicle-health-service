@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
 
@@ -20,5 +21,6 @@ public class JwtAuthenticationResponse implements Serializable {
 
 	private String accessToken;
 	private String refreshToken;
+	@JsonProperty("successful")
 	private boolean isSuccessful;
 }

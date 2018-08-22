@@ -1,5 +1,14 @@
 package me.grudzien.patryk.unit.controller.login;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -14,18 +23,11 @@ import org.junit.runner.RunWith;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.controller.login.UserAuthenticationController;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationResponse;
 import me.grudzien.patryk.service.login.UserAuthenticationService;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(controllers = UserAuthenticationController.class, secure = false)
@@ -34,6 +36,9 @@ public class UserAuthenticationControllerTest {
 	@Autowired
 	private MockMvc mockMvc;
 
+	@Autowired
+	private CustomApplicationProperties customApplicationProperties;
+
 	@MockBean
 	private UserAuthenticationService userAuthenticationService;
 
@@ -41,19 +46,19 @@ public class UserAuthenticationControllerTest {
 
 	@Test
 	public void testSuccessfulLogin() throws Exception {
+		final JwtAuthenticationResponse expectedResponse = JwtAuthenticationResponse.Builder()
+		                                                                            .accessToken("test_access_token")
+		                                                                            .refreshToken("test_refresh_token")
+		                                                                            .isSuccessful(Boolean.TRUE)
+		                                                                            .build();
 		// when
-		when(userAuthenticationService.login(any(), any()))
-				.thenReturn(JwtAuthenticationResponse.Builder()
-				                                     .accessToken("test_access_token")
-				                                     .refreshToken("test_refresh_token")
-				                                     .isSuccessful(Boolean.TRUE)
-				                                     .build());
+		when(userAuthenticationService.login(any(), any())).thenReturn(expectedResponse);
 		// login request
 		final JwtAuthenticationRequest loginRequest = new JwtAuthenticationRequest("email", "password", "test_refresh_token");
 		// json conversion
 		final String jsonLoginRequest = objectMapper.writeValueAsString(loginRequest);
 		// request builder
-		final RequestBuilder requestBuilder = post("/auth")
+		final RequestBuilder requestBuilder = post(customApplicationProperties.getEndpoints().getAuthentication().getRoot())
 													  .accept(MediaType.APPLICATION_JSON).content(jsonLoginRequest)
 				                                      .contentType(MediaType.APPLICATION_JSON);
 		// mock call
@@ -61,7 +66,13 @@ public class UserAuthenticationControllerTest {
 		                                   .andDo(print())
 		                                   .andExpect(status().isOk())
 		                                   .andReturn();
+
+		final JwtAuthenticationResponse actualResponse = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), JwtAuthenticationResponse.class);
+
 		// then
 		verify(userAuthenticationService, times(1)).login(any(), any());
+		assertEquals(expectedResponse.getAccessToken(), actualResponse.getAccessToken());
+		assertEquals(expectedResponse.getRefreshToken(), actualResponse.getRefreshToken());
+		assertEquals(expectedResponse.isSuccessful(), actualResponse.isSuccessful());
 	}
 }
