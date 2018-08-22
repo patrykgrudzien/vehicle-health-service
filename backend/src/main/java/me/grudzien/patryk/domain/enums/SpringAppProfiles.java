@@ -11,5 +11,5 @@ public enum SpringAppProfiles {
 	DEV_OFFICE("dev-office"),
 	HEROKU_DEPLOYMENT("heroku-deployment");
 
-	private String ymlName;
+	private final String ymlName;
 }
