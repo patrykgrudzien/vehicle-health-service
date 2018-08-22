@@ -99,19 +99,11 @@ spring:
   # -----> OAuth 2
 #  security:
 #    oauth2:
-#      google:
-#        client:
-#          clientId: 289764469472-iai5kgpta7nofavbt7c11qio93tb3r6c.apps.googleusercontent.com
-#          clientSecret: WTVtIHyf6_908WDtHMfnh5pc
-#          accessTokenUri: https://www.googleapis.com/oauth2/v3/token
-#          userAuthorizationUri: https://accounts.google.com/o/oauth2/auth
-#          tokenName: oauth_token
-#          authenticationScheme: query
-#          clientAuthenticationScheme: form
-#          scope: profile
-#        resource:
-#          userInfoUri: https://www.googleapis.com/userinfo/v2/me
-#          preferTokenInfo: false
+#      client:
+#        registration:
+#          google:
+#            client-id: xxx
+#            client-secret: xxx
 
 ---
 
