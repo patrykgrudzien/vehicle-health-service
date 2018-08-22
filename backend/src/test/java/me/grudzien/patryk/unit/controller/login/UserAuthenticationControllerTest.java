@@ -1,0 +1,67 @@
+package me.grudzien.patryk.unit.controller.login;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.RequestBuilder;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import me.grudzien.patryk.controller.login.UserAuthenticationController;
+import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
+import me.grudzien.patryk.domain.dto.login.JwtAuthenticationResponse;
+import me.grudzien.patryk.service.login.UserAuthenticationService;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@RunWith(SpringRunner.class)
+@WebMvcTest(controllers = UserAuthenticationController.class, secure = false)
+public class UserAuthenticationControllerTest {
+
+	@Autowired
+	private MockMvc mockMvc;
+
+	@MockBean
+	private UserAuthenticationService userAuthenticationService;
+
+	private final ObjectMapper objectMapper = new ObjectMapper();
+
+	@Test
+	public void testSuccessfulLogin() throws Exception {
+		// when
+		when(userAuthenticationService.login(any(), any()))
+				.thenReturn(JwtAuthenticationResponse.Builder()
+				                                     .accessToken("test_access_token")
+				                                     .refreshToken("test_refresh_token")
+				                                     .isSuccessful(Boolean.TRUE)
+				                                     .build());
+		// login request
+		final JwtAuthenticationRequest loginRequest = new JwtAuthenticationRequest("email", "password", "test_refresh_token");
+		// json conversion
+		final String jsonLoginRequest = objectMapper.writeValueAsString(loginRequest);
+		// request builder
+		final RequestBuilder requestBuilder = post("/auth")
+													  .accept(MediaType.APPLICATION_JSON).content(jsonLoginRequest)
+				                                      .contentType(MediaType.APPLICATION_JSON);
+		// mock call
+		final MvcResult mvcResult = mockMvc.perform(requestBuilder)
+		                                   .andDo(print())
+		                                   .andExpect(status().isOk())
+		                                   .andReturn();
+		// then
+		verify(userAuthenticationService, times(1)).login(any(), any());
+	}
+}
