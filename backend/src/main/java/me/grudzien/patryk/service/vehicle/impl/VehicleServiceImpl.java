@@ -49,14 +49,14 @@ public class VehicleServiceImpl implements VehicleService {
 	@Override
 	public Vehicle findByCustomUserId(final String customUserId) {
 		final Long decodedCustomUserId = requestsDecoder.decodeStringParamAndConvertToLong(customUserId);
-		return Optional.ofNullable(vehicleRepository.findByCustomUserId(decodedCustomUserId))
+		return Optional.ofNullable(vehicleRepository.findByCustomUser_Id(decodedCustomUserId))
 		               .orElseThrow(() -> new VehicleNotFoundException("No vehicle found for specified userId: " + decodedCustomUserId));
 	}
 
 	@Override
 	public Vehicle findByCustomUserEmail(final String customUserEmail) {
 		final String decodedCustomUserEmail = requestsDecoder.decodeStringParam(customUserEmail);
-		return Optional.ofNullable(vehicleRepository.findByCustomUserEmail(decodedCustomUserEmail))
+		return Optional.ofNullable(vehicleRepository.findByCustomUser_Email(decodedCustomUserEmail))
 		               .orElseThrow(() -> new VehicleNotFoundException("No vehicle found for specified user email: " + decodedCustomUserEmail));
 	}
 
