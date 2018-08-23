@@ -11,9 +11,9 @@ import me.grudzien.patryk.domain.entities.vehicle.Vehicle;
 
 public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 
-	Vehicle findByCustomUserId(Long customUserId);
+	Vehicle findByCustomUser_Id(Long customUserId);
 
-	Vehicle findByCustomUserEmail(String customUserEmail);
+	Vehicle findByCustomUser_Email(String customUserEmail);
 
 	@SuppressWarnings("SpringDataRepositoryMethodReturnTypeInspection")
 	@Query("SELECT new me.grudzien.patryk.domain.dto.vehicle.VehicleDto(v.vehicleType, v.engine.engineType, v.mileage, v.customUser.id, v.customUser.email) "
