@@ -32,15 +32,15 @@ import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 
 @Log4j2
 @Component
-public class TestUserBootLoader implements CommandLineRunner {
+public class TestUserInitializer implements CommandLineRunner {
 
 	private final CustomUserRepository customUserRepository;
 	private final BCryptPasswordEncoder passwordEncoder;
 	private final Environment environment;
 
-	public TestUserBootLoader(final CustomUserRepository customUserRepository,
-	                          final BCryptPasswordEncoder passwordEncoder,
-	                          final Environment environment) {
+	public TestUserInitializer(final CustomUserRepository customUserRepository,
+	                           final BCryptPasswordEncoder passwordEncoder,
+	                           final Environment environment) {
 
 		Preconditions.checkNotNull(customUserRepository, "customUserRepository cannot be null!");
 		Preconditions.checkNotNull(passwordEncoder, "passwordEncoder cannot be null!");
