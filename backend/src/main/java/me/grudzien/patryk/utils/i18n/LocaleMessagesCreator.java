@@ -1,5 +1,7 @@
 package me.grudzien.patryk.utils.i18n;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,10 @@ public class LocaleMessagesCreator {
 
 	private static final String DEFAULT_MESSAGE = "NO MESSAGE FOUND IN PROPERTIES FILE";
 
+	@Setter
+	@Getter
+	private String createdMessage;
+
 	private final MessageSource messageSource;
 	private final LocaleMessagesHelper localeMessagesHelper;
 
@@ -25,17 +31,20 @@ public class LocaleMessagesCreator {
 	}
 
 	public String buildLocaleMessage(final String messageCode) {
-		return messageSource.getMessage(messageCode, new Object[]{}, DEFAULT_MESSAGE, LocaleMessagesHelper.getLocale());
+		setCreatedMessage(messageSource.getMessage(messageCode, new Object[]{}, DEFAULT_MESSAGE, LocaleMessagesHelper.getLocale()));
+		return createdMessage;
 	}
 
 	public String buildLocaleMessageWithParam(final String messageCode, @Nullable final Object param) {
-		return localeMessagesHelper.removeSquareBracketsFromMessage(messageSource.getMessage(messageCode, new Object[]{param}, DEFAULT_MESSAGE,
-		                                                                                     LocaleMessagesHelper.getLocale()));
+		setCreatedMessage(localeMessagesHelper.removeSquareBracketsFromMessage(messageSource.getMessage(messageCode, new Object[]{param}, DEFAULT_MESSAGE,
+		                                                                                                LocaleMessagesHelper.getLocale())));
+		return createdMessage;
 	}
 
 	@SafeVarargs
 	public final String buildLocaleMessageWithParams(final String messageCode, @Nullable final List<Object>... params) {
-		return localeMessagesHelper.removeSquareBracketsFromMessage(messageSource.getMessage(messageCode, params, DEFAULT_MESSAGE,
-		                                                                                     LocaleMessagesHelper.getLocale()));
+		setCreatedMessage(localeMessagesHelper.removeSquareBracketsFromMessage(messageSource.getMessage(messageCode, params, DEFAULT_MESSAGE,
+		                                                                                                LocaleMessagesHelper.getLocale())));
+		return createdMessage;
 	}
 }
