@@ -94,17 +94,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		        .authorizeRequests()
 					// allow calls for request methods of "OPTIONS" type -> (CORS purpose) without checking JWT token
 					// (this helps to avoid duplicate calls before the specific ones)
-					.antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+					.mvcMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 					// /auth
-					.antMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getAuthentication().getRoot()).permitAll()
+					.mvcMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getAuthentication().getRoot()).permitAll()
 					// /auth/**
-					.antMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getAuthentication().getRoot() + "/**").permitAll()
+					.mvcMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getAuthentication().getRoot() + "/**").permitAll()
 			        // /registration/**  (/register-user-account)
-			        .antMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getRegistration().getRoot() + "/**").permitAll()
+			        .mvcMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getRegistration().getRoot() + "/**").permitAll()
 					// /registration/**
-					.antMatchers(HttpMethod.GET, customApplicationProperties.getEndpoints().getRegistration().getRoot() + "/**").permitAll()
+					.mvcMatchers(HttpMethod.GET, customApplicationProperties.getEndpoints().getRegistration().getRoot() + "/**").permitAll()
 					// /refresh-token
-					.antMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getAuthentication().getRefreshToken()).permitAll()
+					.mvcMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getAuthentication().getRefreshToken()).permitAll()
 			        // require authentication via JWT
 					.anyRequest().authenticated();
 
@@ -133,30 +133,30 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		web.ignoring()
 		        // allow calls for request methods of "OPTIONS" type -> (CORS purpose) without checking JWT token
 		        // (this helps to avoid duplicate calls before the specific ones)
-		        .antMatchers(HttpMethod.OPTIONS, "/**")
+		        .mvcMatchers(HttpMethod.OPTIONS, "/**")
 		            .and()
 		   .ignoring()
 		        // /auth
-		        .antMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getAuthentication().getRoot())
+		        .mvcMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getAuthentication().getRoot())
 					.and()
 		    .ignoring()
 		        // /auth/**
-		        .antMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getAuthentication().getRoot() + "/**")
+		        .mvcMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getAuthentication().getRoot() + "/**")
 		            .and()
 			.ignoring()
 		        // /registration/**  (/register-user-account)
-				.antMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getRegistration().getRoot() + "/**")
+				.mvcMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getRegistration().getRoot() + "/**")
 					.and()
 			.ignoring()
 		        // /registration/**
-				.antMatchers(HttpMethod.GET, customApplicationProperties.getEndpoints().getRegistration().getRoot() + "/**")
+				.mvcMatchers(HttpMethod.GET, customApplicationProperties.getEndpoints().getRegistration().getRoot() + "/**")
 					.and()
 		   .ignoring()
 		        // /refresh-token
-		        .antMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getAuthentication().getRefreshToken())
+		        .mvcMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getAuthentication().getRefreshToken())
 		            .and()
 			.ignoring()
-                .antMatchers(HttpMethod.GET,
+                .mvcMatchers(HttpMethod.GET,
                              "/",
                              "/favicon.ico",
                              "/static/**",
@@ -170,7 +170,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                              "/static/js/**")
 					.and()
 			.ignoring()
-				.antMatchers(HttpMethod.GET,
+				.mvcMatchers(HttpMethod.GET,
 				             "/about-me",
 				             "/registration-form",
 				             "/registration-confirmed",
