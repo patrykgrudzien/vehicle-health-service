@@ -21,9 +21,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.google.common.base.Preconditions;
 
+import static me.grudzien.patryk.Constants.Endpoints.AUTH;
+import static me.grudzien.patryk.Constants.Endpoints.REFRESH_TOKEN;
+import static me.grudzien.patryk.Constants.Endpoints.REGISTRATION;
+
+import me.grudzien.patryk.Constants;
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.config.filters.JwtAuthorizationTokenFilter;
 import me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter;
+import me.grudzien.patryk.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
 import me.grudzien.patryk.service.security.MyUserDetailsService;
 import me.grudzien.patryk.utils.log.LogMarkers;
 
@@ -79,34 +85,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(final HttpSecurity httpSecurity) throws Exception {
-		httpSecurity
-				// don't need CSRF because JWT token is invulnerable
-				.csrf().disable()
-				// show message to the user that some resource requires authentication
-				.exceptionHandling()
-					.authenticationEntryPoint(customAuthenticationEntryPoint)
-                        .and()
-                // don't create session
-                .sessionManagement()
-					.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                        .and()
-                // filters
-		        .authorizeRequests()
-					// allow calls for request methods of "OPTIONS" type -> (CORS purpose) without checking JWT token
-					// (this helps to avoid duplicate calls before the specific ones)
-					.mvcMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-					// /auth
-					.mvcMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getAuthentication().getRoot()).permitAll()
-					// /auth/**
-					.mvcMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getAuthentication().getRoot() + "/**").permitAll()
-			        // /registration/**  (/register-user-account)
-			        .mvcMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getRegistration().getRoot() + "/**").permitAll()
-					// /registration/**
-					.mvcMatchers(HttpMethod.GET, customApplicationProperties.getEndpoints().getRegistration().getRoot() + "/**").permitAll()
-					// /refresh-token
-					.mvcMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getAuthentication().getRefreshToken()).permitAll()
-			        // require authentication via JWT
-					.anyRequest().authenticated();
+		// don't create session - set creation policy to STATELESS
+		HttpSecurityConfigurer.sessionCreationPolicy(httpSecurity);
+
+		// we are stateless so "/logout" endpoint not needed
+		HttpSecurityConfigurer.logout(httpSecurity);
+
+		// show message to the user that some resource requires authentication
+		HttpSecurityConfigurer.exceptionHandling(httpSecurity, customAuthenticationEntryPoint);
 
 		// JWT filter
 		final JwtAuthorizationTokenFilter authorizationTokenFilter = new JwtAuthorizationTokenFilter(userDetailsService(), customApplicationProperties);
@@ -125,6 +111,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 * {@link me.grudzien.patryk.utils.i18n.LocaleMessagesCreator#buildLocaleMessage(String)} or to take right email template inside:
 		 * {@link me.grudzien.patryk.service.registration.impl.EmailServiceImpl#sendMessageUsingTemplate(me.grudzien.patryk.domain.dto.registration.EmailDto)}.
 		 */
+
+		// don't need CSRF because JWT token is invulnerable
+		HttpSecurityConfigurer.csrf(httpSecurity);
+
+		// CORS configuration
+		HttpSecurityConfigurer.cors(httpSecurity);
+
+		// oauth2 clients
+		HttpSecurityConfigurer.oauth2Client(httpSecurity, customApplicationProperties);
+
+		// mvcMatchers
+		HttpSecurityConfigurer.authorizeRequests(httpSecurity, customApplicationProperties);
 	}
 
 	@Override
@@ -180,5 +178,59 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				             "/main-board",
 				             "/main-board/**",
 				             "/authentication-required");
+	}
+
+	private static final class HttpSecurityConfigurer {
+
+		static void sessionCreationPolicy(final HttpSecurity httpSecurity) throws Exception {
+			httpSecurity.sessionManagement()
+			            .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		}
+
+		static void logout(final HttpSecurity httpSecurity) throws Exception {
+			httpSecurity.logout()
+			            .disable();
+		}
+
+		static void csrf(final HttpSecurity httpSecurity) throws Exception {
+			httpSecurity.csrf()
+			            .disable();
+		}
+
+		static void cors(final HttpSecurity httpSecurity) throws Exception {
+			httpSecurity.cors();
+		}
+
+		static void exceptionHandling(final HttpSecurity httpSecurity, final CustomAuthenticationEntryPoint customAuthenticationEntryPoint) throws Exception {
+			httpSecurity.exceptionHandling()
+			            .authenticationEntryPoint(customAuthenticationEntryPoint);
+		}
+
+		static void authorizeRequests(final HttpSecurity httpSecurity, final CustomApplicationProperties customApplicationProperties) throws Exception {
+			httpSecurity
+					.authorizeRequests()
+					// allow calls for request methods of "OPTIONS" type -> (CORS purpose) without checking JWT token
+					// (this helps to avoid duplicate calls before the specific ones)
+					.mvcMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+					// /auth
+					.mvcMatchers(HttpMethod.POST, AUTH).permitAll()
+					// /auth/**
+					.mvcMatchers(HttpMethod.POST, AUTH + "/**").permitAll()
+					// /registration/**  (/register-user-account)
+					.mvcMatchers(HttpMethod.POST, REGISTRATION + "/**").permitAll()
+					// /registration/**
+					.mvcMatchers(HttpMethod.GET, REGISTRATION + "/**").permitAll()
+					// /refresh-token
+					.mvcMatchers(HttpMethod.POST, REFRESH_TOKEN).permitAll()
+					// require authentication via JWT
+					.anyRequest().authenticated();
+		}
+
+		static void oauth2Client(final HttpSecurity httpSecurity, final CustomApplicationProperties customApplicationProperties) throws Exception {
+			httpSecurity.oauth2Login()
+			            .loginPage(Constants.OAuth2.LOGIN_PAGE)
+			            .authorizationEndpoint()
+							.authorizationRequestRepository(new HttpCookieOAuth2AuthorizationRequestRepository(customApplicationProperties));
+		}
 	}
 }
