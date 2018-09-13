@@ -34,20 +34,20 @@ public class VehicleController {
 		this.requestsDecoder = requestsDecoder;
 	}
 
-	@GetMapping("/vehicle/{ownerEmailAddress}")
+	@GetMapping("${custom.properties.endpoints.vehicle-resource.get-vehicle}")
 	public VehicleDto getVehicleDtoForOwnerEmailAddress(@PathVariable("ownerEmailAddress") final String ownerEmailAddress,
 	                                                    @SuppressWarnings("unused") final WebRequest webRequest) {
 		return vehicleService.findDtoByOwnerEmailAddress(ownerEmailAddress);
 	}
 
-	@GetMapping("/vehicle/get-current-mileage/{ownerEmailAddress}")
+	@GetMapping("${custom.properties.endpoints.vehicle-resource.get-current-mileage}")
 	@PreAuthorize("@requestParamPathVariableGuard.isUserEmailAuthenticated(#ownerEmailAddress)")
 	public Long getVehicleCurrentMileage(@PathVariable("ownerEmailAddress") final String ownerEmailAddress,
 	                                     @SuppressWarnings("unused") final WebRequest webRequest) {
 		return vehicleService.getVehicleCurrentMileage(ownerEmailAddress);
 	}
 
-	@PutMapping("/vehicle/update-current-mileage/{ownerEmailAddress}")
+	@PutMapping("${custom.properties.endpoints.vehicle-resource.update-current-mileage}")
 	public void updateVehicleCurrentMileage(@RequestBody final VehicleDto vehicleDto,
 	                                        @PathVariable("ownerEmailAddress") final String ownerEmailAddress,
 	                                        @SuppressWarnings("unused") final WebRequest webRequest) {
