@@ -26,9 +26,9 @@ custom:
         app-url: https://vehicle-health-service.herokuapp.com
       vehicle-resource:
         root: /vehicles
-        get-vehicle: /vehicles/vehicle/{ownerEmailAddress}
-        get-current-mileage: /vehicles/vehicle/get-current-mileage/{ownerEmailAddress}
-        update-current-mileage: /vehicles/vehicle/update-current-mileage/{ownerEmailAddress}
+        get-vehicle: "/vehicle/{ownerEmailAddress}"
+        get-current-mileage: "/vehicle/get-current-mileage/{ownerEmailAddress}"
+        update-current-mileage: "/vehicle/update-current-mileage/{ownerEmailAddress}"
     cors-origins:
       front-end-module: http://localhost:8080
       back-end-module: http://localhost:8088
