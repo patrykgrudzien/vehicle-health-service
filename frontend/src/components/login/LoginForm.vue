@@ -247,7 +247,7 @@
       },
       googleButtonClicked() {
         console.log('googleButtonClicked');
-        this.axios.get('/sso/google');
+        window.location.href = 'http://localhost:8088/oauth2/authorization/google';
       },
       facebookButtonClicked() {
         console.log('facebookButtonClicked');
