@@ -6,11 +6,14 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import me.grudzien.patryk.domain.enums.SpringAppProfiles;
 import me.grudzien.patryk.utils.log.LogMarkers;
+
+import static me.grudzien.patryk.Constants.FrontendRoutes;
 
 @Log4j2
 @Controller
-@Profile("heroku-deployment")
+@Profile(SpringAppProfiles.YmlName.HEROKU_DEPLOYMENT)
 public class HerokuForwardingController {
 
 	/**
@@ -23,8 +26,9 @@ public class HerokuForwardingController {
 	 * @return bundled index.html on page reloading, going back/forward browser action.
 	 */
 	@RequestMapping({
-            "/server-health", "/about-me", "/registration-form", "/registration-confirmed", "/registration-confirmed/**",
-            "/login", "/main-board", "/main-board/**", "/authentication-required"
+			FrontendRoutes.ABOUT_ME, FrontendRoutes.REGISTRATION_FORM, FrontendRoutes.REGISTRATION_CONFIRMED,
+			FrontendRoutes.REGISTRATION_CONFIRMED_WILDCARD, FrontendRoutes.LOGIN, FrontendRoutes.MAIN_BOARD,
+			FrontendRoutes.MAIN_BOARD_WILDCARD, FrontendRoutes.AUTHENTICATION_REQUIRED
 	})
 	public String forwardHerokuRequests() {
 		log.info(LogMarkers.CONTROLLER_MARKER, "Request forwarded to index.html.");
