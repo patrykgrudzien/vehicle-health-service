@@ -19,4 +19,5 @@ public final class LogMarkers {
 	public static final Marker EXCEPTION_MARKER = MarkerManager.getMarker("EXCEPTION");
 	public static final Marker ASPECT_MARKER = MarkerManager.getMarker("ASPECT");
 	public static final Marker SECURITY_MARKER = MarkerManager.getMarker("SECURITY");
+	public static final Marker OAUTH2_MARKER = MarkerManager.getMarker("OAUTH2");
 }
