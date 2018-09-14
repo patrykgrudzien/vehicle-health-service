@@ -17,6 +17,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.google.common.base.Preconditions;
@@ -25,6 +26,7 @@ import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.config.filters.JwtAuthorizationTokenFilter;
 import me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter;
 import me.grudzien.patryk.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
+import me.grudzien.patryk.oauth2.OAuth2AuthenticationSuccessHandler;
 import me.grudzien.patryk.service.security.MyUserDetailsService;
 import me.grudzien.patryk.utils.log.LogMarkers;
 
@@ -41,6 +43,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private final UserDetailsService userDetailsService;
 	private final CustomApplicationProperties customApplicationProperties;
 	private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+	private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
 
 	/**
 	 * @Qualifier for {@link org.springframework.security.core.userdetails.UserDetailsService} is used here because there is also
@@ -50,15 +53,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	public SecurityConfig(@Qualifier(MyUserDetailsService.BEAN_NAME) final UserDetailsService userDetailsService,
 	                      final CustomApplicationProperties customApplicationProperties,
-	                      final CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
+	                      final CustomAuthenticationEntryPoint customAuthenticationEntryPoint,
+	                      final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler) {
 
 		Preconditions.checkNotNull(userDetailsService, "userDetailsService cannot be null!");
 		Preconditions.checkNotNull(customApplicationProperties, "customApplicationProperties cannot be null!");
 		Preconditions.checkNotNull(customAuthenticationEntryPoint, "customAuthenticationEntryPoint cannot be null!");
+		Preconditions.checkNotNull(oAuth2AuthenticationSuccessHandler, "oAuth2AuthenticationSuccessHandler cannot be null!");
 
 		this.userDetailsService = userDetailsService;
 		this.customApplicationProperties = customApplicationProperties;
 		this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
+		this.oAuth2AuthenticationSuccessHandler = oAuth2AuthenticationSuccessHandler;
 	}
 
 	@Bean
@@ -93,23 +99,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		// show message to the user that some resource requires authentication
 		HttpSecurityConfigurer.exceptionHandling(httpSecurity, customAuthenticationEntryPoint);
 
-		// JWT filter
-		final JwtAuthorizationTokenFilter authorizationTokenFilter = new JwtAuthorizationTokenFilter(userDetailsService(), customApplicationProperties);
-		httpSecurity.addFilterBefore(authorizationTokenFilter, UsernamePasswordAuthenticationFilter.class);
-
-		// ServletExceptionHandlerFilter (it is first and allows JwtAuthorizationTokenFilter to process).
-		// Catches exceptions thrown by JwtAuthorizationTokenFilter.
-		final ServletExceptionHandlerFilter servletExceptionHandlerFilter = new ServletExceptionHandlerFilter();
-		httpSecurity.addFilterBefore(servletExceptionHandlerFilter, JwtAuthorizationTokenFilter.class);
-
 		/**
-		 * There is also another filter {@link me.grudzien.patryk.config.filters.LocaleDeterminerFilter} which is registered in
-		 * {@link me.grudzien.patryk.config.filters.registry.FiltersRegistryConfig#registerLocaleDeterminerFilter()}
-		 * to disable Spring Security on some endpoints like: "/auth", "/registration".
-		 * This filter is required to determine "Locale" which is needed to create appropriate messages using:
-		 * {@link me.grudzien.patryk.utils.i18n.LocaleMessagesCreator#buildLocaleMessage(String)} or to take right email template inside:
-		 * {@link me.grudzien.patryk.service.registration.impl.EmailServiceImpl#sendMessageUsingTemplate(me.grudzien.patryk.domain.dto.registration.EmailDto)}.
+		 * {@link me.grudzien.patryk.config.filters.JwtAuthorizationTokenFilter}
+		 * &&
+		 * {@link me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter}
 		 */
+		HttpSecurityConfigurer.tokenAuthentication(httpSecurity, userDetailsService(), customApplicationProperties);
 
 		// don't need CSRF because JWT token is invulnerable
 		HttpSecurityConfigurer.csrf(httpSecurity);
@@ -118,7 +113,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		HttpSecurityConfigurer.cors(httpSecurity);
 
 		// oauth2 clients
-		HttpSecurityConfigurer.oauth2Client(httpSecurity, customApplicationProperties);
+		HttpSecurityConfigurer.oauth2Client(httpSecurity, customApplicationProperties, oAuth2AuthenticationSuccessHandler);
 
 		// mvcMatchers
 		HttpSecurityConfigurer.authorizeRequests(httpSecurity);
@@ -200,6 +195,27 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			            .authenticationEntryPoint(customAuthenticationEntryPoint);
 		}
 
+		static void tokenAuthentication(final HttpSecurity httpSecurity, final UserDetailsService userDetailsService,
+		                                final CustomApplicationProperties customApplicationProperties) {
+			// JWT filter
+			final JwtAuthorizationTokenFilter authorizationTokenFilter = new JwtAuthorizationTokenFilter(userDetailsService, customApplicationProperties);
+			httpSecurity.addFilterBefore(authorizationTokenFilter, UsernamePasswordAuthenticationFilter.class);
+
+			// ServletExceptionHandlerFilter (it is first and allows JwtAuthorizationTokenFilter to process).
+			// Catches exceptions thrown by JwtAuthorizationTokenFilter.
+			final ServletExceptionHandlerFilter servletExceptionHandlerFilter = new ServletExceptionHandlerFilter();
+			httpSecurity.addFilterBefore(servletExceptionHandlerFilter, JwtAuthorizationTokenFilter.class);
+
+			/**
+			 * There is also another filter {@link me.grudzien.patryk.config.filters.LocaleDeterminerFilter} which is registered in
+			 * {@link me.grudzien.patryk.config.filters.registry.FiltersRegistryConfig#registerLocaleDeterminerFilter()}
+			 * to disable Spring Security on some endpoints like: "/auth", "/registration".
+			 * This filter is required to determine "Locale" which is needed to create appropriate messages using:
+			 * {@link me.grudzien.patryk.utils.i18n.LocaleMessagesCreator#buildLocaleMessage(String)} or to take right email template inside:
+			 * {@link me.grudzien.patryk.service.registration.impl.EmailServiceImpl#sendMessageUsingTemplate(me.grudzien.patryk.domain.dto.registration.EmailDto)}.
+			 */
+		}
+
 		static void authorizeRequests(final HttpSecurity httpSecurity) throws Exception {
 			httpSecurity
 					.authorizeRequests()
@@ -220,11 +236,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.anyRequest().authenticated();
 		}
 
-		static void oauth2Client(final HttpSecurity httpSecurity, final CustomApplicationProperties customApplicationProperties) throws Exception {
+		static void oauth2Client(final HttpSecurity httpSecurity, final CustomApplicationProperties customApplicationProperties,
+		                         final AuthenticationSuccessHandler authenticationSuccessHandler) throws Exception {
 			httpSecurity.oauth2Login()
 			            .loginPage(OAuth2.LOGIN_PAGE)
 			            .authorizationEndpoint()
-							.authorizationRequestRepository(new HttpCookieOAuth2AuthorizationRequestRepository(customApplicationProperties));
+							.authorizationRequestRepository(new HttpCookieOAuth2AuthorizationRequestRepository(customApplicationProperties))
+								.and()
+                        .successHandler(authenticationSuccessHandler);
 		}
 	}
 }
