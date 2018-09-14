@@ -33,7 +33,7 @@ public enum AppFLow {
 			"Cannot redirect user to ({}) url."
 	);
 
-	private String determineUrlLogInfoMessage;
-	private String successfulRedirectionLogInfoMessage;
-	private String redirectionExceptionLogErrorMessage;
+	private final String determineUrlLogInfoMessage;
+	private final String successfulRedirectionLogInfoMessage;
+	private final String redirectionExceptionLogErrorMessage;
 }
