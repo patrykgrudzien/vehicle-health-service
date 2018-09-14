@@ -21,17 +21,16 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.google.common.base.Preconditions;
 
-import static me.grudzien.patryk.Constants.Endpoints.AUTH;
-import static me.grudzien.patryk.Constants.Endpoints.REFRESH_TOKEN;
-import static me.grudzien.patryk.Constants.Endpoints.REGISTRATION;
-
-import me.grudzien.patryk.Constants;
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.config.filters.JwtAuthorizationTokenFilter;
 import me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter;
 import me.grudzien.patryk.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
 import me.grudzien.patryk.service.security.MyUserDetailsService;
 import me.grudzien.patryk.utils.log.LogMarkers;
+
+import static me.grudzien.patryk.Constants.Endpoints;
+import static me.grudzien.patryk.Constants.FrontendRoutes;
+import static me.grudzien.patryk.Constants.OAuth2;
 
 @Log4j2
 @Configuration
@@ -122,7 +121,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		HttpSecurityConfigurer.oauth2Client(httpSecurity, customApplicationProperties);
 
 		// mvcMatchers
-		HttpSecurityConfigurer.authorizeRequests(httpSecurity, customApplicationProperties);
+		HttpSecurityConfigurer.authorizeRequests(httpSecurity);
 	}
 
 	@Override
@@ -135,23 +134,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		            .and()
 		   .ignoring()
 		        // /auth
-		        .mvcMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getAuthentication().getRoot())
+		        .mvcMatchers(HttpMethod.POST, Endpoints.AUTH)
 					.and()
 		    .ignoring()
 		        // /auth/**
-		        .mvcMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getAuthentication().getRoot() + "/**")
+		        .mvcMatchers(HttpMethod.POST, Endpoints.AUTH + "/**")
 		            .and()
 			.ignoring()
 		        // /registration/**  (/register-user-account)
-				.mvcMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getRegistration().getRoot() + "/**")
+				.mvcMatchers(HttpMethod.POST, Endpoints.REGISTRATION + "/**")
 					.and()
 			.ignoring()
 		        // /registration/**
-				.mvcMatchers(HttpMethod.GET, customApplicationProperties.getEndpoints().getRegistration().getRoot() + "/**")
+				.mvcMatchers(HttpMethod.GET, Endpoints.REGISTRATION + "/**")
 					.and()
 		   .ignoring()
 		        // /refresh-token
-		        .mvcMatchers(HttpMethod.POST, customApplicationProperties.getEndpoints().getAuthentication().getRefreshToken())
+		        .mvcMatchers(HttpMethod.POST, Endpoints.REFRESH_TOKEN)
 		            .and()
 			.ignoring()
                 .mvcMatchers(HttpMethod.GET,
@@ -159,25 +158,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                              "/favicon.ico",
                              "/static/**",
                              "/static/*.html",
-                             "/static/engine-1.jpg",
-                             "/static/engine-2.jpg",
-                             "/static/engine-3.jpg",
-                             "/static/engine-4.jpg",
-                             "/static/engine-5.jpg",
+                             "/static/*.jpg",
                              "/static/css/**",
                              "/static/js/**")
 					.and()
 			.ignoring()
 				.mvcMatchers(HttpMethod.GET,
-				             "/about-me",
-				             "/registration-form",
-				             "/registration-confirmed",
-				             "/registration-confirmed/**",
-				             "/server-health",
-				             "/login",
-				             "/main-board",
-				             "/main-board/**",
-				             "/authentication-required");
+				             FrontendRoutes.ABOUT_ME,
+				             FrontendRoutes.REGISTRATION_FORM,
+				             FrontendRoutes.REGISTRATION_CONFIRMED,
+				             FrontendRoutes.REGISTRATION_CONFIRMED_WILDCARD,
+				             FrontendRoutes.LOGIN,
+				             FrontendRoutes.MAIN_BOARD,
+				             FrontendRoutes.MAIN_BOARD_WILDCARD,
+				             FrontendRoutes.AUTHENTICATION_REQUIRED);
 	}
 
 	private static final class HttpSecurityConfigurer {
@@ -206,29 +200,29 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			            .authenticationEntryPoint(customAuthenticationEntryPoint);
 		}
 
-		static void authorizeRequests(final HttpSecurity httpSecurity, final CustomApplicationProperties customApplicationProperties) throws Exception {
+		static void authorizeRequests(final HttpSecurity httpSecurity) throws Exception {
 			httpSecurity
 					.authorizeRequests()
 					// allow calls for request methods of "OPTIONS" type -> (CORS purpose) without checking JWT token
 					// (this helps to avoid duplicate calls before the specific ones)
 					.mvcMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 					// /auth
-					.mvcMatchers(HttpMethod.POST, AUTH).permitAll()
+					.mvcMatchers(HttpMethod.POST, Endpoints.AUTH).permitAll()
 					// /auth/**
-					.mvcMatchers(HttpMethod.POST, AUTH + "/**").permitAll()
+					.mvcMatchers(HttpMethod.POST, Endpoints.AUTH + "/**").permitAll()
 					// /registration/**  (/register-user-account)
-					.mvcMatchers(HttpMethod.POST, REGISTRATION + "/**").permitAll()
+					.mvcMatchers(HttpMethod.POST, Endpoints.REGISTRATION + "/**").permitAll()
 					// /registration/**
-					.mvcMatchers(HttpMethod.GET, REGISTRATION + "/**").permitAll()
+					.mvcMatchers(HttpMethod.GET, Endpoints.REGISTRATION + "/**").permitAll()
 					// /refresh-token
-					.mvcMatchers(HttpMethod.POST, REFRESH_TOKEN).permitAll()
+					.mvcMatchers(HttpMethod.POST, Endpoints.REFRESH_TOKEN).permitAll()
 					// require authentication via JWT
 					.anyRequest().authenticated();
 		}
 
 		static void oauth2Client(final HttpSecurity httpSecurity, final CustomApplicationProperties customApplicationProperties) throws Exception {
 			httpSecurity.oauth2Login()
-			            .loginPage(Constants.OAuth2.LOGIN_PAGE)
+			            .loginPage(OAuth2.LOGIN_PAGE)
 			            .authorizationEndpoint()
 							.authorizationRequestRepository(new HttpCookieOAuth2AuthorizationRequestRepository(customApplicationProperties));
 		}
