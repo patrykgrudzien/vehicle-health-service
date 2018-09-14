@@ -10,6 +10,7 @@ public interface Constants {
 		String AUTH = customProps.getEndpoints().getAuthentication().getRoot();
 		String REGISTRATION = customProps.getEndpoints().getRegistration().getRoot();
 		String REFRESH_TOKEN = customProps.getEndpoints().getAuthentication().getRefreshToken();
+		String REGISTER_USER_ACCOUNT = customProps.getEndpoints().getRegistration().getRegisterUserAccount();
 	}
 
 	interface OAuth2 {
