@@ -23,7 +23,7 @@ custom:
         root: /logout
         success-url: ?logout
       heroku:
-        app-url: https://vehicle-health-service.herokuapp.com
+        context-path: https://vehicle-health-service.herokuapp.com
       vehicle-resource:
         root: /vehicles
         get-vehicle: "/vehicle/{ownerEmailAddress}"
@@ -35,7 +35,8 @@ custom:
     jwt:
       header: Authorization
       secret: super-secret-authorization-token-password
-      expiration: 900000
+      expiration: 900000 # 15 minutes
+      short-lived-millis: 120000 # 2 minutes
     messages-language:
       header: Language
 

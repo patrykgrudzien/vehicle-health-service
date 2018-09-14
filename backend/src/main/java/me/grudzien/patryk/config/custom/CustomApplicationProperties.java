@@ -27,6 +27,7 @@ public class CustomApplicationProperties {
 		private String header;
 		private String secret;
 		private Long expiration;
+		private int shortLivedMillis;
 	}
 
 	@Getter
@@ -61,20 +62,8 @@ public class CustomApplicationProperties {
 			private String confirmedTokenExpired;
 			private String userAlreadyEnabled;
 
-			public String getRootRegisterUserAccount() {
-				return getRoot() + getRegisterUserAccount();
-			}
-
-			public String getRootConfirmRegistration() {
-				return getRoot() + getConfirmRegistration();
-			}
-
 			public String getRootConfirmationUrl() {
 				return getRoot() + getConfirmationUrl();
-			}
-
-			public String getRootResendEmailVerificationToken() {
-				return getRoot() + getResendEmailVerificationToken();
 			}
 		}
 
@@ -92,16 +81,12 @@ public class CustomApplicationProperties {
 		public static class Logout {
 			private String root;
 			private String successUrl;
-
-			public String getRootSuccessUrl() {
-				return getRoot() + getSuccessUrl();
-			}
 		}
 
 		@Getter
 		@Setter
 		public static class Heroku {
-			private String appUrl;
+			private String contextPath;
 		}
 	}
 
