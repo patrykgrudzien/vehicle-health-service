@@ -6,8 +6,10 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import me.grudzien.patryk.domain.enums.SpringAppProfiles;
+
 @Configuration
-@Profile({"dev-home", "dev-office"})
+@Profile({SpringAppProfiles.YmlName.DEV_HOME, SpringAppProfiles.YmlName.DEV_OFFICE})
 public class CorsConfig {
 
 	@Bean
