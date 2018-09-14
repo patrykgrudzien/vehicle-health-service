@@ -1,25 +1,18 @@
 package me.grudzien.patryk.config.filters.registry;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.config.filters.LocaleDeterminerFilter;
+
+import static me.grudzien.patryk.Constants.Endpoints;
 
 /**
  * This configuration determines on which endpoint {@link me.grudzien.patryk.config.filters.LocaleDeterminerFilter} is applied.
  */
 @Configuration
 public class FiltersRegistryConfig {
-
-	private final CustomApplicationProperties customApplicationProperties;
-
-	@Autowired
-	public FiltersRegistryConfig(final CustomApplicationProperties customApplicationProperties) {
-		this.customApplicationProperties = customApplicationProperties;
-	}
 
 	@Bean
 	public FilterRegistrationBean<LocaleDeterminerFilter> registerLocaleDeterminerFilter() {
@@ -28,14 +21,13 @@ public class FiltersRegistryConfig {
 		registrationBean.setFilter(new LocaleDeterminerFilter());
 		registrationBean.addUrlPatterns(
 				// -> /auth
-				customApplicationProperties.getEndpoints().getAuthentication().getRoot(),
+				Endpoints.AUTH,
 				// -> /registration
-				customApplicationProperties.getEndpoints().getRegistration().getRoot(),
+				Endpoints.REGISTRATION,
 				// -> /register-user-account
-				customApplicationProperties.getEndpoints().getRegistration().getRegisterUserAccount(),
+				Endpoints.REGISTER_USER_ACCOUNT,
 				// -> /registration/register-user-account
-				customApplicationProperties.getEndpoints().getRegistration().getRoot() +
-				customApplicationProperties.getEndpoints().getRegistration().getRegisterUserAccount()
+				Endpoints.REGISTRATION + Endpoints.REGISTER_USER_ACCOUNT
 		);
 		return registrationBean;
 	}
