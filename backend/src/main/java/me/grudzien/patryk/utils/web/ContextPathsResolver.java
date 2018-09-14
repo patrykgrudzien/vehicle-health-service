@@ -26,7 +26,7 @@ import static me.grudzien.patryk.utils.log.LogMarkers.METHOD_INVOCATION_MARKER;
 @Log4j2
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class AppUrlsResolver implements InitializingBean {
+public class ContextPathsResolver implements InitializingBean {
 
 	private static String ACTIVE_SPRING_PROFILE;
 
@@ -34,7 +34,7 @@ public class AppUrlsResolver implements InitializingBean {
 	private final CustomApplicationProperties customApplicationProperties;
 
 	@Autowired
-	public AppUrlsResolver(final Environment environment, final CustomApplicationProperties customApplicationProperties) {
+	public ContextPathsResolver(final Environment environment, final CustomApplicationProperties customApplicationProperties) {
 		Preconditions.checkNotNull(environment, "environment cannot be null!");
 		Preconditions.checkNotNull(customApplicationProperties, "customApplicationProperties cannot be null!");
 		this.environment = environment;
@@ -49,9 +49,9 @@ public class AppUrlsResolver implements InitializingBean {
 		      .ifPresent(activeProfile -> ACTIVE_SPRING_PROFILE = activeProfile);
 	}
 
-	public String determineAppUrlFor(final AppFLow appFLow) {
+	public String determineUrlFor(final AppFLow appFLow) {
 		if (SpringAppProfiles.HEROKU_DEPLOYMENT.getYmlName().equals(ACTIVE_SPRING_PROFILE)) {
-			return getHerokuAppBaseUrl();
+			return getHerokuBaseUrl();
 		} else {
 			switch (appFLow) {
 				case ACCOUNT_ALREADY_ENABLED:
@@ -81,8 +81,8 @@ public class AppUrlsResolver implements InitializingBean {
 	 *
 	 * @return base app URL (Heroku environment).
 	 */
-	private String getHerokuAppBaseUrl() {
+	private String getHerokuBaseUrl() {
 		log.info(METHOD_INVOCATION_MARKER, "Created base app URL for (HEROKU) env.");
-		return customApplicationProperties.getEndpoints().getHeroku().getAppUrl();
+		return customApplicationProperties.getEndpoints().getHeroku().getContextPath();
 	}
 }

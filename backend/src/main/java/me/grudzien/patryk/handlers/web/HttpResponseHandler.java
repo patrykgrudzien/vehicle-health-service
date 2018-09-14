@@ -15,7 +15,7 @@ import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.domain.enums.AppFLow;
 import me.grudzien.patryk.exceptions.RedirectionException;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
-import me.grudzien.patryk.utils.web.AppUrlsResolver;
+import me.grudzien.patryk.utils.web.ContextPathsResolver;
 
 import static me.grudzien.patryk.domain.enums.AppFLow.ACCOUNT_ALREADY_ENABLED;
 import static me.grudzien.patryk.domain.enums.AppFLow.CONFIRM_REGISTRATION;
@@ -28,19 +28,19 @@ import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 @Component
 public class HttpResponseHandler {
 
-	private final AppUrlsResolver appUrlsResolver;
+	private final ContextPathsResolver contextPathsResolver;
 	private final CustomApplicationProperties customApplicationProperties;
 	private final LocaleMessagesCreator localeMessagesCreator;
 
 	@Autowired
-	public HttpResponseHandler(final AppUrlsResolver appUrlsResolver,
+	public HttpResponseHandler(final ContextPathsResolver contextPathsResolver,
 	                           final CustomApplicationProperties customApplicationProperties,
 	                           final LocaleMessagesCreator localeMessagesCreator) {
-		Preconditions.checkNotNull(appUrlsResolver, "appUrlsResolver cannot be null!");
+		Preconditions.checkNotNull(contextPathsResolver, "contextPathsResolver cannot be null!");
 		Preconditions.checkNotNull(customApplicationProperties, "customApplicationProperties cannot be null!");
 		Preconditions.checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
 
-		this.appUrlsResolver = appUrlsResolver;
+		this.contextPathsResolver = contextPathsResolver;
 		this.customApplicationProperties = customApplicationProperties;
 		this.localeMessagesCreator = localeMessagesCreator;
 	}
@@ -56,7 +56,7 @@ public class HttpResponseHandler {
 			case ACCOUNT_ALREADY_ENABLED:
 				final String userAlreadyEnabledUrl = customApplicationProperties.getEndpoints().getRegistration().getUserAlreadyEnabled();
 				try {
-					response.sendRedirect(appUrlsResolver.determineAppUrlFor(ACCOUNT_ALREADY_ENABLED) + userAlreadyEnabledUrl);
+					response.sendRedirect(contextPathsResolver.determineUrlFor(ACCOUNT_ALREADY_ENABLED) + userAlreadyEnabledUrl);
 					log.info(FLOW_MARKER, ACCOUNT_ALREADY_ENABLED.getSuccessfulRedirectionLogInfoMessage(), userAlreadyEnabledUrl);
 				} catch (final IOException exception) {
 					log.error(EXCEPTION_MARKER, ACCOUNT_ALREADY_ENABLED.getRedirectionExceptionLogErrorMessage(), userAlreadyEnabledUrl);
@@ -66,7 +66,7 @@ public class HttpResponseHandler {
 			case CONFIRM_REGISTRATION:
 				final String registrationConfirmedUrl = customApplicationProperties.getEndpoints().getRegistration().getConfirmed();
 				try {
-					response.sendRedirect(appUrlsResolver.determineAppUrlFor(CONFIRM_REGISTRATION) + registrationConfirmedUrl);
+					response.sendRedirect(contextPathsResolver.determineUrlFor(CONFIRM_REGISTRATION) + registrationConfirmedUrl);
 					log.info(FLOW_MARKER, CONFIRM_REGISTRATION.getSuccessfulRedirectionLogInfoMessage(), registrationConfirmedUrl);
 				} catch (final IOException exception) {
 					log.error(EXCEPTION_MARKER, CONFIRM_REGISTRATION.getRedirectionExceptionLogErrorMessage(), registrationConfirmedUrl);
@@ -76,7 +76,7 @@ public class HttpResponseHandler {
 			case VERIFICATION_TOKEN_NOT_FOUND:
 				final String confirmedTokenNotFoundUrl = customApplicationProperties.getEndpoints().getRegistration().getConfirmedTokenNotFound();
 				try {
-					response.sendRedirect(appUrlsResolver.determineAppUrlFor(CONFIRM_REGISTRATION) + confirmedTokenNotFoundUrl);
+					response.sendRedirect(contextPathsResolver.determineUrlFor(CONFIRM_REGISTRATION) + confirmedTokenNotFoundUrl);
 					log.info(FLOW_MARKER, VERIFICATION_TOKEN_NOT_FOUND.getSuccessfulRedirectionLogInfoMessage(), confirmedTokenNotFoundUrl);
 				} catch (final IOException exception) {
 					log.error(EXCEPTION_MARKER, VERIFICATION_TOKEN_NOT_FOUND.getRedirectionExceptionLogErrorMessage(), confirmedTokenNotFoundUrl);
@@ -86,7 +86,7 @@ public class HttpResponseHandler {
 			case VERIFICATION_TOKEN_EXPIRED:
 				final String confirmedTokenExpired = customApplicationProperties.getEndpoints().getRegistration().getConfirmedTokenExpired();
 				try {
-					response.sendRedirect(appUrlsResolver.determineAppUrlFor(CONFIRM_REGISTRATION) + confirmedTokenExpired);
+					response.sendRedirect(contextPathsResolver.determineUrlFor(CONFIRM_REGISTRATION) + confirmedTokenExpired);
 					log.info(FLOW_MARKER, VERIFICATION_TOKEN_EXPIRED.getSuccessfulRedirectionLogInfoMessage(), confirmedTokenExpired);
 				} catch (final IOException exception) {
 					log.error(EXCEPTION_MARKER, VERIFICATION_TOKEN_EXPIRED.getRedirectionExceptionLogErrorMessage(), confirmedTokenExpired);

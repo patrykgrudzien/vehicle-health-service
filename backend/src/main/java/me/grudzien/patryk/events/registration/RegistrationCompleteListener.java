@@ -16,7 +16,7 @@ import me.grudzien.patryk.domain.dto.registration.EmailDto;
 import me.grudzien.patryk.domain.entities.registration.CustomUser;
 import me.grudzien.patryk.service.registration.EmailService;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
-import me.grudzien.patryk.utils.web.AppUrlsResolver;
+import me.grudzien.patryk.utils.web.ContextPathsResolver;
 
 import static me.grudzien.patryk.domain.enums.AppFLow.VERIFICATION_TOKEN_CREATION;
 import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
@@ -31,21 +31,21 @@ public class RegistrationCompleteListener implements ApplicationListener<OnRegis
 
 	private final EmailService emailService;
 	private final CustomApplicationProperties customApplicationProperties;
-	private final AppUrlsResolver appUrlsResolver;
+	private final ContextPathsResolver contextPathsResolver;
 	private final LocaleMessagesCreator localeMessagesCreator;
 
 	@Autowired
 	public RegistrationCompleteListener(final EmailService emailService, final CustomApplicationProperties customApplicationProperties,
-	                                    final AppUrlsResolver appUrlsResolver,
+	                                    final ContextPathsResolver contextPathsResolver,
 	                                    final LocaleMessagesCreator localeMessagesCreator) {
 		Preconditions.checkNotNull(emailService, "emailService cannot be null!");
 		Preconditions.checkNotNull(customApplicationProperties, "customApplicationProperties cannot be null!");
-		Preconditions.checkNotNull(appUrlsResolver, "appUrlsResolver cannot be null!");
+		Preconditions.checkNotNull(contextPathsResolver, "contextPathsResolver cannot be null!");
 		Preconditions.checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
 
 		this.emailService = emailService;
 		this.customApplicationProperties = customApplicationProperties;
-		this.appUrlsResolver = appUrlsResolver;
+		this.contextPathsResolver = contextPathsResolver;
 		this.localeMessagesCreator = localeMessagesCreator;
 	}
 
@@ -77,7 +77,7 @@ public class RegistrationCompleteListener implements ApplicationListener<OnRegis
 					                                                 builder()
 					                                                .put("userFirstName", userBeingRegistered.getFirstName())
 			                                                        .put("confirmationUrl",
-			                                                             appUrlsResolver.determineAppUrlFor(VERIFICATION_TOKEN_CREATION) + confirmationUrl)
+			                                                             contextPathsResolver.determineUrlFor(VERIFICATION_TOKEN_CREATION) + confirmationUrl)
 			                                                        .build())
 		                                              .build());
 		log.info(FLOW_MARKER, "Registration confirmation email has been sent to {}", recipientAddress);
