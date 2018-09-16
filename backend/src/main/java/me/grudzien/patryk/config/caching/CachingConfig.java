@@ -8,6 +8,7 @@ import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import me.grudzien.patryk.oauth2.repository.CacheBasedOAuth2AuthorizationRequestRepository;
 import me.grudzien.patryk.service.security.MyUserDetailsService;
 import me.grudzien.patryk.service.vehicle.impl.VehicleServiceImpl;
 
@@ -27,10 +28,13 @@ public class CachingConfig {
 	public net.sf.ehcache.CacheManager ehCacheManager() {
 		final CacheConfiguration vehicleMileageCacheConfiguration = namedCacheConfiguration(VehicleServiceImpl.VEHICLE_MILEAGE_CACHE_NAME);
 		final CacheConfiguration principalUserCacheConfiguration = namedCacheConfiguration(MyUserDetailsService.PRINCIPAL_USER_CACHE_NAME);
+		final CacheConfiguration oauth2AuthorizationRequestCacheConfiguration = namedCacheConfiguration(
+				CacheBasedOAuth2AuthorizationRequestRepository.OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME);
 
 		final net.sf.ehcache.config.Configuration configuration = new net.sf.ehcache.config.Configuration();
 		configuration.addCache(vehicleMileageCacheConfiguration);
 		configuration.addCache(principalUserCacheConfiguration);
+		configuration.addCache(oauth2AuthorizationRequestCacheConfiguration);
 
 		return new net.sf.ehcache.CacheManager(configuration);
 	}

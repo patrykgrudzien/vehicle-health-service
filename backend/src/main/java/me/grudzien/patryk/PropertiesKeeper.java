@@ -56,4 +56,8 @@ public class PropertiesKeeper {
 		String MAIN_BOARD_WILDCARD = "/main-board/**";
 		String AUTHENTICATION_REQUIRED = "/authentication-required";
 	}
+
+	public interface StaticResources {
+		String[] ALL = {"/", "/favicon.ico", "/static/**", "/static/*.html", "/static/*.jpg", "/static/css/**", "/static/js/**"};
+	}
 }
