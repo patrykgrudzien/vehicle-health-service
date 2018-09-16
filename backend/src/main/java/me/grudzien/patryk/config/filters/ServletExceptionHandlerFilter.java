@@ -1,5 +1,12 @@
 package me.grudzien.patryk.config.filters;
 
+import static io.vavr.API.$;
+import static io.vavr.API.Case;
+import static io.vavr.API.Match;
+import static io.vavr.API.run;
+import static io.vavr.Predicates.instanceOf;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
@@ -10,23 +17,14 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import java.io.IOException;
-
-import static io.vavr.API.$;
-import static io.vavr.API.Case;
-import static io.vavr.API.Match;
-import static io.vavr.API.run;
-import static io.vavr.Predicates.instanceOf;
 import static me.grudzien.patryk.domain.dto.responses.CustomResponse.Codes.JWT_TOKEN_EXPIRED;
 import static me.grudzien.patryk.domain.dto.responses.ExceptionResponse.buildBodyMessage;
 import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
 import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 import static me.grudzien.patryk.utils.web.HttpResponseCustomizer.customizeHttpResponse;
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 /**
  * Filters CANNOT be managed by Spring explicitly !!!
@@ -45,11 +43,9 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 public class ServletExceptionHandlerFilter extends OncePerRequestFilter {
 
 	@Override
-	protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response, final FilterChain filterChain)
-			throws ServletException, IOException {
+	protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response, final FilterChain filterChain) {
 
-		log.info(FLOW_MARKER, "(FILTER) -----> {} ({})", this.getClass().getSimpleName(), request.getMethod());
-		log.info(FLOW_MARKER, "(FILTER Path) -----> {}", request.getRequestURI());
+		log.info(FLOW_MARKER, "(FILTER) -----> {} ({}) on path -> {}", this.getClass().getSimpleName(), request.getMethod(), request.getRequestURI());
 
 		Try.run(() -> filterChain.doFilter(request, response))
 		   .onFailure(throwable -> Match(throwable).of(
