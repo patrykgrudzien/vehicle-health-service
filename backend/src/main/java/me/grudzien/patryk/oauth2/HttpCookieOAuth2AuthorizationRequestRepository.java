@@ -19,11 +19,10 @@ import java.io.Serializable;
 import java.util.Base64;
 import java.util.stream.Stream;
 
-import me.grudzien.patryk.config.custom.CustomApplicationProperties;
-import me.grudzien.patryk.oauth2.utils.HttpCookieUtils;
-
-import static me.grudzien.patryk.Constants.OAuth2;
 import static me.grudzien.patryk.utils.log.LogMarkers.OAUTH2_MARKER;
+
+import me.grudzien.patryk.PropertiesKeeper;
+import me.grudzien.patryk.oauth2.utils.HttpCookieUtils;
 
 /**
  * For storing the {@link org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest},
@@ -44,13 +43,13 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
 	private final int cookieExpirySecs;
 
 	/**
-	 * @param customApplicationProperties created in:
-	 * {@link me.grudzien.patryk.config.security.SecurityConfig.HttpSecurityConfigurer#oauth2Client}
+	 * @param propertiesKeeper created in:
+	 * {@link me.grudzien.patryk.config.security.SecurityConfig}
 	 */
-	public HttpCookieOAuth2AuthorizationRequestRepository(final CustomApplicationProperties customApplicationProperties) {
+	public HttpCookieOAuth2AuthorizationRequestRepository(final PropertiesKeeper propertiesKeeper) {
 		log.info(OAUTH2_MARKER, "Custom implementation of -> {}", this.getClass().getSimpleName());
-		Preconditions.checkNotNull(customApplicationProperties, "customApplicationProperties cannot be null!");
-		cookieExpirySecs = OAuth2.SHORT_LIVED_MILLIS / 1000;
+		Preconditions.checkNotNull(propertiesKeeper, "propertiesKeeper cannot be null!");
+		cookieExpirySecs = propertiesKeeper.oAuth2().SHORT_LIVED_MILLIS / 1000;
 	}
 
 	@Override

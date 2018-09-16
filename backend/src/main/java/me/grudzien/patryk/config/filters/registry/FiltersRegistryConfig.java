@@ -1,12 +1,14 @@
 package me.grudzien.patryk.config.filters.registry;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import me.grudzien.patryk.config.filters.LocaleDeterminerFilter;
+import com.google.common.base.Preconditions;
 
-import static me.grudzien.patryk.Constants.Endpoints;
+import me.grudzien.patryk.PropertiesKeeper;
+import me.grudzien.patryk.config.filters.LocaleDeterminerFilter;
 
 /**
  * This configuration determines on which endpoint {@link me.grudzien.patryk.config.filters.LocaleDeterminerFilter} is applied.
@@ -14,6 +16,21 @@ import static me.grudzien.patryk.Constants.Endpoints;
 @Configuration
 public class FiltersRegistryConfig {
 
+	private final PropertiesKeeper propertiesKeeper;
+
+	@Autowired
+	public FiltersRegistryConfig(final PropertiesKeeper propertiesKeeper) {
+		Preconditions.checkNotNull(propertiesKeeper, "propertiesKeeper cannot be null!");
+		this.propertiesKeeper = propertiesKeeper;
+	}
+
+	/**
+	 * I cannot use here constants from:
+	 * {@link me.grudzien.patryk.PropertiesKeeper.Endpoints}
+	 * because classes annotated by:
+	 * {@link org.springframework.context.annotation.Configuration}
+	 * are loaded at the first stage of context loading.
+	 */
 	@Bean
 	public FilterRegistrationBean<LocaleDeterminerFilter> registerLocaleDeterminerFilter() {
 
@@ -21,13 +38,14 @@ public class FiltersRegistryConfig {
 		registrationBean.setFilter(new LocaleDeterminerFilter());
 		registrationBean.addUrlPatterns(
 				// -> /auth
-				Endpoints.AUTH,
+				propertiesKeeper.endpoints().AUTH,
 				// -> /registration
-				Endpoints.REGISTRATION,
+				propertiesKeeper.endpoints().REGISTRATION,
 				// -> /register-user-account
-				Endpoints.REGISTER_USER_ACCOUNT,
+				propertiesKeeper.endpoints().REGISTER_USER_ACCOUNT,
 				// -> /registration/register-user-account
-				Endpoints.REGISTRATION + Endpoints.REGISTER_USER_ACCOUNT
+				propertiesKeeper.endpoints().REGISTRATION +
+				propertiesKeeper.endpoints().REGISTER_USER_ACCOUNT
 		);
 		return registrationBean;
 	}

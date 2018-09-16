@@ -22,17 +22,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.google.common.base.Preconditions;
 
-import me.grudzien.patryk.config.custom.CustomApplicationProperties;
+import static me.grudzien.patryk.PropertiesKeeper.FrontendRoutes;
+
+import me.grudzien.patryk.PropertiesKeeper;
 import me.grudzien.patryk.config.filters.JwtAuthorizationTokenFilter;
 import me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter;
 import me.grudzien.patryk.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
 import me.grudzien.patryk.oauth2.OAuth2AuthenticationSuccessHandler;
 import me.grudzien.patryk.service.security.MyUserDetailsService;
 import me.grudzien.patryk.utils.log.LogMarkers;
-
-import static me.grudzien.patryk.Constants.Endpoints;
-import static me.grudzien.patryk.Constants.FrontendRoutes;
-import static me.grudzien.patryk.Constants.OAuth2;
 
 @Log4j2
 @Configuration
@@ -41,9 +39,9 @@ import static me.grudzien.patryk.Constants.OAuth2;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	private final UserDetailsService userDetailsService;
-	private final CustomApplicationProperties customApplicationProperties;
 	private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 	private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+	private final PropertiesKeeper propertiesKeeper;
 
 	/**
 	 * @Qualifier for {@link org.springframework.security.core.userdetails.UserDetailsService} is used here because there is also
@@ -52,19 +50,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	 */
 	@Autowired
 	public SecurityConfig(@Qualifier(MyUserDetailsService.BEAN_NAME) final UserDetailsService userDetailsService,
-	                      final CustomApplicationProperties customApplicationProperties,
 	                      final CustomAuthenticationEntryPoint customAuthenticationEntryPoint,
-	                      final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler) {
+	                      final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler,
+	                      final PropertiesKeeper propertiesKeeper) {
 
 		Preconditions.checkNotNull(userDetailsService, "userDetailsService cannot be null!");
-		Preconditions.checkNotNull(customApplicationProperties, "customApplicationProperties cannot be null!");
 		Preconditions.checkNotNull(customAuthenticationEntryPoint, "customAuthenticationEntryPoint cannot be null!");
 		Preconditions.checkNotNull(oAuth2AuthenticationSuccessHandler, "oAuth2AuthenticationSuccessHandler cannot be null!");
+		Preconditions.checkNotNull(propertiesKeeper, "propertiesKeeper cannot be null!");
 
 		this.userDetailsService = userDetailsService;
-		this.customApplicationProperties = customApplicationProperties;
 		this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
 		this.oAuth2AuthenticationSuccessHandler = oAuth2AuthenticationSuccessHandler;
+		this.propertiesKeeper = propertiesKeeper;
 	}
 
 	@Bean
@@ -91,32 +89,32 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(final HttpSecurity httpSecurity) throws Exception {
 		// don't create session - set creation policy to STATELESS
-		HttpSecurityConfigurer.sessionCreationPolicy(httpSecurity);
+		sessionCreationPolicy(httpSecurity);
 
 		// we are stateless so "/logout" endpoint not needed
-		HttpSecurityConfigurer.logout(httpSecurity);
+		logout(httpSecurity);
 
 		// show message to the user that some resource requires authentication
-		HttpSecurityConfigurer.exceptionHandling(httpSecurity, customAuthenticationEntryPoint);
+		exceptionHandling(httpSecurity, customAuthenticationEntryPoint);
 
 		/**
 		 * {@link me.grudzien.patryk.config.filters.JwtAuthorizationTokenFilter}
 		 * &&
 		 * {@link me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter}
 		 */
-		HttpSecurityConfigurer.tokenAuthentication(httpSecurity, userDetailsService(), customApplicationProperties);
+		tokenAuthentication(httpSecurity, userDetailsService());
 
 		// don't need CSRF because JWT token is invulnerable
-		HttpSecurityConfigurer.csrf(httpSecurity);
+		csrf(httpSecurity);
 
 		// CORS configuration
-		HttpSecurityConfigurer.cors(httpSecurity);
+		cors(httpSecurity);
 
 		// oauth2 clients
-		HttpSecurityConfigurer.oauth2Client(httpSecurity, customApplicationProperties, oAuth2AuthenticationSuccessHandler);
+		oauth2Client(httpSecurity, oAuth2AuthenticationSuccessHandler);
 
 		// mvcMatchers
-		HttpSecurityConfigurer.authorizeRequests(httpSecurity);
+		authorizeRequests(httpSecurity);
 	}
 
 	@Override
@@ -129,23 +127,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		            .and()
 		   .ignoring()
 		        // /auth
-		        .mvcMatchers(HttpMethod.POST, Endpoints.AUTH)
+		        .mvcMatchers(HttpMethod.POST, propertiesKeeper.endpoints().AUTH)
 					.and()
 		    .ignoring()
 		        // /auth/**
-		        .mvcMatchers(HttpMethod.POST, Endpoints.AUTH + "/**")
+		        .mvcMatchers(HttpMethod.POST, propertiesKeeper.endpoints().AUTH + "/**")
 		            .and()
 			.ignoring()
 		        // /registration/**  (/register-user-account)
-				.mvcMatchers(HttpMethod.POST, Endpoints.REGISTRATION + "/**")
+				.mvcMatchers(HttpMethod.POST, propertiesKeeper.endpoints().REGISTRATION + "/**")
 					.and()
 			.ignoring()
 		        // /registration/**
-				.mvcMatchers(HttpMethod.GET, Endpoints.REGISTRATION + "/**")
+				.mvcMatchers(HttpMethod.GET, propertiesKeeper.endpoints().REGISTRATION + "/**")
 					.and()
 		   .ignoring()
 		        // /refresh-token
-		        .mvcMatchers(HttpMethod.POST, Endpoints.REFRESH_TOKEN)
+		        .mvcMatchers(HttpMethod.POST, propertiesKeeper.endpoints().REFRESH_TOKEN)
 		            .and()
 			.ignoring()
                 .mvcMatchers(HttpMethod.GET,
@@ -169,81 +167,76 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				             FrontendRoutes.AUTHENTICATION_REQUIRED);
 	}
 
-	private static final class HttpSecurityConfigurer {
+	private void sessionCreationPolicy(final HttpSecurity httpSecurity) throws Exception {
+		httpSecurity.sessionManagement()
+		            .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+	}
 
-		static void sessionCreationPolicy(final HttpSecurity httpSecurity) throws Exception {
-			httpSecurity.sessionManagement()
-			            .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-		}
+	private void logout(final HttpSecurity httpSecurity) throws Exception {
+		httpSecurity.logout()
+		            .disable();
+	}
 
-		static void logout(final HttpSecurity httpSecurity) throws Exception {
-			httpSecurity.logout()
-			            .disable();
-		}
+	private void csrf(final HttpSecurity httpSecurity) throws Exception {
+		httpSecurity.csrf()
+		            .disable();
+	}
 
-		static void csrf(final HttpSecurity httpSecurity) throws Exception {
-			httpSecurity.csrf()
-			            .disable();
-		}
+	private void cors(final HttpSecurity httpSecurity) throws Exception {
+		httpSecurity.cors();
+	}
 
-		static void cors(final HttpSecurity httpSecurity) throws Exception {
-			httpSecurity.cors();
-		}
+	private void exceptionHandling(final HttpSecurity httpSecurity, final CustomAuthenticationEntryPoint customAuthenticationEntryPoint) throws Exception {
+		httpSecurity.exceptionHandling()
+		            .authenticationEntryPoint(customAuthenticationEntryPoint);
+	}
 
-		static void exceptionHandling(final HttpSecurity httpSecurity, final CustomAuthenticationEntryPoint customAuthenticationEntryPoint) throws Exception {
-			httpSecurity.exceptionHandling()
-			            .authenticationEntryPoint(customAuthenticationEntryPoint);
-		}
+	private void tokenAuthentication(final HttpSecurity httpSecurity, final UserDetailsService userDetailsService) {
+		// JWT filter
+		final JwtAuthorizationTokenFilter authorizationTokenFilter = new JwtAuthorizationTokenFilter(userDetailsService, propertiesKeeper);
+		httpSecurity.addFilterBefore(authorizationTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
-		static void tokenAuthentication(final HttpSecurity httpSecurity, final UserDetailsService userDetailsService,
-		                                final CustomApplicationProperties customApplicationProperties) {
-			// JWT filter
-			final JwtAuthorizationTokenFilter authorizationTokenFilter = new JwtAuthorizationTokenFilter(userDetailsService, customApplicationProperties);
-			httpSecurity.addFilterBefore(authorizationTokenFilter, UsernamePasswordAuthenticationFilter.class);
+		// ServletExceptionHandlerFilter (it is first and allows JwtAuthorizationTokenFilter to process).
+		// Catches exceptions thrown by JwtAuthorizationTokenFilter.
+		final ServletExceptionHandlerFilter servletExceptionHandlerFilter = new ServletExceptionHandlerFilter();
+		httpSecurity.addFilterBefore(servletExceptionHandlerFilter, JwtAuthorizationTokenFilter.class);
 
-			// ServletExceptionHandlerFilter (it is first and allows JwtAuthorizationTokenFilter to process).
-			// Catches exceptions thrown by JwtAuthorizationTokenFilter.
-			final ServletExceptionHandlerFilter servletExceptionHandlerFilter = new ServletExceptionHandlerFilter();
-			httpSecurity.addFilterBefore(servletExceptionHandlerFilter, JwtAuthorizationTokenFilter.class);
+		/**
+		 * There is also another filter {@link me.grudzien.patryk.config.filters.LocaleDeterminerFilter} which is registered in
+		 * {@link me.grudzien.patryk.config.filters.registry.FiltersRegistryConfig#registerLocaleDeterminerFilter()}
+		 * to disable Spring Security on some endpoints like: "/auth", "/registration".
+		 * This filter is required to determine "Locale" which is needed to create appropriate messages using:
+		 * {@link me.grudzien.patryk.utils.i18n.LocaleMessagesCreator#buildLocaleMessage(String)} or to take right email template inside:
+		 * {@link me.grudzien.patryk.service.registration.impl.EmailServiceImpl#sendMessageUsingTemplate(me.grudzien.patryk.domain.dto.registration.EmailDto)}.
+		 */
+	}
 
-			/**
-			 * There is also another filter {@link me.grudzien.patryk.config.filters.LocaleDeterminerFilter} which is registered in
-			 * {@link me.grudzien.patryk.config.filters.registry.FiltersRegistryConfig#registerLocaleDeterminerFilter()}
-			 * to disable Spring Security on some endpoints like: "/auth", "/registration".
-			 * This filter is required to determine "Locale" which is needed to create appropriate messages using:
-			 * {@link me.grudzien.patryk.utils.i18n.LocaleMessagesCreator#buildLocaleMessage(String)} or to take right email template inside:
-			 * {@link me.grudzien.patryk.service.registration.impl.EmailServiceImpl#sendMessageUsingTemplate(me.grudzien.patryk.domain.dto.registration.EmailDto)}.
-			 */
-		}
+	private void authorizeRequests(final HttpSecurity httpSecurity) throws Exception {
+		httpSecurity
+				.authorizeRequests()
+				// allow calls for request methods of "OPTIONS" type -> (CORS purpose) without checking JWT token
+				// (this helps to avoid duplicate calls before the specific ones)
+				.mvcMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+				// /auth
+				.mvcMatchers(HttpMethod.POST, propertiesKeeper.endpoints().REFRESH_TOKEN).permitAll()
+				// /auth/**
+				.mvcMatchers(HttpMethod.POST, propertiesKeeper.endpoints().AUTH + "/**").permitAll()
+				// /registration/**  (/register-user-account)
+				.mvcMatchers(HttpMethod.POST, propertiesKeeper.endpoints().REGISTRATION + "/**").permitAll()
+				// /registration/**
+				.mvcMatchers(HttpMethod.GET, propertiesKeeper.endpoints().REGISTRATION + "/**").permitAll()
+				// /refresh-token
+				.mvcMatchers(HttpMethod.POST, propertiesKeeper.endpoints().REFRESH_TOKEN).permitAll()
+				// require authentication via JWT
+				.anyRequest().authenticated();
+	}
 
-		static void authorizeRequests(final HttpSecurity httpSecurity) throws Exception {
-			httpSecurity
-					.authorizeRequests()
-					// allow calls for request methods of "OPTIONS" type -> (CORS purpose) without checking JWT token
-					// (this helps to avoid duplicate calls before the specific ones)
-					.mvcMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-					// /auth
-					.mvcMatchers(HttpMethod.POST, Endpoints.AUTH).permitAll()
-					// /auth/**
-					.mvcMatchers(HttpMethod.POST, Endpoints.AUTH + "/**").permitAll()
-					// /registration/**  (/register-user-account)
-					.mvcMatchers(HttpMethod.POST, Endpoints.REGISTRATION + "/**").permitAll()
-					// /registration/**
-					.mvcMatchers(HttpMethod.GET, Endpoints.REGISTRATION + "/**").permitAll()
-					// /refresh-token
-					.mvcMatchers(HttpMethod.POST, Endpoints.REFRESH_TOKEN).permitAll()
-					// require authentication via JWT
-					.anyRequest().authenticated();
-		}
-
-		static void oauth2Client(final HttpSecurity httpSecurity, final CustomApplicationProperties customApplicationProperties,
-		                         final AuthenticationSuccessHandler authenticationSuccessHandler) throws Exception {
-			httpSecurity.oauth2Login()
-			            .loginPage(OAuth2.LOGIN_PAGE)
-			            .authorizationEndpoint()
-							.authorizationRequestRepository(new HttpCookieOAuth2AuthorizationRequestRepository(customApplicationProperties))
-								.and()
-                        .successHandler(authenticationSuccessHandler);
-		}
+	private void oauth2Client(final HttpSecurity httpSecurity, final AuthenticationSuccessHandler authenticationSuccessHandler) throws Exception {
+		httpSecurity.oauth2Login()
+		            .loginPage(propertiesKeeper.oAuth2().LOGIN_PAGE)
+		            .authorizationEndpoint()
+		            .authorizationRequestRepository(new HttpCookieOAuth2AuthorizationRequestRepository(propertiesKeeper))
+		            .and()
+		            .successHandler(authenticationSuccessHandler);
 	}
 }

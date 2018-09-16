@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import me.grudzien.patryk.domain.enums.SpringAppProfiles;
 import me.grudzien.patryk.utils.log.LogMarkers;
 
-import static me.grudzien.patryk.Constants.FrontendRoutes;
+import static me.grudzien.patryk.PropertiesKeeper.FrontendRoutes;
 
 @Log4j2
 @Controller

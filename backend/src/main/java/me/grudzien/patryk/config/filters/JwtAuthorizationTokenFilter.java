@@ -17,12 +17,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-import me.grudzien.patryk.config.custom.CustomApplicationProperties;
-import me.grudzien.patryk.service.security.MyUserDetailsService;
-import me.grudzien.patryk.utils.jwt.JwtTokenUtil;
-
 import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
 import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
+
+import me.grudzien.patryk.PropertiesKeeper;
+import me.grudzien.patryk.service.security.MyUserDetailsService;
+import me.grudzien.patryk.utils.jwt.JwtTokenUtil;
 
 /**
  * Filters CANNOT be managed by Spring explicitly !!!
@@ -38,17 +38,16 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
 	private final UserDetailsService userDetailsService;
 
 	public JwtAuthorizationTokenFilter(@Qualifier(MyUserDetailsService.BEAN_NAME) final UserDetailsService userDetailsService,
-	                                   final CustomApplicationProperties customApplicationProperties) {
+	                                   final PropertiesKeeper propertiesKeeper) {
 		this.userDetailsService = userDetailsService;
-		this.tokenHeader = customApplicationProperties.getJwt().getHeader();
+		this.tokenHeader = propertiesKeeper.jwt().TOKEN_HEADER;
 	}
 
 	@Override
 	protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response,
 	                                final FilterChain filterChain) throws ServletException, IOException {
 
-		log.info(FLOW_MARKER, "(FILTER) -----> {} ({})", this.getClass().getSimpleName(), request.getMethod());
-		log.info(FLOW_MARKER, "Processing authentication for -----> {}", request.getRequestURI());
+		log.info(FLOW_MARKER, "(FILTER) -----> {} ({}) on path -> {}", this.getClass().getSimpleName(), request.getMethod(), request.getRequestURI());
 
 		final String requestHeader = request.getHeader(this.tokenHeader);
 
