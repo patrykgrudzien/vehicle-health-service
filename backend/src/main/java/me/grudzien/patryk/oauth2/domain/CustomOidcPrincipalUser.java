@@ -1,9 +1,6 @@
-package me.grudzien.patryk.oauth2;
+package me.grudzien.patryk.oauth2.domain;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
+import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
@@ -13,10 +10,12 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import java.util.Collection;
 import java.util.Map;
 
-@Getter
-@Builder(builderMethodName = "Builder")
-@RequiredArgsConstructor
-public class OAuth2User implements OidcUser, UserDetails {
+public class CustomOidcPrincipalUser implements OidcUser, UserDetails, CredentialsContainer {
+
+	@Override
+	public void eraseCredentials() {
+
+	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -34,17 +33,17 @@ public class OAuth2User implements OidcUser, UserDetails {
 	}
 
 	@Override
+	public String getName() {
+		return null;
+	}
+
+	@Override
 	public OidcUserInfo getUserInfo() {
 		return null;
 	}
 
 	@Override
 	public OidcIdToken getIdToken() {
-		return null;
-	}
-
-	@Override
-	public String getName() {
 		return null;
 	}
 

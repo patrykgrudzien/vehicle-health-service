@@ -4,6 +4,7 @@ import lombok.extern.log4j.Log4j2;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -17,18 +18,21 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.google.common.base.Preconditions;
 
+import static me.grudzien.patryk.PropertiesKeeper.*;
 import static me.grudzien.patryk.PropertiesKeeper.FrontendRoutes;
 
 import me.grudzien.patryk.PropertiesKeeper;
 import me.grudzien.patryk.config.filters.JwtAuthorizationTokenFilter;
 import me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter;
-import me.grudzien.patryk.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
-import me.grudzien.patryk.oauth2.OAuth2AuthenticationSuccessHandler;
+import me.grudzien.patryk.oauth2.service.CustomOAuth2UserService;
+import me.grudzien.patryk.oauth2.service.CustomOidcUserService;
+import me.grudzien.patryk.oauth2.repository.CacheBasedOAuth2AuthorizationRequestRepository;
+import me.grudzien.patryk.oauth2.handlers.CustomOAuth2AuthenticationFailureHandler;
+import me.grudzien.patryk.oauth2.handlers.CustomOAuth2AuthenticationSuccessHandler;
 import me.grudzien.patryk.service.security.MyUserDetailsService;
 import me.grudzien.patryk.utils.log.LogMarkers;
 
@@ -40,8 +44,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	private final UserDetailsService userDetailsService;
 	private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
-	private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+
+	private final CustomOAuth2AuthenticationSuccessHandler customOAuth2AuthenticationSuccessHandler;
+	private final CustomOAuth2AuthenticationFailureHandler customOAuth2AuthenticationFailureHandler;
+	private final CustomOidcUserService customOidcUserService;
+	private final CustomOAuth2UserService customOAuth2UserService;
+
 	private final PropertiesKeeper propertiesKeeper;
+
+	private final CacheManager cacheManager;
 
 	/**
 	 * @Qualifier for {@link org.springframework.security.core.userdetails.UserDetailsService} is used here because there is also
@@ -51,17 +62,30 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	public SecurityConfig(@Qualifier(MyUserDetailsService.BEAN_NAME) final UserDetailsService userDetailsService,
 	                      final CustomAuthenticationEntryPoint customAuthenticationEntryPoint,
-	                      final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler,
-	                      final PropertiesKeeper propertiesKeeper) {
+	                      final CustomOAuth2AuthenticationSuccessHandler customOAuth2AuthenticationSuccessHandler,
+	                      final CustomOAuth2AuthenticationFailureHandler customOAuth2AuthenticationFailureHandler,
+	                      final CustomOidcUserService customOidcUserService, final CustomOAuth2UserService customOAuth2UserService,
+	                      final PropertiesKeeper propertiesKeeper, final CacheManager cacheManager) {
+		this.cacheManager = cacheManager;
 
 		Preconditions.checkNotNull(userDetailsService, "userDetailsService cannot be null!");
 		Preconditions.checkNotNull(customAuthenticationEntryPoint, "customAuthenticationEntryPoint cannot be null!");
-		Preconditions.checkNotNull(oAuth2AuthenticationSuccessHandler, "oAuth2AuthenticationSuccessHandler cannot be null!");
+
+		Preconditions.checkNotNull(customOAuth2AuthenticationSuccessHandler, "customOAuth2AuthenticationSuccessHandler cannot be null!");
+		Preconditions.checkNotNull(customOAuth2AuthenticationFailureHandler, "customOAuth2AuthenticationFailureHandler cannot be null!");
+		Preconditions.checkNotNull(customOidcUserService, "customOidcUserService cannot be null!");
+		Preconditions.checkNotNull(customOAuth2UserService, "customOAuth2UserService cannot be null!");
+
 		Preconditions.checkNotNull(propertiesKeeper, "propertiesKeeper cannot be null!");
 
 		this.userDetailsService = userDetailsService;
 		this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
-		this.oAuth2AuthenticationSuccessHandler = oAuth2AuthenticationSuccessHandler;
+
+		this.customOAuth2AuthenticationSuccessHandler = customOAuth2AuthenticationSuccessHandler;
+		this.customOAuth2AuthenticationFailureHandler = customOAuth2AuthenticationFailureHandler;
+		this.customOidcUserService = customOidcUserService;
+		this.customOAuth2UserService = customOAuth2UserService;
+
 		this.propertiesKeeper = propertiesKeeper;
 	}
 
@@ -111,7 +135,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		cors(httpSecurity);
 
 		// oauth2 clients
-		oauth2Client(httpSecurity, oAuth2AuthenticationSuccessHandler);
+		oauth2Client(httpSecurity);
 
 		// mvcMatchers
 		authorizeRequests(httpSecurity);
@@ -146,14 +170,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		        .mvcMatchers(HttpMethod.POST, propertiesKeeper.endpoints().REFRESH_TOKEN)
 		            .and()
 			.ignoring()
-                .mvcMatchers(HttpMethod.GET,
-                             "/",
-                             "/favicon.ico",
-                             "/static/**",
-                             "/static/*.html",
-                             "/static/*.jpg",
-                             "/static/css/**",
-                             "/static/js/**")
+                .mvcMatchers(HttpMethod.GET, StaticResources.ALL)
 					.and()
 			.ignoring()
 				.mvcMatchers(HttpMethod.GET,
@@ -231,12 +248,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.anyRequest().authenticated();
 	}
 
-	private void oauth2Client(final HttpSecurity httpSecurity, final AuthenticationSuccessHandler authenticationSuccessHandler) throws Exception {
+	private void oauth2Client(final HttpSecurity httpSecurity) throws Exception {
 		httpSecurity.oauth2Login()
 		            .loginPage(propertiesKeeper.oAuth2().LOGIN_PAGE)
 		            .authorizationEndpoint()
-		            .authorizationRequestRepository(new HttpCookieOAuth2AuthorizationRequestRepository(propertiesKeeper))
-		            .and()
-		            .successHandler(authenticationSuccessHandler);
+		                .authorizationRequestRepository(new CacheBasedOAuth2AuthorizationRequestRepository(cacheManager))
+		                    .and()
+		            .successHandler(customOAuth2AuthenticationSuccessHandler)
+					.failureHandler(customOAuth2AuthenticationFailureHandler)
+					.userInfoEndpoint()
+		                // OpenID Connect (Google)
+						.oidcUserService(customOidcUserService)
+		                // OAuth2 2.0 (Facebook)
+                        .userService(customOAuth2UserService);
 	}
 }
