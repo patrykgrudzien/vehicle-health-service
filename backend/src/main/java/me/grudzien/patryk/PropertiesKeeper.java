@@ -8,7 +8,7 @@ import com.google.common.base.Preconditions;
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 
 @Component
-public class PropertiesKeeper {
+public final class PropertiesKeeper {
 
 	private final CustomApplicationProperties customApplicationProperties;
 
