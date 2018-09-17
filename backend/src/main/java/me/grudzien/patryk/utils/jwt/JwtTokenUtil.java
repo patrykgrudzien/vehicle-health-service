@@ -8,8 +8,12 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mobile.device.Device;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.WebRequest;
+
+import com.google.common.base.Preconditions;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -21,10 +25,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
+import static me.grudzien.patryk.utils.log.LogMarkers.METHOD_INVOCATION_MARKER;
+
+import me.grudzien.patryk.PropertiesKeeper;
 import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.domain.dto.login.JwtUser;
-
-import static me.grudzien.patryk.utils.log.LogMarkers.METHOD_INVOCATION_MARKER;
 
 @Log4j2
 @Component
@@ -66,12 +71,17 @@ public class JwtTokenUtil implements Serializable {
 	private static String tokenSecret;
 	private static String tokenHeader;
 	private static Long tokenExpiration;
+	private static Long expirationMillis;
 
 	private final CustomApplicationProperties customApplicationProperties;
+	private final PropertiesKeeper propertiesKeeper;
 
 	@Autowired
-	public JwtTokenUtil(final CustomApplicationProperties customApplicationProperties) {
+	public JwtTokenUtil(final CustomApplicationProperties customApplicationProperties, final PropertiesKeeper propertiesKeeper) {
+		Preconditions.checkNotNull(customApplicationProperties, "customApplicationProperties cannot be null!");
+		Preconditions.checkNotNull(propertiesKeeper, "propertiesKeeper cannot be null!");
 		this.customApplicationProperties = customApplicationProperties;
+		this.propertiesKeeper = propertiesKeeper;
 	}
 
 	@PostConstruct
@@ -79,6 +89,7 @@ public class JwtTokenUtil implements Serializable {
 		tokenSecret = customApplicationProperties.getJwt().getSecret();
 		tokenHeader = customApplicationProperties.getJwt().getHeader();
 		tokenExpiration = customApplicationProperties.getJwt().getExpiration();
+		expirationMillis = propertiesKeeper.oAuth2().SHORT_LIVED_MILLIS;
 	}
 
 	public static class Retriever {
@@ -178,6 +189,26 @@ public class JwtTokenUtil implements Serializable {
 				audience = AUDIENCE_MOBILE;
 			}
 			return audience;
+		}
+
+		// TODO
+		public static class OAuth2 {
+
+			public static <T extends OAuth2User & OidcUser> String generateAccessToken(final T principal) {
+				final Map<String, Object> claims = new HashMap<>();
+				claims.put(TOKEN_CLAIMS.ROLES.name(), principal.getAuthorities());
+				return buildAccessToken(claims, principal.getEmail(), expirationMillis);
+			}
+
+			private static String buildAccessToken(final Map<String, Object> claims, final String userEmail, final Long expirationMillis) {
+				return Jwts.builder()
+				           .setClaims(claims)
+				           .setSubject(userEmail)
+				           .setIssuedAt(new Date())
+				           .setExpiration(new Date(System.currentTimeMillis() + expirationMillis))
+				           .signWith(SignatureAlgorithm.HS512, tokenSecret)
+				           .compact();
+			}
 		}
 	}
 

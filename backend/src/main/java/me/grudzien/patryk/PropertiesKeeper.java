@@ -43,7 +43,7 @@ public final class PropertiesKeeper {
 
 	public class OAuth2 {
 		public String LOGIN_PAGE = "http://localhost:8080/login";
-		public int SHORT_LIVED_MILLIS = customApplicationProperties.getJwt().getShortLivedMillis();
+		public Long SHORT_LIVED_MILLIS = customApplicationProperties.getJwt().getShortLivedMillis();
 	}
 
 	public interface FrontendRoutes {

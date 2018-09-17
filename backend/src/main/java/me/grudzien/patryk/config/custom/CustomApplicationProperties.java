@@ -27,7 +27,7 @@ public class CustomApplicationProperties {
 		private String header;
 		private String secret;
 		private Long expiration;
-		private int shortLivedMillis;
+		private Long shortLivedMillis;
 	}
 
 	@Getter
