@@ -1,5 +1,10 @@
 package me.grudzien.patryk.oauth2.domain;
 
+import lombok.Builder;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+
 import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,7 +15,18 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import java.util.Collection;
 import java.util.Map;
 
+@Getter
+@Setter
+@Builder(builderMethodName = "Builder")
+@RequiredArgsConstructor
 public class CustomOidcPrincipalUser implements OidcUser, UserDetails, CredentialsContainer {
+
+	private static final long serialVersionUID = 9136407623861455510L;
+
+	private String name;
+	private String username;
+	private OidcUserInfo oidcUserInfo;
+	private OidcIdToken oidcIdToken;
 
 	@Override
 	public void eraseCredentials() {
@@ -34,17 +50,17 @@ public class CustomOidcPrincipalUser implements OidcUser, UserDetails, Credentia
 
 	@Override
 	public String getName() {
-		return null;
+		return name;
 	}
 
 	@Override
 	public OidcUserInfo getUserInfo() {
-		return null;
+		return oidcUserInfo;
 	}
 
 	@Override
 	public OidcIdToken getIdToken() {
-		return null;
+		return oidcIdToken;
 	}
 
 	@Override
@@ -54,7 +70,7 @@ public class CustomOidcPrincipalUser implements OidcUser, UserDetails, Credentia
 
 	@Override
 	public String getUsername() {
-		return null;
+		return username;
 	}
 
 	@Override
