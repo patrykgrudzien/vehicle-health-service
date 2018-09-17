@@ -15,6 +15,8 @@ import com.google.common.base.Preconditions;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import java.util.Optional;
+
 import static me.grudzien.patryk.utils.log.LogMarkers.OAUTH2_MARKER;
 
 /**
@@ -39,6 +41,7 @@ public class CacheBasedOAuth2AuthorizationRequestRepository implements Authoriza
 
 	@Autowired
 	public CacheBasedOAuth2AuthorizationRequestRepository(final CacheManager cacheManager) {
+		Preconditions.checkNotNull(cacheManager, "cacheManager cannot be null!");
 		this.cacheManager = cacheManager;
 	}
 
@@ -53,26 +56,22 @@ public class CacheBasedOAuth2AuthorizationRequestRepository implements Authoriza
 			this.removeAuthorizationRequest(request);
 			return;
 		}
-		final Cache cache = cacheManager.getCache(OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME);
-		if (cache != null) {
-			cache.put(OAUTH2_AUTHORIZATION_REQUEST_CACHE_KEY, authorizationRequest);
-			log.info(OAUTH2_MARKER, "OAuth2AuthorizationRequest saved inside ({}) cache.", OAUTH2_AUTHORIZATION_REQUEST_CACHE_KEY);
-		}
+		Optional.ofNullable(cacheManager.getCache(OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME))
+		        .ifPresent(cache -> {
+		        	cache.put(OAUTH2_AUTHORIZATION_REQUEST_CACHE_KEY, authorizationRequest);
+		        	log.info(OAUTH2_MARKER, "OAuth2AuthorizationRequest saved inside ({}) cache.", OAUTH2_AUTHORIZATION_REQUEST_CACHE_KEY);
+		        });
 	}
 
 	@Override
 	public OAuth2AuthorizationRequest loadAuthorizationRequest(final HttpServletRequest request) {
 		log.info(OAUTH2_MARKER, "loadAuthorizationRequest()");
 		Preconditions.checkNotNull(request, "request cannot be null!");
-
-		final Cache cache = cacheManager.getCache(OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME);
-		if (cache != null) {
-			Cache.ValueWrapper valueWrapper = cache.get(OAUTH2_AUTHORIZATION_REQUEST_CACHE_KEY);
-			if (valueWrapper != null) {
-				return (OAuth2AuthorizationRequest) valueWrapper.get();
-			}
-		}
-		return null;
+		return (OAuth2AuthorizationRequest) Optional.ofNullable(cacheManager.getCache(OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME))
+		                                            .map(cache -> Optional.ofNullable(cache.get(OAUTH2_AUTHORIZATION_REQUEST_CACHE_KEY))
+		                                                                  .map(Cache.ValueWrapper::get)
+		                                                                  .orElse(null))
+		                                            .orElse(null);
 	}
 
 	@Override
@@ -86,11 +85,11 @@ public class CacheBasedOAuth2AuthorizationRequestRepository implements Authoriza
 	}
 
 	public void evictOAuth2AuthorizationRequestCache() {
-		final Cache cache = cacheManager.getCache(OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME);
-		if (cache != null) {
-			cache.evict(OAUTH2_AUTHORIZATION_REQUEST_CACHE_KEY);
-			log.info(OAUTH2_MARKER, "Cache ({}) evicted.", OAUTH2_AUTHORIZATION_REQUEST_CACHE_KEY);
-		}
+		Optional.ofNullable(cacheManager.getCache(OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME))
+		        .ifPresent(cache -> {
+		        	cache.evict(OAUTH2_AUTHORIZATION_REQUEST_CACHE_KEY);
+		        	log.info(OAUTH2_MARKER, "Cache ({}) evicted.", OAUTH2_AUTHORIZATION_REQUEST_CACHE_KEY);
+		        });
 	}
 }
 
