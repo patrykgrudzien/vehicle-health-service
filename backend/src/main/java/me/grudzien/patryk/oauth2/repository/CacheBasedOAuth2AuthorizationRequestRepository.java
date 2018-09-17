@@ -53,11 +53,11 @@ public class CacheBasedOAuth2AuthorizationRequestRepository implements Authoriza
 		Preconditions.checkNotNull(request, "request cannot be null!");
 		Preconditions.checkNotNull(request, "response cannot be null!");
 
-		// TODO: FIX ME (in purpose to determine where request comes from -> "/login" or "/register")
+		// TODO: FIX ME (in purpose to determine where request comes from -> "/login" or "/register") for the future implementation
 		log.info(OAUTH2_MARKER, "Request comes from ({}).", request.getHeader(REFERENCE_URL_HEADER_NAME));
 
 		if (authorizationRequest == null) {
-			this.removeAuthorizationRequest(request);
+			this.evictOAuth2AuthorizationRequestCache();
 			return;
 		}
 		Optional.ofNullable(cacheManager.getCache(OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME))
@@ -81,11 +81,7 @@ public class CacheBasedOAuth2AuthorizationRequestRepository implements Authoriza
 	@Override
 	public OAuth2AuthorizationRequest removeAuthorizationRequest(final HttpServletRequest request) {
 		log.info(OAUTH2_MARKER, ">>>> OAUTH2 <<<< removeAuthorizationRequest()");
-		final OAuth2AuthorizationRequest oAuth2AuthorizationRequest = this.loadAuthorizationRequest(request);
-		if (oAuth2AuthorizationRequest != null) {
-			this.evictOAuth2AuthorizationRequestCache();
-		}
-		return oAuth2AuthorizationRequest;
+		return this.loadAuthorizationRequest(request);
 	}
 
 	public void evictOAuth2AuthorizationRequestCache() {

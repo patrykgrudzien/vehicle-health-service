@@ -24,6 +24,9 @@ import org.springframework.security.web.savedrequest.RequestCache;
 
 import com.google.common.base.Preconditions;
 
+import static me.grudzien.patryk.PropertiesKeeper.FrontendRoutes;
+import static me.grudzien.patryk.PropertiesKeeper.StaticResources;
+
 import me.grudzien.patryk.PropertiesKeeper;
 import me.grudzien.patryk.config.filters.JwtAuthorizationTokenFilter;
 import me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter;
@@ -34,9 +37,6 @@ import me.grudzien.patryk.oauth2.service.CustomOAuth2UserService;
 import me.grudzien.patryk.oauth2.service.CustomOidcUserService;
 import me.grudzien.patryk.service.security.MyUserDetailsService;
 import me.grudzien.patryk.utils.log.LogMarkers;
-
-import static me.grudzien.patryk.PropertiesKeeper.FrontendRoutes;
-import static me.grudzien.patryk.PropertiesKeeper.StaticResources;
 
 @Log4j2
 @Configuration
@@ -172,6 +172,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		        // /refresh-token
 		        .mvcMatchers(HttpMethod.POST, propertiesKeeper.endpoints().REFRESH_TOKEN)
 		            .and()
+		   .ignoring()
+		        // TODO
+		        .mvcMatchers("/social-login-success**")
+		            .and()
 			.ignoring()
                 .mvcMatchers(HttpMethod.GET, StaticResources.ALL)
 					.and()
@@ -252,6 +256,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.mvcMatchers(HttpMethod.GET, propertiesKeeper.endpoints().REGISTRATION + "/**").permitAll()
 				// /refresh-token
 				.mvcMatchers(HttpMethod.POST, propertiesKeeper.endpoints().REFRESH_TOKEN).permitAll()
+				// TODO
+				.mvcMatchers("/social-login-success**").permitAll()
 				// require authentication via JWT
 				.anyRequest().authenticated();
 	}
