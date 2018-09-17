@@ -19,7 +19,7 @@ import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
  * heroku-maven-plugin to start deployment process on Heroku.
  */
 @Log4j2
-public class CreateFileOnActiveHerokuProfile {
+public final class CreateFileOnActiveHerokuProfile {
 
 	private static final String FRONTEND_MODULE = "frontend";
 	private static final String BACKEND_MODULE = "backend";

@@ -36,6 +36,7 @@ public class CacheBasedOAuth2AuthorizationRequestRepository implements Authoriza
 
 	public static final String OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME = "oauth2-authorization-request";
 	private static final String OAUTH2_AUTHORIZATION_REQUEST_CACHE_KEY = "oauth2_authorization_request_key";
+	private static final String REFERENCE_URL_HEADER_NAME = "referer";
 
 	private final CacheManager cacheManager;
 
@@ -48,9 +49,12 @@ public class CacheBasedOAuth2AuthorizationRequestRepository implements Authoriza
 	@Override
 	public void saveAuthorizationRequest(final OAuth2AuthorizationRequest authorizationRequest, final HttpServletRequest request,
 	                                     final HttpServletResponse response) {
-		log.info(OAUTH2_MARKER, "saveAuthorizationRequest()");
+		log.info(OAUTH2_MARKER, ">>>> OAUTH2 <<<< saveAuthorizationRequest()");
 		Preconditions.checkNotNull(request, "request cannot be null!");
 		Preconditions.checkNotNull(request, "response cannot be null!");
+
+		// TODO: FIX ME (in purpose to determine where request comes from -> "/login" or "/register")
+		log.info(OAUTH2_MARKER, "Request comes from ({}).", request.getHeader(REFERENCE_URL_HEADER_NAME));
 
 		if (authorizationRequest == null) {
 			this.removeAuthorizationRequest(request);
@@ -65,7 +69,7 @@ public class CacheBasedOAuth2AuthorizationRequestRepository implements Authoriza
 
 	@Override
 	public OAuth2AuthorizationRequest loadAuthorizationRequest(final HttpServletRequest request) {
-		log.info(OAUTH2_MARKER, "loadAuthorizationRequest()");
+		log.info(OAUTH2_MARKER, ">>>> OAUTH2 <<<< loadAuthorizationRequest()");
 		Preconditions.checkNotNull(request, "request cannot be null!");
 		return (OAuth2AuthorizationRequest) Optional.ofNullable(cacheManager.getCache(OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME))
 		                                            .map(cache -> Optional.ofNullable(cache.get(OAUTH2_AUTHORIZATION_REQUEST_CACHE_KEY))
@@ -76,7 +80,7 @@ public class CacheBasedOAuth2AuthorizationRequestRepository implements Authoriza
 
 	@Override
 	public OAuth2AuthorizationRequest removeAuthorizationRequest(final HttpServletRequest request) {
-		log.info(OAUTH2_MARKER, "removeAuthorizationRequest()");
+		log.info(OAUTH2_MARKER, ">>>> OAUTH2 <<<< removeAuthorizationRequest()");
 		final OAuth2AuthorizationRequest oAuth2AuthorizationRequest = this.loadAuthorizationRequest(request);
 		if (oAuth2AuthorizationRequest != null) {
 			this.evictOAuth2AuthorizationRequestCache();
@@ -85,6 +89,7 @@ public class CacheBasedOAuth2AuthorizationRequestRepository implements Authoriza
 	}
 
 	public void evictOAuth2AuthorizationRequestCache() {
+		log.info(OAUTH2_MARKER, ">>>> OAUTH2 <<<< evictOAuth2AuthorizationRequestCache()");
 		Optional.ofNullable(cacheManager.getCache(OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME))
 		        .ifPresent(cache -> {
 		        	cache.evict(OAUTH2_AUTHORIZATION_REQUEST_CACHE_KEY);
