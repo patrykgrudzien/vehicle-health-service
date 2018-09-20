@@ -1,0 +1,26 @@
+<template>
+  <v-container fluid fill-height>
+    <v-layout column align-center justify-center>
+
+      <v-flex class="text-xs-center">
+        <textarea rows="50" cols="250" title="label">
+          {{ shortLivedAuthTokenQueryParam }}
+        </textarea>
+      </v-flex>
+
+    </v-layout>
+  </v-container>
+</template>
+
+<script>
+  export default {
+    data() {
+      return {
+        shortLivedAuthTokenQueryParam: ''
+      }
+    },
+    created() {
+      this.shortLivedAuthTokenQueryParam = this.$route.query.shortLivedAuthToken;
+    }
+  }
+</script>

@@ -1,15 +1,16 @@
-import Home                from '../components/home/Home';
-import AboutMe             from '../components/AboutMe';
-import RegistrationForm    from '../components/registration/RegistrationForm';
-import ConfirmRegistration from '../components/registration/ConfirmRegistration';
-import LoginForm           from '../components/login/LoginForm';
-import Wrapper             from '../components/Wrapper';
-import MainBoard           from '../components/home/MainBoard';
-import Engine              from '../components/vehicle/Engine';
-import Fluids              from '../components/vehicle/Fluids';
-import Tires               from '../components/vehicle/Tires';
-import MaintenanceCosts    from '../components/vehicle/MaintenanceCosts';
-import componentsDetails   from '../componentsDetails';
+import Home                        from '../components/home/Home';
+import AboutMe                     from '../components/AboutMe';
+import RegistrationForm            from '../components/registration/RegistrationForm';
+import ConfirmRegistration         from '../components/registration/ConfirmRegistration';
+import LoginForm                   from '../components/login/LoginForm';
+import Wrapper                     from '../components/Wrapper';
+import MainBoard                   from '../components/home/MainBoard';
+import Engine                      from '../components/vehicle/Engine';
+import Fluids                      from '../components/vehicle/Fluids';
+import Tires                       from '../components/vehicle/Tires';
+import MaintenanceCosts            from '../components/vehicle/MaintenanceCosts';
+import componentsDetails           from '../componentsDetails';
+import GoogleRedirectionSuccessful from '../components/oauth2/GoogleRedirectionSuccessful';
 
 export default [
   {
@@ -107,5 +108,10 @@ export default [
     path: componentsDetails.maintenanceCosts.path,
     component: MaintenanceCosts,
     meta: {requiresAuth: true}
+  },
+  {
+    name: componentsDetails.googleRedirectionSuccessful.name,
+    path: componentsDetails.googleRedirectionSuccessful.path,
+    component: GoogleRedirectionSuccessful
   }
 ];
