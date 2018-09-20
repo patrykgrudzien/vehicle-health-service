@@ -4,7 +4,6 @@ import lombok.extern.log4j.Log4j2;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -36,7 +35,8 @@ import me.grudzien.patryk.oauth2.utils.CacheHelper;
 import me.grudzien.patryk.service.security.MyUserDetailsService;
 import me.grudzien.patryk.utils.log.LogMarkers;
 
-import static me.grudzien.patryk.PropertiesKeeper.*;
+import static me.grudzien.patryk.PropertiesKeeper.FrontendRoutes;
+import static me.grudzien.patryk.PropertiesKeeper.StaticResources;
 
 @Log4j2
 @Configuration
@@ -51,7 +51,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private final CustomOidcUserService customOidcUserService;
 	private final CustomOAuth2UserService customOAuth2UserService;
 	private final PropertiesKeeper propertiesKeeper;
-	private final CacheManager cacheManager;
 	private final CacheHelper cacheHelper;
 
 	/**
@@ -64,8 +63,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	                      final CustomAuthenticationEntryPoint customAuthenticationEntryPoint,
 	                      final CustomOAuth2AuthenticationSuccessHandler customOAuth2AuthenticationSuccessHandler,
 	                      final CustomOAuth2AuthenticationFailureHandler customOAuth2AuthenticationFailureHandler,
-	                      final CustomOidcUserService customOidcUserService, final CustomOAuth2UserService customOAuth2UserService,
-	                      final PropertiesKeeper propertiesKeeper, final CacheManager cacheManager, final CacheHelper cacheHelper) {
+	                      final CustomOidcUserService customOidcUserService,
+	                      final CustomOAuth2UserService customOAuth2UserService,
+	                      final PropertiesKeeper propertiesKeeper,
+	                      final CacheHelper cacheHelper) {
 
 		Preconditions.checkNotNull(userDetailsService, "userDetailsService cannot be null!");
 		Preconditions.checkNotNull(customAuthenticationEntryPoint, "customAuthenticationEntryPoint cannot be null!");
@@ -74,7 +75,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		Preconditions.checkNotNull(customOidcUserService, "customOidcUserService cannot be null!");
 		Preconditions.checkNotNull(customOAuth2UserService, "customOAuth2UserService cannot be null!");
 		Preconditions.checkNotNull(propertiesKeeper, "propertiesKeeper cannot be null!");
-		Preconditions.checkNotNull(cacheManager, "cacheManager cannot be null!");
 		Preconditions.checkNotNull(cacheHelper, "cacheHelper cannot be null!");
 
 		this.userDetailsService = userDetailsService;
@@ -84,7 +84,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		this.customOidcUserService = customOidcUserService;
 		this.customOAuth2UserService = customOAuth2UserService;
 		this.propertiesKeeper = propertiesKeeper;
-		this.cacheManager = cacheManager;
 		this.cacheHelper = cacheHelper;
 	}
 
@@ -201,7 +200,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		httpSecurity.oauth2Login()
 		            .loginPage(propertiesKeeper.oAuth2().LOGIN_PAGE)
 		            .authorizationEndpoint()
-		                .authorizationRequestRepository(new CacheBasedOAuth2AuthorizationRequestRepository(cacheManager, cacheHelper))
+		                .authorizationRequestRepository(new CacheBasedOAuth2AuthorizationRequestRepository(cacheHelper))
 		                    .and()
 		            .successHandler(customOAuth2AuthenticationSuccessHandler)
 					.failureHandler(customOAuth2AuthenticationFailureHandler)

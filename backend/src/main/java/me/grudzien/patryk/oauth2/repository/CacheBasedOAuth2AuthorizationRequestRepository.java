@@ -3,9 +3,6 @@ package me.grudzien.patryk.oauth2.repository;
 import lombok.extern.log4j.Log4j2;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.stereotype.Repository;
@@ -15,7 +12,7 @@ import com.google.common.base.Preconditions;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import java.util.Optional;
+import me.grudzien.patryk.oauth2.utils.CacheHelper;
 
 import static me.grudzien.patryk.utils.log.LogMarkers.OAUTH2_MARKER;
 
@@ -31,19 +28,21 @@ import static me.grudzien.patryk.utils.log.LogMarkers.OAUTH2_MARKER;
  */
 @Log4j2
 @Repository
-@CacheConfig(cacheNames = CacheBasedOAuth2AuthorizationRequestRepository.OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME)
 public class CacheBasedOAuth2AuthorizationRequestRepository implements AuthorizationRequestRepository<OAuth2AuthorizationRequest> {
 
 	public static final String OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME = "oauth2-authorization-request";
 	private static final String OAUTH2_AUTHORIZATION_REQUEST_CACHE_KEY = "oauth2_authorization_request_key";
+
+	public static final String SSO_BUTTON_CLICK_EVENT_ORIGIN_CACHE_NAME = "sso-button-click-event-origin-cache-name";
+	public static final String SSO_BUTTON_CLICK_EVENT_ORIGIN_CACHE_KEY = "sso-button-click-event-origin-cache-key";
 	private static final String REFERENCE_URL_HEADER_NAME = "referer";
 
-	private final CacheManager cacheManager;
+	private final CacheHelper cacheHelper;
 
 	@Autowired
-	public CacheBasedOAuth2AuthorizationRequestRepository(final CacheManager cacheManager) {
-		Preconditions.checkNotNull(cacheManager, "cacheManager cannot be null!");
-		this.cacheManager = cacheManager;
+	public CacheBasedOAuth2AuthorizationRequestRepository(final CacheHelper cacheHelper) {
+		Preconditions.checkNotNull(cacheHelper, "cacheHelper cannot be null!");
+		this.cacheHelper = cacheHelper;
 	}
 
 	@Override
@@ -53,29 +52,24 @@ public class CacheBasedOAuth2AuthorizationRequestRepository implements Authoriza
 		Preconditions.checkNotNull(request, "request cannot be null!");
 		Preconditions.checkNotNull(request, "response cannot be null!");
 
-		// TODO: FIX ME (in purpose to determine where request comes from -> "/login" or "/register") for the future implementation
-		log.info(OAUTH2_MARKER, "Request comes from ({}).", request.getHeader(REFERENCE_URL_HEADER_NAME));
-
 		if (authorizationRequest == null) {
 			this.evictOAuth2AuthorizationRequestCache();
 			return;
 		}
-		Optional.ofNullable(cacheManager.getCache(OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME))
-		        .ifPresent(cache -> {
-		        	cache.put(OAUTH2_AUTHORIZATION_REQUEST_CACHE_KEY, authorizationRequest);
-		        	log.info(OAUTH2_MARKER, "OAuth2AuthorizationRequest saved inside ({}) cache.", OAUTH2_AUTHORIZATION_REQUEST_CACHE_KEY);
-		        });
+		/**
+		 * Saving additional cache which will be required in:
+		 * {@link me.grudzien.patryk.oauth2.service.CustomOAuth2UserService#buildPrincipal(org.springframework.security.oauth2.core.user.OAuth2User, String)}
+		 * to decide if user should be (log in) or (register).
+		 */
+		cacheHelper.saveCache(SSO_BUTTON_CLICK_EVENT_ORIGIN_CACHE_NAME, SSO_BUTTON_CLICK_EVENT_ORIGIN_CACHE_KEY, request.getHeader(REFERENCE_URL_HEADER_NAME));
+		cacheHelper.saveCache(OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME, OAUTH2_AUTHORIZATION_REQUEST_CACHE_KEY, authorizationRequest);
 	}
 
 	@Override
 	public OAuth2AuthorizationRequest loadAuthorizationRequest(final HttpServletRequest request) {
 		log.info(OAUTH2_MARKER, ">>>> OAUTH2 <<<< loadAuthorizationRequest()");
 		Preconditions.checkNotNull(request, "request cannot be null!");
-		return (OAuth2AuthorizationRequest) Optional.ofNullable(cacheManager.getCache(OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME))
-		                                            .map(cache -> Optional.ofNullable(cache.get(OAUTH2_AUTHORIZATION_REQUEST_CACHE_KEY))
-		                                                                  .map(Cache.ValueWrapper::get)
-		                                                                  .orElse(null))
-		                                            .orElse(null);
+		return cacheHelper.loadCache(OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME, OAUTH2_AUTHORIZATION_REQUEST_CACHE_KEY, () -> null);
 	}
 
 	@Override
@@ -86,11 +80,7 @@ public class CacheBasedOAuth2AuthorizationRequestRepository implements Authoriza
 
 	public void evictOAuth2AuthorizationRequestCache() {
 		log.info(OAUTH2_MARKER, ">>>> OAUTH2 <<<< evictOAuth2AuthorizationRequestCache()");
-		Optional.ofNullable(cacheManager.getCache(OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME))
-		        .ifPresent(cache -> {
-		        	cache.evict(OAUTH2_AUTHORIZATION_REQUEST_CACHE_KEY);
-		        	log.info(OAUTH2_MARKER, "Cache ({}) evicted.", OAUTH2_AUTHORIZATION_REQUEST_CACHE_KEY);
-		        });
+		cacheHelper.evictCacheByNameAndKey(OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME, OAUTH2_AUTHORIZATION_REQUEST_CACHE_KEY);
 	}
 }
 

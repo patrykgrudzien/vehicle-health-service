@@ -42,8 +42,10 @@ public final class PropertiesKeeper {
 	}
 
 	public class OAuth2 {
-		public String LOGIN_PAGE = "http://localhost:8080/login";
-		public Long SHORT_LIVED_MILLIS = customApplicationProperties.getJwt().getShortLivedMillis();
+		public String LOGIN_PAGE = customApplicationProperties.getEndpoints().getOAuth2().getLoginPage();
+		public Long SHORT_LIVED_MILLIS = customApplicationProperties.getEndpoints().getOAuth2().getShortLivedMillis();
+		public String SUCCESS_TARGET_URL = customApplicationProperties.getEndpoints().getOAuth2().getRedirectionSuccessTargetUrl();
+		public String FAILURE_TARGET_URL = customApplicationProperties.getEndpoints().getOAuth2().getRedirectionFailureTargetUrl();
 	}
 
 	public interface FrontendRoutes {

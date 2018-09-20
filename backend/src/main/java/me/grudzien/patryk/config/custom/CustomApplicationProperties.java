@@ -27,7 +27,6 @@ public class CustomApplicationProperties {
 		private String header;
 		private String secret;
 		private Long expiration;
-		private Long shortLivedMillis;
 	}
 
 	@Getter
@@ -39,6 +38,16 @@ public class CustomApplicationProperties {
 		private Logout logout = new Logout();
 		private Heroku heroku = new Heroku();
 		private VehicleResource vehicleResource = new VehicleResource();
+		private OAuth2 oAuth2 = new OAuth2();
+
+		@Getter
+		@Setter
+		public static class OAuth2 {
+			private String loginPage;
+			private Long shortLivedMillis;
+			private String redirectionSuccessTargetUrl;
+			private String redirectionFailureTargetUrl;
+		}
 
 		@Getter
 		@Setter
