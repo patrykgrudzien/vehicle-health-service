@@ -70,10 +70,6 @@ public class CustomApplicationProperties {
 			private String confirmedTokenNotFound;
 			private String confirmedTokenExpired;
 			private String userAlreadyEnabled;
-
-			public String getRootConfirmationUrl() {
-				return getRoot() + getConfirmationUrl();
-			}
 		}
 
 		@Getter

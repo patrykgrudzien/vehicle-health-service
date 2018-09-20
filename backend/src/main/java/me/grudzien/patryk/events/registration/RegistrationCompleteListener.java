@@ -11,15 +11,15 @@ import com.google.common.collect.ImmutableMap;
 
 import java.util.UUID;
 
-import me.grudzien.patryk.config.custom.CustomApplicationProperties;
+import static me.grudzien.patryk.domain.enums.AppFLow.VERIFICATION_TOKEN_CREATION;
+import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
+
+import me.grudzien.patryk.PropertiesKeeper;
 import me.grudzien.patryk.domain.dto.registration.EmailDto;
 import me.grudzien.patryk.domain.entities.registration.CustomUser;
 import me.grudzien.patryk.service.registration.EmailService;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.web.ContextPathsResolver;
-
-import static me.grudzien.patryk.domain.enums.AppFLow.VERIFICATION_TOKEN_CREATION;
-import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 
 /**
  * That listener is going to handle {@link OnRegistrationCompleteEvent} which is published by
@@ -30,23 +30,22 @@ import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 public class RegistrationCompleteListener implements ApplicationListener<OnRegistrationCompleteEvent> {
 
 	private final EmailService emailService;
-	private final CustomApplicationProperties customApplicationProperties;
 	private final ContextPathsResolver contextPathsResolver;
 	private final LocaleMessagesCreator localeMessagesCreator;
+	private final PropertiesKeeper propertiesKeeper;
 
 	@Autowired
-	public RegistrationCompleteListener(final EmailService emailService, final CustomApplicationProperties customApplicationProperties,
-	                                    final ContextPathsResolver contextPathsResolver,
-	                                    final LocaleMessagesCreator localeMessagesCreator) {
+	public RegistrationCompleteListener(final EmailService emailService, final ContextPathsResolver contextPathsResolver,
+	                                    final LocaleMessagesCreator localeMessagesCreator, final PropertiesKeeper propertiesKeeper) {
 		Preconditions.checkNotNull(emailService, "emailService cannot be null!");
-		Preconditions.checkNotNull(customApplicationProperties, "customApplicationProperties cannot be null!");
 		Preconditions.checkNotNull(contextPathsResolver, "contextPathsResolver cannot be null!");
 		Preconditions.checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
+		Preconditions.checkNotNull(propertiesKeeper, "propertiesKeeper cannot be null!");
 
 		this.emailService = emailService;
-		this.customApplicationProperties = customApplicationProperties;
 		this.contextPathsResolver = contextPathsResolver;
 		this.localeMessagesCreator = localeMessagesCreator;
+		this.propertiesKeeper = propertiesKeeper;
 	}
 
 	@Override
@@ -65,13 +64,12 @@ public class RegistrationCompleteListener implements ApplicationListener<OnRegis
 
 		final String recipientAddress = userBeingRegistered.getEmail();
 		final String subject = localeMessagesCreator.buildLocaleMessage("registration-email-subject");
-		final String confirmationUrl = event.getApplicationUrl() + customApplicationProperties.getEndpoints()
-		                                                                                      .getRegistration()
-		                                                                                      .getRootConfirmationUrl() + token;
+		final String confirmationUrl = event.getApplicationUrl() + propertiesKeeper.endpoints().REGISTRATION_CONFIRMATION + token;
+
 		emailService.sendMessageUsingTemplate(EmailDto.Builder()
 		                                              .to(recipientAddress)
 		                                              .subject(subject)
-		                                              .content(customApplicationProperties.getCorsOrigins().getFrontEndModule() + confirmationUrl)
+		                                              .content(propertiesKeeper.corsOrigins().FRONT_END_MODULE + confirmationUrl)
 		                                              .templatePlaceholders(
 				                                              ImmutableMap.<String, Object>
 					                                                 builder()
