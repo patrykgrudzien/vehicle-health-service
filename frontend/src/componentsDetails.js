@@ -55,5 +55,9 @@ export default {
   authenticationRequired: {
     path: '/authentication-required',
     name: 'LoginForm-secured-resource-authentication-required'
+  },
+  googleRedirectionSuccessful: {
+    path: '/google-redirection-success**',
+    name: 'Google Redirection Successful'
   }
 }
