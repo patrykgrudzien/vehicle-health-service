@@ -1,5 +1,6 @@
 package me.grudzien.patryk.handlers.web;
 
+import io.vavr.Tuple2;
 import lombok.extern.log4j.Log4j2;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,14 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-import me.grudzien.patryk.PropertiesKeeper;
-import me.grudzien.patryk.config.custom.CustomApplicationProperties;
-import me.grudzien.patryk.domain.enums.AppFLow;
-import me.grudzien.patryk.exceptions.RedirectionException;
-import me.grudzien.patryk.oauth2.handlers.CustomOAuth2AuthenticationSuccessHandler;
-import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
-import me.grudzien.patryk.utils.web.ContextPathsResolver;
-
 import static me.grudzien.patryk.domain.enums.AppFLow.ACCOUNT_ALREADY_ENABLED;
 import static me.grudzien.patryk.domain.enums.AppFLow.CONFIRM_REGISTRATION;
 import static me.grudzien.patryk.domain.enums.AppFLow.GOOGLE_REDIRECTION_SUCCESSFUL;
@@ -26,33 +19,37 @@ import static me.grudzien.patryk.domain.enums.AppFLow.VERIFICATION_TOKEN_EXPIRED
 import static me.grudzien.patryk.domain.enums.AppFLow.VERIFICATION_TOKEN_NOT_FOUND;
 import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
 import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
+import static me.grudzien.patryk.utils.web.CustomURLBuilder.URLParamType;
+
+import me.grudzien.patryk.PropertiesKeeper;
+import me.grudzien.patryk.domain.enums.AppFLow;
+import me.grudzien.patryk.exceptions.RedirectionException;
+import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
+import me.grudzien.patryk.utils.web.ContextPathsResolver;
+import me.grudzien.patryk.utils.web.CustomURLBuilder;
 
 @Log4j2
 @Component
 public class HttpResponseHandler {
 
 	private final ContextPathsResolver contextPathsResolver;
-	private final CustomApplicationProperties customApplicationProperties;
 	private final LocaleMessagesCreator localeMessagesCreator;
-
 	private final PropertiesKeeper propertiesKeeper;
 
 	@Autowired
-	public HttpResponseHandler(final ContextPathsResolver contextPathsResolver, final CustomApplicationProperties customApplicationProperties,
-	                           final LocaleMessagesCreator localeMessagesCreator, final PropertiesKeeper propertiesKeeper) {
+	public HttpResponseHandler(final ContextPathsResolver contextPathsResolver, final LocaleMessagesCreator localeMessagesCreator,
+	                           final PropertiesKeeper propertiesKeeper) {
 		Preconditions.checkNotNull(contextPathsResolver, "contextPathsResolver cannot be null!");
-		Preconditions.checkNotNull(customApplicationProperties, "customApplicationProperties cannot be null!");
 		Preconditions.checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
+		Preconditions.checkNotNull(propertiesKeeper, "propertiesKeeper cannot be null!");
 
 		this.contextPathsResolver = contextPathsResolver;
-		this.customApplicationProperties = customApplicationProperties;
 		this.localeMessagesCreator = localeMessagesCreator;
-
-		Preconditions.checkNotNull(propertiesKeeper, "propertiesKeeper cannot be null!");
 		this.propertiesKeeper = propertiesKeeper;
 	}
 
-	public void redirectUserTo(final AppFLow appFLow, final HttpServletResponse response, final String... additionalParameters) {
+	@SafeVarargs
+	public final void redirectUserTo(final AppFLow appFLow, final HttpServletResponse response, final Tuple2<String, String>... additionalParameters) {
 		/**
 		 * Creating base app URLs for:
 		 * {@link me.grudzien.patryk.service.registration.impl.UserRegistrationServiceImpl#confirmRegistration(String, javax.servlet.http.HttpServletResponse)}
@@ -61,7 +58,7 @@ public class HttpResponseHandler {
 		 */
 		switch (appFLow) {
 			case ACCOUNT_ALREADY_ENABLED:
-				final String userAlreadyEnabledUrl = customApplicationProperties.getEndpoints().getRegistration().getUserAlreadyEnabled();
+				final String userAlreadyEnabledUrl = propertiesKeeper.endpoints().USER_ALREADY_ENABLED;
 				try {
 					response.sendRedirect(contextPathsResolver.determineUrlFor(ACCOUNT_ALREADY_ENABLED) + userAlreadyEnabledUrl);
 					log.info(FLOW_MARKER, ACCOUNT_ALREADY_ENABLED.getSuccessfulRedirectionLogInfoMessage(), userAlreadyEnabledUrl);
@@ -71,7 +68,7 @@ public class HttpResponseHandler {
 				}
 				break;
 			case CONFIRM_REGISTRATION:
-				final String registrationConfirmedUrl = customApplicationProperties.getEndpoints().getRegistration().getConfirmed();
+				final String registrationConfirmedUrl = propertiesKeeper.endpoints().REGISTRATION_CONFIRMED;
 				try {
 					response.sendRedirect(contextPathsResolver.determineUrlFor(CONFIRM_REGISTRATION) + registrationConfirmedUrl);
 					log.info(FLOW_MARKER, CONFIRM_REGISTRATION.getSuccessfulRedirectionLogInfoMessage(), registrationConfirmedUrl);
@@ -81,7 +78,7 @@ public class HttpResponseHandler {
 				}
 				break;
 			case VERIFICATION_TOKEN_NOT_FOUND:
-				final String confirmedTokenNotFoundUrl = customApplicationProperties.getEndpoints().getRegistration().getConfirmedTokenNotFound();
+				final String confirmedTokenNotFoundUrl = propertiesKeeper.endpoints().CONFIRMATION_TOKEN_NOT_FOUND;
 				try {
 					response.sendRedirect(contextPathsResolver.determineUrlFor(CONFIRM_REGISTRATION) + confirmedTokenNotFoundUrl);
 					log.info(FLOW_MARKER, VERIFICATION_TOKEN_NOT_FOUND.getSuccessfulRedirectionLogInfoMessage(), confirmedTokenNotFoundUrl);
@@ -91,7 +88,7 @@ public class HttpResponseHandler {
 				}
 				break;
 			case VERIFICATION_TOKEN_EXPIRED:
-				final String confirmedTokenExpired = customApplicationProperties.getEndpoints().getRegistration().getConfirmedTokenExpired();
+				final String confirmedTokenExpired = propertiesKeeper.endpoints().CONFIRMATION_TOKEN_EXPIRED;
 				try {
 					response.sendRedirect(contextPathsResolver.determineUrlFor(CONFIRM_REGISTRATION) + confirmedTokenExpired);
 					log.info(FLOW_MARKER, VERIFICATION_TOKEN_EXPIRED.getSuccessfulRedirectionLogInfoMessage(), confirmedTokenExpired);
@@ -101,17 +98,14 @@ public class HttpResponseHandler {
 				}
 				break;
 			case GOOGLE_REDIRECTION_SUCCESSFUL:
-				final String googleSuccessTargetUrl = propertiesKeeper.oAuth2().SUCCESS_TARGET_URL +
-				                                      "?" +
-				                                      CustomOAuth2AuthenticationSuccessHandler.SHORT_LIVED_AUTH_TOKEN_NAME +
-				                                      "=" +
-				                                      additionalParameters[0];
+				final String googleSuccessTargetUrl = CustomURLBuilder.buildURL(propertiesKeeper.oAuth2().SUCCESS_TARGET_URL, URLParamType.REQUEST_PARAM,
+				                                                                additionalParameters);
 				try {
-					response.sendRedirect("http://localhost:8080" + googleSuccessTargetUrl);
+					response.sendRedirect(contextPathsResolver.determineUrlFor(GOOGLE_REDIRECTION_SUCCESSFUL) + googleSuccessTargetUrl);
 					log.info(FLOW_MARKER, GOOGLE_REDIRECTION_SUCCESSFUL.getSuccessfulRedirectionLogInfoMessage(), googleSuccessTargetUrl);
 				} catch (final IOException exception) {
 					log.error(EXCEPTION_MARKER, GOOGLE_REDIRECTION_SUCCESSFUL.getRedirectionExceptionLogErrorMessage(), googleSuccessTargetUrl);
-					throw new RedirectionException(localeMessagesCreator.buildLocaleMessage("cannot-redirect-to-registration-confirmed-token-expired-url"));
+					throw new RedirectionException(localeMessagesCreator.buildLocaleMessage("google-redirection-failure"));
 				}
 				break;
 		}

@@ -18,27 +18,27 @@ public final class PropertiesKeeper {
 		this.customApplicationProperties = customApplicationProperties;
 	}
 
-	public Endpoints endpoints() {
-		return new Endpoints();
-	}
+	public Endpoints endpoints() {return new Endpoints();}
+	public JWT jwt() {return new JWT();}
+	public OAuth2 oAuth2() {return new OAuth2();}
+	public Heroku heroku() {return new Heroku();}
+	public CorsOrigins corsOrigins() {return new CorsOrigins();}
 
 	public class Endpoints {
 		public String AUTH = customApplicationProperties.getEndpoints().getAuthentication().getRoot();
 		public String REGISTRATION = customApplicationProperties.getEndpoints().getRegistration().getRoot();
 		public String REFRESH_TOKEN = customApplicationProperties.getEndpoints().getAuthentication().getRefreshToken();
 		public String REGISTER_USER_ACCOUNT = customApplicationProperties.getEndpoints().getRegistration().getRegisterUserAccount();
-	}
-
-	public JWT jwt() {
-		return new JWT();
+		public String REGISTRATION_CONFIRMATION = customApplicationProperties.getEndpoints().getRegistration().getRoot() +
+		                                          customApplicationProperties.getEndpoints().getRegistration().getConfirmationUrl();
+		public String USER_ALREADY_ENABLED = customApplicationProperties.getEndpoints().getRegistration().getUserAlreadyEnabled();
+		public String REGISTRATION_CONFIRMED = customApplicationProperties.getEndpoints().getRegistration().getConfirmed();
+		public String CONFIRMATION_TOKEN_NOT_FOUND = customApplicationProperties.getEndpoints().getRegistration().getConfirmedTokenNotFound();
+		public String CONFIRMATION_TOKEN_EXPIRED = customApplicationProperties.getEndpoints().getRegistration().getConfirmedTokenExpired();
 	}
 
 	public class JWT {
 		public String TOKEN_HEADER = customApplicationProperties.getJwt().getHeader();
-	}
-
-	public OAuth2 oAuth2() {
-		return new OAuth2();
 	}
 
 	public class OAuth2 {
@@ -46,6 +46,15 @@ public final class PropertiesKeeper {
 		public Long SHORT_LIVED_MILLIS = customApplicationProperties.getEndpoints().getOAuth2().getShortLivedMillis();
 		public String SUCCESS_TARGET_URL = customApplicationProperties.getEndpoints().getOAuth2().getRedirectionSuccessTargetUrl();
 		public String FAILURE_TARGET_URL = customApplicationProperties.getEndpoints().getOAuth2().getRedirectionFailureTargetUrl();
+	}
+
+	public class Heroku {
+		public String HEROKU_BASE_CONTEXT_PATH = customApplicationProperties.getEndpoints().getHeroku().getContextPath();
+	}
+
+	public class CorsOrigins {
+		public String FRONT_END_MODULE = customApplicationProperties.getCorsOrigins().getFrontEndModule();
+		public String BACK_END_MODULE = customApplicationProperties.getCorsOrigins().getBackEndModule();
 	}
 
 	public interface FrontendRoutes {
