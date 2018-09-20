@@ -29,6 +29,11 @@ custom:
         get-vehicle: "/vehicle/{ownerEmailAddress}"
         get-current-mileage: "/vehicle/get-current-mileage/{ownerEmailAddress}"
         update-current-mileage: "/vehicle/update-current-mileage/{ownerEmailAddress}"
+      oauth2:
+        login-page: http://localhost:8080/login
+        short-lived-millis: 120000 # 2 minutes
+        redirection-success-target-url: /google-redirection-success
+        redirection-failure-target-url: /google-redirection-failure
     cors-origins:
       front-end-module: http://localhost:8080
       back-end-module: http://localhost:8088
@@ -36,7 +41,6 @@ custom:
       header: Authorization
       secret: super-secret-authorization-token-password
       expiration: 900000 # 15 minutes
-      short-lived-millis: 120000 # 2 minutes
     messages-language:
       header: Language
 

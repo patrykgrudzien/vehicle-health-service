@@ -31,6 +31,11 @@ public enum AppFLow {
 			"Created registration confirmation URL for (LOCAL) env.",
 			"User successfully redirected to ({}) url.",
 			"Cannot redirect user to ({}) url."
+	),
+	GOOGLE_REDIRECTION_SUCCESSFUL(
+			"Created registration confirmation URL for (LOCAL) env.",
+			"User successfully redirected to ({}) url.",
+			"Cannot redirect user to ({}) url."
 	);
 
 	private final String determineUrlLogInfoMessage;

@@ -22,10 +22,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static me.grudzien.patryk.domain.enums.jwt.TokenTypes.ACCESS_TOKEN;
-import static me.grudzien.patryk.domain.enums.jwt.TokenTypes.REFRESH_TOKEN;
-import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
-
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationResponse;
 import me.grudzien.patryk.domain.dto.login.JwtUser;
@@ -40,6 +36,10 @@ import me.grudzien.patryk.utils.jwt.JwtTokenUtil;
 import me.grudzien.patryk.utils.log.LogMarkers;
 import me.grudzien.patryk.utils.validators.ValidatorCreator;
 import me.grudzien.patryk.utils.web.RequestsDecoder;
+
+import static me.grudzien.patryk.domain.enums.jwt.TokenTypes.ACCESS_TOKEN;
+import static me.grudzien.patryk.domain.enums.jwt.TokenTypes.REFRESH_TOKEN;
+import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 
 @Log4j2
 @Service
@@ -122,11 +122,21 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 			return Optional.of(authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password)));
 		} catch (final DisabledException exception) {
 			log.error(LogMarkers.EXCEPTION_MARKER, "User with {} is disabled! Error message -> {}", email, exception.getMessage());
-			// it is checked in (AccountStatusUserDetailsChecker implements UserDetailsChecker)
+			/**
+			 * Exception thrown below is determined in:
+			 * {@link org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider#preAuthenticationChecks}
+			 * which points to:
+			 * {@link org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider.DefaultPreAuthenticationChecks#check(org.springframework.security.core.userdetails.UserDetails)}
+			 */
 			throw new UserDisabledAuthenticationException(localeMessagesCreator.buildLocaleMessage("user-disabled-exception"));
 		} catch (final BadCredentialsException exception) {
 			log.error(LogMarkers.EXCEPTION_MARKER, "E-mail address or password is not correct! Error message -> {}", exception.getMessage());
-			// it is checked in (AbstractUserDetailsAuthenticationProvider)
+			/**
+			 * Exception thrown below is determined in:
+			 * {@link org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider#authenticate(org.springframework.security.core.Authentication)}
+			 * which tries to retrieve user using:
+			 * {@link me.grudzien.patryk.service.security.MyUserDetailsService}
+			 */
 			throw new BadCredentialsAuthenticationException(localeMessagesCreator.buildLocaleMessage("bad-credentials-exception"));
 		}
 	}
