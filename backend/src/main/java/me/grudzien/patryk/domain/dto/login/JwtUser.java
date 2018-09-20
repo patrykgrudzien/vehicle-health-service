@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 
@@ -17,7 +18,7 @@ import java.util.Date;
 @RequiredArgsConstructor
 @JsonIgnoreProperties({"accountNonExpired", "accountNonLocked", "credentialsNonExpired", "password", "lastPasswordResetDate",
                        "authorities", "username", "enabled", "roles"})
-public class JwtUser implements UserDetails {
+public class JwtUser implements UserDetails, Serializable {
 
 	private static final long serialVersionUID = -5701766234662554950L;
 
