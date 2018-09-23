@@ -19,6 +19,7 @@ custom:
         failure-url: /login?error=true
         principal-user: /principal-user
         refresh-token: /refresh-token
+        login: /login # TODO: this URL is taken in {@link me.grudzien.patryk.oauth2.utils.OAuth2FlowDelegator}
       logout:
         root: /logout
         success-url: ?logout
@@ -30,7 +31,7 @@ custom:
         get-current-mileage: "/vehicle/get-current-mileage/{ownerEmailAddress}"
         update-current-mileage: "/vehicle/update-current-mileage/{ownerEmailAddress}"
       oauth2:
-        login-page: http://localhost:8080/login
+        login-page: http://localhost:8080/login # TODO: must be updated because on production context is different (for now testing purpose)
         short-lived-millis: 120000 # 2 minutes
         redirection-success-target-url: /google-redirection-success
         redirection-failure-target-url: /google-redirection-failure
@@ -109,6 +110,15 @@ spring:
           google:
             client-id: 289764469472-jnvmuvelohvieo6bn1362p89qkt6cjrk.apps.googleusercontent.com
             client-secret: LjrrABzPkzbvUHkqmRm7pNqp
+            client-name: GOOGLE
+          facebook:
+            client-id: 677962172580314
+            client-secret: a9eac62a4cd5d78d49aa6dd87582cf86
+            client-name: FACEBOOK
+        provider:
+          facebook:
+            # Provider's (user-info-uri) specified below, overrides default because Facebook has changed API and this link is provided after Spring Boot 2.0.0
+            user-info-uri: https://graph.facebook.com/me?fields=id,name,email
 
 ---
 

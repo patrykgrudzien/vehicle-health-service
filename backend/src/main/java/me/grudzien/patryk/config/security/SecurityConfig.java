@@ -23,6 +23,9 @@ import org.springframework.security.web.savedrequest.RequestCache;
 
 import com.google.common.base.Preconditions;
 
+import static me.grudzien.patryk.PropertiesKeeper.FrontendRoutes;
+import static me.grudzien.patryk.PropertiesKeeper.StaticResources;
+
 import me.grudzien.patryk.PropertiesKeeper;
 import me.grudzien.patryk.config.filters.JwtAuthorizationTokenFilter;
 import me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter;
@@ -33,10 +36,8 @@ import me.grudzien.patryk.oauth2.service.CustomOAuth2UserService;
 import me.grudzien.patryk.oauth2.service.CustomOidcUserService;
 import me.grudzien.patryk.oauth2.utils.CacheHelper;
 import me.grudzien.patryk.service.security.MyUserDetailsService;
+import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.log.LogMarkers;
-
-import static me.grudzien.patryk.PropertiesKeeper.FrontendRoutes;
-import static me.grudzien.patryk.PropertiesKeeper.StaticResources;
 
 @Log4j2
 @Configuration
@@ -52,6 +53,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private final CustomOAuth2UserService customOAuth2UserService;
 	private final PropertiesKeeper propertiesKeeper;
 	private final CacheHelper cacheHelper;
+	private final LocaleMessagesCreator localeMessageCreator;
 
 	/**
 	 * @Qualifier for {@link org.springframework.security.core.userdetails.UserDetailsService} is used here because there is also
@@ -63,10 +65,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	                      final CustomAuthenticationEntryPoint customAuthenticationEntryPoint,
 	                      final CustomOAuth2AuthenticationSuccessHandler customOAuth2AuthenticationSuccessHandler,
 	                      final CustomOAuth2AuthenticationFailureHandler customOAuth2AuthenticationFailureHandler,
-	                      final CustomOidcUserService customOidcUserService,
-	                      final CustomOAuth2UserService customOAuth2UserService,
+	                      final CustomOidcUserService customOidcUserService, final CustomOAuth2UserService customOAuth2UserService,
 	                      final PropertiesKeeper propertiesKeeper,
-	                      final CacheHelper cacheHelper) {
+	                      final CacheHelper cacheHelper,
+	                      final LocaleMessagesCreator localeMessageCreator) {
 
 		Preconditions.checkNotNull(userDetailsService, "userDetailsService cannot be null!");
 		Preconditions.checkNotNull(customAuthenticationEntryPoint, "customAuthenticationEntryPoint cannot be null!");
@@ -76,6 +78,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		Preconditions.checkNotNull(customOAuth2UserService, "customOAuth2UserService cannot be null!");
 		Preconditions.checkNotNull(propertiesKeeper, "propertiesKeeper cannot be null!");
 		Preconditions.checkNotNull(cacheHelper, "cacheHelper cannot be null!");
+		Preconditions.checkNotNull(localeMessageCreator, "localeMessageCreator cannot be null!");
 
 		this.userDetailsService = userDetailsService;
 		this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
@@ -85,6 +88,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		this.customOAuth2UserService = customOAuth2UserService;
 		this.propertiesKeeper = propertiesKeeper;
 		this.cacheHelper = cacheHelper;
+		this.localeMessageCreator = localeMessageCreator;
 	}
 
 	@Bean
@@ -131,7 +135,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 * &&
 		 * {@link me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter}
 		 */
-		tokenAuthentication(httpSecurity, userDetailsService());
+		tokenAuthentication(httpSecurity, userDetailsService(), localeMessageCreator);
 
 		// don't need CSRF because JWT token is invulnerable
 		csrf(httpSecurity);
@@ -176,9 +180,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		            .authenticationEntryPoint(customAuthenticationEntryPoint);
 	}
 
-	private void tokenAuthentication(final HttpSecurity httpSecurity, final UserDetailsService userDetailsService) {
+	private void tokenAuthentication(final HttpSecurity httpSecurity, final UserDetailsService userDetailsService,
+	                                 final LocaleMessagesCreator localeMessagesCreator) {
 		// JWT filter
-		final JwtAuthorizationTokenFilter authorizationTokenFilter = new JwtAuthorizationTokenFilter(userDetailsService, propertiesKeeper);
+		final JwtAuthorizationTokenFilter authorizationTokenFilter = new JwtAuthorizationTokenFilter(userDetailsService, propertiesKeeper, localeMessagesCreator);
 		httpSecurity.addFilterBefore(authorizationTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
 		// ServletExceptionHandlerFilter (it is first and allows JwtAuthorizationTokenFilter to process).
@@ -231,6 +236,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.mvcMatchers(propertiesKeeper.oAuth2().SUCCESS_TARGET_URL + "**").permitAll()
 				// /google-login-failure
 				.mvcMatchers(propertiesKeeper.oAuth2().FAILURE_TARGET_URL + "**").permitAll()
+				// /exchange-short-lived-token
+				.mvcMatchers(HttpMethod.POST, "exchange-short-lived-token**").permitAll()
 				// require authentication via JWT
 				.anyRequest().authenticated();
 	}
@@ -274,6 +281,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.ignoring()
                 .mvcMatchers(HttpMethod.GET, StaticResources.ALL)
 					.and()
+		   .ignoring()
+		        .mvcMatchers("exchange-short-lived-token**")
+		            .and()
 			.ignoring()
 				.mvcMatchers(HttpMethod.GET,
 				             FrontendRoutes.ABOUT_ME,

@@ -30,14 +30,11 @@ public class CachingConfig {
 		final CacheConfiguration principalUserCacheConfiguration = namedCacheConfiguration(MyUserDetailsService.PRINCIPAL_USER_CACHE_NAME);
 		final CacheConfiguration oauth2AuthorizationRequestCacheConfiguration = namedCacheConfiguration(
 				CacheBasedOAuth2AuthorizationRequestRepository.OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME);
-		final CacheConfiguration ssoButtonClickEventOriginCacheConfiguration = namedCacheConfiguration(
-				CacheBasedOAuth2AuthorizationRequestRepository.SSO_BUTTON_CLICK_EVENT_ORIGIN_CACHE_NAME);
 
 		final net.sf.ehcache.config.Configuration configuration = new net.sf.ehcache.config.Configuration();
 		configuration.addCache(vehicleMileageCacheConfiguration);
 		configuration.addCache(principalUserCacheConfiguration);
 		configuration.addCache(oauth2AuthorizationRequestCacheConfiguration);
-		configuration.addCache(ssoButtonClickEventOriginCacheConfiguration);
 
 		return new net.sf.ehcache.CacheManager(configuration);
 	}

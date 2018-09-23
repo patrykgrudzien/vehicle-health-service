@@ -7,8 +7,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import com.google.common.base.Preconditions;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -16,12 +19,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
 import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 
 import me.grudzien.patryk.PropertiesKeeper;
 import me.grudzien.patryk.service.security.MyUserDetailsService;
+import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.jwt.JwtTokenUtil;
 
 /**
@@ -36,11 +41,15 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
 
 	private final String tokenHeader;
 	private final UserDetailsService userDetailsService;
+	private final LocaleMessagesCreator localeMessagesCreator;
 
 	public JwtAuthorizationTokenFilter(@Qualifier(MyUserDetailsService.BEAN_NAME) final UserDetailsService userDetailsService,
-	                                   final PropertiesKeeper propertiesKeeper) {
-		this.userDetailsService = userDetailsService;
+	                                   final PropertiesKeeper propertiesKeeper, final LocaleMessagesCreator localeMessagesCreator) {
 		this.tokenHeader = propertiesKeeper.jwt().TOKEN_HEADER;
+		Preconditions.checkNotNull(userDetailsService, "userDetailsService cannot be null!");
+		Preconditions.checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
+		this.userDetailsService = userDetailsService;
+		this.localeMessagesCreator = localeMessagesCreator;
 	}
 
 	@Override
@@ -67,36 +76,39 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
 			 * It is not compelling necessary to load the use details from the database. You could also store the information
 			 * in the token and read it from it.
 			 */
-			final UserDetails userDetails = this.userDetailsService.loadUserByUsername(email);
+			final Optional<UserDetails> userDetails = Optional.ofNullable(this.userDetailsService.loadUserByUsername(email));
 			/*
 			 * For simple validation it is completely sufficient to just check the token integrity. You don't have to call
 			 * the database compellingly.
 			 */
-			if (JwtTokenUtil.Validator.validateToken(accessToken, userDetails)) {
-				/*
-				 * UsernamePasswordAuthenticationToken- an {@link org.springframework.security.core.Authentication} implementation that is
-				 * designed for simple presentation of a username and password.
-				 *
-				 * Authentication - represents the token for an authentication request or for an authentication principal once the
-				 * request has been processed by "AuthenticationManager.authenticate()" method.
-				 * Once the request has been authenticated, the "Authentication" will usually be stored in a thread-local
-				 * (SecurityContext) managed by the (SecurityContextHolder) by the authentication mechanism which is being used.
-				 *
-				 * Credentials - they prove that principal is correct. This is usually a password, but could be anything relevant to the
-				 * AuthenticationManager. Callers are expected to populate the credentials.
-				 */
-				final UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null,
-				                                                                                                   userDetails.getAuthorities());
-				/*
-				 * Details - store additional details about the authentication request. These might be an IP address, certificate serial
-				 * number etc.
-				 *
-				 * WebAuthenticationDetailsSource - implementation of (AuthenticationDetailsSource) which builds the details object from
-				 * an "HttpServletRequest" object.
-				 */
-				authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-				log.info(FLOW_MARKER, "Authorized user '{}', setting security context.", email);
-				SecurityContextHolder.getContext().setAuthentication(authentication);
+			if (userDetails.isPresent()) {
+				if (JwtTokenUtil.Validator.validateToken(accessToken, userDetails.get())) {
+					/*
+					 * UsernamePasswordAuthenticationToken- an {@link org.springframework.security.core.Authentication} implementation that is
+					 * designed for simple presentation of a username and password.
+					 *
+					 * Authentication - represents the token for an authentication request or for an authentication principal once the
+					 * request has been processed by "AuthenticationManager.authenticate()" method.
+					 * Once the request has been authenticated, the "Authentication" will usually be stored in a thread-local
+					 * (SecurityContext) managed by the (SecurityContextHolder) by the authentication mechanism which is being used.
+					 *
+					 * Credentials - they prove that principal is correct. This is usually a password, but could be anything relevant to the
+					 * AuthenticationManager. Callers are expected to populate the credentials.
+					 */
+					final UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails.get(), null,
+					                                                                                                   userDetails.get().getAuthorities());
+					/*
+					 * Details - store additional details about the authentication request. These might be an IP address, certificate serial number etc.
+					 *
+					 * WebAuthenticationDetailsSource - implementation of (AuthenticationDetailsSource) which builds the details object from
+					 * an "HttpServletRequest" object.
+					 */
+					authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+					log.info(FLOW_MARKER, "Authorized user '{}', setting security context.", email);
+					SecurityContextHolder.getContext().setAuthentication(authentication);
+				}
+			} else {
+				throw new UsernameNotFoundException(localeMessagesCreator.buildLocaleMessageWithParam("user-not-found-by-email", email));
 			}
 		}
 		filterChain.doFilter(request, response);

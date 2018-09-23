@@ -3,6 +3,7 @@ package me.grudzien.patryk.oauth2.repository;
 import lombok.extern.log4j.Log4j2;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.stereotype.Repository;
@@ -12,9 +13,10 @@ import com.google.common.base.Preconditions;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import me.grudzien.patryk.oauth2.utils.CacheHelper;
-
 import static me.grudzien.patryk.utils.log.LogMarkers.OAUTH2_MARKER;
+
+import me.grudzien.patryk.oauth2.utils.CacheHelper;
+import me.grudzien.patryk.oauth2.utils.URLParser;
 
 /**
  * For storing the {@link org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest},
@@ -30,12 +32,9 @@ import static me.grudzien.patryk.utils.log.LogMarkers.OAUTH2_MARKER;
 @Repository
 public class CacheBasedOAuth2AuthorizationRequestRepository implements AuthorizationRequestRepository<OAuth2AuthorizationRequest> {
 
-	public static final String OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME = "oauth2-authorization-request";
-	private static final String OAUTH2_AUTHORIZATION_REQUEST_CACHE_KEY = "oauth2_authorization_request_key";
-
-	public static final String SSO_BUTTON_CLICK_EVENT_ORIGIN_CACHE_NAME = "sso-button-click-event-origin-cache-name";
-	public static final String SSO_BUTTON_CLICK_EVENT_ORIGIN_CACHE_KEY = "sso-button-click-event-origin-cache-key";
-	private static final String REFERENCE_URL_HEADER_NAME = "referer";
+	public static final String OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME = "oauth2-authorization-request-cache-name";
+	private static final String OAUTH2_AUTHORIZATION_REQUEST_CACHE_KEY = "oauth2_authorization_request_cache_key";
+	public static final String SSO_BUTTON_CLICK_EVENT_ENDPOINT_URL_CACHE_KEY = "sso_button_click_event_endpoint_url_cache_key";
 
 	private final CacheHelper cacheHelper;
 
@@ -61,7 +60,8 @@ public class CacheBasedOAuth2AuthorizationRequestRepository implements Authoriza
 		 * {@link me.grudzien.patryk.oauth2.service.CustomOAuth2UserService#buildPrincipal(org.springframework.security.oauth2.core.user.OAuth2User, String)}
 		 * to decide if user should be (log in) or (register).
 		 */
-		cacheHelper.saveCache(SSO_BUTTON_CLICK_EVENT_ORIGIN_CACHE_NAME, SSO_BUTTON_CLICK_EVENT_ORIGIN_CACHE_KEY, request.getHeader(REFERENCE_URL_HEADER_NAME));
+		URLParser.retrieveEndpointFromURL(request.getHeader(HttpHeaders.REFERER))
+		         .ifPresent(endpoint -> cacheHelper.saveCache(OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME, SSO_BUTTON_CLICK_EVENT_ENDPOINT_URL_CACHE_KEY, endpoint));
 		cacheHelper.saveCache(OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME, OAUTH2_AUTHORIZATION_REQUEST_CACHE_KEY, authorizationRequest);
 	}
 

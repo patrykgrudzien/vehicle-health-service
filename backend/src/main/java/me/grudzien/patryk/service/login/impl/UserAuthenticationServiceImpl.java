@@ -11,6 +11,7 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Preconditions;
@@ -21,6 +22,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static me.grudzien.patryk.domain.enums.jwt.TokenTypes.ACCESS_TOKEN;
+import static me.grudzien.patryk.domain.enums.jwt.TokenTypes.REFRESH_TOKEN;
+import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationResponse;
@@ -36,10 +41,6 @@ import me.grudzien.patryk.utils.jwt.JwtTokenUtil;
 import me.grudzien.patryk.utils.log.LogMarkers;
 import me.grudzien.patryk.utils.validators.ValidatorCreator;
 import me.grudzien.patryk.utils.web.RequestsDecoder;
-
-import static me.grudzien.patryk.domain.enums.jwt.TokenTypes.ACCESS_TOKEN;
-import static me.grudzien.patryk.domain.enums.jwt.TokenTypes.REFRESH_TOKEN;
-import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 
 @Log4j2
 @Service
@@ -84,13 +85,18 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 			final Optional<Authentication> authentication = authenticateUser(authenticationRequest);
 			if (authentication.isPresent()) {
 				// Reload password post-security so we can generate the token
-				final JwtUser jwtUser = (JwtUser) userDetailsService.loadUserByUsername(email);
-				log.info("Started generating tokens...");
-				return JwtAuthenticationResponse.Builder()
-				                                .accessToken(generateToken(ACCESS_TOKEN, jwtUser, device))
-				                                .refreshToken(generateToken(REFRESH_TOKEN, jwtUser, device))
-				                                .isSuccessful(Boolean.TRUE)
-				                                .build();
+				final Optional<JwtUser> jwtUser = Optional.ofNullable((JwtUser) userDetailsService.loadUserByUsername(email));
+
+				return jwtUser.map(user -> {
+									log.info("Started generating tokens...");
+									return JwtAuthenticationResponse.Builder()
+					                                .accessToken(generateToken(ACCESS_TOKEN, user, device))
+					                                .refreshToken(generateToken(REFRESH_TOKEN, user, device))
+					                                .isSuccessful(Boolean.TRUE)
+					                                .build();
+							   })
+				              .orElseThrow(() -> new UsernameNotFoundException(
+				              		localeMessagesCreator.buildLocaleMessageWithParam("user-not-found-by-email", email)));
 			}
 		}
 		return emptyResponse;
@@ -126,7 +132,8 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 			 * Exception thrown below is determined in:
 			 * {@link org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider#preAuthenticationChecks}
 			 * which points to:
-			 * {@link org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider.DefaultPreAuthenticationChecks#check(org.springframework.security.core.userdetails.UserDetails)}
+			 * {@link org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider.DefaultPreAuthenticationChecks#check(
+			 * org.springframework.security.core.userdetails.UserDetails)}
 			 */
 			throw new UserDisabledAuthenticationException(localeMessagesCreator.buildLocaleMessage("user-disabled-exception"));
 		} catch (final BadCredentialsException exception) {
@@ -157,7 +164,10 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 	public String createRefreshedAuthAccessToken(final JwtAuthenticationRequest authenticationRequest, final Device device) {
 		final String refreshToken = authenticationRequest.getRefreshToken();
 		final String email = JwtTokenUtil.Retriever.getUserEmailFromToken(refreshToken);
-		final JwtUser jwtUser = (JwtUser) userDetailsService.loadUserByUsername(email);
-		return JwtTokenUtil.Creator.generateAccessToken(jwtUser, device);
+
+		final Optional<JwtUser> jwtUser = Optional.ofNullable((JwtUser) userDetailsService.loadUserByUsername(email));
+		return jwtUser.map(user -> JwtTokenUtil.Creator.generateAccessToken(user, device))
+		              .orElseThrow(() -> new UsernameNotFoundException(
+		              		localeMessagesCreator.buildLocaleMessageWithParam("user-not-found-by-email", email)));
 	}
 }

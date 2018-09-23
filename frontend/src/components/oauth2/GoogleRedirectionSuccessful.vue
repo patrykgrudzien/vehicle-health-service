@@ -21,6 +21,14 @@
     },
     created() {
       this.shortLivedAuthTokenQueryParam = this.$route.query.shortLivedAuthToken;
+
+      this.axios.post('/exchange-short-lived-token', {shortLivedAuthToken: this.shortLivedAuthTokenQueryParam})
+          .then(response => {
+            console.log(response.data);
+          })
+          .catch(error => {
+            console.log(error.data);
+          })
     }
   }
 </script>

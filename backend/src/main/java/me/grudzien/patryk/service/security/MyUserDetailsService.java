@@ -5,7 +5,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.lang.NonNull;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -16,13 +15,13 @@ import com.google.common.base.Preconditions;
 
 import java.util.Optional;
 
-import me.grudzien.patryk.repository.registration.CustomUserRepository;
-import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
-import me.grudzien.patryk.utils.jwt.JwtUserFactory;
-
 import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
 import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 import static me.grudzien.patryk.utils.log.LogMarkers.METHOD_INVOCATION_MARKER;
+
+import me.grudzien.patryk.repository.registration.CustomUserRepository;
+import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
+import me.grudzien.patryk.utils.jwt.JwtUserFactory;
 
 @Log4j2
 @Service
@@ -46,24 +45,23 @@ public class MyUserDetailsService implements UserDetailsService {
 	}
 
 	/**
-	 * Method that returns {@link org.springframework.lang.NonNull} object, otherwise it throws an exception.
+	 * Method returning object that implements {@link org.springframework.security.core.userdetails.UserDetails} interface, null otherwise.
 	 *
 	 * @param email used to retrieve {@link me.grudzien.patryk.domain.entities.registration.CustomUser} entity.
-	 * @return {@link me.grudzien.patryk.domain.entities.registration.CustomUser} entity.
-	 * @throws UsernameNotFoundException if there is no user present in database.
+	 * @return {@link me.grudzien.patryk.domain.entities.registration.CustomUser} entity, null otherwise.
 	 */
 	@Override
 	@Cacheable(key = "#email", condition = "#email != null && !#email.equals(\"\")")
-	public @NonNull UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException {
+	public UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException {
 		log.info(METHOD_INVOCATION_MARKER, "(NO CACHE FOUND) => method execution...");
 		return Optional.ofNullable(customUserRepository.findByEmail(email))
 		               .map(foundUser -> {
 		               	    log.info(FLOW_MARKER, "User with {} address found.", email);
 		               	    return JwtUserFactory.create(foundUser);
 		               })
-		               .orElseThrow(() -> {
+		               .orElseGet(() -> {
 		               	    log.error(EXCEPTION_MARKER, "No user found for specified email: {}", email);
-		               	    return new UsernameNotFoundException(localeMessagesCreator.buildLocaleMessageWithParam("user-not-found-by-email", email));
+		               	    return null;
 		               });
 	}
 }

@@ -79,6 +79,7 @@ public class CustomApplicationProperties {
 			private String failureUrl;
 			private String principalUser;
 			private String refreshToken;
+			private String login;
 		}
 
 		@Getter
