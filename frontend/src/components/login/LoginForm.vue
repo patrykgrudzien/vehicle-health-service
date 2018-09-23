@@ -251,6 +251,7 @@
       },
       facebookButtonClicked() {
         console.log('facebookButtonClicked');
+		window.location.href = 'http://localhost:8088/oauth2/authorization/facebook';
       }
     },
     created() {

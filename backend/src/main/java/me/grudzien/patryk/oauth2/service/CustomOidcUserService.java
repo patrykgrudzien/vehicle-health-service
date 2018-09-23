@@ -35,7 +35,9 @@ public class CustomOidcUserService extends OidcUserService {
 	public OidcUser loadUser(final OidcUserRequest userRequest) throws OAuth2AuthenticationException {
 		final OidcUser oidcUser = super.loadUser(userRequest);
 
-		final CustomOAuth2OidcPrincipalUser principal = customOAuth2UserService.buildPrincipal(oidcUser, userRequest.getClientRegistration().getRegistrationId());
+		final CustomOAuth2OidcPrincipalUser principal = customOAuth2UserService.determineFlowAndPreparePrincipal(
+				oidcUser, userRequest.getClientRegistration());
+
 		principal.setAttributes(oidcUser.getAttributes());
 		principal.setClaims(oidcUser.getClaims());
 		principal.setOidcIdToken(oidcUser.getIdToken());
