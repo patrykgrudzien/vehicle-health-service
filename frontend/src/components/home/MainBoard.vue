@@ -1,7 +1,6 @@
 <template>
   <v-container fluid
-               fill-height
-               grid-list-xl>
+               grid-list-xl class="ma-3 pl-0 pr-0">
     <v-layout align-center
               justify-center
               row

@@ -186,10 +186,12 @@
 
     <!-- CONTENT (ROUTES) -->
     <v-content>
-      <transition name="fade"
-                  mode="out-in">
-        <router-view :key="$route.fullPath" />
-      </transition>
+      <v-container fluid fill-height class="ma-0 pa-0">
+        <transition name="fade"
+                    mode="out-in">
+          <router-view :key="$route.fullPath"/>
+        </transition>
+      </v-container>
     </v-content>
     <!-- CONTENT (ROUTES) -->
 
@@ -210,11 +212,11 @@
                agree-button-text="token-window-agree-button-text"
                disagree-button-text="token-window-disagree-button-text"
                :agree-button-function="stayLogInButtonClicked"
-               :disagree-button-function="logoutButtonClicked" />
+               :disagree-button-function="logoutButtonClicked"/>
     <!-- JWT TOKEN EXPIRED WINDOW -->
 
     <!-- LOADING DIALOG WINDOW -->
-    <loading-dialog :visibility="isLoading" />
+    <loading-dialog :visibility="isLoading"/>
     <!-- LOADING DIALOG WINDOW -->
 
   </v-app>
@@ -239,8 +241,8 @@
     },
     methods: {
       ...mapActions({
-        logout: ACTIONS.LOGOUT
-      }),
+                      logout: ACTIONS.LOGOUT
+                    }),
       showModalAndSendLang: function (lang) {
 
         if (this.$route.path.includes(componentsDetails.loginForm.path) ||
@@ -280,12 +282,12 @@
     },
     computed: {
       ...mapGetters([
-        'getSideNavigation',
-        'isLogged',
-        'getPrincipalUserFirstName',
-        'isJwtAccessTokenExpired',
-        'isLoading'
-      ]),
+                      'getSideNavigation',
+                      'isLogged',
+                      'getPrincipalUserFirstName',
+                      'isJwtAccessTokenExpired',
+                      'isLoading'
+                    ]),
       menuItems() {
         if (this.isLogged) {
           return [
@@ -367,6 +369,7 @@
     background-color: #0097A7;
     border-radius: 25px;
   }
+
   /* STYLING SCROLLBARS */
 
   a {
@@ -407,12 +410,12 @@
   }
 
   .notSelectable {
-    -webkit-touch-callout: none;    /* iOS Safari */
-    -webkit-user-select: none;      /* Safari */
-    -khtml-user-select: none;       /* Konqueror HTML */
-    -moz-user-select: none;         /* Firefox */
-    -ms-user-select: none;          /* Internet Explorer/Edge */
-    user-select: none;              /* Non-prefixed version, currently supported by Chrome and Opera */
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
   }
 
   .centerTextInsideDiv {

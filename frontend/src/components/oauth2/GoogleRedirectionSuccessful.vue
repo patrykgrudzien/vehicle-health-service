@@ -1,15 +1,13 @@
 <template>
-  <v-container fluid fill-height>
-    <v-layout row align-center justify-center>
+  <v-layout row align-center justify-center>
 
-      <v-flex xs12 sm8 md6>
-        <!-- LOADING DIALOG WINDOW -->
-        <loading-dialog :visibility="isLoading" />
-        <!-- LOADING DIALOG WINDOW -->
-      </v-flex>
+    <v-flex xs12 sm8 md6>
+      <!-- LOADING DIALOG WINDOW -->
+      <loading-dialog :visibility="isLoading"/>
+      <!-- LOADING DIALOG WINDOW -->
+    </v-flex>
 
-    </v-layout>
-  </v-container>
+  </v-layout>
 </template>
 
 <script>
