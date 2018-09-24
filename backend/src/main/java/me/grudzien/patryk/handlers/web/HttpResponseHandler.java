@@ -19,7 +19,7 @@ import static me.grudzien.patryk.domain.enums.AppFLow.VERIFICATION_TOKEN_EXPIRED
 import static me.grudzien.patryk.domain.enums.AppFLow.VERIFICATION_TOKEN_NOT_FOUND;
 import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
 import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
-import static me.grudzien.patryk.utils.web.CustomURLBuilder.URLParamType;
+import static me.grudzien.patryk.utils.web.CustomURLBuilder.AdditionalParamsDelimiterType;
 
 import me.grudzien.patryk.PropertiesKeeper;
 import me.grudzien.patryk.domain.enums.AppFLow;
@@ -98,7 +98,7 @@ public class HttpResponseHandler {
 				}
 				break;
 			case GOOGLE_REDIRECTION_SUCCESSFUL:
-				final String googleSuccessTargetUrl = CustomURLBuilder.buildURL(propertiesKeeper.oAuth2().SUCCESS_TARGET_URL, URLParamType.REQUEST_PARAM,
+				final String googleSuccessTargetUrl = CustomURLBuilder.buildURL(propertiesKeeper.oAuth2().SUCCESS_TARGET_URL, AdditionalParamsDelimiterType.REQUEST_PARAM,
 				                                                                additionalParameters);
 				try {
 					response.sendRedirect(contextPathsResolver.determineUrlFor(GOOGLE_REDIRECTION_SUCCESSFUL) + googleSuccessTargetUrl);

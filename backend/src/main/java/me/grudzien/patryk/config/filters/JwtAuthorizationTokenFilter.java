@@ -21,13 +21,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 
-import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
-import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
-
 import me.grudzien.patryk.PropertiesKeeper;
 import me.grudzien.patryk.service.security.MyUserDetailsService;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.jwt.JwtTokenUtil;
+
+import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
+import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 
 /**
  * Filters CANNOT be managed by Spring explicitly !!!
@@ -45,11 +45,13 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
 
 	public JwtAuthorizationTokenFilter(@Qualifier(MyUserDetailsService.BEAN_NAME) final UserDetailsService userDetailsService,
 	                                   final PropertiesKeeper propertiesKeeper, final LocaleMessagesCreator localeMessagesCreator) {
-		this.tokenHeader = propertiesKeeper.jwt().TOKEN_HEADER;
 		Preconditions.checkNotNull(userDetailsService, "userDetailsService cannot be null!");
 		Preconditions.checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
+		Preconditions.checkNotNull(propertiesKeeper, "propertiesKeeper cannot be null!");
 		this.userDetailsService = userDetailsService;
 		this.localeMessagesCreator = localeMessagesCreator;
+
+		this.tokenHeader = propertiesKeeper.jwt().TOKEN_HEADER;
 	}
 
 	@Override

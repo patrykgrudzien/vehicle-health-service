@@ -24,5 +24,21 @@
         * Calls a configured [OAuth2UserService]() implementation to retrieve the user information (email etc.) by calling the user-info-uri of the provider (e.g. https://www.googleapis.com/oauth2/v3/userinfo).
         * Authenticates the user.
         * Clears the stored [OAuth2AuthorizationRequest]().
-        * Redirects the user to a configured <b>success-url</b>. You may be thinking that you could configure the success-url to be the homepage of your front-end, but that won’t work with a stateless backend. 
+        * Redirects the user to a configured <b>success-url</b>. You may be thinking that you could configure the success-url to be the homepage of your front-end, but that won’t work with a stateless backend.
+    * **_STEP 5 - Front-End Uses the Short-Lived Token for Fetching User Information and a Long-Lived Token_**<br>
+        After getting a nonce or short-lived token in the above step, the front-end then:
+        * Calls your backend to fetch the user information and a long-lived token.
+        * Updates the user information in the front-end models.
+        * Stores the long-lived token in the local storage.
+        * Closes the modal browser window.
+        <br><br>
+        **My Implementation:**
+            * [CustomOAuth2UserService]() uses [OAuth2FlowDelegator.]()[determineFlowAndPreparePrincipal()]() to proceed with Google or Facebook flow, following with **login** / **register** logic which returns
+            [CustomOAuth2OidcPrincipalUser]() principal to [CustomOidcUserService]().
+            * If all code above went successfully, [CustomOAuth2AuthenticationSuccessHandler]() is called which returns **target url** with **shortLivedAuthToken**.
+            * [GoogleOAuth2Controller]() intercepts such request and redirects user to [GoogleRedirectionSuccessful.vue]() component.
+            * That component makes post request with **Authorization** header and **shortLivedAuthToken** with **Baerer** prefix.
+            * [JwtAuthorizationTokenFilter]() filters that request because [SecurityConfig]() **does not** permit such path and [SecurityContextHolder]() is populated after token validation.
+            * [GoogleOAuth2Controller]() is called at the end to exchange **shortLivedAuthToken** and return some additional data.
+             
         

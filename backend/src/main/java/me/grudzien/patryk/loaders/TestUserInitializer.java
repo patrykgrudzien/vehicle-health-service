@@ -16,8 +16,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Optional;
 
-import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
-
 import me.grudzien.patryk.domain.entities.engine.Engine;
 import me.grudzien.patryk.domain.entities.registration.CustomUser;
 import me.grudzien.patryk.domain.entities.registration.Privilege;
@@ -29,6 +27,8 @@ import me.grudzien.patryk.domain.enums.registration.PrivilegeName;
 import me.grudzien.patryk.domain.enums.registration.RoleName;
 import me.grudzien.patryk.domain.enums.vehicle.VehicleType;
 import me.grudzien.patryk.repository.registration.CustomUserRepository;
+
+import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 
 @Log4j2
 @Component
@@ -65,7 +65,7 @@ public class TestUserInitializer implements CommandLineRunner {
 			final CustomUser testUser = CustomUser.Builder()
 			                                      .firstName("Admin")
 			                                      .lastName("Root")
-			                                      .email("jurik99.pg@gmail.com")
+			                                      .email("patryk.grudzien@globallogic.com")
 			                                      .password(passwordEncoder.encode("admin"))
 			                                      .roles(Collections.singleton(Role.Builder()
 			                                                                       .roleName(RoleName.ROLE_ADMIN)

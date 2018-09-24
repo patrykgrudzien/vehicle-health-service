@@ -35,6 +35,7 @@ custom:
         short-lived-millis: 120000 # 2 minutes
         redirection-success-target-url: /google-redirection-success
         redirection-failure-target-url: /google-redirection-failure
+        exchange-short-lived-token: /exchange-short-lived-token
     cors-origins:
       front-end-module: http://localhost:8080
       back-end-module: http://localhost:8088

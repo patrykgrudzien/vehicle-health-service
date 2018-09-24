@@ -39,6 +39,16 @@ export default {
       });
   },
 
+  performSuccessfulLoginOperations({commit}, response) {
+    localStorage.setItem('access_token', response.data.accessToken);
+    localStorage.setItem('refresh_token', response.data.refreshToken);
+    commit(MUTATIONS.LOGIN);
+    commit(MUTATIONS.CLEAR_SERVER_EXCEPTION_RESPONSE);
+    commit(MUTATIONS.CLEAR_LOGIN_FORM);
+    myRouter.push({path: componentsDetails.mainBoard.path});
+    window.scrollTo(0 ,0);
+  },
+
   [ACTIONS.LOGIN] ({commit}, credentials) {
     if (localStorage.getItem('access_token')) {
       localStorage.removeItem('access_token');

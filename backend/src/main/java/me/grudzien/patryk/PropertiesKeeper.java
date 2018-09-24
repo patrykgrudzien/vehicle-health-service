@@ -36,6 +36,7 @@ public final class PropertiesKeeper {
 		public String CONFIRMATION_TOKEN_NOT_FOUND = customApplicationProperties.getEndpoints().getRegistration().getConfirmedTokenNotFound();
 		public String CONFIRMATION_TOKEN_EXPIRED = customApplicationProperties.getEndpoints().getRegistration().getConfirmedTokenExpired();
 		public String LOGIN = customApplicationProperties.getEndpoints().getAuthentication().getLogin();
+		public String LOGOUT = customApplicationProperties.getEndpoints().getLogout().getRoot();
 	}
 
 	public class JWT {
@@ -47,6 +48,7 @@ public final class PropertiesKeeper {
 		public Long SHORT_LIVED_MILLIS = customApplicationProperties.getEndpoints().getOAuth2().getShortLivedMillis();
 		public String SUCCESS_TARGET_URL = customApplicationProperties.getEndpoints().getOAuth2().getRedirectionSuccessTargetUrl();
 		public String FAILURE_TARGET_URL = customApplicationProperties.getEndpoints().getOAuth2().getRedirectionFailureTargetUrl();
+		public String EXCHANGE_SHORT_LIVED_TOKEN = customApplicationProperties.getEndpoints().getOAuth2().getExchangeShortLivedToken();
 	}
 
 	public class Heroku {

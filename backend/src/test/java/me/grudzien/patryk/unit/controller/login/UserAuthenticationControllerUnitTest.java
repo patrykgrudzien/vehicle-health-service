@@ -1,15 +1,5 @@
 package me.grudzien.patryk.unit.controller.login;
 
-import static io.jsonwebtoken.lang.Assert.notEmpty;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -36,6 +26,16 @@ import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationResponse;
 import me.grudzien.patryk.service.login.UserAuthenticationService;
 import me.grudzien.patryk.utils.validators.ValidatorCreator;
+
+import static io.jsonwebtoken.lang.Assert.notEmpty;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(controllers = UserAuthenticationController.class, secure = false)
@@ -68,7 +68,7 @@ public class UserAuthenticationControllerUnitTest {
 		// when
 		when(userAuthenticationService.login(any(), any())).thenReturn(expectedResponse);
 		// login request
-		final JwtAuthenticationRequest loginRequest = new JwtAuthenticationRequest("email", "password", "test_refresh_token", "");
+		final JwtAuthenticationRequest loginRequest = new JwtAuthenticationRequest("email", "password", "test_refresh_token");
 		// json conversion
 		final String jsonLoginRequest = objectMapper.writeValueAsString(loginRequest);
 		// request builder
@@ -95,7 +95,7 @@ public class UserAuthenticationControllerUnitTest {
 		// expected response
 		final JwtAuthenticationResponse emptyResponse = new JwtAuthenticationResponse();
 		// login request
-		final JwtAuthenticationRequest loginRequest = new JwtAuthenticationRequest("", "password", "test_refresh_token", "");
+		final JwtAuthenticationRequest loginRequest = new JwtAuthenticationRequest("", "password", "test_refresh_token");
 
 		final Set<ConstraintViolation<JwtAuthenticationRequest>> loginValidation = validator.validate(loginRequest);
 		notEmpty(loginValidation);

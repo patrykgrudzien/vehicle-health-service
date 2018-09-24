@@ -1,7 +1,5 @@
 package me.grudzien.patryk.utils.web;
 
-import static org.springframework.util.ObjectUtils.isEmpty;
-
 import io.vavr.Tuple2;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,9 +11,10 @@ import org.apache.logging.log4j.util.Strings;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static me.grudzien.patryk.utils.web.CustomURLBuilder.URLParamType.NONE;
-import static me.grudzien.patryk.utils.web.CustomURLBuilder.URLParamType.PATH_VARIABLE;
-import static me.grudzien.patryk.utils.web.CustomURLBuilder.URLParamType.REQUEST_PARAM;
+import static me.grudzien.patryk.utils.web.CustomURLBuilder.AdditionalParamsDelimiterType.NONE;
+import static me.grudzien.patryk.utils.web.CustomURLBuilder.AdditionalParamsDelimiterType.PATH_VARIABLE;
+import static me.grudzien.patryk.utils.web.CustomURLBuilder.AdditionalParamsDelimiterType.REQUEST_PARAM;
+import static org.springframework.util.ObjectUtils.isEmpty;
 
 public class CustomURLBuilder {
 
@@ -24,7 +23,7 @@ public class CustomURLBuilder {
 
 	@Getter
 	@AllArgsConstructor
-	public enum URLParamType {
+	public enum AdditionalParamsDelimiterType {
 		PATH_VARIABLE {
 			@SafeVarargs
 			@Override
@@ -58,12 +57,12 @@ public class CustomURLBuilder {
 	}
 
 	@SafeVarargs
-	public static String buildURL(@NonNull final String context, @NonNull final URLParamType urlParamType,
+	public static String buildURL(@NonNull final String context, @NonNull final AdditionalParamsDelimiterType additionalParamsDelimiterType,
 	                              final Tuple2<String, String>... additionalParameters) {
-		if (urlParamType == NONE || isEmpty(additionalParameters)) {
+		if (additionalParamsDelimiterType == NONE || isEmpty(additionalParameters)) {
 			return context;
 		} else if (!isEmpty(additionalParameters)) {
-			switch (urlParamType) {
+			switch (additionalParamsDelimiterType) {
 				case PATH_VARIABLE:
 					return context + PATH_VARIABLE.delimiterWith(additionalParameters);
 				case REQUEST_PARAM:

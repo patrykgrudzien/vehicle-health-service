@@ -33,7 +33,4 @@ public class JwtAuthenticationRequest implements Serializable {
 	private String password;
 
 	private String refreshToken;
-
-	// temporary
-	private String shortLivedAuthToken;
 }

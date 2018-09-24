@@ -62,7 +62,7 @@ public class CustomOAuth2OidcPrincipalUser implements OidcUser, UserDetails, Ser
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return jwtUser.getRoles();
+		return jwtUser.getAuthorities();
 	}
 
 	@Override
