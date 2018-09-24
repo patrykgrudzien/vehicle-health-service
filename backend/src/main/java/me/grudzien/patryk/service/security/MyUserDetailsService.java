@@ -15,13 +15,12 @@ import com.google.common.base.Preconditions;
 
 import java.util.Optional;
 
+import me.grudzien.patryk.repository.registration.CustomUserRepository;
+import me.grudzien.patryk.utils.jwt.JwtUserFactory;
+
 import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
 import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 import static me.grudzien.patryk.utils.log.LogMarkers.METHOD_INVOCATION_MARKER;
-
-import me.grudzien.patryk.repository.registration.CustomUserRepository;
-import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
-import me.grudzien.patryk.utils.jwt.JwtUserFactory;
 
 @Log4j2
 @Service
@@ -33,15 +32,11 @@ public class MyUserDetailsService implements UserDetailsService {
 	public static final String PRINCIPAL_USER_CACHE_NAME = "principal-user";
 
 	private final CustomUserRepository customUserRepository;
-	private final LocaleMessagesCreator localeMessagesCreator;
 
 	@Autowired
-	public MyUserDetailsService(final CustomUserRepository customUserRepository, final LocaleMessagesCreator localeMessagesCreator) {
+	public MyUserDetailsService(final CustomUserRepository customUserRepository) {
 		Preconditions.checkNotNull(customUserRepository, "customUserRepository cannot be null!");
-		Preconditions.checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
-
 		this.customUserRepository = customUserRepository;
-		this.localeMessagesCreator = localeMessagesCreator;
 	}
 
 	/**
