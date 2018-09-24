@@ -1,7 +1,6 @@
 <template>
-  <v-container fluid fill-height>
-    <v-layout row align-center justify-center>
-      <v-flex xs12 sm8 md6>
+    <v-layout row align-center justify-center class="pa-2">
+      <v-flex xs12 sm8 md8 lg6 xl4>
         <!-- USER ALREADY ENABLED ALERT -->
         <my-alert id="user-already-enabled-alert"
                   dismissible
@@ -176,7 +175,6 @@
       </v-flex>
 
     </v-layout>
-  </v-container>
 </template>
 
 <script>

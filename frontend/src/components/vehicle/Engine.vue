@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid>
+  <v-container fluid class="pa-3">
     <v-layout align-center
               justify-center
               class="mt-2 notSelectable">
@@ -77,7 +77,6 @@
 
       </v-flex>
     </v-layout>
-
   </v-container>
 </template>
 
