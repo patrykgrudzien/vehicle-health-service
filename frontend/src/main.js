@@ -63,7 +63,9 @@ Vue.use(Vuetify, {
     primary: colors.cyan.darken2,
     secondary: colors.deepOrange.darken4,
     footer: colors.grey.darken4,
-    background: '#303030'
+    background: '#303030',
+    googleButtonColor: colors.red.darken3,
+    facebookButtonColor: colors.blue.darken4
   }
 });
 

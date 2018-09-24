@@ -1,5 +1,5 @@
 <template>
-    <v-layout row align-center justify-center class="pa-2">
+    <v-layout row align-center justify-center class="pa-4">
       <v-flex xs12 sm8 md8 lg6 xl4>
         <!-- USER ALREADY ENABLED ALERT -->
         <my-alert id="user-already-enabled-alert"
@@ -83,6 +83,34 @@
                   :message="formFilledIncorrectlyMessage"/>
         <!-- FORM FILLED INCORRECTLY ALERT -->
 
+        <v-layout row>
+          <!-- Google Button -->
+          <v-flex xs6
+                  class="text-xs-center googleButtonColor">
+            <v-btn flat
+                   large
+                   ripple
+                   class="white--text"
+                   @click="googleButtonClicked">
+              <v-icon left>fab fa-google</v-icon>
+              Google
+            </v-btn>
+          </v-flex><!-- Google Button -->
+
+          <!-- Facebook Button -->
+          <v-flex xs6
+                  class="text-xs-center blue">
+            <v-btn flat
+                   large
+                   ripple
+                   class="white--text"
+                   @click="facebookButtonClicked">
+              <v-icon left>fab fa-facebook</v-icon>
+              Facebook
+            </v-btn>
+          </v-flex><!-- Facebook Button -->
+        </v-layout>
+
         <!-- FORM -->
         <v-card class="elevation-12">
           <v-card-text>
@@ -129,23 +157,6 @@
             <v-btn color="primary" @click="submit" :disabled="loginButtonDisabled" :loading="isLoading">
               {{ $t('login-button') }}
             </v-btn>
-            <!-- Google -->
-            <v-btn icon
-                   large
-                   ripple
-                   @click="googleButtonClicked">
-              <v-icon>fab fa-google</v-icon>
-            </v-btn>
-            <!-- Google -->
-
-            <!-- Facebook -->
-            <v-btn icon
-                   large
-                   ripple
-                   @click="facebookButtonClicked">
-              <v-icon>fab fa-facebook-f</v-icon>
-            </v-btn>
-            <!-- Facebook -->
             <v-btn color="error" @click="clearFormFields" :disabled="clearButtonDisabled" left>
               {{ $t('clear-button') }}
             </v-btn>
