@@ -47,6 +47,7 @@ public class CustomApplicationProperties {
 			private Long shortLivedMillis;
 			private String redirectionSuccessTargetUrl;
 			private String redirectionFailureTargetUrl;
+			private String exchangeShortLivedToken;
 		}
 
 		@Getter

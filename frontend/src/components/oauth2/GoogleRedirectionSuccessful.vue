@@ -1,11 +1,11 @@
 <template>
   <v-container fluid fill-height>
-    <v-layout column align-center justify-center>
+    <v-layout row align-center justify-center>
 
-      <v-flex class="text-xs-center">
-        <textarea rows="50" cols="250" title="label">
-          {{ shortLivedAuthTokenQueryParam }}
-        </textarea>
+      <v-flex xs12 sm8 md6>
+        <!-- LOADING DIALOG WINDOW -->
+        <loading-dialog :visibility="isLoading" />
+        <!-- LOADING DIALOG WINDOW -->
       </v-flex>
 
     </v-layout>
@@ -13,21 +13,30 @@
 </template>
 
 <script>
+  import {mapGetters} from 'vuex';
+  import {MUTATIONS}  from "../../Constants";
+
   export default {
-    data() {
-      return {
-        shortLivedAuthTokenQueryParam: ''
-      }
+    computed: {
+      ...mapGetters([
+        'isLoading'
+      ])
     },
     created() {
-      this.shortLivedAuthTokenQueryParam = this.$route.query.shortLivedAuthToken;
+      let config = {
+        headers: {
+          Authorization: `Bearer ${this.$route.query.shortLivedAuthToken}`
+        }
+      };
 
-      this.axios.post('/exchange-short-lived-token', {shortLivedAuthToken: this.shortLivedAuthTokenQueryParam})
+      this.$store.commit(MUTATIONS.SET_LOADING, true);
+      this.axios.get('/exchange-short-lived-token', config)
           .then(response => {
-            console.log(response.data);
+            this.$store.commit(MUTATIONS.SET_LOADING, false);
+            this.$store.dispatch('performSuccessfulLoginOperations', response);
           })
-          .catch(error => {
-            console.log(error.data);
+          .catch(() => {
+            this.$store.commit(MUTATIONS.SET_LOADING, false);
           })
     }
   }

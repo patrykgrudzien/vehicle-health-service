@@ -247,11 +247,12 @@
       },
       googleButtonClicked() {
         console.log('googleButtonClicked');
+        this.$store.commit(MUTATIONS.SET_LOADING, true);
         window.location.href = 'http://localhost:8088/oauth2/authorization/google';
       },
       facebookButtonClicked() {
         console.log('facebookButtonClicked');
-		window.location.href = 'http://localhost:8088/oauth2/authorization/facebook';
+        window.location.href = 'http://localhost:8088/oauth2/authorization/facebook';
       }
     },
     created() {

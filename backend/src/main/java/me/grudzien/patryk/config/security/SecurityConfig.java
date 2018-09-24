@@ -23,9 +23,6 @@ import org.springframework.security.web.savedrequest.RequestCache;
 
 import com.google.common.base.Preconditions;
 
-import static me.grudzien.patryk.PropertiesKeeper.FrontendRoutes;
-import static me.grudzien.patryk.PropertiesKeeper.StaticResources;
-
 import me.grudzien.patryk.PropertiesKeeper;
 import me.grudzien.patryk.config.filters.JwtAuthorizationTokenFilter;
 import me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter;
@@ -38,6 +35,9 @@ import me.grudzien.patryk.oauth2.utils.CacheHelper;
 import me.grudzien.patryk.service.security.MyUserDetailsService;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.log.LogMarkers;
+
+import static me.grudzien.patryk.PropertiesKeeper.FrontendRoutes;
+import static me.grudzien.patryk.PropertiesKeeper.StaticResources;
 
 @Log4j2
 @Configuration
@@ -124,8 +124,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		sessionCreationPolicy(httpSecurity);
 		httpSessionRequestCache(httpSecurity, httpSessionRequestCache());
 
-		// we are stateless so "/logout" endpoint not needed
-		logout(httpSecurity);
+		// we are stateless so these things are not needed
+		disableFormLogin(httpSecurity);
+		disableHttpBasic(httpSecurity);
+		disableLogout(httpSecurity);
 
 		// show message to the user that some resource requires authentication
 		exceptionHandling(httpSecurity, customAuthenticationEntryPoint);
@@ -135,16 +137,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 * &&
 		 * {@link me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter}
 		 */
-		tokenAuthentication(httpSecurity, userDetailsService(), localeMessageCreator);
+		addTokenAuthenticationFilters(httpSecurity, userDetailsService(), localeMessageCreator);
 
 		// don't need CSRF because JWT token is invulnerable
-		csrf(httpSecurity);
+		disableCSRF(httpSecurity);
 
 		// CORS configuration
-		cors(httpSecurity);
+		addCORSFilter(httpSecurity);
 
 		// oauth2 clients
-		oauth2Client(httpSecurity, cacheHelper);
+		configureOAuth2Client(httpSecurity, cacheHelper);
 
 		// mvcMatchers
 		authorizeRequests(httpSecurity);
@@ -161,17 +163,27 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		            .requestCache(requestCache);
 	}
 
-	private void logout(final HttpSecurity httpSecurity) throws Exception {
+	private void disableLogout(final HttpSecurity httpSecurity) throws Exception {
 		httpSecurity.logout()
 		            .disable();
 	}
 
-	private void csrf(final HttpSecurity httpSecurity) throws Exception {
+	private void disableFormLogin(final HttpSecurity httpSecurity) throws Exception {
+		httpSecurity.formLogin()
+		            .disable();
+	}
+
+	private void disableHttpBasic(final HttpSecurity httpSecurity) throws Exception {
+		httpSecurity.httpBasic()
+		            .disable();
+	}
+
+	private void disableCSRF(final HttpSecurity httpSecurity) throws Exception {
 		httpSecurity.csrf()
 		            .disable();
 	}
 
-	private void cors(final HttpSecurity httpSecurity) throws Exception {
+	private void addCORSFilter(final HttpSecurity httpSecurity) throws Exception {
 		httpSecurity.cors();
 	}
 
@@ -180,8 +192,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		            .authenticationEntryPoint(customAuthenticationEntryPoint);
 	}
 
-	private void tokenAuthentication(final HttpSecurity httpSecurity, final UserDetailsService userDetailsService,
-	                                 final LocaleMessagesCreator localeMessagesCreator) {
+	private void addTokenAuthenticationFilters(final HttpSecurity httpSecurity, final UserDetailsService userDetailsService,
+	                                           final LocaleMessagesCreator localeMessagesCreator) {
 		// JWT filter
 		final JwtAuthorizationTokenFilter authorizationTokenFilter = new JwtAuthorizationTokenFilter(userDetailsService, propertiesKeeper, localeMessagesCreator);
 		httpSecurity.addFilterBefore(authorizationTokenFilter, UsernamePasswordAuthenticationFilter.class);
@@ -201,7 +213,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 */
 	}
 
-	private void oauth2Client(final HttpSecurity httpSecurity, final CacheHelper cacheHelper) throws Exception {
+	private void configureOAuth2Client(final HttpSecurity httpSecurity, final CacheHelper cacheHelper) throws Exception {
 		httpSecurity.oauth2Login()
 		            .loginPage(propertiesKeeper.oAuth2().LOGIN_PAGE)
 		            .authorizationEndpoint()
@@ -236,8 +248,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.mvcMatchers(propertiesKeeper.oAuth2().SUCCESS_TARGET_URL + "**").permitAll()
 				// /google-login-failure
 				.mvcMatchers(propertiesKeeper.oAuth2().FAILURE_TARGET_URL + "**").permitAll()
-				// /exchange-short-lived-token
-				.mvcMatchers(HttpMethod.POST, "exchange-short-lived-token**").permitAll()
 				// require authentication via JWT
 				.anyRequest().authenticated();
 	}
@@ -281,9 +291,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.ignoring()
                 .mvcMatchers(HttpMethod.GET, StaticResources.ALL)
 					.and()
-		   .ignoring()
-		        .mvcMatchers("exchange-short-lived-token**")
-		            .and()
 			.ignoring()
 				.mvcMatchers(HttpMethod.GET,
 				             FrontendRoutes.ABOUT_ME,

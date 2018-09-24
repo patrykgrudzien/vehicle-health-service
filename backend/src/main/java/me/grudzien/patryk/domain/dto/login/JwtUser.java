@@ -1,5 +1,6 @@
 package me.grudzien.patryk.domain.dto.login;
 
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,11 @@ public class JwtUser implements UserDetails, Serializable {
 	private final String lastname;
 	private final String password;
 	private final String email;
+
+	// disabling getter for roles to stay consistent and force usage of "getAuthorities()" instead
+	@Getter(AccessLevel.NONE)
 	private final Collection<? extends GrantedAuthority> roles;
+
 	private final boolean enabled;
 	private final Date lastPasswordResetDate;
 
