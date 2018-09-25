@@ -86,26 +86,42 @@
         <v-layout row>
           <!-- Google Button -->
           <v-flex xs6
-                  class="text-xs-center googleButtonColor">
+                  class="text-xs-center
+                  googleButtonColor
+                  mb-2
+                  mr-1
+                  elevation-12
+                  google-button-style"
+                  @click="googleButtonClicked">
             <v-btn flat
                    large
                    ripple
+                   disabled
                    class="white--text"
-                   @click="googleButtonClicked">
-              <v-icon left>fab fa-google</v-icon>
+                   style="color: white !important;">
+              <v-icon left
+                      style="color: white !important;">fab fa-google</v-icon>
               Google
             </v-btn>
           </v-flex><!-- Google Button -->
 
           <!-- Facebook Button -->
           <v-flex xs6
-                  class="text-xs-center blue">
+                  class="text-xs-center
+                  facebookButtonColor
+                  mb-2
+                  ml-1
+                  elevation-12
+                  facebook-button-style"
+                  @click="facebookButtonClicked">
             <v-btn flat
                    large
                    ripple
+                   disabled
                    class="white--text"
-                   @click="facebookButtonClicked">
-              <v-icon left>fab fa-facebook</v-icon>
+                   style="color: white !important;">
+              <v-icon left
+                      style="color: white !important;">fab fa-facebook</v-icon>
               Facebook
             </v-btn>
           </v-flex><!-- Facebook Button -->
@@ -342,5 +358,17 @@
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+  .facebook-button-style, .google-button-style {
+    cursor: pointer;
+  }
+
+  .facebook-button-style:hover {
+    background-color: #1565C0 !important;
+  }
+
+  .google-button-style:hover {
+    background-color: #D32F2F !important;
   }
 </style>
