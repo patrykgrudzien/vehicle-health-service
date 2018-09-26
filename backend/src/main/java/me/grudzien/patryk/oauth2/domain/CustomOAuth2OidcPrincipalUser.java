@@ -24,8 +24,8 @@ import me.grudzien.patryk.domain.dto.login.JwtUser;
  * It's done this way because I want
  * {@link me.grudzien.patryk.domain.dto.login.JwtUser}
  * to be set as required field during building
- * {@link me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser}
- * object using lombok's builder.
+ * {@link me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser} object in:
+ * {@link me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUserFactory#create(JwtUser)}.
  */
 @Builder(builderMethodName = "hiddenBuilder")
 @AllArgsConstructor
