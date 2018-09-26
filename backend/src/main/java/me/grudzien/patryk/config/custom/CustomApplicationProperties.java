@@ -35,7 +35,6 @@ public class CustomApplicationProperties {
 
 		private Registration registration = new Registration();
 		private Authentication authentication = new Authentication();
-		private Logout logout = new Logout();
 		private Heroku heroku = new Heroku();
 		private VehicleResource vehicleResource = new VehicleResource();
 		private OAuth2 oAuth2 = new OAuth2();
@@ -80,14 +79,6 @@ public class CustomApplicationProperties {
 			private String failureUrl;
 			private String principalUser;
 			private String refreshToken;
-			private String login;
-		}
-
-		@Getter
-		@Setter
-		public static class Logout {
-			private String root;
-			private String successUrl;
 		}
 
 		@Getter

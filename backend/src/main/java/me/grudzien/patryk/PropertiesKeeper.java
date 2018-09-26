@@ -35,8 +35,6 @@ public final class PropertiesKeeper {
 		public String REGISTRATION_CONFIRMED = customApplicationProperties.getEndpoints().getRegistration().getConfirmed();
 		public String CONFIRMATION_TOKEN_NOT_FOUND = customApplicationProperties.getEndpoints().getRegistration().getConfirmedTokenNotFound();
 		public String CONFIRMATION_TOKEN_EXPIRED = customApplicationProperties.getEndpoints().getRegistration().getConfirmedTokenExpired();
-		public String LOGIN = customApplicationProperties.getEndpoints().getAuthentication().getLogin();
-		public String LOGOUT = customApplicationProperties.getEndpoints().getLogout().getRoot();
 	}
 
 	public class JWT {
@@ -69,6 +67,10 @@ public final class PropertiesKeeper {
 		String MAIN_BOARD = "/main-board";
 		String MAIN_BOARD_WILDCARD = "/main-board/**";
 		String AUTHENTICATION_REQUIRED = "/authentication-required";
+		/**
+		 * Used for now only in: {@link me.grudzien.patryk.oauth2.utils.OAuth2FlowDelegator#determineFlowBasedOnUrl(String)}
+		 */
+		String LOGOUT = "/logout";
 	}
 
 	public interface StaticResources {

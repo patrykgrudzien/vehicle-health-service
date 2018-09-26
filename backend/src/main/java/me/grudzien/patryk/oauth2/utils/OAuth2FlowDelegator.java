@@ -43,7 +43,7 @@ public class OAuth2FlowDelegator {
 	private String FACEBOOK_CLIENT_NAME;
 
 	private enum OAuth2Flow {
-		LOGIN, LOGOUT, REGISTRATION, UNKNOWN
+		LOGIN, REGISTRATION, UNKNOWN
 	}
 
 	@Autowired
@@ -93,7 +93,7 @@ public class OAuth2FlowDelegator {
 	}
 
 	private OAuth2Flow determineFlowBasedOnUrl(@NonNull final String url) {
-		if (url.contains(propertiesKeeper.endpoints().LOGIN) || url.contains(propertiesKeeper.endpoints().LOGOUT))
+		if (url.contains(PropertiesKeeper.FrontendRoutes.LOGIN) || url.contains(PropertiesKeeper.FrontendRoutes.LOGOUT))
 			return OAuth2Flow.LOGIN;
 		else if (url.contains(propertiesKeeper.endpoints().REGISTRATION))
 			return OAuth2Flow.REGISTRATION;
