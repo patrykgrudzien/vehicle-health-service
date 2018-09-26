@@ -83,15 +83,10 @@
                   :message="formFilledIncorrectlyMessage"/>
         <!-- FORM FILLED INCORRECTLY ALERT -->
 
-        <v-layout row>
+        <v-layout v-bind="rowColumnDeterminer">
           <!-- Google Button -->
           <v-flex xs6
-                  class="text-xs-center
-                  googleButtonColor
-                  mb-2
-                  mr-1
-                  elevation-12
-                  google-button-style"
+                  :class="googleFlexClasses"
                   @click="googleButtonClicked">
             <v-btn flat
                    large
@@ -101,18 +96,13 @@
                    style="color: white !important;">
               <v-icon left
                       style="color: white !important;">fab fa-google</v-icon>
-              Google
+              Log in with Google
             </v-btn>
           </v-flex><!-- Google Button -->
 
           <!-- Facebook Button -->
           <v-flex xs6
-                  class="text-xs-center
-                  facebookButtonColor
-                  mb-2
-                  ml-1
-                  elevation-12
-                  facebook-button-style"
+                  :class="facebookFlexClasses"
                   @click="facebookButtonClicked">
             <v-btn flat
                    large
@@ -122,7 +112,7 @@
                    style="color: white !important;">
               <v-icon left
                       style="color: white !important;">fab fa-facebook</v-icon>
-              Facebook
+              Log in with Facebook
             </v-btn>
           </v-flex><!-- Facebook Button -->
         </v-layout>
@@ -339,6 +329,55 @@
                   (this.isLoading === true || this.isLoading)
                );
       },
+      rowColumnDeterminer() {
+        const binding = {};
+        if (this.$vuetify.breakpoint.mdAndDown) {
+          binding.column = true;
+        } else {
+          binding.row = true;
+        }
+        return binding;
+      },
+      googleFlexClasses() {
+        if (this.$vuetify.breakpoint.mdAndUp) {
+          return {
+            'text-xs-center': true,
+            'googleButtonColor': true,
+            'mb-2': true,
+            'mr-1': true,
+            'elevation-12': true,
+            'google-button-style': true
+          }
+        } else {
+          return {
+            'text-xs-center': true,
+            'googleButtonColor': true,
+            'mb-2': true,
+            'elevation-12': true,
+            'google-button-style': true
+          }
+        }
+      },
+      facebookFlexClasses() {
+        if (this.$vuetify.breakpoint.mdAndUp) {
+          return {
+            'text-xs-center': true,
+            'facebookButtonColor': true,
+            'mb-2': true,
+            'ml-1': true,
+            'elevation-12': true,
+            'facebook-button-style': true
+          }
+        } else {
+          return {
+            'text-xs-center': true,
+            'facebookButtonColor': true,
+            'mb-2': true,
+            'elevation-12': true,
+            'facebook-button-style': true
+          }
+        }
+      }
     }
   };
 </script>
