@@ -28,13 +28,16 @@ public class JwtUser implements UserDetails, Serializable {
 	private final String lastname;
 	private final String password;
 	private final String email;
+	private final Date lastPasswordResetDate;
+	private final String photoUrl;
 
-	// disabling getter for roles to stay consistent and force usage of "getAuthorities()" instead
+	// disabling getter for "roles" to stay consistent and force usage of "getAuthorities()" instead
 	@Getter(AccessLevel.NONE)
 	private final Collection<? extends GrantedAuthority> roles;
 
+	// disabling getter for "enabled" to stay consistent and force usage of overriden "isEnabled()" instead
+	@Getter(AccessLevel.NONE)
 	private final boolean enabled;
-	private final Date lastPasswordResetDate;
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
