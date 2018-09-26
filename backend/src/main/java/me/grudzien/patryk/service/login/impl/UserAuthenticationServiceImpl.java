@@ -23,14 +23,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static me.grudzien.patryk.domain.enums.jwt.TokenTypes.ACCESS_TOKEN;
-import static me.grudzien.patryk.domain.enums.jwt.TokenTypes.REFRESH_TOKEN;
-import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
-
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationResponse;
 import me.grudzien.patryk.domain.dto.login.JwtUser;
-import me.grudzien.patryk.domain.enums.jwt.TokenTypes;
 import me.grudzien.patryk.exceptions.login.BadCredentialsAuthenticationException;
 import me.grudzien.patryk.exceptions.login.UserDisabledAuthenticationException;
 import me.grudzien.patryk.exceptions.registration.CustomUserValidationException;
@@ -41,6 +36,8 @@ import me.grudzien.patryk.utils.jwt.JwtTokenUtil;
 import me.grudzien.patryk.utils.log.LogMarkers;
 import me.grudzien.patryk.utils.validators.ValidatorCreator;
 import me.grudzien.patryk.utils.web.RequestsDecoder;
+
+import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 
 @Log4j2
 @Service
@@ -90,8 +87,8 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 				return jwtUser.map(user -> {
 									log.info("Started generating tokens...");
 									return JwtAuthenticationResponse.Builder()
-					                                .accessToken(generateToken(ACCESS_TOKEN, user, device))
-					                                .refreshToken(generateToken(REFRESH_TOKEN, user, device))
+					                                .accessToken(JwtTokenUtil.Creator.generateAccessToken(user, device))
+					                                .refreshToken(JwtTokenUtil.Creator.generateRefreshToken(user))
 					                                .isSuccessful(Boolean.TRUE)
 					                                .build();
 							   })
@@ -145,18 +142,6 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 			 * {@link me.grudzien.patryk.service.security.MyUserDetailsService}
 			 */
 			throw new BadCredentialsAuthenticationException(localeMessagesCreator.buildLocaleMessage("bad-credentials-exception"));
-		}
-	}
-
-	@Override
-	public String generateToken(final TokenTypes tokenType, final JwtUser jwtUser, final Device device) {
-		switch (tokenType) {
-			case ACCESS_TOKEN:
-				return JwtTokenUtil.Creator.generateAccessToken(jwtUser, device);
-			case REFRESH_TOKEN:
-				return JwtTokenUtil.Creator.generateRefreshToken(jwtUser);
-			default:
-				return null;
 		}
 	}
 
