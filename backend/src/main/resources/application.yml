@@ -19,10 +19,6 @@ custom:
         failure-url: /login?error=true
         principal-user: /principal-user
         refresh-token: /refresh-token
-        login: /login # TODO: this URL is taken in {@link me.grudzien.patryk.oauth2.utils.OAuth2FlowDelegator}
-      logout:
-        root: /logout
-        success-url: ?logout
       heroku:
         context-path: https://vehicle-health-service.herokuapp.com
       vehicle-resource:
