@@ -49,6 +49,40 @@
                 :message="formFilledIncorrectlyMessage"/>
       <!-- FORM FILLED INCORRECTLY ALERT -->
 
+      <v-layout v-bind="rowColumnDeterminer">
+        <!-- Google Button -->
+        <v-flex xs6
+                :class="googleFlexClasses"
+                @click="googleButtonClicked">
+          <v-btn flat
+                 large
+                 ripple
+                 disabled
+                 class="white--text"
+                 style="color: white !important;">
+            <v-icon left
+                    style="color: white !important;">fab fa-google</v-icon>
+            Register with Google
+          </v-btn>
+        </v-flex><!-- Google Button -->
+
+        <!-- Facebook Button -->
+        <v-flex xs6
+                :class="facebookFlexClasses"
+                @click="facebookButtonClicked">
+          <v-btn flat
+                 large
+                 ripple
+                 disabled
+                 class="white--text"
+                 style="color: white !important;">
+            <v-icon left
+                    style="color: white !important;">fab fa-facebook</v-icon>
+            Register with Facebook
+          </v-btn>
+        </v-flex><!-- Facebook Button -->
+      </v-layout>
+
       <!-- FORM -->
       <v-card class="elevation-12">
         <v-card-text>
@@ -299,6 +333,15 @@
       },
       setServerRunning() {
         this.$store.commit(MUTATIONS.SET_SERVER_RUNNING, true);
+      },
+      googleButtonClicked() {
+        console.log('googleButtonClicked');
+        this.$store.commit(MUTATIONS.SET_LOADING, true);
+        window.location.href = 'http://localhost:8088/oauth2/authorization/google';
+      },
+      facebookButtonClicked() {
+        console.log('facebookButtonClicked');
+        window.location.href = 'http://localhost:8088/oauth2/authorization/facebook';
       }
     },
     created() {
@@ -411,6 +454,46 @@
       formFilledIncorrectlyMessage() {
         return this.getServerExceptionResponse;
       },
+      googleFlexClasses() {
+        if (this.$vuetify.breakpoint.mdAndUp) {
+          return {
+            'text-xs-center': true,
+            'googleButtonColor': true,
+            'mb-2': true,
+            'mr-1': true,
+            'elevation-12': true,
+            'google-button-style': true
+          }
+        } else {
+          return {
+            'text-xs-center': true,
+            'googleButtonColor': true,
+            'mb-2': true,
+            'elevation-12': true,
+            'google-button-style': true
+          }
+        }
+      },
+      facebookFlexClasses() {
+        if (this.$vuetify.breakpoint.mdAndUp) {
+          return {
+            'text-xs-center': true,
+            'facebookButtonColor': true,
+            'mb-2': true,
+            'ml-1': true,
+            'elevation-12': true,
+            'facebook-button-style': true
+          }
+        } else {
+          return {
+            'text-xs-center': true,
+            'facebookButtonColor': true,
+            'mb-2': true,
+            'elevation-12': true,
+            'facebook-button-style': true
+          }
+        }
+      }
     }
   };
 </script>
@@ -430,5 +513,17 @@
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+  .facebook-button-style, .google-button-style {
+    cursor: pointer;
+  }
+
+  .facebook-button-style:hover {
+    background-color: #1565C0 !important;
+  }
+
+  .google-button-style:hover {
+    background-color: #D32F2F !important;
   }
 </style>
