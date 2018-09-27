@@ -11,8 +11,6 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.base.Preconditions;
 
-import me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser;
-
 /**
  * Custom implementation of an {@link org.springframework.security.oauth2.client.userinfo.OAuth2UserService}
  * that supports OpenID Connect 1.0 Provider's.
@@ -35,13 +33,14 @@ public class CustomOidcUserService extends OidcUserService {
 	public OidcUser loadUser(final OidcUserRequest userRequest) throws OAuth2AuthenticationException {
 		final OidcUser oidcUser = super.loadUser(userRequest);
 
-		final CustomOAuth2OidcPrincipalUser principal = customOAuth2UserService.determineFlowAndPreparePrincipal(
-				oidcUser, userRequest.getClientRegistration());
-
-		principal.setAttributes(oidcUser.getAttributes());
-		principal.setClaims(oidcUser.getClaims());
-		principal.setOidcIdToken(oidcUser.getIdToken());
-		principal.setOidcUserInfo(oidcUser.getUserInfo());
-		return principal;
+		return customOAuth2UserService.determineFlowAndPreparePrincipal(oidcUser, userRequest.getClientRegistration())
+		                              .map(principal -> {
+		                              	principal.setAttributes(oidcUser.getAttributes());
+		                              	principal.setOidcIdToken(oidcUser.getIdToken());
+		                              	principal.setOidcUserInfo(oidcUser.getUserInfo());
+		                              	return principal;
+		                              })
+		                              // TODO
+		                              .orElseThrow(() -> new RuntimeException("// TODO:"));
 	}
 }

@@ -65,7 +65,7 @@ public class TestUserInitializer implements CommandLineRunner {
 			final CustomUser testUser = CustomUser.Builder()
 			                                      .firstName("Admin")
 			                                      .lastName("Root")
-			                                      .email("patryk.grudzien@globallogic.com")
+			                                      .email("admin.root@gmail.com")
 			                                      .password(passwordEncoder.encode("admin"))
 			                                      .roles(Collections.singleton(Role.Builder()
 			                                                                       .roleName(RoleName.ROLE_ADMIN)

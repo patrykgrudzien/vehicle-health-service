@@ -7,18 +7,16 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.oauth2.core.oidc.StandardClaimNames;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Preconditions;
 
-import java.util.Map;
+import java.util.Optional;
 
 import me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser;
 import me.grudzien.patryk.oauth2.utils.CacheHelper;
 import me.grudzien.patryk.oauth2.utils.OAuth2FlowDelegator;
-import me.grudzien.patryk.oauth2.utils.OAuth2OidcAttributesExtractor;
 
 import static me.grudzien.patryk.oauth2.repository.CacheBasedOAuth2AuthorizationRequestRepository.OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME;
 import static me.grudzien.patryk.oauth2.repository.CacheBasedOAuth2AuthorizationRequestRepository.SSO_BUTTON_CLICK_EVENT_ENDPOINT_URL_CACHE_KEY;
@@ -48,15 +46,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 	@Override
 	public OAuth2User loadUser(final OAuth2UserRequest oAuth2UserRequest) throws OAuth2AuthenticationException {
 		final OAuth2User oAuth2User = super.loadUser(oAuth2UserRequest);
-		return this.determineFlowAndPreparePrincipal(oAuth2User, oAuth2UserRequest.getClientRegistration());
+		return this.determineFlowAndPreparePrincipal(oAuth2User, oAuth2UserRequest.getClientRegistration())
+		           // TODO
+		           .orElseThrow(() -> new RuntimeException("// TODO:"));
 	}
 
-	public CustomOAuth2OidcPrincipalUser determineFlowAndPreparePrincipal(final OAuth2User oAuth2User, final ClientRegistration clientRegistration) {
-		final Map<String, Object> attributes = oAuth2User.getAttributes();
-		final String oAuth2Email = OAuth2OidcAttributesExtractor.getOAuth2AttributeValue(attributes, StandardClaimNames.EMAIL);
+	public Optional<CustomOAuth2OidcPrincipalUser> determineFlowAndPreparePrincipal(final OAuth2User oAuth2User, final ClientRegistration clientRegistration) {
 		final String ssoButtonClickEventOriginUrl = cacheHelper.loadCache(OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME,
 		                                                                  SSO_BUTTON_CLICK_EVENT_ENDPOINT_URL_CACHE_KEY, () -> "");
-		// determining either LOGIN or REGISTRATION flow
-		return oAuth2FlowDelegator.determineFlowAndPreparePrincipal(clientRegistration, ssoButtonClickEventOriginUrl, oAuth2Email);
+		return Optional.ofNullable(oAuth2FlowDelegator.determineFlowAndPreparePrincipal(clientRegistration, ssoButtonClickEventOriginUrl, oAuth2User));
 	}
 }
