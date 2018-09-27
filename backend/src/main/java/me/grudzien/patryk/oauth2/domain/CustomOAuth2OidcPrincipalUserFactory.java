@@ -8,8 +8,9 @@ public class CustomOAuth2OidcPrincipalUserFactory {
 		throw new UnsupportedOperationException("Creating object of this class is not allowed!");
 	}
 
-	public static CustomOAuth2OidcPrincipalUser create(final JwtUser jwtUser) {
+	public static CustomOAuth2OidcPrincipalUser create(final JwtUser jwtUser, final CustomOAuth2OidcPrincipalUser.AccountStatus accountStatus) {
 		return CustomOAuth2OidcPrincipalUser.Builder(jwtUser)
+		                                    .accountStatus(accountStatus)
 		                                    .build();
 	}
 }

@@ -4,17 +4,21 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
+import org.springframework.util.ObjectUtils;
 
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 
 import me.grudzien.patryk.domain.dto.login.JwtUser;
 
@@ -28,18 +32,23 @@ import me.grudzien.patryk.domain.dto.login.JwtUser;
  * {@link me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUserFactory#create(JwtUser)}.
  */
 @Builder(builderMethodName = "hiddenBuilder")
+@NoArgsConstructor
 @AllArgsConstructor
 public class CustomOAuth2OidcPrincipalUser implements OidcUser, UserDetails, Serializable {
 
 	private static final long serialVersionUID = 9136407623861455510L;
 
 	@Getter(AccessLevel.NONE)
-	private final JwtUser jwtUser;
+	private JwtUser jwtUser;
 
 	private Map<String, Object> attributes;
-	private Map<String, Object> claims;
 	private OidcUserInfo oidcUserInfo;
 	private OidcIdToken oidcIdToken;
+	private AccountStatus accountStatus;
+
+	public enum AccountStatus {
+		LOGGED, REGISTERED
+	}
 
 	public static CustomOAuth2OidcPrincipalUserBuilder Builder(final JwtUser jwtUser) {
 		return hiddenBuilder().jwtUser(jwtUser);
@@ -62,7 +71,9 @@ public class CustomOAuth2OidcPrincipalUser implements OidcUser, UserDetails, Ser
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return jwtUser.getAuthorities();
+		return ObjectUtils.isEmpty(Optional.ofNullable(jwtUser)
+		                                   .map(JwtUser::getAuthorities)
+		                                   .isPresent()) ? jwtUser.getAuthorities() : AuthorityUtils.NO_AUTHORITIES;
 	}
 
 	@Override
@@ -93,5 +104,10 @@ public class CustomOAuth2OidcPrincipalUser implements OidcUser, UserDetails, Ser
 	@Override
 	public OidcIdToken getIdToken() {
 		return oidcIdToken;
+	}
+
+	@Override
+	public Map<String, Object> getClaims() {
+		return oidcIdToken.getClaims();
 	}
 }

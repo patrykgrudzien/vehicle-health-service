@@ -1,9 +1,10 @@
 package me.grudzien.patryk.domain.dto.login;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,8 +16,8 @@ import java.util.Collection;
 import java.util.Date;
 
 @Getter
+@AllArgsConstructor
 @Builder(builderMethodName = "Builder")
-@RequiredArgsConstructor
 @JsonIgnoreProperties({"accountNonExpired", "accountNonLocked", "credentialsNonExpired", "password", "lastPasswordResetDate",
                        "authorities", "username", "enabled", "roles"})
 public class JwtUser implements UserDetails, Serializable {
@@ -29,7 +30,8 @@ public class JwtUser implements UserDetails, Serializable {
 	private final String password;
 	private final String email;
 	private final Date lastPasswordResetDate;
-	private final String photoUrl;
+	@Setter
+	private String photoUrl;
 
 	// disabling getter for "roles" to stay consistent and force usage of "getAuthorities()" instead
 	@Getter(AccessLevel.NONE)

@@ -30,7 +30,7 @@ public abstract class CustomResponse {
 		JWT_TOKEN_EXPIRED("JWT TOKEN EXPIRED"),
 		SECURED_RESOURCE_CODE("Unauthenticated");
 
-		private String codeMessage;
+		private final String codeMessage;
 	}
 
 	@Getter
@@ -40,7 +40,7 @@ public abstract class CustomResponse {
 		CONTENT_TYPE("Content-Type", "application/json;charset=UTF-8"),
 		ACCESS_CONTROL_ALLOW_ORIGIN("Access-Control-Allow-Origin", "http://localhost:8080");
 
-		private String key;
-		private String value;
+		private final String key;
+		private final String value;
 	}
 }

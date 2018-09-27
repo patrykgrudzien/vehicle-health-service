@@ -1,6 +1,7 @@
 package me.grudzien.patryk.domain.dto.registration;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,6 +16,7 @@ import me.grudzien.patryk.validators.registration.ValidEmail;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder(builderMethodName = "Builder")
 @FieldMatcher.List({
 		@FieldMatcher(first = "password", second = "confirmedPassword", message = "password-fields-must-match"),
 		@FieldMatcher(first = "email", second = "confirmedEmail", message = "email-fields-must-match")
