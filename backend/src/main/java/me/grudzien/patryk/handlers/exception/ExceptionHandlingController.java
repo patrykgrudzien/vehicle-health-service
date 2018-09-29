@@ -16,7 +16,7 @@ import me.grudzien.patryk.exceptions.registration.TokenExpiredException;
 import me.grudzien.patryk.exceptions.registration.TokenNotFoundException;
 import me.grudzien.patryk.exceptions.registration.UserAlreadyExistsException;
 import me.grudzien.patryk.exceptions.vehicle.VehicleNotFoundException;
-import me.grudzien.patryk.oauth2.exceptions.UnknownDelegateException;
+import me.grudzien.patryk.oauth2.exceptions.UnknownOAuth2FlowException;
 
 /**
  * The @ControllerAdvice annotation is a component annotation allowing implementation classes to be auto-detected
@@ -88,8 +88,8 @@ public class ExceptionHandlingController {
 		return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), HttpStatus.FORBIDDEN);
 	}
 
-	@ExceptionHandler(UnknownDelegateException.class)
-	public ResponseEntity<ExceptionResponse> unknownDelegateException(final UnknownDelegateException exception) {
-		return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), HttpStatus.BAD_REQUEST);
+	@ExceptionHandler(UnknownOAuth2FlowException.class)
+	public ResponseEntity<ExceptionResponse> unknownDelegateException(final UnknownOAuth2FlowException exception) {
+		return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 }
