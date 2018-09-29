@@ -37,6 +37,11 @@ public enum AppFLow {
 			"Created google redirection successful URL for (LOCAL) env.",
 			AppFLow.SUCCESSFUL_REDIRECTION_DEFAULT_LOG_INFO_MESSAGE,
 			AppFLow.REDIRECTION_EXCEPTION_DEFAULT_LOG_INFO_MESSAGE
+	),
+	REGISTER_OAUTH2_PRINCIPAL(
+			"Created register oauth2 principal URL for (LOCAL) env.",
+			AppFLow.SUCCESSFUL_REDIRECTION_DEFAULT_LOG_INFO_MESSAGE,
+			AppFLow.REDIRECTION_EXCEPTION_DEFAULT_LOG_INFO_MESSAGE
 	);
 
 	private final String determineUrlLogInfoMessage;
