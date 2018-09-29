@@ -14,13 +14,14 @@ import com.google.common.base.Preconditions;
 
 import java.util.function.Predicate;
 
+import static me.grudzien.patryk.oauth2.repository.CacheBasedOAuth2AuthorizationRequestRepository.OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME;
+import static me.grudzien.patryk.oauth2.repository.CacheBasedOAuth2AuthorizationRequestRepository.SSO_BUTTON_CLICK_EVENT_ENDPOINT_URL_CACHE_KEY;
+import static me.grudzien.patryk.utils.log.LogMarkers.OAUTH2_MARKER;
+
 import me.grudzien.patryk.PropertiesKeeper;
 import me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser;
 import me.grudzien.patryk.oauth2.service.facebook.FacebookPrincipalService;
 import me.grudzien.patryk.oauth2.service.google.GooglePrincipalService;
-
-import static me.grudzien.patryk.oauth2.repository.CacheBasedOAuth2AuthorizationRequestRepository.OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME;
-import static me.grudzien.patryk.oauth2.repository.CacheBasedOAuth2AuthorizationRequestRepository.SSO_BUTTON_CLICK_EVENT_ENDPOINT_URL_CACHE_KEY;
 
 @Log4j2
 @Component
@@ -64,20 +65,29 @@ public class OAuth2FlowDelegator {
 		final OAuth2Flow oAuth2Flow = determineFlowBasedOnUrl(ssoButtonClickEventOriginUrl);
 
 		if (isGoogleProvider.test(clientName)) {
+			log.info(OAUTH2_MARKER, "Processing OAuth2 using ({}) provider.", clientName);
 			return googlePrincipalService.finishOAuthFlowAndPreparePrincipal(oAuth2Flow, oAuth2User);
 		} else if (isFacebookProvider.test(clientName)) {
+			log.info(OAUTH2_MARKER, "Processing OAuth2 using ({}) provider.", clientName);
 			return facebookPrincipalService.finishOAuthFlowAndPreparePrincipal(oAuth2Flow, oAuth2User);
 		}
+		log.warn(OAUTH2_MARKER, "Unknown OAuth2 provider...");
 		cacheHelper.evictCacheByNameAndKey(OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME, SSO_BUTTON_CLICK_EVENT_ENDPOINT_URL_CACHE_KEY);
 		return null;
 	}
 
 	private OAuth2Flow determineFlowBasedOnUrl(@NonNull final String url) {
-		if (url.contains(PropertiesKeeper.FrontendRoutes.LOGIN) || url.contains(PropertiesKeeper.FrontendRoutes.LOGOUT))
+		if (url.contains(PropertiesKeeper.FrontendRoutes.LOGIN) || url.contains(PropertiesKeeper.FrontendRoutes.LOGOUT)) {
+			log.info(OAUTH2_MARKER, "{} flow determined based on \"{}\" URL.", OAuth2Flow.LOGIN.name(), url);
 			return OAuth2Flow.LOGIN;
-		else if (url.contains(propertiesKeeper.endpoints().REGISTRATION))
+		}
+		else if (url.contains(propertiesKeeper.endpoints().REGISTRATION)) {
+			log.info(OAUTH2_MARKER, "{} flow determined based on \"{}\" URL.", OAuth2Flow.REGISTRATION.name(), url);
 			return OAuth2Flow.REGISTRATION;
-		else
+		}
+		else {
+			log.warn(OAUTH2_MARKER, "Cannot determine flow based on \"{}\" URL.", url);
 			return OAuth2Flow.UNKNOWN;
+		}
 	}
 }
