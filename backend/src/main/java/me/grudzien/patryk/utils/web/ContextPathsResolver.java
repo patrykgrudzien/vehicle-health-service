@@ -16,6 +16,7 @@ import java.util.Arrays;
 import static me.grudzien.patryk.domain.enums.AppFLow.ACCOUNT_ALREADY_ENABLED;
 import static me.grudzien.patryk.domain.enums.AppFLow.CONFIRM_REGISTRATION;
 import static me.grudzien.patryk.domain.enums.AppFLow.GOOGLE_REDIRECTION_SUCCESSFUL;
+import static me.grudzien.patryk.domain.enums.AppFLow.REGISTER_OAUTH2_PRINCIPAL;
 import static me.grudzien.patryk.domain.enums.AppFLow.VERIFICATION_TOKEN_CREATION;
 import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
 import static me.grudzien.patryk.utils.log.LogMarkers.METHOD_INVOCATION_MARKER;
@@ -74,6 +75,9 @@ public class ContextPathsResolver implements InitializingBean {
 				case GOOGLE_REDIRECTION_SUCCESSFUL:
 					log.info(METHOD_INVOCATION_MARKER, GOOGLE_REDIRECTION_SUCCESSFUL.getDetermineUrlLogInfoMessage());
 					return propertiesKeeper.corsOrigins().FRONT_END_MODULE;
+				case REGISTER_OAUTH2_PRINCIPAL:
+					log.info(METHOD_INVOCATION_MARKER, REGISTER_OAUTH2_PRINCIPAL.getDetermineUrlLogInfoMessage());
+					return propertiesKeeper.corsOrigins().BACK_END_MODULE;
 				default:
 					log.error(EXCEPTION_MARKER, "Unknown flow... Cannot determine app url where user will be redirected...");
 					return null;
