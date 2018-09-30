@@ -1,5 +1,10 @@
 package me.grudzien.patryk.utils.web;
 
+import static io.vavr.API.$;
+import static io.vavr.API.Case;
+import static io.vavr.API.Match;
+import static io.vavr.Predicates.is;
+
 import lombok.extern.log4j.Log4j2;
 
 import org.springframework.beans.factory.InitializingBean;
@@ -55,33 +60,39 @@ public class ContextPathsResolver implements InitializingBean {
 		if (SpringAppProfiles.HEROKU_DEPLOYMENT.getYmlName().equals(ACTIVE_SPRING_PROFILE)) {
 			return getHerokuBaseUrl();
 		} else {
-			switch (appFLow) {
-				case ACCOUNT_ALREADY_ENABLED:
-					log.info(METHOD_INVOCATION_MARKER, ACCOUNT_ALREADY_ENABLED.getDetermineUrlLogInfoMessage());
-					return propertiesKeeper.corsOrigins().FRONT_END_MODULE;
-				case VERIFICATION_TOKEN_CREATION:
-					/**
-					 * Creating base app URL for:
-					 * {@link me.grudzien.patryk.events.registration.RegistrationCompleteListener#createVerificationTokenAndSendEmail(
-					 * me.grudzien.patryk.events.registration.OnRegistrationCompleteEvent)}
-					 *
-					 * @return base app URL which is used to redirect user to specific screen on UI.
-					 */
-					log.info(METHOD_INVOCATION_MARKER, VERIFICATION_TOKEN_CREATION.getDetermineUrlLogInfoMessage());
-					return propertiesKeeper.corsOrigins().BACK_END_MODULE;
-				case CONFIRM_REGISTRATION:
-					log.info(METHOD_INVOCATION_MARKER, CONFIRM_REGISTRATION.getDetermineUrlLogInfoMessage());
-					return propertiesKeeper.corsOrigins().FRONT_END_MODULE;
-				case GOOGLE_REDIRECTION_SUCCESSFUL:
-					log.info(METHOD_INVOCATION_MARKER, GOOGLE_REDIRECTION_SUCCESSFUL.getDetermineUrlLogInfoMessage());
-					return propertiesKeeper.corsOrigins().FRONT_END_MODULE;
-				case REGISTER_OAUTH2_PRINCIPAL:
-					log.info(METHOD_INVOCATION_MARKER, REGISTER_OAUTH2_PRINCIPAL.getDetermineUrlLogInfoMessage());
-					return propertiesKeeper.corsOrigins().BACK_END_MODULE;
-				default:
-					log.error(EXCEPTION_MARKER, "Unknown flow... Cannot determine app url where user will be redirected...");
-					return null;
-			}
+			return Match(appFLow).of(
+					Case($(is(ACCOUNT_ALREADY_ENABLED)), () -> {
+						log.info(METHOD_INVOCATION_MARKER, ACCOUNT_ALREADY_ENABLED.getDetermineUrlLogInfoMessage());
+						return propertiesKeeper.corsOrigins().FRONT_END_MODULE;
+					}),
+					Case($(is(VERIFICATION_TOKEN_CREATION)), () -> {
+						/**
+						 * Creating base app URL for:
+						 * {@link me.grudzien.patryk.events.registration.RegistrationCompleteListener#createVerificationTokenAndSendEmail(
+						 * me.grudzien.patryk.events.registration.OnRegistrationCompleteEvent)}
+						 *
+						 * @return base app URL which is used to redirect user to specific screen on UI.
+						 */
+						log.info(METHOD_INVOCATION_MARKER, VERIFICATION_TOKEN_CREATION.getDetermineUrlLogInfoMessage());
+						return propertiesKeeper.corsOrigins().BACK_END_MODULE;
+					}),
+					Case($(is(CONFIRM_REGISTRATION)), () -> {
+						log.info(METHOD_INVOCATION_MARKER, CONFIRM_REGISTRATION.getDetermineUrlLogInfoMessage());
+						return propertiesKeeper.corsOrigins().FRONT_END_MODULE;
+					}),
+					Case($(is(GOOGLE_REDIRECTION_SUCCESSFUL)), () -> {
+						log.info(METHOD_INVOCATION_MARKER, GOOGLE_REDIRECTION_SUCCESSFUL.getDetermineUrlLogInfoMessage());
+						return propertiesKeeper.corsOrigins().FRONT_END_MODULE;
+					}),
+					Case($(is(REGISTER_OAUTH2_PRINCIPAL)), () -> {
+						log.info(METHOD_INVOCATION_MARKER, REGISTER_OAUTH2_PRINCIPAL.getDetermineUrlLogInfoMessage());
+						return propertiesKeeper.corsOrigins().BACK_END_MODULE;
+					}),
+					Case($(), () -> {
+						log.error(EXCEPTION_MARKER, "Unknown flow... Cannot determine app url where user will be redirected...");
+						return null;
+					})
+			);
 		}
 	}
 
