@@ -62,14 +62,12 @@ public class ExceptionHandlingController {
 
 	@ExceptionHandler(UserDisabledAuthenticationException.class)
 	public ResponseEntity<ExceptionResponse> userIsDisabled(final UserDisabledAuthenticationException exception) {
-		// returning 200 OK status just to catch error message and display it on UI
-		return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), HttpStatus.OK);
+		return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), HttpStatus.NOT_FOUND);
 	}
 
 	@ExceptionHandler(BadCredentialsAuthenticationException.class)
 	public ResponseEntity<ExceptionResponse> badCredentials(final BadCredentialsAuthenticationException exception) {
-		// returning 200 OK status just to catch error message and display it on UI
-		return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), HttpStatus.OK);
+		return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), HttpStatus.NOT_FOUND);
 	}
 
 	@ExceptionHandler(VehicleNotFoundException.class)
