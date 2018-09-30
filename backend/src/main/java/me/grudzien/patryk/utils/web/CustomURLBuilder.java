@@ -1,5 +1,11 @@
 package me.grudzien.patryk.utils.web;
 
+import static io.vavr.API.$;
+import static io.vavr.API.Case;
+import static io.vavr.API.Match;
+import static io.vavr.Predicates.is;
+import static org.springframework.util.ObjectUtils.isEmpty;
+
 import io.vavr.Tuple2;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,7 +20,6 @@ import java.util.stream.Stream;
 import static me.grudzien.patryk.utils.web.CustomURLBuilder.AdditionalParamsDelimiterType.NONE;
 import static me.grudzien.patryk.utils.web.CustomURLBuilder.AdditionalParamsDelimiterType.PATH_VARIABLE;
 import static me.grudzien.patryk.utils.web.CustomURLBuilder.AdditionalParamsDelimiterType.REQUEST_PARAM;
-import static org.springframework.util.ObjectUtils.isEmpty;
 
 public class CustomURLBuilder {
 
@@ -62,12 +67,10 @@ public class CustomURLBuilder {
 		if (additionalParamsDelimiterType == NONE || isEmpty(additionalParameters)) {
 			return context;
 		} else if (!isEmpty(additionalParameters)) {
-			switch (additionalParamsDelimiterType) {
-				case PATH_VARIABLE:
-					return context + PATH_VARIABLE.delimiterWith(additionalParameters);
-				case REQUEST_PARAM:
-					return context + REQUEST_PARAM.delimiterWith(additionalParameters);
-			}
+			return Match(additionalParamsDelimiterType).of(
+					Case($(is(PATH_VARIABLE)), () -> context + PATH_VARIABLE.delimiterWith(additionalParameters)),
+					Case($(is(REQUEST_PARAM)), () -> context + REQUEST_PARAM.delimiterWith(additionalParameters))
+			);
 		}
 		return null;
 	}
