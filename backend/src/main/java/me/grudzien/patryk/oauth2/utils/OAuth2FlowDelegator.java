@@ -1,5 +1,10 @@
 package me.grudzien.patryk.oauth2.utils;
 
+import static io.vavr.API.$;
+import static io.vavr.API.Case;
+import static io.vavr.API.Match;
+import static io.vavr.Predicates.anyOf;
+
 import lombok.extern.log4j.Log4j2;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +32,11 @@ import me.grudzien.patryk.oauth2.service.google.GooglePrincipalService;
 @Component
 public class OAuth2FlowDelegator {
 
-	private final PropertiesKeeper propertiesKeeper;
+	private final Predicate<String> URL_CONTAINS_LOGIN_OR_LOGOUT = input -> input.contains(PropertiesKeeper.FrontendRoutes.LOGIN) ||
+	                                                                        input.contains(PropertiesKeeper.FrontendRoutes.LOGOUT);
+	private final Predicate<String> URL_EQUALS_REGISTRATION_CONFIRMED = input -> input.equalsIgnoreCase(PropertiesKeeper.FrontendRoutes.REGISTRATION_CONFIRMED);
+	private final Predicate<String> URL_EQUALS_REGISTRATION_FORM = input -> input.equalsIgnoreCase(PropertiesKeeper.FrontendRoutes.REGISTRATION_FORM);
+
 	private final CacheHelper cacheHelper;
 	private final GooglePrincipalService googlePrincipalService;
 	private final FacebookPrincipalService facebookPrincipalService;
@@ -42,15 +51,13 @@ public class OAuth2FlowDelegator {
 	}
 
 	@Autowired
-	public OAuth2FlowDelegator(final PropertiesKeeper propertiesKeeper, final CacheHelper cacheHelper,
-	                           final GooglePrincipalService googlePrincipalService, final FacebookPrincipalService facebookPrincipalService) {
+	public OAuth2FlowDelegator(final CacheHelper cacheHelper, final GooglePrincipalService googlePrincipalService,
+	                           final FacebookPrincipalService facebookPrincipalService) {
 
-		Preconditions.checkNotNull(propertiesKeeper, "propertiesKeeper cannot be null!");
 		Preconditions.checkNotNull(cacheHelper, "cacheHelper cannot be null!");
 		Preconditions.checkNotNull(googlePrincipalService, "googlePrincipalService cannot be null!");
 		Preconditions.checkNotNull(facebookPrincipalService, "facebookPrincipalService cannot be null!");
 
-		this.propertiesKeeper = propertiesKeeper;
 		this.cacheHelper = cacheHelper;
 		this.googlePrincipalService = googlePrincipalService;
 		this.facebookPrincipalService = facebookPrincipalService;
@@ -64,30 +71,39 @@ public class OAuth2FlowDelegator {
 		final String clientName = clientRegistration.getClientName();
 		final OAuth2Flow oAuth2Flow = determineFlowBasedOnUrl(ssoButtonClickEventOriginUrl);
 
-		if (isGoogleProvider.test(clientName)) {
-			log.info(OAUTH2_MARKER, "Processing OAuth2 using ({}) provider.", clientName);
-			return googlePrincipalService.finishOAuthFlowAndPreparePrincipal(oAuth2Flow, oAuth2User);
-		} else if (isFacebookProvider.test(clientName)) {
-			log.info(OAUTH2_MARKER, "Processing OAuth2 using ({}) provider.", clientName);
-			return facebookPrincipalService.finishOAuthFlowAndPreparePrincipal(oAuth2Flow, oAuth2User);
-		}
-		log.warn(OAUTH2_MARKER, "Unknown OAuth2 provider...");
-		cacheHelper.evictCacheByNameAndKey(OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME, SSO_BUTTON_CLICK_EVENT_ENDPOINT_URL_CACHE_KEY);
-		return null;
+		return Match(clientName).of(
+				Case($(isGoogleProvider), () -> {
+					log.info(OAUTH2_MARKER, "Processing OAuth2 using ({}) provider.", clientName);
+					return googlePrincipalService.finishOAuthFlowAndPreparePrincipal(oAuth2Flow, oAuth2User);
+				}),
+				Case($(isFacebookProvider), () -> {
+					log.info(OAUTH2_MARKER, "Processing OAuth2 using ({}) provider.", clientName);
+					return facebookPrincipalService.finishOAuthFlowAndPreparePrincipal(oAuth2Flow, oAuth2User);
+				}),
+				Case($(), () -> {
+					log.warn(OAUTH2_MARKER, "Unknown OAuth2 provider...");
+					cacheHelper.evictCacheByNameAndKey(OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME, SSO_BUTTON_CLICK_EVENT_ENDPOINT_URL_CACHE_KEY);
+					return null;
+				})
+		);
+		// TODO: establish correct place to do that
+//		cacheHelper.evictCacheByNameAndKey(OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME, SSO_BUTTON_CLICK_EVENT_ENDPOINT_URL_CACHE_KEY);
 	}
 
 	private OAuth2Flow determineFlowBasedOnUrl(@NonNull final String url) {
-		if (url.contains(PropertiesKeeper.FrontendRoutes.LOGIN) || url.contains(PropertiesKeeper.FrontendRoutes.LOGOUT)) {
-			log.info(OAUTH2_MARKER, "{} flow determined based on \"{}\" URL.", OAuth2Flow.LOGIN.name(), url);
-			return OAuth2Flow.LOGIN;
-		}
-		else if (url.contains(propertiesKeeper.endpoints().REGISTRATION)) {
-			log.info(OAUTH2_MARKER, "{} flow determined based on \"{}\" URL.", OAuth2Flow.REGISTRATION.name(), url);
-			return OAuth2Flow.REGISTRATION;
-		}
-		else {
-			log.warn(OAUTH2_MARKER, "Cannot determine flow based on \"{}\" URL.", url);
-			return OAuth2Flow.UNKNOWN;
-		}
+		return Match(url).of(
+				Case($(anyOf(URL_CONTAINS_LOGIN_OR_LOGOUT, URL_EQUALS_REGISTRATION_CONFIRMED)), () -> {
+					log.info(OAUTH2_MARKER, "{} flow determined based on \"{}\" URL.", OAuth2Flow.LOGIN.name(), url);
+					return OAuth2Flow.LOGIN;
+				}),
+				Case($(URL_EQUALS_REGISTRATION_FORM), () -> {
+					log.info(OAUTH2_MARKER, "{} flow determined based on \"{}\" URL.", OAuth2Flow.REGISTRATION.name(), url);
+					return OAuth2Flow.REGISTRATION;
+				}),
+				Case($(), () -> {
+					log.warn(OAUTH2_MARKER, "Cannot determine flow based on \"{}\" URL.", url);
+					return OAuth2Flow.UNKNOWN;
+				})
+		);
 	}
 }

@@ -57,7 +57,7 @@ public class CacheBasedOAuth2AuthorizationRequestRepository implements Authoriza
 		}
 		/**
 		 * Saving additional cache which will be required in:
-		 * {@link me.grudzien.patryk.oauth2.service.CustomOAuth2UserService#buildPrincipal(org.springframework.security.oauth2.core.user.OAuth2User, String)}
+		 * {@link me.grudzien.patryk.oauth2.service.google.impl.CustomOAuth2UserService#buildPrincipal(org.springframework.security.oauth2.core.user.OAuth2User, String)}
 		 * to decide if user should be (log in) or (register).
 		 */
 		URLParser.retrieveEndpointFromURL(request.getHeader(HttpHeaders.REFERER))
