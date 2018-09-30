@@ -16,13 +16,13 @@ import com.google.common.base.Preconditions;
 
 import javax.servlet.http.HttpServletResponse;
 
+import static me.grudzien.patryk.domain.enums.AppFLow.GOOGLE_REDIRECTION_SUCCESSFUL;
+import static me.grudzien.patryk.oauth2.handlers.CustomOAuth2AuthenticationSuccessHandler.SHORT_LIVED_AUTH_TOKEN_NAME;
+
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationResponse;
 import me.grudzien.patryk.domain.dto.login.JwtUser;
 import me.grudzien.patryk.handlers.web.HttpResponseHandler;
 import me.grudzien.patryk.utils.jwt.JwtTokenUtil;
-
-import static me.grudzien.patryk.domain.enums.AppFLow.GOOGLE_REDIRECTION_SUCCESSFUL;
-import static me.grudzien.patryk.oauth2.handlers.CustomOAuth2AuthenticationSuccessHandler.SHORT_LIVED_AUTH_TOKEN_NAME;
 
 @Log4j2
 @RestController
@@ -52,6 +52,18 @@ public class GoogleOAuth2Controller {
 		                                                  .refreshToken(JwtTokenUtil.Creator.generateRefreshToken(jwtUser))
 		                                                  .isSuccessful(Boolean.TRUE)
 		                                                  .build());
+	}
+
+	@GetMapping("/user-registered-using-google")
+	public ResponseEntity<Void> userRegisteredUsingGoogle() {
+		// TODO: FIX ME
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
+	@GetMapping("/user-account-already-exists")
+	public ResponseEntity<Void> userAccountAlreadyExists() {
+		// TODO: FIX ME
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	@GetMapping("${custom.properties.endpoints.oauth2.redirection-failure-target-url}")

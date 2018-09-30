@@ -36,7 +36,7 @@ import me.grudzien.patryk.domain.dto.login.JwtUser;
 @AllArgsConstructor
 public class CustomOAuth2OidcPrincipalUser implements OidcUser, UserDetails, Serializable {
 
-	private static final long serialVersionUID = 9136407623861455510L;
+	private static final long serialVersionUID = 6518123310061364513L;
 
 	@Getter(AccessLevel.NONE)
 	private JwtUser jwtUser;
@@ -46,8 +46,14 @@ public class CustomOAuth2OidcPrincipalUser implements OidcUser, UserDetails, Ser
 	private OidcIdToken oidcIdToken;
 	private AccountStatus accountStatus;
 
+	@Getter
+	@AllArgsConstructor
 	public enum AccountStatus {
-		LOGGED, REGISTERED
+		LOGGED("User has been successfully logged in."),
+		REGISTERED("User has been successfully registered."),
+		ALREADY_EXISTS("User cannot be registered because it's account already exists!");
+
+		private String description;
 	}
 
 	public static CustomOAuth2OidcPrincipalUserBuilder Builder(final JwtUser jwtUser) {

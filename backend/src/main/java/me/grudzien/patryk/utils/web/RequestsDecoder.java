@@ -13,7 +13,7 @@ public class RequestsDecoder {
 
 	public String decodeStringParam(final String arg) {
 
-		if (!StringUtils.isEmpty(arg) && isParamEncoded(arg)) {
+		if (!StringUtils.isEmpty(arg) && isParamEncoded(arg) && !org.apache.commons.lang3.StringUtils.isNumeric(arg)) {
 			return new String(Base64.getDecoder().decode(arg));
 		} else {
 			return arg;

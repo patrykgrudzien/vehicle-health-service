@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import com.google.common.base.Preconditions;
 
@@ -49,9 +48,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 	public void commence(final HttpServletRequest request, final HttpServletResponse response,
 	                     final AuthenticationException authException) {
 		log.info(FLOW_MARKER, authException.getMessage());
-		final String alreadyCreatedMessage = localeMessagesCreator.getCreatedMessage();
-		final String bodyMessage = StringUtils.isEmpty(alreadyCreatedMessage) ?
-				                           localeMessagesCreator.buildLocaleMessage("secured-resource-message") : alreadyCreatedMessage;
+		final String bodyMessage = localeMessagesCreator.buildLocaleMessage("secured-resource-message");
 		customizeHttpResponse(response, OK, buildBodyMessage(bodyMessage, SECURED_RESOURCE_CODE));
 	}
 }

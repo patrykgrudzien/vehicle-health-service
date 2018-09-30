@@ -23,21 +23,21 @@ import org.springframework.security.web.savedrequest.RequestCache;
 
 import com.google.common.base.Preconditions;
 
+import static me.grudzien.patryk.PropertiesKeeper.FrontendRoutes;
+import static me.grudzien.patryk.PropertiesKeeper.StaticResources;
+
 import me.grudzien.patryk.PropertiesKeeper;
 import me.grudzien.patryk.config.filters.JwtAuthorizationTokenFilter;
 import me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter;
 import me.grudzien.patryk.oauth2.handlers.CustomOAuth2AuthenticationFailureHandler;
 import me.grudzien.patryk.oauth2.handlers.CustomOAuth2AuthenticationSuccessHandler;
 import me.grudzien.patryk.oauth2.repository.CacheBasedOAuth2AuthorizationRequestRepository;
-import me.grudzien.patryk.oauth2.service.CustomOAuth2UserService;
-import me.grudzien.patryk.oauth2.service.CustomOidcUserService;
+import me.grudzien.patryk.oauth2.service.google.impl.CustomOAuth2UserService;
+import me.grudzien.patryk.oauth2.service.google.impl.CustomOidcUserService;
 import me.grudzien.patryk.oauth2.utils.CacheHelper;
 import me.grudzien.patryk.service.security.MyUserDetailsService;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.log.LogMarkers;
-
-import static me.grudzien.patryk.PropertiesKeeper.FrontendRoutes;
-import static me.grudzien.patryk.PropertiesKeeper.StaticResources;
 
 @Log4j2
 @Configuration
@@ -248,6 +248,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.mvcMatchers(propertiesKeeper.oAuth2().SUCCESS_TARGET_URL + "**").permitAll()
 				// /google-login-failure
 				.mvcMatchers(propertiesKeeper.oAuth2().FAILURE_TARGET_URL + "**").permitAll()
+				// /user-registered-using-google
+				.mvcMatchers("/user-registered-using-google" + "**").permitAll()
+				// /user-account-already-exists
+				.mvcMatchers("/user-account-already-exists" + "**").permitAll()
 				// require authentication via JWT
 				.anyRequest().authenticated();
 	}
