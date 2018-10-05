@@ -23,12 +23,14 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import me.grudzien.patryk.config.security.SecurityConfig;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationResponse;
 import me.grudzien.patryk.domain.dto.login.JwtUser;
 import me.grudzien.patryk.exceptions.login.BadCredentialsAuthenticationException;
 import me.grudzien.patryk.exceptions.login.UserDisabledAuthenticationException;
 import me.grudzien.patryk.exceptions.registration.CustomUserValidationException;
+import me.grudzien.patryk.oauth2.authentication.JwtAuthenticationToken;
 import me.grudzien.patryk.service.login.UserAuthenticationService;
 import me.grudzien.patryk.service.security.MyUserDetailsService;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
@@ -67,7 +69,7 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 
 	@Override
 	public JwtAuthenticationResponse login(final JwtAuthenticationRequest authenticationRequest, final Device device) {
-		final JwtAuthenticationResponse emptyResponse = new JwtAuthenticationResponse();
+		final JwtAuthenticationResponse jwtAuthenticationResponseFailure = JwtAuthenticationResponse.Builder().isSuccessful(Boolean.FALSE).build();
 		final String email = requestsDecoder.decodeStringParam(authenticationRequest.getEmail());
 		final Set<ConstraintViolation<String>> validation = ValidatorCreator.getDefaultValidator().validate(email);
 		if (!validation.isEmpty()) {
@@ -96,7 +98,7 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 				              		localeMessagesCreator.buildLocaleMessageWithParam("user-not-found-by-email", email)));
 			}
 		}
-		return emptyResponse;
+		return jwtAuthenticationResponseFailure;
 	}
 
 	/**
@@ -108,6 +110,7 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 	public Optional<Authentication> authenticateUser(final JwtAuthenticationRequest authenticationRequest) {
 		final String email = requestsDecoder.decodeStringParam(authenticationRequest.getEmail());
 		final String password = requestsDecoder.decodeStringParam(authenticationRequest.getPassword());
+		Authentication authentication = null;
 
 		Objects.requireNonNull(email);
 		Objects.requireNonNull(password);
@@ -122,7 +125,14 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 			 * granted authorities if successful).
 			 * It attempts to authenticate the passed (Authentication) object, returning a fully populated "Authentication" object.
 			 */
-			return Optional.of(authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password)));
+
+			if (SecurityConfig.AuthenticationApproach.BUILT_IN.isActive()) {
+				authentication = new UsernamePasswordAuthenticationToken(email, password);
+			} else if (SecurityConfig.AuthenticationApproach.CUSTOM.isActive()) {
+				authentication = new JwtAuthenticationToken()
+			}
+			return Optional.ofNullable(authenticationManager.authenticate(authentication));
+
 		} catch (final DisabledException exception) {
 			log.error(LogMarkers.EXCEPTION_MARKER, "User with {} is disabled! Error message -> {}", email, exception.getMessage());
 			/**
