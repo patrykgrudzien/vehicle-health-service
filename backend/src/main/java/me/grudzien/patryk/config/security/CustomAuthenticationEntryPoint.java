@@ -1,7 +1,5 @@
 package me.grudzien.patryk.config.security;
 
-import static org.springframework.http.HttpStatus.OK;
-
 import lombok.extern.log4j.Log4j2;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,12 +12,13 @@ import com.google.common.base.Preconditions;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
+
 import static me.grudzien.patryk.domain.dto.responses.AuthenticationEntryPointResponse.buildBodyMessage;
 import static me.grudzien.patryk.domain.dto.responses.CustomResponse.Codes.SECURED_RESOURCE_CODE;
 import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 import static me.grudzien.patryk.utils.web.HttpResponseCustomizer.customizeHttpResponse;
-
-import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 
 /**
  * IMPORTANT NOTE:
@@ -49,6 +48,6 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 	                     final AuthenticationException authException) {
 		log.info(FLOW_MARKER, authException.getMessage());
 		final String bodyMessage = localeMessagesCreator.buildLocaleMessage("secured-resource-message");
-		customizeHttpResponse(response, OK, buildBodyMessage(bodyMessage, SECURED_RESOURCE_CODE));
+		customizeHttpResponse(response, FORBIDDEN, buildBodyMessage(bodyMessage, SECURED_RESOURCE_CODE));
 	}
 }
