@@ -16,13 +16,13 @@ import com.google.common.base.Preconditions;
 
 import javax.servlet.http.HttpServletResponse;
 
-import static me.grudzien.patryk.domain.enums.AppFLow.GOOGLE_REDIRECTION_SUCCESSFUL;
-import static me.grudzien.patryk.oauth2.handlers.CustomOAuth2AuthenticationSuccessHandler.SHORT_LIVED_AUTH_TOKEN_NAME;
-
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationResponse;
 import me.grudzien.patryk.domain.dto.login.JwtUser;
 import me.grudzien.patryk.handlers.web.HttpResponseHandler;
 import me.grudzien.patryk.utils.jwt.JwtTokenUtil;
+
+import static me.grudzien.patryk.domain.enums.AppFLow.USER_LOGGED_IN_USING_GOOGLE;
+import static me.grudzien.patryk.oauth2.handlers.CustomOAuth2AuthenticationSuccessHandler.SHORT_LIVED_AUTH_TOKEN_NAME;
 
 @Log4j2
 @RestController
@@ -36,11 +36,17 @@ public class GoogleOAuth2Controller {
 		this.httpResponseHandler = httpResponseHandler;
 	}
 
-	@GetMapping("${custom.properties.endpoints.oauth2.redirection-success-target-url}")
-	public ResponseEntity<Void> googleRedirectionSuccess(@RequestParam(SHORT_LIVED_AUTH_TOKEN_NAME) final String token,
-	                                                     final HttpServletResponse httpServletResponse) {
+	@GetMapping("/user-not-found")
+	public ResponseEntity<Void> userNotFound() {
+		// TODO: FIX ME
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
+	@GetMapping("${custom.properties.endpoints.oauth2.user-logged-in-using-google}")
+	public ResponseEntity<Void> userLoggedInUsingGoogle(@RequestParam(SHORT_LIVED_AUTH_TOKEN_NAME) final String token,
+	                                                    final HttpServletResponse httpServletResponse) {
 		final Tuple2<String, String> additionalParameters = new Tuple2<>(SHORT_LIVED_AUTH_TOKEN_NAME, token);
-		httpResponseHandler.redirectUserTo(GOOGLE_REDIRECTION_SUCCESSFUL, httpServletResponse, additionalParameters);
+		httpResponseHandler.redirectUserTo(USER_LOGGED_IN_USING_GOOGLE, httpServletResponse, additionalParameters);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
@@ -66,8 +72,8 @@ public class GoogleOAuth2Controller {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
-	@GetMapping("${custom.properties.endpoints.oauth2.redirection-failure-target-url}")
-	public ResponseEntity<Void> googleRedirectionFailure() {
+	@GetMapping("${custom.properties.endpoints.oauth2.failure-target-url}")
+	public ResponseEntity<Void> failureTargetUrl() {
 		// TODO: FIX ME
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
