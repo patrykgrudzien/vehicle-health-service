@@ -41,19 +41,21 @@ public class CustomOAuth2OidcPrincipalUser implements OidcUser, UserDetails, Ser
 	@Getter(AccessLevel.NONE)
 	private JwtUser jwtUser;
 
+	private AccountStatus accountStatus;
+
 	private Map<String, Object> attributes;
 	private OidcUserInfo oidcUserInfo;
 	private OidcIdToken oidcIdToken;
-	private AccountStatus accountStatus;
 
 	@Getter
 	@AllArgsConstructor
 	public enum AccountStatus {
 		LOGGED("User has been successfully logged in."),
+		NOT_FOUND("User cannot be found based on provided e-mail address."),
 		REGISTERED("User has been successfully registered."),
 		ALREADY_EXISTS("User cannot be registered because it's account already exists!");
 
-		private String description;
+		private final String description;
 	}
 
 	public static CustomOAuth2OidcPrincipalUserBuilder Builder(final JwtUser jwtUser) {
