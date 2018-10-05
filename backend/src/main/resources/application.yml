@@ -29,9 +29,9 @@ custom:
       oauth2:
         login-page: http://localhost:8080/login # TODO: must be updated because on production context is different (for now testing purpose)
         short-lived-millis: 120000 # 2 minutes
-        redirection-success-target-url: /google-redirection-success
-        redirection-failure-target-url: /google-redirection-failure
+        user-logged-in-using-google: /user-logged-in-using-google
         exchange-short-lived-token: /exchange-short-lived-token
+        failure-target-url: /failure-target-url
     cors-origins:
       front-end-module: http://localhost:8080
       back-end-module: http://localhost:8088
