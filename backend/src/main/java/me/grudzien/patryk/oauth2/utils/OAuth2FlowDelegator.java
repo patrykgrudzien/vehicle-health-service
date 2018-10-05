@@ -1,10 +1,5 @@
 package me.grudzien.patryk.oauth2.utils;
 
-import static io.vavr.API.$;
-import static io.vavr.API.Case;
-import static io.vavr.API.Match;
-import static io.vavr.Predicates.anyOf;
-
 import lombok.extern.log4j.Log4j2;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,14 +14,18 @@ import com.google.common.base.Preconditions;
 
 import java.util.function.Predicate;
 
-import static me.grudzien.patryk.oauth2.repository.CacheBasedOAuth2AuthorizationRequestRepository.OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME;
-import static me.grudzien.patryk.oauth2.repository.CacheBasedOAuth2AuthorizationRequestRepository.SSO_BUTTON_CLICK_EVENT_ENDPOINT_URL_CACHE_KEY;
-import static me.grudzien.patryk.utils.log.LogMarkers.OAUTH2_MARKER;
-
 import me.grudzien.patryk.PropertiesKeeper;
 import me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser;
 import me.grudzien.patryk.oauth2.service.facebook.FacebookPrincipalService;
 import me.grudzien.patryk.oauth2.service.google.GooglePrincipalService;
+
+import static io.vavr.API.$;
+import static io.vavr.API.Case;
+import static io.vavr.API.Match;
+import static io.vavr.Predicates.anyOf;
+import static me.grudzien.patryk.oauth2.repository.CacheBasedOAuth2AuthorizationRequestRepository.OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME;
+import static me.grudzien.patryk.oauth2.repository.CacheBasedOAuth2AuthorizationRequestRepository.SSO_BUTTON_CLICK_EVENT_ENDPOINT_URL_CACHE_KEY;
+import static me.grudzien.patryk.utils.log.LogMarkers.OAUTH2_MARKER;
 
 @Log4j2
 @Component
@@ -74,10 +73,12 @@ public class OAuth2FlowDelegator {
 		return Match(clientName).of(
 				Case($(isGoogleProvider), () -> {
 					log.info(OAUTH2_MARKER, "Processing OAuth2 using ({}) provider.", clientName);
+					cacheHelper.evictCacheByNameAndKey(OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME, SSO_BUTTON_CLICK_EVENT_ENDPOINT_URL_CACHE_KEY);
 					return googlePrincipalService.finishOAuthFlowAndPreparePrincipal(oAuth2Flow, oAuth2User);
 				}),
 				Case($(isFacebookProvider), () -> {
 					log.info(OAUTH2_MARKER, "Processing OAuth2 using ({}) provider.", clientName);
+					cacheHelper.evictCacheByNameAndKey(OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME, SSO_BUTTON_CLICK_EVENT_ENDPOINT_URL_CACHE_KEY);
 					return facebookPrincipalService.finishOAuthFlowAndPreparePrincipal(oAuth2Flow, oAuth2User);
 				}),
 				Case($(), () -> {
@@ -86,8 +87,6 @@ public class OAuth2FlowDelegator {
 					return null;
 				})
 		);
-		// TODO: establish correct place to do that
-//		cacheHelper.evictCacheByNameAndKey(OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME, SSO_BUTTON_CLICK_EVENT_ENDPOINT_URL_CACHE_KEY);
 	}
 
 	private OAuth2Flow determineFlowBasedOnUrl(@NonNull final String url) {
