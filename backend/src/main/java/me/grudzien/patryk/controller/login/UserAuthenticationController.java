@@ -36,7 +36,7 @@ public class UserAuthenticationController {
 	public ResponseEntity<?> login(@RequestBody final JwtAuthenticationRequest authenticationRequest, final Device device,
 	                               @SuppressWarnings("unused") final WebRequest webRequest) {
 		final JwtAuthenticationResponse authenticationResponse = userAuthenticationService.login(authenticationRequest, device);
-		return authenticationResponse.isSuccessful() ? ResponseEntity.ok(authenticationResponse) : ResponseEntity.noContent().build();
+		return authenticationResponse.isSuccessful() ? ResponseEntity.ok(authenticationResponse) : ResponseEntity.badRequest().build();
 	}
 
 	@PostMapping("${custom.properties.endpoints.authentication.refresh-token}")
