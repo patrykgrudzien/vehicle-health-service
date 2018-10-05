@@ -44,9 +44,8 @@ public final class PropertiesKeeper {
 	public class OAuth2 {
 		public String LOGIN_PAGE = customApplicationProperties.getEndpoints().getOAuth2().getLoginPage();
 		public Long SHORT_LIVED_MILLIS = customApplicationProperties.getEndpoints().getOAuth2().getShortLivedMillis();
-		public String SUCCESS_TARGET_URL = customApplicationProperties.getEndpoints().getOAuth2().getRedirectionSuccessTargetUrl();
-		public String FAILURE_TARGET_URL = customApplicationProperties.getEndpoints().getOAuth2().getRedirectionFailureTargetUrl();
-		public String EXCHANGE_SHORT_LIVED_TOKEN = customApplicationProperties.getEndpoints().getOAuth2().getExchangeShortLivedToken();
+		public String USER_LOGGED_IN_USING_GOOGLE = customApplicationProperties.getEndpoints().getOAuth2().getUserLoggedInUsingGoogle();
+		public String FAILURE_TARGET_URL = customApplicationProperties.getEndpoints().getOAuth2().getFailureTargetUrl();
 	}
 
 	public class Heroku {
