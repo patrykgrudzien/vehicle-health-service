@@ -1,10 +1,4 @@
-package me.grudzien.patryk.oauth2.service.google.impl;
-
-import static io.vavr.API.$;
-import static io.vavr.API.Case;
-import static io.vavr.API.Match;
-import static io.vavr.Predicates.is;
-import static io.vavr.Predicates.isIn;
+package me.grudzien.patryk.oauth2.service;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -18,6 +12,10 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.base.Preconditions;
 
+import static io.vavr.API.$;
+import static io.vavr.API.Case;
+import static io.vavr.API.Match;
+import static io.vavr.Predicates.isIn;
 import static me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser.AccountStatus;
 
 /**
@@ -52,7 +50,7 @@ public class CustomOidcUserService extends OidcUserService {
 				                                principal.setOidcUserInfo(oidcUser.getUserInfo());
 				                                return principal;
 			                                }),
-			                                Case($(is(AccountStatus.ALREADY_EXISTS)), accountStatus -> {
+			                                Case($(isIn(AccountStatus.ALREADY_EXISTS, AccountStatus.NOT_FOUND)), accountStatus -> {
 				                                final OAuth2Error oauth2Error = new OAuth2Error(accountStatus.name());
 				                                throw new OAuth2AuthenticationException(oauth2Error, accountStatus.getDescription());
 			                                })
@@ -61,6 +59,5 @@ public class CustomOidcUserService extends OidcUserService {
 			                              final OAuth2Error oidcError = new OAuth2Error(UNKNOWN_OIDC_USER_ERROR_CODE);
 			                              return new OAuth2AuthenticationException(oidcError, UNKNOWN_OIDC_USER_ERROR_MESSAGE);
 		                              });
-		// TODO: check all CACHES after whole flow !!!
 	}
 }
