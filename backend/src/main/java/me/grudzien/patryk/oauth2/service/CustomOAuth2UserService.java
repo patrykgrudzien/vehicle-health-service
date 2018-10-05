@@ -1,10 +1,4 @@
-package me.grudzien.patryk.oauth2.service.google.impl;
-
-import static io.vavr.API.$;
-import static io.vavr.API.Case;
-import static io.vavr.API.Match;
-import static io.vavr.Predicates.is;
-import static io.vavr.Predicates.isIn;
+package me.grudzien.patryk.oauth2.service;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -21,13 +15,17 @@ import com.google.common.base.Preconditions;
 
 import java.util.Optional;
 
-import static me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser.*;
-import static me.grudzien.patryk.oauth2.repository.CacheBasedOAuth2AuthorizationRequestRepository.OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME;
-import static me.grudzien.patryk.oauth2.repository.CacheBasedOAuth2AuthorizationRequestRepository.SSO_BUTTON_CLICK_EVENT_ENDPOINT_URL_CACHE_KEY;
-
 import me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser;
 import me.grudzien.patryk.oauth2.utils.CacheHelper;
 import me.grudzien.patryk.oauth2.utils.OAuth2FlowDelegator;
+
+import static io.vavr.API.$;
+import static io.vavr.API.Case;
+import static io.vavr.API.Match;
+import static io.vavr.Predicates.isIn;
+import static me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser.AccountStatus;
+import static me.grudzien.patryk.oauth2.repository.CacheBasedOAuth2AuthorizationRequestRepository.OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME;
+import static me.grudzien.patryk.oauth2.repository.CacheBasedOAuth2AuthorizationRequestRepository.SSO_BUTTON_CLICK_EVENT_ENDPOINT_URL_CACHE_KEY;
 
 /**
  * An implementation of an {@link org.springframework.security.oauth2.client.userinfo.OAuth2UserService}
@@ -60,7 +58,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 		return this.determineFlowAndPreparePrincipal(oAuth2User, oAuth2UserRequest.getClientRegistration())
 		           .map(principal -> Match(principal.getAccountStatus()).of(
 		           		Case($(isIn(AccountStatus.REGISTERED, AccountStatus.LOGGED)), principal),
-			            Case($(is(AccountStatus.ALREADY_EXISTS)), accountStatus -> {
+			            Case($(isIn(AccountStatus.ALREADY_EXISTS, AccountStatus.NOT_FOUND)), accountStatus -> {
 				            final OAuth2Error oauth2Error = new OAuth2Error(accountStatus.name());
 			            	throw new OAuth2AuthenticationException(oauth2Error, accountStatus.getDescription());
 			            })
@@ -69,7 +67,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 			           final OAuth2Error oauth2Error = new OAuth2Error(UNKNOWN_OAUTH2_USER_ERROR_CODE);
 			           return new OAuth2AuthenticationException(oauth2Error, UNKNOWN_OAUTH2_USER_ERROR_MESSAGE);
 		           });
-		// TODO: check all CACHES after whole flow !!!
 	}
 
 	public Optional<CustomOAuth2OidcPrincipalUser> determineFlowAndPreparePrincipal(final OAuth2User oAuth2User, final ClientRegistration clientRegistration) {
