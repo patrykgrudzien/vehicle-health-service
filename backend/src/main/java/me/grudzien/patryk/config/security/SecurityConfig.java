@@ -1,5 +1,8 @@
 package me.grudzien.patryk.config.security;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,21 +26,28 @@ import org.springframework.security.web.savedrequest.RequestCache;
 
 import com.google.common.base.Preconditions;
 
-import static me.grudzien.patryk.PropertiesKeeper.FrontendRoutes;
-import static me.grudzien.patryk.PropertiesKeeper.StaticResources;
-
 import me.grudzien.patryk.PropertiesKeeper;
 import me.grudzien.patryk.config.filters.JwtAuthorizationTokenFilter;
 import me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter;
+import me.grudzien.patryk.oauth2.authentication.JwtAuthenticationProvider;
+import me.grudzien.patryk.oauth2.authentication.JwtTokenAuthenticationFilter;
 import me.grudzien.patryk.oauth2.handlers.CustomOAuth2AuthenticationFailureHandler;
 import me.grudzien.patryk.oauth2.handlers.CustomOAuth2AuthenticationSuccessHandler;
 import me.grudzien.patryk.oauth2.repository.CacheBasedOAuth2AuthorizationRequestRepository;
-import me.grudzien.patryk.oauth2.service.google.impl.CustomOAuth2UserService;
-import me.grudzien.patryk.oauth2.service.google.impl.CustomOidcUserService;
+import me.grudzien.patryk.oauth2.service.CustomOAuth2UserService;
+import me.grudzien.patryk.oauth2.service.CustomOidcUserService;
 import me.grudzien.patryk.oauth2.utils.CacheHelper;
 import me.grudzien.patryk.service.security.MyUserDetailsService;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.log.LogMarkers;
+
+import static io.vavr.API.$;
+import static io.vavr.API.Case;
+import static io.vavr.API.Match;
+import static io.vavr.API.run;
+import static io.vavr.Predicates.is;
+import static me.grudzien.patryk.PropertiesKeeper.FrontendRoutes;
+import static me.grudzien.patryk.PropertiesKeeper.StaticResources;
 
 @Log4j2
 @Configuration
@@ -55,6 +65,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private final CacheHelper cacheHelper;
 	private final LocaleMessagesCreator localeMessageCreator;
 
+	private final JwtAuthenticationProvider jwtAuthenticationProvider;
+
 	/**
 	 * @Qualifier for {@link org.springframework.security.core.userdetails.UserDetailsService} is used here because there is also
 	 * {@link org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration} available and Spring
@@ -64,11 +76,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	public SecurityConfig(@Qualifier(MyUserDetailsService.BEAN_NAME) final UserDetailsService userDetailsService,
 	                      final CustomAuthenticationEntryPoint customAuthenticationEntryPoint,
 	                      final CustomOAuth2AuthenticationSuccessHandler customOAuth2AuthenticationSuccessHandler,
-	                      final CustomOAuth2AuthenticationFailureHandler customOAuth2AuthenticationFailureHandler,
-	                      final CustomOidcUserService customOidcUserService, final CustomOAuth2UserService customOAuth2UserService,
-	                      final PropertiesKeeper propertiesKeeper,
-	                      final CacheHelper cacheHelper,
-	                      final LocaleMessagesCreator localeMessageCreator) {
+	                      final CustomOAuth2AuthenticationFailureHandler customOAuth2AuthenticationFailureHandler, final CustomOidcUserService customOidcUserService,
+	                      final CustomOAuth2UserService customOAuth2UserService, final PropertiesKeeper propertiesKeeper, final CacheHelper cacheHelper,
+	                      final LocaleMessagesCreator localeMessageCreator, final JwtAuthenticationProvider jwtAuthenticationProvider) {
 
 		Preconditions.checkNotNull(userDetailsService, "userDetailsService cannot be null!");
 		Preconditions.checkNotNull(customAuthenticationEntryPoint, "customAuthenticationEntryPoint cannot be null!");
@@ -89,6 +99,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		this.propertiesKeeper = propertiesKeeper;
 		this.cacheHelper = cacheHelper;
 		this.localeMessageCreator = localeMessageCreator;
+		this.jwtAuthenticationProvider = jwtAuthenticationProvider;
 	}
 
 	@Bean
@@ -98,7 +109,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	protected void configureGlobal(final AuthenticationManagerBuilder auth) throws Exception {
-		auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+		auth.userDetailsService(userDetailsService)
+		    .passwordEncoder(this.passwordEncoder())
+		    .and()
+		    .authenticationProvider(jwtAuthenticationProvider);
 		log.info(LogMarkers.FLOW_MARKER, "Authentication Provider configured globally.");
 	}
 
@@ -137,7 +151,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 * &&
 		 * {@link me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter}
 		 */
-		addTokenAuthenticationFilters(httpSecurity, userDetailsService(), localeMessageCreator);
+		addTokenAuthenticationFilters(httpSecurity, localeMessageCreator, AuthenticationApproach.BUILT_IN);
 
 		// don't need CSRF because JWT token is invulnerable
 		disableCSRF(httpSecurity);
@@ -192,25 +206,52 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		            .authenticationEntryPoint(customAuthenticationEntryPoint);
 	}
 
-	private void addTokenAuthenticationFilters(final HttpSecurity httpSecurity, final UserDetailsService userDetailsService,
-	                                           final LocaleMessagesCreator localeMessagesCreator) {
-		// JWT filter
-		final JwtAuthorizationTokenFilter authorizationTokenFilter = new JwtAuthorizationTokenFilter(userDetailsService, propertiesKeeper, localeMessagesCreator);
-		httpSecurity.addFilterBefore(authorizationTokenFilter, UsernamePasswordAuthenticationFilter.class);
+	@Getter
+	@AllArgsConstructor
+	public enum AuthenticationApproach {
+		BUILT_IN(Boolean.FALSE), CUSTOM(Boolean.FALSE);
 
-		// ServletExceptionHandlerFilter (it is first and allows JwtAuthorizationTokenFilter to process).
-		// Catches exceptions thrown by JwtAuthorizationTokenFilter.
-		final ServletExceptionHandlerFilter servletExceptionHandlerFilter = new ServletExceptionHandlerFilter();
-		httpSecurity.addFilterBefore(servletExceptionHandlerFilter, JwtAuthorizationTokenFilter.class);
+		@Setter
+		private boolean isActive;
+	}
 
-		/**
-		 * There is also another filter {@link me.grudzien.patryk.config.filters.LocaleDeterminerFilter} which is registered in
-		 * {@link me.grudzien.patryk.config.filters.registry.FiltersRegistryConfig#registerLocaleDeterminerFilter()}
-		 * to disable Spring Security on some endpoints like: "/auth", "/registration".
-		 * This filter is required to determine "Locale" which is needed to create appropriate messages using:
-		 * {@link me.grudzien.patryk.utils.i18n.LocaleMessagesCreator#buildLocaleMessage(String)} or to take right email template inside:
-		 * {@link me.grudzien.patryk.service.registration.impl.EmailServiceImpl#sendMessageUsingTemplate(me.grudzien.patryk.domain.dto.registration.EmailDto)}.
-		 */
+	private void addTokenAuthenticationFilters(final HttpSecurity httpSecurity, final LocaleMessagesCreator localeMessagesCreator,
+	                                           @SuppressWarnings("SameParameterValue") final AuthenticationApproach authenticationApproach) {
+		Match(authenticationApproach).of(
+				Case($(is(AuthenticationApproach.BUILT_IN)), run(() -> {
+					authenticationApproach.setActive(Boolean.TRUE);
+					// JWT filter
+					final JwtAuthorizationTokenFilter authorizationTokenFilter = new JwtAuthorizationTokenFilter(super.userDetailsService(), propertiesKeeper, localeMessagesCreator);
+					httpSecurity.addFilterBefore(authorizationTokenFilter, UsernamePasswordAuthenticationFilter.class);
+
+					// ServletExceptionHandlerFilter (it is first and allows JwtAuthorizationTokenFilter to process).
+					// Catches exceptions thrown by JwtAuthorizationTokenFilter.
+					final ServletExceptionHandlerFilter servletExceptionHandlerFilter = new ServletExceptionHandlerFilter();
+					httpSecurity.addFilterBefore(servletExceptionHandlerFilter, JwtAuthorizationTokenFilter.class);
+
+					/**
+					 * There is also another filter {@link me.grudzien.patryk.config.filters.LocaleDeterminerFilter} which is registered in
+					 * {@link me.grudzien.patryk.config.filters.registry.FiltersRegistryConfig#registerLocaleDeterminerFilter()}
+					 * to disable Spring Security on some endpoints like: "/auth", "/registration".
+					 * This filter is required to determine "Locale" which is needed to create appropriate messages using:
+					 * {@link me.grudzien.patryk.utils.i18n.LocaleMessagesCreator#buildLocaleMessage(String)} or to take right email template inside:
+					 * {@link me.grudzien.patryk.service.registration.impl.EmailServiceImpl#sendMessageUsingTemplate(me.grudzien.patryk.domain.dto.registration.EmailDto)}.
+					 */
+				})),
+				Case($(is(AuthenticationApproach.CUSTOM)), run(() -> {
+					authenticationApproach.setActive(Boolean.TRUE);
+					try {
+						httpSecurity.addFilterBefore(new JwtTokenAuthenticationFilter(this.authenticationManagerBean(), propertiesKeeper), UsernamePasswordAuthenticationFilter.class);
+					} catch (final Exception exception) {
+						exception.printStackTrace();
+					}
+
+					// ServletExceptionHandlerFilter (it is first and allows JwtTokenAuthenticationFilter to process).
+					// Catches exceptions thrown by JwtTokenAuthenticationFilter.
+					final ServletExceptionHandlerFilter servletExceptionHandlerFilter = new ServletExceptionHandlerFilter();
+					httpSecurity.addFilterBefore(servletExceptionHandlerFilter, JwtTokenAuthenticationFilter.class);
+				}))
+		);
 	}
 
 	private void configureOAuth2Client(final HttpSecurity httpSecurity, final CacheHelper cacheHelper) throws Exception {
@@ -245,13 +286,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				// /refresh-token
 				.mvcMatchers(HttpMethod.POST, propertiesKeeper.endpoints().REFRESH_TOKEN).permitAll()
 				// //google-login-success**
-				.mvcMatchers(propertiesKeeper.oAuth2().SUCCESS_TARGET_URL + "**").permitAll()
+				.mvcMatchers(propertiesKeeper.oAuth2().USER_LOGGED_IN_USING_GOOGLE + "**").permitAll()
 				// /google-login-failure
 				.mvcMatchers(propertiesKeeper.oAuth2().FAILURE_TARGET_URL + "**").permitAll()
 				// /user-registered-using-google
 				.mvcMatchers("/user-registered-using-google" + "**").permitAll()
 				// /user-account-already-exists
 				.mvcMatchers("/user-account-already-exists" + "**").permitAll()
+				// /user-not-found
+				.mvcMatchers("/user-not-found" + "**").permitAll()
 				// require authentication via JWT
 				.anyRequest().authenticated();
 	}
@@ -286,7 +329,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		            .and()
 		   .ignoring()
 		        // /google-login-success**
-		        .mvcMatchers(propertiesKeeper.oAuth2().SUCCESS_TARGET_URL + "**")
+		        .mvcMatchers(propertiesKeeper.oAuth2().USER_LOGGED_IN_USING_GOOGLE + "**")
 		            .and()
 		   .ignoring()
 		        // /google-login-failure
