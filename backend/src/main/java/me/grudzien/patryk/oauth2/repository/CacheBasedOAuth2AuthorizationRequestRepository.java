@@ -13,10 +13,10 @@ import com.google.common.base.Preconditions;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static me.grudzien.patryk.utils.log.LogMarkers.OAUTH2_MARKER;
-
 import me.grudzien.patryk.oauth2.utils.CacheHelper;
 import me.grudzien.patryk.oauth2.utils.URLParser;
+
+import static me.grudzien.patryk.utils.log.LogMarkers.OAUTH2_MARKER;
 
 /**
  * For storing the {@link org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest},
@@ -57,7 +57,8 @@ public class CacheBasedOAuth2AuthorizationRequestRepository implements Authoriza
 		}
 		/**
 		 * Saving additional cache which will be required in:
-		 * {@link me.grudzien.patryk.oauth2.service.google.impl.CustomOAuth2UserService#buildPrincipal(org.springframework.security.oauth2.core.user.OAuth2User, String)}
+		 * {@link me.grudzien.patryk.oauth2.service.CustomOAuth2UserService#determineFlowAndPreparePrincipal(
+		 * org.springframework.security.oauth2.core.user.OAuth2User, org.springframework.security.oauth2.client.registration.ClientRegistration)}
 		 * to decide if user should be (log in) or (register).
 		 */
 		URLParser.retrieveEndpointFromURL(request.getHeader(HttpHeaders.REFERER))
