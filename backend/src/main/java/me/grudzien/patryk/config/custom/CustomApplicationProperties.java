@@ -44,8 +44,8 @@ public class CustomApplicationProperties {
 		public static class OAuth2 {
 			private String loginPage;
 			private Long shortLivedMillis;
-			private String redirectionSuccessTargetUrl;
-			private String redirectionFailureTargetUrl;
+			private String userLoggedInUsingGoogle;
+			private String failureTargetUrl;
 			private String exchangeShortLivedToken;
 		}
 
