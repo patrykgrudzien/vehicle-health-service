@@ -45,6 +45,9 @@ public class CustomApplicationProperties {
 			private String loginPage;
 			private Long shortLivedMillis;
 			private String userLoggedInUsingGoogle;
+			private String userNotFound;
+			private String userRegisteredUsingGoogle;
+			private String userAccountAlreadyExists;
 			private String failureTargetUrl;
 			private String exchangeShortLivedToken;
 		}

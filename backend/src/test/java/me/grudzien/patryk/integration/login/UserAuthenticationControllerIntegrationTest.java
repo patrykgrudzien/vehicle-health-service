@@ -1,5 +1,7 @@
 package me.grudzien.patryk.integration.login;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -16,8 +18,6 @@ import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationResponse;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class UserAuthenticationControllerIntegrationTest {
@@ -32,7 +32,7 @@ public class UserAuthenticationControllerIntegrationTest {
 	public void testSuccessfulLogin() {
 		final String password = Base64.getEncoder().encodeToString("admin".getBytes());
 		// arrange
-		final JwtAuthenticationRequest loginRequest = new JwtAuthenticationRequest("admin.root@gmail.com", password, "");
+		final JwtAuthenticationRequest loginRequest = JwtAuthenticationRequest.Builder().email("admin.root@gmail.com").password(password).build();
 
 		// act
 		final ResponseEntity<JwtAuthenticationResponse> response = testRestTemplate.postForEntity(

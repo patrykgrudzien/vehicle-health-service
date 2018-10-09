@@ -26,11 +26,15 @@ import org.springframework.security.web.savedrequest.RequestCache;
 
 import com.google.common.base.Preconditions;
 
+import static me.grudzien.patryk.PropertiesKeeper.FrontendRoutes;
+import static me.grudzien.patryk.PropertiesKeeper.StaticResources;
+import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
+
 import me.grudzien.patryk.PropertiesKeeper;
-import me.grudzien.patryk.config.filters.JwtAuthorizationTokenFilter;
+import me.grudzien.patryk.config.filters.JwtTokenSpringAuthenticationManagerFilter;
 import me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter;
 import me.grudzien.patryk.oauth2.authentication.JwtAuthenticationProvider;
-import me.grudzien.patryk.oauth2.authentication.JwtTokenAuthenticationFilter;
+import me.grudzien.patryk.oauth2.authentication.JwtTokenCustomAuthenticationManagerFilter;
 import me.grudzien.patryk.oauth2.handlers.CustomOAuth2AuthenticationFailureHandler;
 import me.grudzien.patryk.oauth2.handlers.CustomOAuth2AuthenticationSuccessHandler;
 import me.grudzien.patryk.oauth2.repository.CacheBasedOAuth2AuthorizationRequestRepository;
@@ -39,15 +43,6 @@ import me.grudzien.patryk.oauth2.service.CustomOidcUserService;
 import me.grudzien.patryk.oauth2.utils.CacheHelper;
 import me.grudzien.patryk.service.security.MyUserDetailsService;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
-import me.grudzien.patryk.utils.log.LogMarkers;
-
-import static io.vavr.API.$;
-import static io.vavr.API.Case;
-import static io.vavr.API.Match;
-import static io.vavr.API.run;
-import static io.vavr.Predicates.is;
-import static me.grudzien.patryk.PropertiesKeeper.FrontendRoutes;
-import static me.grudzien.patryk.PropertiesKeeper.StaticResources;
 
 @Log4j2
 @Configuration
@@ -113,7 +108,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		    .passwordEncoder(this.passwordEncoder())
 		    .and()
 		    .authenticationProvider(jwtAuthenticationProvider);
-		log.info(LogMarkers.FLOW_MARKER, "Authentication Provider configured globally.");
+		log.info(FLOW_MARKER, "Authentication Provider configured globally.");
 	}
 
 	/**
@@ -147,11 +142,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		exceptionHandling(httpSecurity, customAuthenticationEntryPoint);
 
 		/**
-		 * {@link me.grudzien.patryk.config.filters.JwtAuthorizationTokenFilter}
+		 * {@link me.grudzien.patryk.config.filters.JwtTokenSpringAuthenticationManagerFilter}
+		 * &&
+		 * {@link me.grudzien.patryk.oauth2.authentication.JwtTokenCustomAuthenticationManagerFilter}
 		 * &&
 		 * {@link me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter}
 		 */
-		addTokenAuthenticationFilters(httpSecurity, localeMessageCreator, AuthenticationApproach.BUILT_IN);
+		addTokenAuthenticationFilters(httpSecurity, localeMessageCreator, AuthenticationProvider.CUSTOM);
 
 		// don't need CSRF because JWT token is invulnerable
 		disableCSRF(httpSecurity);
@@ -208,50 +205,51 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Getter
 	@AllArgsConstructor
-	public enum AuthenticationApproach {
-		BUILT_IN(Boolean.FALSE), CUSTOM(Boolean.FALSE);
+	public enum AuthenticationProvider {
+		SPRING(Boolean.FALSE), CUSTOM(Boolean.FALSE);
 
 		@Setter
 		private boolean isActive;
 	}
 
 	private void addTokenAuthenticationFilters(final HttpSecurity httpSecurity, final LocaleMessagesCreator localeMessagesCreator,
-	                                           @SuppressWarnings("SameParameterValue") final AuthenticationApproach authenticationApproach) {
-		Match(authenticationApproach).of(
-				Case($(is(AuthenticationApproach.BUILT_IN)), run(() -> {
-					authenticationApproach.setActive(Boolean.TRUE);
-					// JWT filter
-					final JwtAuthorizationTokenFilter authorizationTokenFilter = new JwtAuthorizationTokenFilter(super.userDetailsService(), propertiesKeeper, localeMessagesCreator);
-					httpSecurity.addFilterBefore(authorizationTokenFilter, UsernamePasswordAuthenticationFilter.class);
+	                                           final AuthenticationProvider authenticationProvider) throws Exception {
 
-					// ServletExceptionHandlerFilter (it is first and allows JwtAuthorizationTokenFilter to process).
-					// Catches exceptions thrown by JwtAuthorizationTokenFilter.
-					final ServletExceptionHandlerFilter servletExceptionHandlerFilter = new ServletExceptionHandlerFilter();
-					httpSecurity.addFilterBefore(servletExceptionHandlerFilter, JwtAuthorizationTokenFilter.class);
+		final ServletExceptionHandlerFilter servletExceptionHandlerFilter = new ServletExceptionHandlerFilter();
 
-					/**
-					 * There is also another filter {@link me.grudzien.patryk.config.filters.LocaleDeterminerFilter} which is registered in
-					 * {@link me.grudzien.patryk.config.filters.registry.FiltersRegistryConfig#registerLocaleDeterminerFilter()}
-					 * to disable Spring Security on some endpoints like: "/auth", "/registration".
-					 * This filter is required to determine "Locale" which is needed to create appropriate messages using:
-					 * {@link me.grudzien.patryk.utils.i18n.LocaleMessagesCreator#buildLocaleMessage(String)} or to take right email template inside:
-					 * {@link me.grudzien.patryk.service.registration.impl.EmailServiceImpl#sendMessageUsingTemplate(me.grudzien.patryk.domain.dto.registration.EmailDto)}.
-					 */
-				})),
-				Case($(is(AuthenticationApproach.CUSTOM)), run(() -> {
-					authenticationApproach.setActive(Boolean.TRUE);
-					try {
-						httpSecurity.addFilterBefore(new JwtTokenAuthenticationFilter(this.authenticationManagerBean(), propertiesKeeper), UsernamePasswordAuthenticationFilter.class);
-					} catch (final Exception exception) {
-						exception.printStackTrace();
-					}
+		switch (authenticationProvider) {
+			case SPRING:
+				AuthenticationProvider.SPRING.setActive(Boolean.TRUE);
+				// JWT filter with Spring based Authentication Manager
+				final JwtTokenSpringAuthenticationManagerFilter authorizationTokenFilter = new JwtTokenSpringAuthenticationManagerFilter(super.userDetailsService(),
+				                                                                                                                         propertiesKeeper,
+				                                                                                                                         localeMessagesCreator);
+				httpSecurity.addFilterBefore(authorizationTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
-					// ServletExceptionHandlerFilter (it is first and allows JwtTokenAuthenticationFilter to process).
-					// Catches exceptions thrown by JwtTokenAuthenticationFilter.
-					final ServletExceptionHandlerFilter servletExceptionHandlerFilter = new ServletExceptionHandlerFilter();
-					httpSecurity.addFilterBefore(servletExceptionHandlerFilter, JwtTokenAuthenticationFilter.class);
-				}))
-		);
+				// ServletExceptionHandlerFilter (it is first and allows JwtTokenSpringAuthenticationManagerFilter to process).
+				// Catches exceptions thrown by JwtTokenSpringAuthenticationManagerFilter.
+				httpSecurity.addFilterBefore(servletExceptionHandlerFilter, JwtTokenSpringAuthenticationManagerFilter.class);
+
+				/**
+				 * There is also another filter {@link me.grudzien.patryk.config.filters.LocaleDeterminerFilter} which is registered in
+				 * {@link me.grudzien.patryk.config.filters.registry.FiltersRegistryConfig#registerLocaleDeterminerFilter()}
+				 * to disable Spring Security on some endpoints like: "/auth", "/registration".
+				 * This filter is required to determine "Locale" which is needed to create appropriate messages using:
+				 * {@link me.grudzien.patryk.utils.i18n.LocaleMessagesCreator#buildLocaleMessage(String)} or to take right email template inside:
+				 * {@link me.grudzien.patryk.service.registration.impl.EmailServiceImpl#sendMessageUsingTemplate(me.grudzien.patryk.domain.dto.registration.EmailDto)}.
+				 */
+				break;
+			case CUSTOM:
+				AuthenticationProvider.CUSTOM.setActive(Boolean.TRUE);
+				// JWT filter with custom Authentication Manager
+				httpSecurity.addFilterBefore(new JwtTokenCustomAuthenticationManagerFilter(this.authenticationManagerBean(), propertiesKeeper),
+				                             UsernamePasswordAuthenticationFilter.class);
+
+				// ServletExceptionHandlerFilter (it is first and allows JwtTokenCustomAuthenticationManagerFilter to process).
+				// Catches exceptions thrown by JwtTokenCustomAuthenticationManagerFilter.
+				httpSecurity.addFilterBefore(servletExceptionHandlerFilter, JwtTokenCustomAuthenticationManagerFilter.class);
+				break;
+		}
 	}
 
 	private void configureOAuth2Client(final HttpSecurity httpSecurity, final CacheHelper cacheHelper) throws Exception {
@@ -285,16 +283,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.mvcMatchers(HttpMethod.GET, propertiesKeeper.endpoints().REGISTRATION + "/**").permitAll()
 				// /refresh-token
 				.mvcMatchers(HttpMethod.POST, propertiesKeeper.endpoints().REFRESH_TOKEN).permitAll()
-				// //google-login-success**
+				// //user-logged-in-using-google**
 				.mvcMatchers(propertiesKeeper.oAuth2().USER_LOGGED_IN_USING_GOOGLE + "**").permitAll()
-				// /google-login-failure
-				.mvcMatchers(propertiesKeeper.oAuth2().FAILURE_TARGET_URL + "**").permitAll()
-				// /user-registered-using-google
-				.mvcMatchers("/user-registered-using-google" + "**").permitAll()
-				// /user-account-already-exists
-				.mvcMatchers("/user-account-already-exists" + "**").permitAll()
 				// /user-not-found
-				.mvcMatchers("/user-not-found" + "**").permitAll()
+				.mvcMatchers(propertiesKeeper.oAuth2().USER_NOT_FOUND + "**").permitAll()
+				// /user-registered-using-google
+				.mvcMatchers(propertiesKeeper.oAuth2().USER_REGISTERED_USING_GOOGLE + "**").permitAll()
+				// /user-account-already-exists
+				.mvcMatchers(propertiesKeeper.oAuth2().USER_ACCOUNT_ALREADY_EXISTS + "**").permitAll()
+				// /failure-target-url
+				.mvcMatchers(propertiesKeeper.oAuth2().FAILURE_TARGET_URL + "**").permitAll()
 				// require authentication via JWT
 				.anyRequest().authenticated();
 	}
@@ -326,14 +324,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		   .ignoring()
 		        // /refresh-token
 		        .mvcMatchers(HttpMethod.POST, propertiesKeeper.endpoints().REFRESH_TOKEN)
-		            .and()
-		   .ignoring()
-		        // /google-login-success**
-		        .mvcMatchers(propertiesKeeper.oAuth2().USER_LOGGED_IN_USING_GOOGLE + "**")
-		            .and()
-		   .ignoring()
-		        // /google-login-failure
-		        .mvcMatchers(propertiesKeeper.oAuth2().FAILURE_TARGET_URL + "**")
 		            .and()
 			.ignoring()
                 .mvcMatchers(HttpMethod.GET, StaticResources.ALL)

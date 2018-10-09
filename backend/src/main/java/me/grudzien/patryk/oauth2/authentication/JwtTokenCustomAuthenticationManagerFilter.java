@@ -14,19 +14,19 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-import me.grudzien.patryk.PropertiesKeeper;
-import me.grudzien.patryk.utils.jwt.JwtTokenUtil;
-
 import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
 import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 
+import me.grudzien.patryk.PropertiesKeeper;
+import me.grudzien.patryk.utils.jwt.JwtTokenUtil;
+
 @Log4j2
-public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
+public class JwtTokenCustomAuthenticationManagerFilter extends OncePerRequestFilter {
 
 	private final String tokenHeader;
 	private final AuthenticationManager authenticationManager;
 
-	public JwtTokenAuthenticationFilter(final AuthenticationManager authenticationManager, final PropertiesKeeper propertiesKeeper) {
+	public JwtTokenCustomAuthenticationManagerFilter(final AuthenticationManager authenticationManager, final PropertiesKeeper propertiesKeeper) {
 		this.authenticationManager = authenticationManager;
 		this.tokenHeader = propertiesKeeper.jwt().TOKEN_HEADER;
 	}
@@ -54,7 +54,6 @@ public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
 			log.debug(FLOW_MARKER, "Security context was null, starting authenticating the user...");
 
 			try {
-
 				final JwtAuthenticationToken jwtAuthenticationToken = new JwtAuthenticationToken(accessToken);
 				final Authentication authentication = authenticationManager.authenticate(jwtAuthenticationToken);
 				SecurityContextHolder.getContext().setAuthentication(authentication);

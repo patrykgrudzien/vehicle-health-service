@@ -3,6 +3,7 @@ package me.grudzien.patryk.oauth2.service.google.helper;
 import lombok.extern.log4j.Log4j2;
 
 import org.springframework.security.oauth2.core.oidc.StandardClaimNames;
+import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +23,11 @@ public class GooglePrincipalServiceHelper {
 
 	public JwtAuthenticationRequest prepareLoginPayload(final OAuth2User oAuth2User, final String password) {
 		final String email = getAttribute(StandardClaimNames.EMAIL, oAuth2User);
-		return new JwtAuthenticationRequest(email, password, "");
+		return JwtAuthenticationRequest.Builder()
+		                               .email(email)
+		                               .password(password)
+		                               .idToken(((DefaultOidcUser) oAuth2User).getIdToken().getTokenValue())
+		                               .build();
 	}
 
 	public UserRegistrationDto prepareRegistrationPayload(final OAuth2User oAuth2User, final String password) {

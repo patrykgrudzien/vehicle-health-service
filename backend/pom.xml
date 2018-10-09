@@ -358,6 +358,18 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-oauth2-jose</artifactId>
         </dependency>
+        <!-- JSON Web Key Set parser library -->
+        <dependency>
+            <groupId>com.auth0</groupId>
+            <artifactId>jwks-rsa</artifactId>
+            <version>${json.web.key.set.parser.version}</version>
+        </dependency>
+        <!-- Spring Security JWT Library -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-jwt</artifactId>
+            <version>${spring.security.jwt.version}</version>
+        </dependency>
     </dependencies>
 
 </project>

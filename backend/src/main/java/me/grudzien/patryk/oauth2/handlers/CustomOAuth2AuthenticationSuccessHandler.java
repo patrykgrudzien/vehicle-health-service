@@ -1,5 +1,10 @@
 package me.grudzien.patryk.oauth2.handlers;
 
+import static io.vavr.API.$;
+import static io.vavr.API.Case;
+import static io.vavr.API.Match;
+import static io.vavr.Predicates.is;
+
 import io.vavr.Tuple2;
 import lombok.extern.log4j.Log4j2;
 
@@ -15,19 +20,15 @@ import com.google.common.base.Preconditions;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import me.grudzien.patryk.PropertiesKeeper;
-import me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser;
-import me.grudzien.patryk.oauth2.repository.CacheBasedOAuth2AuthorizationRequestRepository;
-import me.grudzien.patryk.utils.jwt.JwtTokenUtil;
-
-import static io.vavr.API.$;
-import static io.vavr.API.Case;
-import static io.vavr.API.Match;
-import static io.vavr.Predicates.is;
 import static me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser.AccountStatus;
 import static me.grudzien.patryk.utils.log.LogMarkers.OAUTH2_MARKER;
 import static me.grudzien.patryk.utils.web.CustomURLBuilder.AdditionalParamsDelimiterType.REQUEST_PARAM;
 import static me.grudzien.patryk.utils.web.CustomURLBuilder.buildURL;
+
+import me.grudzien.patryk.PropertiesKeeper;
+import me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser;
+import me.grudzien.patryk.oauth2.repository.CacheBasedOAuth2AuthorizationRequestRepository;
+import me.grudzien.patryk.utils.jwt.JwtTokenUtil;
 
 @Log4j2
 @Component
@@ -58,7 +59,7 @@ public class CustomOAuth2AuthenticationSuccessHandler extends SimpleUrlAuthentic
 	private String defineSuccessTargetURL(final CustomOAuth2OidcPrincipalUser customOAuth2OidcPrincipalUser) {
 		final AccountStatus userAccountStatus = customOAuth2OidcPrincipalUser.getAccountStatus();
 		return Match(userAccountStatus).of(
-				Case($(is(AccountStatus.REGISTERED)), () -> "/user-registered-using-google"),
+				Case($(is(AccountStatus.REGISTERED)), () -> propertiesKeeper.oAuth2().USER_REGISTERED_USING_GOOGLE),
 				Case($(is(AccountStatus.LOGGED)), () -> {
 					final String shortLivedAuthToken = JwtTokenUtil.Creator.generateShortLivedToken(customOAuth2OidcPrincipalUser);
 					final Tuple2<String, String> additionalUrlParameters = new Tuple2<>(SHORT_LIVED_AUTH_TOKEN_NAME, shortLivedAuthToken);

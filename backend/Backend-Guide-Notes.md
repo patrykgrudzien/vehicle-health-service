@@ -38,7 +38,7 @@
             * If all code above went successfully, [CustomOAuth2AuthenticationSuccessHandler]() is called which returns **target url** with **shortLivedAuthToken**.
             * [GoogleOAuth2Controller]() intercepts such request and redirects user to [GoogleRedirectionSuccessful.vue]() component.
             * That component makes post request with **Authorization** header and **shortLivedAuthToken** with **Baerer** prefix.
-            * [JwtAuthorizationTokenFilter]() filters that request because [SecurityConfig]() **does not** permit such path and [SecurityContextHolder]() is populated after token validation.
+            * [JwtTokenSpringAuthenticationManagerFilter]() filters that request because [SecurityConfig]() **does not** permit such path and [SecurityContextHolder]() is populated after token validation.
             * [GoogleOAuth2Controller]() is called at the end to exchange **shortLivedAuthToken** and return some additional data.
              
         

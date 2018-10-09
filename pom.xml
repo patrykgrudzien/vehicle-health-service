@@ -73,7 +73,11 @@
         <spring-boot-starter-mobile.version>1.5.10.RELEASE</spring-boot-starter-mobile.version>
         <!-- Vavr -->
         <vavr.version>0.9.2</vavr.version>
-
+		<!-- JSON Web Key Set parser library -->
+		<json.web.key.set.parser.version>0.6.0</json.web.key.set.parser.version>
+		<!-- Spring Security JWT Library -->
+		<spring.security.jwt.version>1.0.9.RELEASE</spring.security.jwt.version>
+		
         <!--########################### PROJECT's DETAILS ###########################-->
         <!-- Structure -->
         <resources.public.directory>src/main/resources/public</resources.public.directory>
