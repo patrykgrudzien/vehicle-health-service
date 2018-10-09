@@ -45,6 +45,9 @@ public final class PropertiesKeeper {
 		public String LOGIN_PAGE = customApplicationProperties.getEndpoints().getOAuth2().getLoginPage();
 		public Long SHORT_LIVED_MILLIS = customApplicationProperties.getEndpoints().getOAuth2().getShortLivedMillis();
 		public String USER_LOGGED_IN_USING_GOOGLE = customApplicationProperties.getEndpoints().getOAuth2().getUserLoggedInUsingGoogle();
+		public String USER_NOT_FOUND = customApplicationProperties.getEndpoints().getOAuth2().getUserNotFound();
+		public String USER_REGISTERED_USING_GOOGLE = customApplicationProperties.getEndpoints().getOAuth2().getUserRegisteredUsingGoogle();
+		public String USER_ACCOUNT_ALREADY_EXISTS = customApplicationProperties.getEndpoints().getOAuth2().getUserAccountAlreadyExists();
 		public String FAILURE_TARGET_URL = customApplicationProperties.getEndpoints().getOAuth2().getFailureTargetUrl();
 	}
 

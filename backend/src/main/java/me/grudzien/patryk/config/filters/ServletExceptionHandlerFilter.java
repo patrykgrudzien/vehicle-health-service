@@ -31,7 +31,7 @@ import static me.grudzien.patryk.utils.web.HttpResponseCustomizer.customizeHttpR
  * It's NOT ALLOWED to mark them using (@Component) annotation !!!
  * In other case Spring Security does not work properly and does not ignore specified paths.
  * Another filter:
- * {@link JwtAuthorizationTokenFilter}
+ * {@link JwtTokenSpringAuthenticationManagerFilter}
  *
  * This filter is used in case of unsuccessful JWT operations which are performed in:
  * {@link me.grudzien.patryk.utils.jwt.JwtTokenUtil.Retriever}

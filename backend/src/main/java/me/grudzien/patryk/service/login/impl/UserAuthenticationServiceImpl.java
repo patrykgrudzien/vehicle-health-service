@@ -23,6 +23,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
+
 import me.grudzien.patryk.config.security.SecurityConfig;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationResponse;
@@ -38,8 +40,6 @@ import me.grudzien.patryk.utils.jwt.JwtTokenUtil;
 import me.grudzien.patryk.utils.log.LogMarkers;
 import me.grudzien.patryk.utils.validators.ValidatorCreator;
 import me.grudzien.patryk.utils.web.RequestsDecoder;
-
-import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 
 @Log4j2
 @Service
@@ -110,10 +110,11 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 	public Optional<Authentication> authenticateUser(final JwtAuthenticationRequest authenticationRequest) {
 		final String email = requestsDecoder.decodeStringParam(authenticationRequest.getEmail());
 		final String password = requestsDecoder.decodeStringParam(authenticationRequest.getPassword());
-		Authentication authentication = null;
 
 		Objects.requireNonNull(email);
 		Objects.requireNonNull(password);
+
+		Authentication authentication = null;
 
 		try {
 			/*
@@ -126,10 +127,10 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 			 * It attempts to authenticate the passed (Authentication) object, returning a fully populated "Authentication" object.
 			 */
 
-			if (SecurityConfig.AuthenticationApproach.BUILT_IN.isActive()) {
+			if (SecurityConfig.AuthenticationProvider.SPRING.isActive()) {
 				authentication = new UsernamePasswordAuthenticationToken(email, password);
-			} else if (SecurityConfig.AuthenticationApproach.CUSTOM.isActive()) {
-				authentication = new JwtAuthenticationToken()
+			} else if (SecurityConfig.AuthenticationProvider.CUSTOM.isActive()) {
+				authentication = new JwtAuthenticationToken(authenticationRequest.getIdToken());
 			}
 			return Optional.ofNullable(authenticationManager.authenticate(authentication));
 

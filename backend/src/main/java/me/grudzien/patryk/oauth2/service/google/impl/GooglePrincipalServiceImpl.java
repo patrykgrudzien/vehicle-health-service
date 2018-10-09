@@ -1,8 +1,17 @@
 package me.grudzien.patryk.oauth2.service.google.impl;
 
+import static io.vavr.API.$;
+import static io.vavr.API.Case;
+import static io.vavr.API.Match;
+import static io.vavr.Predicates.is;
+
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.jwt.crypto.sign.RsaVerifier;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.core.oidc.StandardClaimNames;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
@@ -10,11 +19,24 @@ import org.springframework.web.client.RestTemplate;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.auth0.jwk.Jwk;
+import com.auth0.jwk.JwkException;
+import com.auth0.jwk.JwkProvider;
+import com.auth0.jwk.UrlJwkProvider;
 import com.google.common.base.Preconditions;
 
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
+import java.security.interfaces.RSAPublicKey;
 import java.util.Map;
 import java.util.Optional;
+
+import static me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser.AccountStatus;
+import static me.grudzien.patryk.oauth2.utils.OAuth2FlowDelegator.OAuth2Flow.LOGIN;
+import static me.grudzien.patryk.oauth2.utils.OAuth2FlowDelegator.OAuth2Flow.REGISTRATION;
+import static me.grudzien.patryk.oauth2.utils.OAuth2FlowDelegator.OAuth2Flow.UNKNOWN;
+import static me.grudzien.patryk.utils.log.LogMarkers.OAUTH2_MARKER;
 
 import me.grudzien.patryk.PropertiesKeeper;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
@@ -29,16 +51,6 @@ import me.grudzien.patryk.oauth2.utils.rest.CustomRestTemplateFactory;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.web.ContextPathsResolver;
 
-import static io.vavr.API.$;
-import static io.vavr.API.Case;
-import static io.vavr.API.Match;
-import static io.vavr.Predicates.is;
-import static me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser.AccountStatus;
-import static me.grudzien.patryk.oauth2.utils.OAuth2FlowDelegator.OAuth2Flow.LOGIN;
-import static me.grudzien.patryk.oauth2.utils.OAuth2FlowDelegator.OAuth2Flow.REGISTRATION;
-import static me.grudzien.patryk.oauth2.utils.OAuth2FlowDelegator.OAuth2Flow.UNKNOWN;
-import static me.grudzien.patryk.utils.log.LogMarkers.OAUTH2_MARKER;
-
 @Log4j2
 @Service
 public class GooglePrincipalServiceImpl implements GooglePrincipalService {
@@ -49,6 +61,10 @@ public class GooglePrincipalServiceImpl implements GooglePrincipalService {
 	private final GooglePrincipalServiceHelper googlePrincipalServiceHelper;
 
 	private final RestTemplate customRestTemplate = CustomRestTemplateFactory.createRestTemplate();
+
+	@Setter
+	@Getter
+	private String jwkURL;
 
 	public GooglePrincipalServiceImpl(final LocaleMessagesCreator localeMessagesCreator, final PropertiesKeeper propertiesKeeper,
 	                                  final ContextPathsResolver contextPathsResolver, final GooglePrincipalServiceHelper googlePrincipalServiceHelper) {
@@ -65,7 +81,9 @@ public class GooglePrincipalServiceImpl implements GooglePrincipalService {
 	}
 
 	@Override
-	public CustomOAuth2OidcPrincipalUser finishOAuthFlowAndPreparePrincipal(final OAuth2FlowDelegator.OAuth2Flow oAuth2Flow, final OAuth2User oAuth2User) {
+	public CustomOAuth2OidcPrincipalUser finishOAuthFlowAndPreparePrincipal(final OAuth2FlowDelegator.OAuth2Flow oAuth2Flow, final OAuth2User oAuth2User,
+	                                                                        final ClientRegistration clientRegistration) {
+		setJwkURL(clientRegistration.getProviderDetails().getJwkSetUri());
 		/**
 		 * Taking {@link org.springframework.security.oauth2.core.oidc.StandardClaimNames.SUB} for password
 		 * as google cannot directly return real user password.
@@ -80,11 +98,20 @@ public class GooglePrincipalServiceImpl implements GooglePrincipalService {
 				}));
 	}
 
+	@Override
+	public RsaVerifier rsaVerifier(final String keyIdentifier) throws MalformedURLException, JwkException {
+		final JwkProvider jwkProvider = new UrlJwkProvider(new URL(this.getJwkURL()));
+		// Represents a JSON Web Key (JWK) used to verify the signature of JWTs
+		final Jwk jwk = jwkProvider.get(keyIdentifier);
+		return new RsaVerifier((RSAPublicKey) jwk.getPublicKey());
+	}
+
 	private CustomOAuth2OidcPrincipalUser loginOAuth2Principal(final OAuth2User oAuth2User, final String password) {
 		// 1. Request's URL
 		final String authEndpoint = propertiesKeeper.endpoints().AUTH;
 		// 2. Request's payload
 		final JwtAuthenticationRequest jwtAuthenticationRequest = googlePrincipalServiceHelper.prepareLoginPayload(oAuth2User, password);
+
 		// 3. Call endpoint as POST request
 		final String endpointAbsolutePath = "http://localhost:8088" + authEndpoint;
 		/**

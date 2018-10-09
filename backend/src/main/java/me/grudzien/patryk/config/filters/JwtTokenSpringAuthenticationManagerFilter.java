@@ -21,13 +21,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 
+import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
+import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
+
 import me.grudzien.patryk.PropertiesKeeper;
 import me.grudzien.patryk.service.security.MyUserDetailsService;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.jwt.JwtTokenUtil;
-
-import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
-import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 
 /**
  * Filters CANNOT be managed by Spring explicitly !!!
@@ -37,14 +37,14 @@ import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
  * {@link me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter}
  */
 @Log4j2
-public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
+public class JwtTokenSpringAuthenticationManagerFilter extends OncePerRequestFilter {
 
 	private final String tokenHeader;
 	private final UserDetailsService userDetailsService;
 	private final LocaleMessagesCreator localeMessagesCreator;
 
-	public JwtAuthorizationTokenFilter(@Qualifier(MyUserDetailsService.BEAN_NAME) final UserDetailsService userDetailsService,
-	                                   final PropertiesKeeper propertiesKeeper, final LocaleMessagesCreator localeMessagesCreator) {
+	public JwtTokenSpringAuthenticationManagerFilter(@Qualifier(MyUserDetailsService.BEAN_NAME) final UserDetailsService userDetailsService,
+	                                                 final PropertiesKeeper propertiesKeeper, final LocaleMessagesCreator localeMessagesCreator) {
 		Preconditions.checkNotNull(userDetailsService, "userDetailsService cannot be null!");
 		Preconditions.checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
 		Preconditions.checkNotNull(propertiesKeeper, "propertiesKeeper cannot be null!");

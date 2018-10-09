@@ -30,6 +30,9 @@ custom:
         login-page: http://localhost:8080/login # TODO: must be updated because on production context is different (for now testing purpose)
         short-lived-millis: 120000 # 2 minutes
         user-logged-in-using-google: /user-logged-in-using-google
+        user-not-found: /user-not-found
+        user-account-already-exists: /user-account-already-exists
+        user-registered-using-google: /user-registered-using-google
         exchange-short-lived-token: /exchange-short-lived-token
         failure-target-url: /failure-target-url
     cors-origins:
