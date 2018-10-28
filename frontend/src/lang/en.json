@@ -72,5 +72,9 @@
   "token-window-text": "System noticed a longer inactivity, so taking care of the security of your data, what do you want to do next?",
   "token-window-agree-button-text": "Stay here",
   "token-window-disagree-button-text": "Log out",
-  "loading-dialog-title": "Loading..."
+  "loading-dialog-title": "Loading...",
+  "google-login-button-title": "Login with Google",
+  "google-register-button-title": "Register with Google",
+  "facebook-login-button-title": "Login with Facebook",
+  "facebook-register-button-title": "Register with Facebook"
 }

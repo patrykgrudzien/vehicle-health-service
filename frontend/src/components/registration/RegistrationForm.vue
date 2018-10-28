@@ -62,7 +62,7 @@
                  style="color: white !important;">
             <v-icon left
                     style="color: white !important;">fab fa-google</v-icon>
-            Register with Google
+            {{ $t('google-register-button-title') }}
           </v-btn>
         </v-flex><!-- Google Button -->
 
@@ -78,7 +78,7 @@
                  style="color: white !important;">
             <v-icon left
                     style="color: white !important;">fab fa-facebook</v-icon>
-            Register with Facebook
+            {{ $t('facebook-register-button-title') }}
           </v-btn>
         </v-flex><!-- Facebook Button -->
       </v-layout>
