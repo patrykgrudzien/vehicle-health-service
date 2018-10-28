@@ -1,10 +1,19 @@
 package me.grudzien.patryk.config.security;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import com.google.common.base.Preconditions;
 import lombok.extern.log4j.Log4j2;
-
+import me.grudzien.patryk.PropertiesKeeper;
+import me.grudzien.patryk.config.filters.GenericJwtTokenFilter;
+import me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter;
+import me.grudzien.patryk.oauth2.authentication.CustomAuthenticationProvider;
+import me.grudzien.patryk.oauth2.handlers.CustomOAuth2AuthenticationFailureHandler;
+import me.grudzien.patryk.oauth2.handlers.CustomOAuth2AuthenticationSuccessHandler;
+import me.grudzien.patryk.oauth2.repository.CacheBasedOAuth2AuthorizationRequestRepository;
+import me.grudzien.patryk.oauth2.service.CustomOAuth2UserService;
+import me.grudzien.patryk.oauth2.service.CustomOidcUserService;
+import me.grudzien.patryk.oauth2.utils.CacheHelper;
+import me.grudzien.patryk.service.security.MyUserDetailsService;
+import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -24,25 +33,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 
-import com.google.common.base.Preconditions;
-
 import static me.grudzien.patryk.PropertiesKeeper.FrontendRoutes;
 import static me.grudzien.patryk.PropertiesKeeper.StaticResources;
 import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
-
-import me.grudzien.patryk.PropertiesKeeper;
-import me.grudzien.patryk.config.filters.JwtTokenSpringAuthenticationManagerFilter;
-import me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter;
-import me.grudzien.patryk.oauth2.authentication.JwtAuthenticationProvider;
-import me.grudzien.patryk.oauth2.authentication.JwtTokenCustomAuthenticationManagerFilter;
-import me.grudzien.patryk.oauth2.handlers.CustomOAuth2AuthenticationFailureHandler;
-import me.grudzien.patryk.oauth2.handlers.CustomOAuth2AuthenticationSuccessHandler;
-import me.grudzien.patryk.oauth2.repository.CacheBasedOAuth2AuthorizationRequestRepository;
-import me.grudzien.patryk.oauth2.service.CustomOAuth2UserService;
-import me.grudzien.patryk.oauth2.service.CustomOidcUserService;
-import me.grudzien.patryk.oauth2.utils.CacheHelper;
-import me.grudzien.patryk.service.security.MyUserDetailsService;
-import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 
 @Log4j2
 @Configuration
@@ -60,7 +53,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private final CacheHelper cacheHelper;
 	private final LocaleMessagesCreator localeMessageCreator;
 
-	private final JwtAuthenticationProvider jwtAuthenticationProvider;
+	private final CustomAuthenticationProvider customAuthenticationProvider;
 
 	/**
 	 * @Qualifier for {@link org.springframework.security.core.userdetails.UserDetailsService} is used here because there is also
@@ -73,7 +66,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	                      final CustomOAuth2AuthenticationSuccessHandler customOAuth2AuthenticationSuccessHandler,
 	                      final CustomOAuth2AuthenticationFailureHandler customOAuth2AuthenticationFailureHandler, final CustomOidcUserService customOidcUserService,
 	                      final CustomOAuth2UserService customOAuth2UserService, final PropertiesKeeper propertiesKeeper, final CacheHelper cacheHelper,
-	                      final LocaleMessagesCreator localeMessageCreator, final JwtAuthenticationProvider jwtAuthenticationProvider) {
+	                      final LocaleMessagesCreator localeMessageCreator, final CustomAuthenticationProvider customAuthenticationProvider) {
 
 		Preconditions.checkNotNull(userDetailsService, "userDetailsService cannot be null!");
 		Preconditions.checkNotNull(customAuthenticationEntryPoint, "customAuthenticationEntryPoint cannot be null!");
@@ -94,7 +87,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		this.propertiesKeeper = propertiesKeeper;
 		this.cacheHelper = cacheHelper;
 		this.localeMessageCreator = localeMessageCreator;
-		this.jwtAuthenticationProvider = jwtAuthenticationProvider;
+		this.customAuthenticationProvider = customAuthenticationProvider;
 	}
 
 	@Bean
@@ -107,7 +100,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		auth.userDetailsService(userDetailsService)
 		    .passwordEncoder(this.passwordEncoder())
 		    .and()
-		    .authenticationProvider(jwtAuthenticationProvider);
+		    .authenticationProvider(customAuthenticationProvider);
 		log.info(FLOW_MARKER, "Authentication Provider configured globally.");
 	}
 
@@ -142,13 +135,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		exceptionHandling(httpSecurity, customAuthenticationEntryPoint);
 
 		/**
-		 * {@link me.grudzien.patryk.config.filters.JwtTokenSpringAuthenticationManagerFilter}
-		 * &&
-		 * {@link me.grudzien.patryk.oauth2.authentication.JwtTokenCustomAuthenticationManagerFilter}
+		 * {@link me.grudzien.patryk.config.filters.GenericJwtTokenFilter}
 		 * &&
 		 * {@link me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter}
 		 */
-		addTokenAuthenticationFilters(httpSecurity, localeMessageCreator, AuthenticationProvider.CUSTOM);
+		addTokenAuthenticationFilters(httpSecurity, localeMessageCreator);
 
 		// don't need CSRF because JWT token is invulnerable
 		disableCSRF(httpSecurity);
@@ -203,53 +194,28 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		            .authenticationEntryPoint(customAuthenticationEntryPoint);
 	}
 
-	@Getter
-	@AllArgsConstructor
-	public enum AuthenticationProvider {
-		SPRING(Boolean.FALSE), CUSTOM(Boolean.FALSE);
+	private void addTokenAuthenticationFilters(final HttpSecurity httpSecurity, final LocaleMessagesCreator localeMessagesCreator) {
 
-		@Setter
-		private boolean isActive;
-	}
+        // JWT filter
+        final GenericJwtTokenFilter genericJwtTokenFilter = new GenericJwtTokenFilter(super.userDetailsService(), propertiesKeeper, localeMessagesCreator);
 
-	private void addTokenAuthenticationFilters(final HttpSecurity httpSecurity, final LocaleMessagesCreator localeMessagesCreator,
-	                                           final AuthenticationProvider authenticationProvider) throws Exception {
+        httpSecurity.addFilterBefore(genericJwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
-		final ServletExceptionHandlerFilter servletExceptionHandlerFilter = new ServletExceptionHandlerFilter();
+        // ServletExceptionHandlerFilter (it is first and allows GenericJwtTokenFilter to process).
+        // Catches exceptions thrown by GenericJwtTokenFilter.
+        final ServletExceptionHandlerFilter servletExceptionHandlerFilter = new ServletExceptionHandlerFilter();
+        httpSecurity.addFilterBefore(servletExceptionHandlerFilter, GenericJwtTokenFilter.class);
 
-		switch (authenticationProvider) {
-			case SPRING:
-				AuthenticationProvider.SPRING.setActive(Boolean.TRUE);
-				// JWT filter with Spring based Authentication Manager
-				final JwtTokenSpringAuthenticationManagerFilter authorizationTokenFilter = new JwtTokenSpringAuthenticationManagerFilter(super.userDetailsService(),
-				                                                                                                                         propertiesKeeper,
-				                                                                                                                         localeMessagesCreator);
-				httpSecurity.addFilterBefore(authorizationTokenFilter, UsernamePasswordAuthenticationFilter.class);
-
-				// ServletExceptionHandlerFilter (it is first and allows JwtTokenSpringAuthenticationManagerFilter to process).
-				// Catches exceptions thrown by JwtTokenSpringAuthenticationManagerFilter.
-				httpSecurity.addFilterBefore(servletExceptionHandlerFilter, JwtTokenSpringAuthenticationManagerFilter.class);
-
-				/**
-				 * There is also another filter {@link me.grudzien.patryk.config.filters.LocaleDeterminerFilter} which is registered in
-				 * {@link me.grudzien.patryk.config.filters.registry.FiltersRegistryConfig#registerLocaleDeterminerFilter()}
-				 * to disable Spring Security on some endpoints like: "/auth", "/registration".
-				 * This filter is required to determine "Locale" which is needed to create appropriate messages using:
-				 * {@link me.grudzien.patryk.utils.i18n.LocaleMessagesCreator#buildLocaleMessage(String)} or to take right email template inside:
-				 * {@link me.grudzien.patryk.service.registration.impl.EmailServiceImpl#sendMessageUsingTemplate(me.grudzien.patryk.domain.dto.registration.EmailDto)}.
-				 */
-				break;
-			case CUSTOM:
-				AuthenticationProvider.CUSTOM.setActive(Boolean.TRUE);
-				// JWT filter with custom Authentication Manager
-				httpSecurity.addFilterBefore(new JwtTokenCustomAuthenticationManagerFilter(this.authenticationManagerBean(), propertiesKeeper),
-				                             UsernamePasswordAuthenticationFilter.class);
-
-				// ServletExceptionHandlerFilter (it is first and allows JwtTokenCustomAuthenticationManagerFilter to process).
-				// Catches exceptions thrown by JwtTokenCustomAuthenticationManagerFilter.
-				httpSecurity.addFilterBefore(servletExceptionHandlerFilter, JwtTokenCustomAuthenticationManagerFilter.class);
-				break;
-		}
+        /**
+         * There is also another filter {@link me.grudzien.patryk.config.filters.LocaleDeterminerFilter} which is registered in
+         * {@link me.grudzien.patryk.config.filters.registry.FiltersRegistryConfig#registerLocaleDeterminerFilter()}
+         * to disable Spring Security on some endpoints like:
+         * 1) "/auth"
+         * 2) "/registration"
+         * This filter is required to determine "Locale" which is needed to create appropriate messages using:
+         * {@link me.grudzien.patryk.utils.i18n.LocaleMessagesCreator#buildLocaleMessage(String)} or to take right email template inside:
+         * {@link me.grudzien.patryk.service.registration.impl.EmailServiceImpl#sendMessageUsingTemplate(me.grudzien.patryk.domain.dto.registration.EmailDto)}.
+         */
 	}
 
 	private void configureOAuth2Client(final HttpSecurity httpSecurity, final CacheHelper cacheHelper) throws Exception {
