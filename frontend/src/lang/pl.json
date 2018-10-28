@@ -72,5 +72,9 @@
   "token-window-text": "System zauważył dłuższą nieaktywność, dlatego dbając o bezpieczeństwo Twoich danych, co chcesz zrobić dalej?",
   "token-window-agree-button-text": "Pozostań",
   "token-window-disagree-button-text": "Wyloguj",
-  "loading-dialog-title": "Ładowanie..."
+  "loading-dialog-title": "Ładowanie...",
+  "google-login-button-title": "Logowanie z Google",
+  "google-register-button-title": "Rejestracja z Google",
+  "facebook-login-button-title": "Logowanie z Facebook",
+  "facebook-register-button-title": "Rejestracja z Facebook"
 }

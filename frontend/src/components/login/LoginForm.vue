@@ -96,7 +96,7 @@
                    style="color: white !important;">
               <v-icon left
                       style="color: white !important;">fab fa-google</v-icon>
-              Log in with Google
+              {{ $t('google-login-button-title') }}
             </v-btn>
           </v-flex><!-- Google Button -->
 
@@ -112,7 +112,7 @@
                    style="color: white !important;">
               <v-icon left
                       style="color: white !important;">fab fa-facebook</v-icon>
-              Log in with Facebook
+              {{ $t('facebook-login-button-title') }}
             </v-btn>
           </v-flex><!-- Facebook Button -->
         </v-layout>
