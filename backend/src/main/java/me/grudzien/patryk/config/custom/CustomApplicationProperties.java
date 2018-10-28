@@ -49,7 +49,6 @@ public class CustomApplicationProperties {
 			private String userRegisteredUsingGoogle;
 			private String userAccountAlreadyExists;
 			private String failureTargetUrl;
-			private String exchangeShortLivedToken;
 		}
 
 		@Getter

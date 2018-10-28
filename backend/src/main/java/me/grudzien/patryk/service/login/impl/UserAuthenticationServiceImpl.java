@@ -1,7 +1,21 @@
 package me.grudzien.patryk.service.login.impl;
 
+import com.google.common.base.Preconditions;
 import lombok.extern.log4j.Log4j2;
-
+import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
+import me.grudzien.patryk.domain.dto.login.JwtAuthenticationResponse;
+import me.grudzien.patryk.domain.dto.login.JwtUser;
+import me.grudzien.patryk.exceptions.login.BadCredentialsAuthenticationException;
+import me.grudzien.patryk.exceptions.login.UserDisabledAuthenticationException;
+import me.grudzien.patryk.exceptions.registration.CustomUserValidationException;
+import me.grudzien.patryk.oauth2.authentication.CustomAuthenticationToken;
+import me.grudzien.patryk.service.login.UserAuthenticationService;
+import me.grudzien.patryk.service.security.MyUserDetailsService;
+import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
+import me.grudzien.patryk.utils.jwt.JwtTokenUtil;
+import me.grudzien.patryk.utils.log.LogMarkers;
+import me.grudzien.patryk.utils.validators.ValidatorCreator;
+import me.grudzien.patryk.utils.web.RequestsDecoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.mobile.device.Device;
@@ -13,33 +27,15 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import com.google.common.base.Preconditions;
+import org.springframework.util.StringUtils;
 
 import javax.validation.ConstraintViolation;
-
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
-
-import me.grudzien.patryk.config.security.SecurityConfig;
-import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
-import me.grudzien.patryk.domain.dto.login.JwtAuthenticationResponse;
-import me.grudzien.patryk.domain.dto.login.JwtUser;
-import me.grudzien.patryk.exceptions.login.BadCredentialsAuthenticationException;
-import me.grudzien.patryk.exceptions.login.UserDisabledAuthenticationException;
-import me.grudzien.patryk.exceptions.registration.CustomUserValidationException;
-import me.grudzien.patryk.oauth2.authentication.JwtAuthenticationToken;
-import me.grudzien.patryk.service.login.UserAuthenticationService;
-import me.grudzien.patryk.service.security.MyUserDetailsService;
-import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
-import me.grudzien.patryk.utils.jwt.JwtTokenUtil;
-import me.grudzien.patryk.utils.log.LogMarkers;
-import me.grudzien.patryk.utils.validators.ValidatorCreator;
-import me.grudzien.patryk.utils.web.RequestsDecoder;
 
 @Log4j2
 @Service
@@ -85,7 +81,6 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 			if (authentication.isPresent()) {
 				// Reload password post-security so we can generate the token
 				final Optional<JwtUser> jwtUser = Optional.ofNullable((JwtUser) userDetailsService.loadUserByUsername(email));
-
 				return jwtUser.map(user -> {
 									log.info("Started generating tokens...");
 									return JwtAuthenticationResponse.Builder()
@@ -114,8 +109,6 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 		Objects.requireNonNull(email);
 		Objects.requireNonNull(password);
 
-		Authentication authentication = null;
-
 		try {
 			/*
 			 * (AuthenticationManager) in authenticate() method will use (DaoAuthenticationProvider).
@@ -126,13 +119,10 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 			 * granted authorities if successful).
 			 * It attempts to authenticate the passed (Authentication) object, returning a fully populated "Authentication" object.
 			 */
-
-			if (SecurityConfig.AuthenticationProvider.SPRING.isActive()) {
-				authentication = new UsernamePasswordAuthenticationToken(email, password);
-			} else if (SecurityConfig.AuthenticationProvider.CUSTOM.isActive()) {
-				authentication = new JwtAuthenticationToken(authenticationRequest.getIdToken());
-			}
-			return Optional.ofNullable(authenticationManager.authenticate(authentication));
+            final String idToken = authenticationRequest.getIdToken();
+            return Optional.ofNullable(authenticationManager.authenticate(StringUtils.isEmpty(idToken) ?
+                                                                                  new UsernamePasswordAuthenticationToken(email, password) :
+                                                                                  new CustomAuthenticationToken(idToken)));
 
 		} catch (final DisabledException exception) {
 			log.error(LogMarkers.EXCEPTION_MARKER, "User with {} is disabled! Error message -> {}", email, exception.getMessage());
