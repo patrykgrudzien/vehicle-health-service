@@ -18,12 +18,14 @@ import static io.vavr.API.Case;
 import static io.vavr.API.Match;
 import static io.vavr.API.run;
 import static io.vavr.Predicates.instanceOf;
+
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+
 import static me.grudzien.patryk.domain.dto.responses.CustomResponse.Codes.JWT_TOKEN_EXPIRED;
 import static me.grudzien.patryk.domain.dto.responses.ExceptionResponse.buildBodyMessage;
 import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
 import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 import static me.grudzien.patryk.utils.web.HttpResponseCustomizer.customizeHttpResponse;
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 /**
  * Filters CANNOT be managed by Spring explicitly !!!
