@@ -1,5 +1,6 @@
 package me.grudzien.patryk.service.registration.impl;
 
+import io.vavr.control.Try;
 import lombok.extern.log4j.Log4j2;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +22,6 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
-import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
-import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
-
 import me.grudzien.patryk.domain.dto.registration.EmailDto;
 import me.grudzien.patryk.domain.entities.registration.CustomUser;
 import me.grudzien.patryk.domain.entities.registration.EmailVerificationToken;
@@ -31,6 +29,15 @@ import me.grudzien.patryk.repository.registration.EmailVerificationTokenReposito
 import me.grudzien.patryk.service.registration.EmailService;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesHelper;
+
+import static io.vavr.API.$;
+import static io.vavr.API.Case;
+import static io.vavr.API.Match;
+import static io.vavr.API.run;
+import static io.vavr.Predicates.instanceOf;
+
+import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
+import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 
 @Log4j2
 @Service
@@ -83,7 +90,8 @@ public class EmailServiceImpl implements EmailService {
 		final String htmlTemplate = templateEngine.process("email-template_" + LocaleMessagesHelper.getLocale(), context);
 
 		final MimeMessage message = javaMailSender.createMimeMessage();
-		try {
+
+		Try.run(() -> {
 			// MimeMessageHelper allows to add attachments to the MimeMessage
 			final MimeMessageHelper messageHelper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
 			                                                              StandardCharsets.UTF_8.name());
@@ -93,13 +101,16 @@ public class EmailServiceImpl implements EmailService {
 			messageHelper.setFrom(senderEmailAddress, localeMessagesCreator.buildLocaleMessage("registration-email-personal-from-address"));
 
 			javaMailSender.send(message);
-		} catch (final MessagingException messagingException) {
-			log.error(EXCEPTION_MARKER, "MessagingException thrown inside sendMessageUsingTemplate(), error message -> {}",
-			          messagingException.getMessage());
-		} catch (UnsupportedEncodingException unsupportedEncodingException) {
-			log.error(EXCEPTION_MARKER, "UnsupportedEncodingException thrown inside sendMessageUsingTemplate(), error message -> {}",
-			          unsupportedEncodingException.getMessage());
-		}
+		})
+		   .onSuccess(successVoid -> log.info("An registration e-mail has been successfully sent."))
+		   .onFailure(throwable -> Match(throwable).of(
+		   		Case($(instanceOf(MessagingException.class)),
+			         MessagingException -> run(() -> log.error(EXCEPTION_MARKER, "MessagingException thrown inside sendMessageUsingTemplate(), error message -> {}",
+			                                                   MessagingException.getMessage()))),
+			    Case($(instanceOf(UnsupportedEncodingException.class)),
+			         UnsupportedEncodingException -> run(() -> log.error(EXCEPTION_MARKER, "UnsupportedEncodingException thrown inside sendMessageUsingTemplate(), error message -> {}",
+			                                                             UnsupportedEncodingException.getMessage())))
+		   ));
 	}
 
 	@Override
