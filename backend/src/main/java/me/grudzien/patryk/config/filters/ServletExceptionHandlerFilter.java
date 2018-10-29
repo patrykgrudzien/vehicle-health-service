@@ -1,12 +1,5 @@
 package me.grudzien.patryk.config.filters;
 
-import static io.vavr.API.$;
-import static io.vavr.API.Case;
-import static io.vavr.API.Match;
-import static io.vavr.API.run;
-import static io.vavr.Predicates.instanceOf;
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
-
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
@@ -20,18 +13,24 @@ import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import static io.vavr.API.$;
+import static io.vavr.API.Case;
+import static io.vavr.API.Match;
+import static io.vavr.API.run;
+import static io.vavr.Predicates.instanceOf;
 import static me.grudzien.patryk.domain.dto.responses.CustomResponse.Codes.JWT_TOKEN_EXPIRED;
 import static me.grudzien.patryk.domain.dto.responses.ExceptionResponse.buildBodyMessage;
 import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
 import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 import static me.grudzien.patryk.utils.web.HttpResponseCustomizer.customizeHttpResponse;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 /**
  * Filters CANNOT be managed by Spring explicitly !!!
  * It's NOT ALLOWED to mark them using (@Component) annotation !!!
  * In other case Spring Security does not work properly and does not ignore specified paths.
  * Another filter:
- * {@link JwtTokenSpringAuthenticationManagerFilter}
+ * {@link me.grudzien.patryk.config.filters.GenericJwtTokenFilter}
  *
  * This filter is used in case of unsuccessful JWT operations which are performed in:
  * {@link me.grudzien.patryk.utils.jwt.JwtTokenUtil.Retriever}
