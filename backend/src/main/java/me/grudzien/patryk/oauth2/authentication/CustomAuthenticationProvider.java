@@ -1,15 +1,10 @@
 package me.grudzien.patryk.oauth2.authentication;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.vavr.CheckedFunction1;
 import io.vavr.Function1;
 import io.vavr.control.Try;
 import lombok.extern.log4j.Log4j2;
-import me.grudzien.patryk.domain.dto.login.JwtUser;
-import me.grudzien.patryk.oauth2.service.google.GooglePrincipalService;
-import me.grudzien.patryk.service.security.MyUserDetailsService;
-import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
@@ -22,8 +17,16 @@ import org.springframework.security.jwt.crypto.sign.RsaVerifier;
 import org.springframework.security.oauth2.core.oidc.StandardClaimNames;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.util.Map;
 import java.util.Optional;
+
+import me.grudzien.patryk.domain.dto.login.JwtUser;
+import me.grudzien.patryk.oauth2.service.google.GooglePrincipalService;
+import me.grudzien.patryk.service.security.MyUserDetailsService;
+import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 
 import static me.grudzien.patryk.utils.log.LogMarkers.SECURITY_MARKER;
 
