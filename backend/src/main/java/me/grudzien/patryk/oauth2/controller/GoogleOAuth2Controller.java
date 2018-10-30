@@ -18,6 +18,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationResponse;
 import me.grudzien.patryk.domain.dto.login.JwtUser;
+import me.grudzien.patryk.domain.dto.responses.ExceptionResponse;
+import me.grudzien.patryk.domain.dto.responses.SuccessResponse;
 import me.grudzien.patryk.handlers.web.HttpResponseHandler;
 import me.grudzien.patryk.utils.jwt.JwtTokenUtil;
 
@@ -37,17 +39,16 @@ public class GoogleOAuth2Controller {
 	}
 
 	@GetMapping("/user-not-found")
-	public ResponseEntity<Void> userNotFound() {
-		// TODO: FIX ME
-		return new ResponseEntity<>(HttpStatus.OK);
+	public ResponseEntity<ExceptionResponse> userNotFound() {
+		return new ResponseEntity<>(ExceptionResponse.Builder().message("User not Found!").build(), HttpStatus.NOT_FOUND);
 	}
 
 	@GetMapping("${custom.properties.endpoints.oauth2.user-logged-in-using-google}")
-	public ResponseEntity<Void> userLoggedInUsingGoogle(@RequestParam(SHORT_LIVED_AUTH_TOKEN_NAME) final String token,
-	                                                    final HttpServletResponse httpServletResponse) {
+	public ResponseEntity<SuccessResponse> userLoggedInUsingGoogle(@RequestParam(SHORT_LIVED_AUTH_TOKEN_NAME) final String token,
+	                                                               final HttpServletResponse httpServletResponse) {
 		final Tuple2<String, String> additionalParameters = new Tuple2<>(SHORT_LIVED_AUTH_TOKEN_NAME, token);
 		httpResponseHandler.redirectUserTo(USER_LOGGED_IN_USING_GOOGLE, httpServletResponse, additionalParameters);
-		return new ResponseEntity<>(HttpStatus.OK);
+		return new ResponseEntity<>(SuccessResponse.buildBodyMessage("User has been successfully logged in using Google.") ,HttpStatus.OK);
 	}
 
 	@GetMapping("${custom.properties.endpoints.oauth2.exchange-short-lived-token}")
@@ -61,20 +62,17 @@ public class GoogleOAuth2Controller {
 	}
 
 	@GetMapping("/user-registered-using-google")
-	public ResponseEntity<Void> userRegisteredUsingGoogle() {
-		// TODO: FIX ME
-		return new ResponseEntity<>(HttpStatus.OK);
+	public ResponseEntity<SuccessResponse> userRegisteredUsingGoogle() {
+		return new ResponseEntity<>(SuccessResponse.buildBodyMessage("User has been successfully registered using Google."), HttpStatus.OK);
 	}
 
 	@GetMapping("/user-account-already-exists")
-	public ResponseEntity<Void> userAccountAlreadyExists() {
-		// TODO: FIX ME
-		return new ResponseEntity<>(HttpStatus.OK);
+	public ResponseEntity<ExceptionResponse> userAccountAlreadyExists() {
+		return new ResponseEntity<>(ExceptionResponse.Builder().message("Cannot register user because already exists!").build(), HttpStatus.OK);
 	}
 
 	@GetMapping("${custom.properties.endpoints.oauth2.failure-target-url}")
-	public ResponseEntity<Void> failureTargetUrl() {
-		// TODO: FIX ME
-		return new ResponseEntity<>(HttpStatus.OK);
+	public ResponseEntity<ExceptionResponse> failureTargetUrl() {
+		return new ResponseEntity<>(ExceptionResponse.Builder().message("Unknown error occurred during OAuth2 flow using Google!").build(), HttpStatus.OK);
 	}
 }

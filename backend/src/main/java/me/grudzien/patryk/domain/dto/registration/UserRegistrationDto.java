@@ -48,4 +48,6 @@ public class UserRegistrationDto {
 	@NotNull(message = "confirmed-password-cannot-be-null")
 	@NotEmpty(message = "confirmed-password-cannot-be-empty")
 	private String confirmedPassword;
+
+	private String profilePictureUrl;
 }

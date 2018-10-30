@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.jwt.Jwt;
@@ -19,11 +20,13 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Preconditions;
 
 import java.util.Map;
 import java.util.Optional;
 
 import me.grudzien.patryk.domain.dto.login.JwtUser;
+import me.grudzien.patryk.oauth2.authentication.checkers.AdditionalChecks;
 import me.grudzien.patryk.oauth2.service.google.GooglePrincipalService;
 import me.grudzien.patryk.service.security.MyUserDetailsService;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
@@ -40,11 +43,28 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 	private final LocaleMessagesCreator localeMessagesCreator;
 	private final GooglePrincipalService googlePrincipalService;
 
+	private final UserDetailsChecker customPreAuthenticationChecks;
+	private final UserDetailsChecker customPostAuthenticationChecks;
+	private final AdditionalChecks additionalChecks;
+
 	public CustomAuthenticationProvider(@Qualifier(MyUserDetailsService.BEAN_NAME) final UserDetailsService userDetailsService,
-	                                 final LocaleMessagesCreator localeMessagesCreator, final GooglePrincipalService googlePrincipalService) {
+	                                    final LocaleMessagesCreator localeMessagesCreator, final GooglePrincipalService googlePrincipalService,
+	                                    final UserDetailsChecker customPreAuthenticationChecks,
+	                                    final UserDetailsChecker customPostAuthenticationChecks,
+	                                    final AdditionalChecks additionalChecks) {
+		Preconditions.checkNotNull(userDetailsService, "userDetailsService cannot be null!");
+		Preconditions.checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
+		Preconditions.checkNotNull(googlePrincipalService, "googlePrincipalService cannot be null!");
+		Preconditions.checkNotNull(customPreAuthenticationChecks, "customPreAuthenticationChecks cannot be null!");
+		Preconditions.checkNotNull(customPostAuthenticationChecks, "customPostAuthenticationChecks cannot be null!");
+		Preconditions.checkNotNull(additionalChecks, "additionalChecks cannot be null!");
+
 		this.userDetailsService = userDetailsService;
 		this.localeMessagesCreator = localeMessagesCreator;
 		this.googlePrincipalService = googlePrincipalService;
+		this.customPreAuthenticationChecks = customPreAuthenticationChecks;
+		this.customPostAuthenticationChecks = customPostAuthenticationChecks;
+		this.additionalChecks = additionalChecks;
 	}
 
 	@Override
@@ -68,12 +88,27 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         final String email = Optional.ofNullable(authInfo)
                                      .map(map -> map.getOrDefault(StandardClaimNames.EMAIL, null))
                                      .orElse(null);
+
+        // loading subject attribute (in this case it's password which was used during registration by google)
+		final String jwtSubjectIdentifier = Optional.ofNullable(authInfo)
+		                                            .map(map -> map.get(StandardClaimNames.SUB))
+		                                            .orElseThrow(() -> new RuntimeException("ERROR while obtaining \"(Subject identifier)\"! It should be always present!"));
+
         // loading user from DB
 		final JwtUser jwtUser = Optional.ofNullable((JwtUser) userDetailsService.loadUserByUsername(email))
 		                                .orElseThrow(() -> new UsernameNotFoundException(
 		                                		localeMessagesCreator.buildLocaleMessageWithParam("user-not-found-by-email", email)));
+		// 1. PRE-authentication checks
+		customPreAuthenticationChecks.check(jwtUser);
 
-		return new CustomAuthenticationToken(jwtUser, token, jwtUser.getAuthorities());
+		// 2. POST-authentication checks
+		customPostAuthenticationChecks.check(jwtUser);
+
+		// 3. ADDITIONAL-authentication checks
+		final CustomAuthenticationToken customAuthenticationToken = new CustomAuthenticationToken(jwtUser, token, jwtUser.getAuthorities());
+		additionalChecks.additionalAuthenticationChecks(jwtUser, customAuthenticationToken, jwtSubjectIdentifier);
+
+		return customAuthenticationToken;
 	}
 
     /**
@@ -82,7 +117,8 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
      */
 	@Override
 	public boolean supports(final Class<?> authentication) {
-	    log.info(SECURITY_MARKER, "Checking custom authentication object whether can be authenticated...");
+	    log.info(SECURITY_MARKER, "Can ({}) be authenticated using ({}) -> ({})", CustomAuthenticationToken.class.getSimpleName(),
+	             CustomAuthenticationProvider.class.getSimpleName(), CustomAuthenticationToken.class.isAssignableFrom(authentication));
 		return CustomAuthenticationToken.class.isAssignableFrom(authentication);
 	}
 }

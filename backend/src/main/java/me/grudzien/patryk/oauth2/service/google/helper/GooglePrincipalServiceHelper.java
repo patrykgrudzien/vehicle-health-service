@@ -9,13 +9,13 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
-import static me.grudzien.patryk.oauth2.utils.OAuth2OidcAttributesExtractor.getOAuth2AttributeValue;
-
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
 import me.grudzien.patryk.domain.dto.login.JwtUser;
 import me.grudzien.patryk.domain.dto.registration.UserRegistrationDto;
 import me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser;
 import me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUserFactory;
+
+import static me.grudzien.patryk.oauth2.utils.OAuth2OidcAttributesExtractor.getOAuth2AttributeValue;
 
 @Log4j2
 @Component
@@ -38,6 +38,7 @@ public class GooglePrincipalServiceHelper {
 		                          .confirmedEmail(getAttribute(StandardClaimNames.EMAIL, oAuth2User))
 		                          .password(password)
 		                          .confirmedPassword(password)
+		                          .profilePictureUrl(getAttribute(StandardClaimNames.PICTURE, oAuth2User))
 		                          .build();
 	}
 

@@ -1,10 +1,5 @@
 package me.grudzien.patryk.oauth2.service.google.impl;
 
-import static io.vavr.API.$;
-import static io.vavr.API.Case;
-import static io.vavr.API.Match;
-import static io.vavr.Predicates.is;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
@@ -32,12 +27,6 @@ import java.security.interfaces.RSAPublicKey;
 import java.util.Map;
 import java.util.Optional;
 
-import static me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser.AccountStatus;
-import static me.grudzien.patryk.oauth2.utils.OAuth2FlowDelegator.OAuth2Flow.LOGIN;
-import static me.grudzien.patryk.oauth2.utils.OAuth2FlowDelegator.OAuth2Flow.REGISTRATION;
-import static me.grudzien.patryk.oauth2.utils.OAuth2FlowDelegator.OAuth2Flow.UNKNOWN;
-import static me.grudzien.patryk.utils.log.LogMarkers.OAUTH2_MARKER;
-
 import me.grudzien.patryk.PropertiesKeeper;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
 import me.grudzien.patryk.domain.dto.registration.UserRegistrationDto;
@@ -50,6 +39,17 @@ import me.grudzien.patryk.oauth2.utils.OAuth2FlowDelegator;
 import me.grudzien.patryk.oauth2.utils.rest.CustomRestTemplateFactory;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.web.ContextPathsResolver;
+
+import static io.vavr.API.$;
+import static io.vavr.API.Case;
+import static io.vavr.API.Match;
+import static io.vavr.Predicates.is;
+
+import static me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser.AccountStatus;
+import static me.grudzien.patryk.oauth2.utils.OAuth2FlowDelegator.OAuth2Flow.LOGIN;
+import static me.grudzien.patryk.oauth2.utils.OAuth2FlowDelegator.OAuth2Flow.REGISTRATION;
+import static me.grudzien.patryk.oauth2.utils.OAuth2FlowDelegator.OAuth2Flow.UNKNOWN;
+import static me.grudzien.patryk.utils.log.LogMarkers.OAUTH2_MARKER;
 
 @Log4j2
 @Service

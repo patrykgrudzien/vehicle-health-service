@@ -114,6 +114,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 			                                        .lastName(lastName)
 			                                        .email(email)
 			                                        .password(passwordEncoder.encode(decodedPassword))
+			                                        .profilePictureUrl(userRegistrationDto.getProfilePictureUrl())
 			                                        .roles(Collections.singleton(Role.Builder()
 			                                                                         .roleName(RoleName.ROLE_ADMIN)
 			                                                                         .privileges(Sets.newHashSet(Privilege.Builder()
