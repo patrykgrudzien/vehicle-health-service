@@ -85,7 +85,7 @@ spring:
   profiles: dev-home
   # -----> Hibernate datasource
   datasource:
-    url: jdbc:postgresql://localhost:5432/full-stack-web-app-db
+    url: jdbc:postgresql://localhost:5432/vehicle-health-service-db
     username: postgres
     password: admin
     driver-class-name: org.postgresql.Driver
@@ -131,7 +131,7 @@ spring:
   profiles: dev-office
   # -----> Hibernate datasource
   datasource:
-    url: jdbc:postgresql://localhost:5432/full-stack-web-app-db
+    url: jdbc:postgresql://localhost:5432/vehicle-health-service-db
     username: postgres
     password: password
     driver-class-name: org.postgresql.Driver
@@ -148,6 +148,23 @@ spring:
     hibernate:
       ddl-auto: create-drop
     database-platform: org.hibernate.dialect.PostgreSQL94Dialect
+  # -----> OAuth 2
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 289764469472-jnvmuvelohvieo6bn1362p89qkt6cjrk.apps.googleusercontent.com
+            client-secret: LjrrABzPkzbvUHkqmRm7pNqp
+            client-name: GOOGLE
+          facebook:
+            client-id: 677962172580314
+            client-secret: a9eac62a4cd5d78d49aa6dd87582cf86
+            client-name: FACEBOOK
+        provider:
+          facebook:
+            # Provider's (user-info-uri) specified below, overrides default because Facebook has changed API and this link is provided after Spring Boot 2.0.0
+            user-info-uri: https://graph.facebook.com/me?fields=id,name,email
 
 ---
 
