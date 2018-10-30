@@ -66,6 +66,9 @@ public class CustomUser {
 	@Size(min = 4)
 	private String password;
 
+	@Column(name = "PROFILE_PICTURE_URL")
+	private String profilePictureUrl;
+
 	@Column(name = "ENABLED")
 	@NotNull
 	private boolean isEnabled;

@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.mobile.device.Device;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -28,23 +26,17 @@ import java.util.stream.Collectors;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationResponse;
 import me.grudzien.patryk.domain.dto.login.JwtUser;
-import me.grudzien.patryk.exceptions.login.BadCredentialsAuthenticationException;
-import me.grudzien.patryk.exceptions.login.UserDisabledAuthenticationException;
 import me.grudzien.patryk.exceptions.registration.CustomUserValidationException;
 import me.grudzien.patryk.oauth2.authentication.CustomAuthenticationToken;
+import me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases;
 import me.grudzien.patryk.service.login.UserAuthenticationService;
 import me.grudzien.patryk.service.security.MyUserDetailsService;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.jwt.JwtTokenUtil;
-import me.grudzien.patryk.utils.log.LogMarkers;
 import me.grudzien.patryk.utils.validators.ValidatorCreator;
 import me.grudzien.patryk.utils.web.RequestsDecoder;
 
-import static io.vavr.API.$;
-import static io.vavr.API.Case;
 import static io.vavr.API.Match;
-import static io.vavr.API.run;
-import static io.vavr.Predicates.instanceOf;
 
 import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 
@@ -135,30 +127,13 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 				                                                                           new CustomAuthenticationToken(idToken))))
 		          .onSuccess(Optional::get)
 		          .onFailure(throwable -> Match(throwable).of(
-				          Case($(instanceOf(DisabledException.class)), DisabledException -> run(() -> {
-					          log.error(LogMarkers.EXCEPTION_MARKER, "User with {} is disabled! Error message -> {}", email, DisabledException.getMessage());
-					          /**
-					           * Exception thrown below is determined in:
-					           * {@link org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider#preAuthenticationChecks}
-					           * which points to:
-					           * {@link org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider.DefaultPreAuthenticationChecks#check(
-					           * org.springframework.security.core.userdetails.UserDetails)}
-					           */
-					          throw new UserDisabledAuthenticationException(localeMessagesCreator.buildLocaleMessage("user-disabled-exception"));
-				          })),
-				          Case($(instanceOf(BadCredentialsException.class)), BadCredentialsException -> run(() -> {
-					          log.error(LogMarkers.EXCEPTION_MARKER, "E-mail address or password is not correct! Error message -> {}", BadCredentialsException.getMessage());
-					          /**
-					           * Exception thrown below is determined in:
-					           * {@link org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider#authenticate(org.springframework.security.core.Authentication)}
-					           * which tries to retrieve user using:
-					           * {@link me.grudzien.patryk.service.security.MyUserDetailsService}
-					           */
-					          throw new BadCredentialsAuthenticationException(localeMessagesCreator.buildLocaleMessage("bad-credentials-exception"));
-				          })),
-				          Case($(instanceOf(UsernameNotFoundException.class)), UsernameNotFoundException -> run(() -> {
-					          throw new UsernameNotFoundException(localeMessagesCreator.buildLocaleMessageWithParam("user-not-found-by-email", email));
-				          }))
+		          		FailedAuthenticationCases.UserDisabledExceptionCase(email, localeMessagesCreator),
+				        FailedAuthenticationCases.BadCredentialsExceptionCase(localeMessagesCreator),
+				        FailedAuthenticationCases.UserAccountIsLockedExceptionCase(localeMessagesCreator),
+				        FailedAuthenticationCases.UserAccountIsExpiredExceptionCase(localeMessagesCreator),
+				        FailedAuthenticationCases.CredentialsExpiredExceptionCase(localeMessagesCreator),
+				        FailedAuthenticationCases.JwtTokenNotFoundExceptionCase(localeMessagesCreator),
+				        FailedAuthenticationCases.UsernameNotFoundExceptionCase(email, localeMessagesCreator)
 		          ))
 		          .getOrElse(Optional.empty());
 	}

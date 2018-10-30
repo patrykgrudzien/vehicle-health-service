@@ -3,6 +3,9 @@ package me.grudzien.patryk.handlers.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AccountExpiredException;
+import org.springframework.security.authentication.CredentialsExpiredException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -16,6 +19,7 @@ import me.grudzien.patryk.exceptions.registration.TokenExpiredException;
 import me.grudzien.patryk.exceptions.registration.TokenNotFoundException;
 import me.grudzien.patryk.exceptions.registration.UserAlreadyExistsException;
 import me.grudzien.patryk.exceptions.vehicle.VehicleNotFoundException;
+import me.grudzien.patryk.oauth2.exceptions.JwtTokenNotFoundException;
 import me.grudzien.patryk.oauth2.exceptions.UnknownOAuth2FlowException;
 
 /**
@@ -67,7 +71,27 @@ public class ExceptionHandlingController {
 
 	@ExceptionHandler(BadCredentialsAuthenticationException.class)
 	public ResponseEntity<ExceptionResponse> badCredentials(final BadCredentialsAuthenticationException exception) {
+		return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler(LockedException.class)
+	public ResponseEntity<ExceptionResponse> userAccountIsLocked(final LockedException exception) {
 		return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), HttpStatus.NOT_FOUND);
+	}
+
+	@ExceptionHandler(AccountExpiredException.class)
+	public ResponseEntity<ExceptionResponse> userAccountIsExpired(final AccountExpiredException exception) {
+		return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), HttpStatus.NOT_FOUND);
+	}
+
+	@ExceptionHandler(CredentialsExpiredException.class)
+	public ResponseEntity<ExceptionResponse> userAccountIsExpired(final CredentialsExpiredException exception) {
+		return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), HttpStatus.NOT_FOUND);
+	}
+
+	@ExceptionHandler(JwtTokenNotFoundException.class)
+	public ResponseEntity<ExceptionResponse> userAccountIsExpired(final JwtTokenNotFoundException exception) {
+		return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(VehicleNotFoundException.class)

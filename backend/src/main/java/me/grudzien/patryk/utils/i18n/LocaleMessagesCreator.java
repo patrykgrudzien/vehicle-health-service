@@ -1,5 +1,6 @@
 package me.grudzien.patryk.utils.i18n;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
@@ -17,7 +18,7 @@ public class LocaleMessagesCreator {
 
 	private static final String DEFAULT_MESSAGE = "NO MESSAGE FOUND IN PROPERTIES FILE";
 
-	@Setter
+	@Setter(AccessLevel.PRIVATE)
 	@Getter
 	private String createdMessage;
 
