@@ -24,6 +24,7 @@ import me.grudzien.patryk.domain.entities.vehicle.Vehicle;
 import me.grudzien.patryk.domain.enums.SpringAppProfiles;
 import me.grudzien.patryk.domain.enums.engine.EngineType;
 import me.grudzien.patryk.domain.enums.registration.PrivilegeName;
+import me.grudzien.patryk.domain.enums.registration.RegistrationProvider;
 import me.grudzien.patryk.domain.enums.registration.RoleName;
 import me.grudzien.patryk.domain.enums.vehicle.VehicleType;
 import me.grudzien.patryk.repository.registration.CustomUserRepository;
@@ -67,6 +68,8 @@ public class TestUserInitializer implements CommandLineRunner {
 			                                      .lastName("Root")
 			                                      .email("admin.root@gmail.com")
 			                                      .password(passwordEncoder.encode("admin"))
+                                                  .profilePictureUrl("www.my-profile-photo.fakeUrl.com")
+                                                  .registrationProvider(RegistrationProvider.CUSTOM)
 			                                      .roles(Collections.singleton(Role.Builder()
 			                                                                       .roleName(RoleName.ROLE_ADMIN)
 			                                                                       .privileges(Sets.newHashSet(Privilege.Builder()
