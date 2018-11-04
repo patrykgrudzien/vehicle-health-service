@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.List;
 
+import me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser.AccountStatus;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,30 +19,44 @@ public class ExceptionResponse extends CustomResponse {
 
 	private List<String> errors;
 
-	@Builder(builderMethodName = "Builder")
-	public ExceptionResponse(final String message, final String code, final String lastRequestedPath, final String lastRequestMethod, final List<String> errors) {
-		super(message, code, lastRequestedPath, lastRequestMethod);
+	@Builder(builderMethodName = "FullBuilder")
+	public ExceptionResponse(final String message, final SecurityStatus securityStatus, final AccountStatus accountStatus, final String lastRequestedPath,
+                             final String lastRequestMethod, final List<String> errors) {
+		super(message, securityStatus, accountStatus, lastRequestedPath, lastRequestMethod);
 		this.errors = errors;
 	}
 
 	public static <T extends RuntimeException> ExceptionResponse buildBodyMessage(final T exception) {
-		return ExceptionResponse.Builder()
+		return ExceptionResponse.FullBuilder()
 		                        .message(exception.getMessage())
 		                        .build();
 	}
 
-	public static <T extends RuntimeException> ExceptionResponse buildBodyMessage(final T exception, final CustomResponse.Codes code) {
-		return ExceptionResponse.Builder()
+	public static <T extends RuntimeException> ExceptionResponse buildBodyMessage(final T exception, final SecurityStatus securityStatus) {
+		return ExceptionResponse.FullBuilder()
 		                        .message(exception.getMessage())
-		                        .code(code.getCodeMessage())
+		                        .securityStatus(securityStatus)
 		                        .build();
 	}
 
-	public static <T extends RuntimeException> ExceptionResponse buildBodyMessage(final T exception, final CustomResponse.Codes code,
+    public static <T extends RuntimeException> ExceptionResponse buildBodyMessage(final AccountStatus accountStatus) {
+        return ExceptionResponse.FullBuilder()
+                                .accountStatus(accountStatus)
+                                .build();
+    }
+
+    public static <T extends RuntimeException> ExceptionResponse buildBodyMessage(final T exception, final AccountStatus accountStatus) {
+        return ExceptionResponse.FullBuilder()
+                                .message(exception.getMessage())
+                                .accountStatus(accountStatus)
+                                .build();
+    }
+
+	public static <T extends RuntimeException> ExceptionResponse buildBodyMessage(final T exception, final SecurityStatus securityStatus,
 	                                                                              final String lastRequestedPath, final String lastRequestMethod) {
-		return ExceptionResponse.Builder()
+		return ExceptionResponse.FullBuilder()
 		                        .message(exception.getMessage())
-		                        .code(code.getCodeMessage())
+		                        .securityStatus(securityStatus)
 		                        .lastRequestedPath(lastRequestedPath)
 		                        .lastRequestMethod(lastRequestMethod)
 		                        .build();
