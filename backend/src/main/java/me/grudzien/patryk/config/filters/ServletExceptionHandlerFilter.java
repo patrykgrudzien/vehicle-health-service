@@ -7,25 +7,22 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import io.vavr.control.Try;
 import lombok.extern.log4j.Log4j2;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static io.vavr.API.$;
-import static io.vavr.API.Case;
-import static io.vavr.API.Match;
-import static io.vavr.API.run;
+import me.grudzien.patryk.domain.dto.responses.CustomResponse.SecurityStatus;
+import me.grudzien.patryk.domain.dto.responses.ExceptionResponse;
+import me.grudzien.patryk.utils.web.HttpResponseCustomizer;
+
+import static io.vavr.API.*;
 import static io.vavr.Predicates.instanceOf;
 
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
-
-import static me.grudzien.patryk.domain.dto.responses.CustomResponse.Codes.JWT_TOKEN_EXPIRED;
-import static me.grudzien.patryk.domain.dto.responses.ExceptionResponse.buildBodyMessage;
 import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
 import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
-import static me.grudzien.patryk.utils.web.HttpResponseCustomizer.customizeHttpResponse;
 
 /**
  * Filters CANNOT be managed by Spring explicitly !!!
@@ -52,7 +49,9 @@ public class ServletExceptionHandlerFilter extends OncePerRequestFilter {
 		   .onFailure(throwable -> Match(throwable).of(
 		   		Case($(instanceOf(ExpiredJwtException.class)), ExpiredJwtException -> run(() -> {
 				    log.error(EXCEPTION_MARKER, "The JWT token is expired and not valid anymore, message -> {}", ExpiredJwtException.getMessage());
-				    customizeHttpResponse(response, UNAUTHORIZED, buildBodyMessage(ExpiredJwtException, JWT_TOKEN_EXPIRED, request.getRequestURI(), request.getMethod()));
+                    HttpResponseCustomizer.customizeHttpResponse(response, HttpStatus.UNAUTHORIZED,
+                                                                 ExceptionResponse.buildBodyMessage(ExpiredJwtException, SecurityStatus.JWT_TOKEN_EXPIRED,
+                                                                                                    request.getRequestURI(), request.getMethod()));
 			    })),
 			    Case($(instanceOf(IllegalArgumentException.class)), IllegalArgumentException -> run(() ->
 					log.error(EXCEPTION_MARKER, "An error occurred during getting email from token, message -> {}", IllegalArgumentException.getMessage()))),
