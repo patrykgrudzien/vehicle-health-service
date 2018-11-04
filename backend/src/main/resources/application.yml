@@ -31,7 +31,14 @@ custom:
         short-lived-millis: 120000 # 2 minutes
         user-logged-in-using-google: /user-logged-in-using-google
         user-not-found: /user-not-found
+        user-account-is-locked: /user-account-is-locked
+        user-is-disabled: /user-is-disabled
+        user-account-is-expired: /user-account-is-expired
         user-account-already-exists: /user-account-already-exists
+        credentials-have-expired: /credentials-have-expired
+        jwt-token-not-found: /jwt-token-not-found
+        registration-provider-mismatch: /registration-provider-mismatch
+        bad-credentials: /bad-credentials
         user-registered-using-google: /user-registered-using-google
         exchange-short-lived-token: /exchange-short-lived-token
         failure-target-url: /failure-target-url

@@ -46,8 +46,15 @@ public class CustomApplicationProperties {
 			private Long shortLivedMillis;
 			private String userLoggedInUsingGoogle;
 			private String userNotFound;
-			private String userRegisteredUsingGoogle;
-			private String userAccountAlreadyExists;
+			private String userAccountIsLocked;
+			private String userIsDisabled;
+			private String userAccountIsExpired;
+            private String userAccountAlreadyExists;
+            private String credentialsHaveExpired;
+            private String jwtTokenNotFound;
+            private String registrationProviderMismatch;
+            private String badCredentials;
+            private String userRegisteredUsingGoogle;
 			private String failureTargetUrl;
 		}
 

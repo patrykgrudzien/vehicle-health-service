@@ -46,8 +46,15 @@ public final class PropertiesKeeper {
 		public Long SHORT_LIVED_MILLIS = customApplicationProperties.getEndpoints().getOAuth2().getShortLivedMillis();
 		public String USER_LOGGED_IN_USING_GOOGLE = customApplicationProperties.getEndpoints().getOAuth2().getUserLoggedInUsingGoogle();
 		public String USER_NOT_FOUND = customApplicationProperties.getEndpoints().getOAuth2().getUserNotFound();
-		public String USER_REGISTERED_USING_GOOGLE = customApplicationProperties.getEndpoints().getOAuth2().getUserRegisteredUsingGoogle();
-		public String USER_ACCOUNT_ALREADY_EXISTS = customApplicationProperties.getEndpoints().getOAuth2().getUserAccountAlreadyExists();
+		public String USER_ACCOUNT_IS_LOCKED = customApplicationProperties.getEndpoints().getOAuth2().getUserAccountIsLocked();
+		public String USER_IS_DISABLED = customApplicationProperties.getEndpoints().getOAuth2().getUserIsDisabled();
+		public String USER_ACCOUNT_IS_EXPIRED = customApplicationProperties.getEndpoints().getOAuth2().getUserAccountIsExpired();
+        public String USER_ACCOUNT_ALREADY_EXISTS = customApplicationProperties.getEndpoints().getOAuth2().getUserAccountAlreadyExists();
+        public String CREDENTIALS_HAVE_EXPIRED = customApplicationProperties.getEndpoints().getOAuth2().getCredentialsHaveExpired();
+        public String JWT_TOKEN_NOT_FOUND = customApplicationProperties.getEndpoints().getOAuth2().getJwtTokenNotFound();
+        public String REGISTRATION_PROVIDER_MISMATCH = customApplicationProperties.getEndpoints().getOAuth2().getRegistrationProviderMismatch();
+        public String BAD_CREDENTIALS = customApplicationProperties.getEndpoints().getOAuth2().getBadCredentials();
+        public String USER_REGISTERED_USING_GOOGLE = customApplicationProperties.getEndpoints().getOAuth2().getUserRegisteredUsingGoogle();
 		public String FAILURE_TARGET_URL = customApplicationProperties.getEndpoints().getOAuth2().getFailureTargetUrl();
 	}
 
