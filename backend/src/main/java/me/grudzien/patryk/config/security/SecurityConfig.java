@@ -1,19 +1,7 @@
 package me.grudzien.patryk.config.security;
 
-import com.google.common.base.Preconditions;
 import lombok.extern.log4j.Log4j2;
-import me.grudzien.patryk.PropertiesKeeper;
-import me.grudzien.patryk.config.filters.GenericJwtTokenFilter;
-import me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter;
-import me.grudzien.patryk.oauth2.authentication.CustomAuthenticationProvider;
-import me.grudzien.patryk.oauth2.handlers.CustomOAuth2AuthenticationFailureHandler;
-import me.grudzien.patryk.oauth2.handlers.CustomOAuth2AuthenticationSuccessHandler;
-import me.grudzien.patryk.oauth2.repository.CacheBasedOAuth2AuthorizationRequestRepository;
-import me.grudzien.patryk.oauth2.service.CustomOAuth2UserService;
-import me.grudzien.patryk.oauth2.service.CustomOidcUserService;
-import me.grudzien.patryk.oauth2.utils.CacheHelper;
-import me.grudzien.patryk.service.security.MyUserDetailsService;
-import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -32,6 +20,21 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
+
+import com.google.common.base.Preconditions;
+
+import me.grudzien.patryk.PropertiesKeeper;
+import me.grudzien.patryk.config.filters.GenericJwtTokenFilter;
+import me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter;
+import me.grudzien.patryk.oauth2.authentication.CustomAuthenticationProvider;
+import me.grudzien.patryk.oauth2.handlers.CustomOAuth2AuthenticationFailureHandler;
+import me.grudzien.patryk.oauth2.handlers.CustomOAuth2AuthenticationSuccessHandler;
+import me.grudzien.patryk.oauth2.repository.CacheBasedOAuth2AuthorizationRequestRepository;
+import me.grudzien.patryk.oauth2.service.CustomOAuth2UserService;
+import me.grudzien.patryk.oauth2.service.CustomOidcUserService;
+import me.grudzien.patryk.oauth2.utils.CacheHelper;
+import me.grudzien.patryk.service.security.MyUserDetailsService;
+import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 
 import static me.grudzien.patryk.PropertiesKeeper.FrontendRoutes;
 import static me.grudzien.patryk.PropertiesKeeper.StaticResources;
@@ -253,6 +256,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.mvcMatchers(propertiesKeeper.oAuth2().USER_LOGGED_IN_USING_GOOGLE + "**").permitAll()
 				// /user-not-found
 				.mvcMatchers(propertiesKeeper.oAuth2().USER_NOT_FOUND + "**").permitAll()
+                // TODO: extract all patterns to external class
+                // /user-is-disabled
+				.mvcMatchers(propertiesKeeper.oAuth2().USER_IS_DISABLED + "**").permitAll()
 				// /user-registered-using-google
 				.mvcMatchers(propertiesKeeper.oAuth2().USER_REGISTERED_USING_GOOGLE + "**").permitAll()
 				// /user-account-already-exists
