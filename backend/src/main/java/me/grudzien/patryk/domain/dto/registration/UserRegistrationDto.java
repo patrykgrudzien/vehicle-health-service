@@ -9,6 +9,7 @@ import lombok.Setter;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
+import me.grudzien.patryk.domain.enums.registration.RegistrationProvider;
 import me.grudzien.patryk.validators.registration.FieldMatcher;
 import me.grudzien.patryk.validators.registration.ValidEmail;
 
@@ -50,4 +51,5 @@ public class UserRegistrationDto {
 	private String confirmedPassword;
 
 	private String profilePictureUrl;
+	private RegistrationProvider registrationProvider;
 }
