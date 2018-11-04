@@ -46,7 +46,7 @@ public class MyUserDetailsService implements UserDetailsService {
 	 * @return {@link me.grudzien.patryk.domain.entities.registration.CustomUser} entity, null otherwise.
 	 */
 	@Override
-	@Cacheable(key = "#email", condition = "#email != null && !#email.equals(\"\")")
+	@Cacheable(key = "#email", condition = "#email != null && !#email.equals(\"\")", unless = "#result == null")
 	public UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException {
 		log.info(METHOD_INVOCATION_MARKER, "(NO CACHE FOUND) => method execution...");
 		return Optional.ofNullable(customUserRepository.findByEmail(email))
