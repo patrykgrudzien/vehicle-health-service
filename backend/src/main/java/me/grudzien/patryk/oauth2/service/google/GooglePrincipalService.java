@@ -13,9 +13,8 @@ import me.grudzien.patryk.oauth2.utils.OAuth2FlowDelegator;
 
 public interface GooglePrincipalService {
 
-	CustomOAuth2OidcPrincipalUser finishOAuthFlowAndPreparePrincipal(final OAuth2FlowDelegator.OAuth2Flow oAuth2Flow, final OAuth2User oAuth2User,
-	                                                                 final ClientRegistration clientRegistration);
+	CustomOAuth2OidcPrincipalUser prepareGooglePrincipal(final OAuth2FlowDelegator.OAuth2Flow oAuth2Flow, final OAuth2User oAuth2User,
+                                                         final ClientRegistration clientRegistration);
 
-	// TODO: think about exposing this method in the interface
 	RsaVerifier rsaVerifier(final String keyIdentifier) throws MalformedURLException, JwkException;
 }
