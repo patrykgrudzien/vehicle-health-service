@@ -12,6 +12,7 @@ import java.util.Map;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
 import me.grudzien.patryk.domain.dto.login.JwtUser;
 import me.grudzien.patryk.domain.dto.registration.UserRegistrationDto;
+import me.grudzien.patryk.domain.enums.registration.RegistrationProvider;
 import me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser;
 import me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUserFactory;
 
@@ -39,6 +40,7 @@ public class GooglePrincipalServiceHelper {
 		                          .password(password)
 		                          .confirmedPassword(password)
 		                          .profilePictureUrl(getAttribute(StandardClaimNames.PICTURE, oAuth2User))
+                                  .registrationProvider(RegistrationProvider.GOOGLE)
 		                          .build();
 	}
 
@@ -49,7 +51,7 @@ public class GooglePrincipalServiceHelper {
 		                                                          .lastname(getAttribute(StandardClaimNames.FAMILY_NAME, oAuth2User))
 		                                                          .email(getAttribute(StandardClaimNames.EMAIL, oAuth2User))
 		                                                          .password(password)
-		                                                          .photoUrl(getAttribute(StandardClaimNames.PICTURE, oAuth2User))
+		                                                          .profilePictureUrl(getAttribute(StandardClaimNames.PICTURE, oAuth2User))
 		                                                          .build(),
 		                                                   accountStatus);
 	}
