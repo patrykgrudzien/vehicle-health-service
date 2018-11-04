@@ -31,7 +31,7 @@ public class FacebookPrincipalServiceImpl implements FacebookPrincipalService {
 	}
 
 	@Override
-	public CustomOAuth2OidcPrincipalUser finishOAuthFlowAndPreparePrincipal(final OAuth2FlowDelegator.OAuth2Flow oAuth2Flow, final OAuth2User oAuth2User) {
+	public CustomOAuth2OidcPrincipalUser prepareFacebookPrincipal(final OAuth2FlowDelegator.OAuth2Flow oAuth2Flow, final OAuth2User oAuth2User) {
 		return null;
 	}
 }
