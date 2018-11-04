@@ -20,7 +20,10 @@ import me.grudzien.patryk.exceptions.registration.TokenNotFoundException;
 import me.grudzien.patryk.exceptions.registration.UserAlreadyExistsException;
 import me.grudzien.patryk.exceptions.vehicle.VehicleNotFoundException;
 import me.grudzien.patryk.oauth2.exceptions.JwtTokenNotFoundException;
+import me.grudzien.patryk.oauth2.exceptions.RegistrationProviderMismatchException;
 import me.grudzien.patryk.oauth2.exceptions.UnknownOAuth2FlowException;
+
+import static me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser.AccountStatus;
 
 /**
  * The @ControllerAdvice annotation is a component annotation allowing implementation classes to be auto-detected
@@ -34,13 +37,48 @@ public class ExceptionHandlingController {
 
 	@ExceptionHandler(UsernameNotFoundException.class)
 	public ResponseEntity<ExceptionResponse> userNotFoundForEmail(final UsernameNotFoundException exception) {
-		return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception, AccountStatus.NOT_FOUND), HttpStatus.NOT_FOUND);
 	}
+
+    @ExceptionHandler(LockedException.class)
+    public ResponseEntity<ExceptionResponse> userAccountIsLocked(final LockedException exception) {
+        return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception, AccountStatus.USER_ACCOUNT_IS_LOCKED), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UserDisabledAuthenticationException.class)
+    public ResponseEntity<ExceptionResponse> userIsDisabled(final UserDisabledAuthenticationException exception) {
+        return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception, AccountStatus.USER_IS_DISABLED), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AccountExpiredException.class)
+    public ResponseEntity<ExceptionResponse> userAccountIsExpired(final AccountExpiredException exception) {
+        return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception, AccountStatus.USER_ACCOUNT_IS_EXPIRED), HttpStatus.BAD_REQUEST);
+    }
 
 	@ExceptionHandler(UserAlreadyExistsException.class)
 	public ResponseEntity<ExceptionResponse> userAlreadyExists(final UserAlreadyExistsException exception) {
-		return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception, AccountStatus.ALREADY_EXISTS), HttpStatus.BAD_REQUEST);
 	}
+
+    @ExceptionHandler(CredentialsExpiredException.class)
+    public ResponseEntity<ExceptionResponse> credentialsHaveExpired(final CredentialsExpiredException exception) {
+        return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception, AccountStatus.CREDENTIALS_HAVE_EXPIRED), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(JwtTokenNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> jwtTokenNotFound(final JwtTokenNotFoundException exception) {
+        return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception, AccountStatus.JWT_TOKEN_NOT_FOUND), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(RegistrationProviderMismatchException.class)
+    public ResponseEntity<ExceptionResponse> registrationProviderMismatch(final RegistrationProviderMismatchException exception) {
+        return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception, AccountStatus.REGISTRATION_PROVIDER_MISMATCH), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(BadCredentialsAuthenticationException.class)
+    public ResponseEntity<ExceptionResponse> badCredentials(final BadCredentialsAuthenticationException exception) {
+        return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception, AccountStatus.BAD_CREDENTIALS), HttpStatus.BAD_REQUEST);
+    }
 
 	@ExceptionHandler(CustomUserValidationException.class)
 	public ResponseEntity<ExceptionResponse> customUserFieldsValidationException(final CustomUserValidationException exception) {
@@ -61,36 +99,6 @@ public class ExceptionHandlingController {
 
 	@ExceptionHandler(RedirectionException.class)
 	public ResponseEntity<ExceptionResponse> cannotRedirectUser(final RedirectionException exception) {
-		return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), HttpStatus.BAD_REQUEST);
-	}
-
-	@ExceptionHandler(UserDisabledAuthenticationException.class)
-	public ResponseEntity<ExceptionResponse> userIsDisabled(final UserDisabledAuthenticationException exception) {
-		return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), HttpStatus.NOT_FOUND);
-	}
-
-	@ExceptionHandler(BadCredentialsAuthenticationException.class)
-	public ResponseEntity<ExceptionResponse> badCredentials(final BadCredentialsAuthenticationException exception) {
-		return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), HttpStatus.BAD_REQUEST);
-	}
-
-	@ExceptionHandler(LockedException.class)
-	public ResponseEntity<ExceptionResponse> userAccountIsLocked(final LockedException exception) {
-		return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), HttpStatus.NOT_FOUND);
-	}
-
-	@ExceptionHandler(AccountExpiredException.class)
-	public ResponseEntity<ExceptionResponse> userAccountIsExpired(final AccountExpiredException exception) {
-		return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), HttpStatus.NOT_FOUND);
-	}
-
-	@ExceptionHandler(CredentialsExpiredException.class)
-	public ResponseEntity<ExceptionResponse> userAccountIsExpired(final CredentialsExpiredException exception) {
-		return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), HttpStatus.NOT_FOUND);
-	}
-
-	@ExceptionHandler(JwtTokenNotFoundException.class)
-	public ResponseEntity<ExceptionResponse> userAccountIsExpired(final JwtTokenNotFoundException exception) {
 		return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), HttpStatus.BAD_REQUEST);
 	}
 
