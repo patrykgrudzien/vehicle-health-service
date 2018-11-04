@@ -21,6 +21,7 @@ import me.grudzien.patryk.domain.dto.login.JwtUser;
 import me.grudzien.patryk.domain.dto.responses.ExceptionResponse;
 import me.grudzien.patryk.domain.dto.responses.SuccessResponse;
 import me.grudzien.patryk.handlers.web.HttpResponseHandler;
+import me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser.AccountStatus;
 import me.grudzien.patryk.utils.jwt.JwtTokenUtil;
 
 import static me.grudzien.patryk.domain.enums.AppFLow.USER_LOGGED_IN_USING_GOOGLE;
@@ -38,17 +39,57 @@ public class GoogleOAuth2Controller {
 		this.httpResponseHandler = httpResponseHandler;
 	}
 
-	@GetMapping("/user-not-found")
+	@GetMapping("${custom.properties.endpoints.oauth2.user-not-found}")
 	public ResponseEntity<ExceptionResponse> userNotFound() {
-		return new ResponseEntity<>(ExceptionResponse.Builder().message("User not Found!").build(), HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(AccountStatus.NOT_FOUND), HttpStatus.NOT_FOUND);
 	}
+
+    @GetMapping("${custom.properties.endpoints.oauth2.user-account-is-locked}")
+    public ResponseEntity<ExceptionResponse> userAccountIsLocked() {
+        return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(AccountStatus.USER_ACCOUNT_IS_LOCKED), HttpStatus.FORBIDDEN);
+    }
+
+    @GetMapping("${custom.properties.endpoints.oauth2.user-is-disabled}")
+    public ResponseEntity<ExceptionResponse> userIsDisabled() {
+        return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(AccountStatus.USER_IS_DISABLED), HttpStatus.FORBIDDEN);
+    }
+
+    @GetMapping("${custom.properties.endpoints.oauth2.user-account-is-expired}")
+    public ResponseEntity<ExceptionResponse> userAccountIsExpired() {
+        return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(AccountStatus.USER_ACCOUNT_IS_EXPIRED), HttpStatus.FORBIDDEN);
+    }
+
+    @GetMapping("${custom.properties.endpoints.oauth2.user-account-already-exists}")
+    public ResponseEntity<ExceptionResponse> userAccountAlreadyExists() {
+        return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(AccountStatus.ALREADY_EXISTS), HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping("${custom.properties.endpoints.oauth2.credentials-have-expired}")
+    public ResponseEntity<ExceptionResponse> credentialsHaveExpired() {
+        return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(AccountStatus.CREDENTIALS_HAVE_EXPIRED), HttpStatus.FORBIDDEN);
+    }
+
+    @GetMapping("${custom.properties.endpoints.oauth2.jwt-token-not-found}")
+    public ResponseEntity<ExceptionResponse> jwtTokenNotFound() {
+        return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(AccountStatus.JWT_TOKEN_NOT_FOUND), HttpStatus.FORBIDDEN);
+    }
+
+    @GetMapping("${custom.properties.endpoints.oauth2.registration-provider-mismatch}")
+    public ResponseEntity<ExceptionResponse> registrationProviderMismatch() {
+        return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(AccountStatus.REGISTRATION_PROVIDER_MISMATCH), HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping("${custom.properties.endpoints.oauth2.bad-credentials}")
+    public ResponseEntity<ExceptionResponse> badCredentials() {
+        return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(AccountStatus.BAD_CREDENTIALS), HttpStatus.BAD_REQUEST);
+    }
 
 	@GetMapping("${custom.properties.endpoints.oauth2.user-logged-in-using-google}")
 	public ResponseEntity<SuccessResponse> userLoggedInUsingGoogle(@RequestParam(SHORT_LIVED_AUTH_TOKEN_NAME) final String token,
 	                                                               final HttpServletResponse httpServletResponse) {
-		final Tuple2<String, String> additionalParameters = new Tuple2<>(SHORT_LIVED_AUTH_TOKEN_NAME, token);
+	    final Tuple2<String, String> additionalParameters = new Tuple2<>(SHORT_LIVED_AUTH_TOKEN_NAME, token);
 		httpResponseHandler.redirectUserTo(USER_LOGGED_IN_USING_GOOGLE, httpServletResponse, additionalParameters);
-		return new ResponseEntity<>(SuccessResponse.buildBodyMessage("User has been successfully logged in using Google.") ,HttpStatus.OK);
+		return new ResponseEntity<>(SuccessResponse.buildBodyMessage(AccountStatus.LOGGED) , HttpStatus.OK);
 	}
 
 	@GetMapping("${custom.properties.endpoints.oauth2.exchange-short-lived-token}")
@@ -61,18 +102,14 @@ public class GoogleOAuth2Controller {
 		                                                  .build());
 	}
 
-	@GetMapping("/user-registered-using-google")
+	@GetMapping("${custom.properties.endpoints.oauth2.user-registered-using-google}")
 	public ResponseEntity<SuccessResponse> userRegisteredUsingGoogle() {
-		return new ResponseEntity<>(SuccessResponse.buildBodyMessage("User has been successfully registered using Google."), HttpStatus.OK);
-	}
-
-	@GetMapping("/user-account-already-exists")
-	public ResponseEntity<ExceptionResponse> userAccountAlreadyExists() {
-		return new ResponseEntity<>(ExceptionResponse.Builder().message("Cannot register user because already exists!").build(), HttpStatus.OK);
+		return new ResponseEntity<>(SuccessResponse.buildBodyMessage(AccountStatus.REGISTERED), HttpStatus.OK);
 	}
 
 	@GetMapping("${custom.properties.endpoints.oauth2.failure-target-url}")
 	public ResponseEntity<ExceptionResponse> failureTargetUrl() {
-		return new ResponseEntity<>(ExceptionResponse.Builder().message("Unknown error occurred during OAuth2 flow using Google!").build(), HttpStatus.OK);
+		return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(AccountStatus.OAUTH2_FLOW_ERROR),
+                                    HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 }
