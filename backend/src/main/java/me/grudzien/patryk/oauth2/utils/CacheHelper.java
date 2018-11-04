@@ -44,6 +44,14 @@ public class CacheHelper {
 		                   .orElseGet(orElseGet);
 	}
 
+    public void clearCacheByName(final String cacheName) {
+	    Optional.ofNullable(cacheManager.getCache(cacheName))
+                .ifPresent(cache -> {
+                    cache.clear();
+                    log.info(OAUTH2_MARKER, "Cache ({}) evicted.", cacheName);
+                });
+    }
+
 	public void evictCacheByNameAndKey(final String cacheName, final String cacheKey) {
 		Optional.ofNullable(cacheManager.getCache(cacheName))
 		        .ifPresent(cache -> {
