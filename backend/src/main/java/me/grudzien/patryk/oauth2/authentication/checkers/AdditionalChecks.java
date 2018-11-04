@@ -3,7 +3,7 @@ package me.grudzien.patryk.oauth2.authentication.checkers;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 
-public interface AdditionalChecks {
+public interface AdditionalChecks<User extends UserDetails> {
 
-	void additionalAuthenticationChecks(UserDetails userDetails, Authentication authentication, String jwtSubjectIdentifier);
+	void additionalAuthenticationChecks(User user, Authentication authentication, String jwtSubjectIdentifier);
 }
