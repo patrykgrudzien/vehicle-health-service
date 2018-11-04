@@ -43,7 +43,7 @@ public class LoggingAspect {
 	@Before("me.grudzien.patryk.aop.pointcuts.LoggingAspectPointcuts.executionMethodsAnnotatedByCacheableAnnotation() || "
 	        + "me.grudzien.patryk.aop.pointcuts.LoggingAspectPointcuts.executionMethodsAnnotatedByCachePutAnnotation() || "
 	        + "me.grudzien.patryk.aop.pointcuts.LoggingAspectPointcuts.executionMethodsAnnotatedByCacheEvictAnnotation()")
-	public void beforeMethodsAnnotatedWithCacheAnnotations() {
-		log.info(ASPECT_MARKER, "=====> Checking cache...");
+	public void beforeMethodsAnnotatedWithCacheAnnotations(final JoinPoint joinPoint) {
+		log.info(ASPECT_MARKER, "=====> Checking cache... Method -----> {}", joinPoint.getSignature().toShortString());
 	}
 }
