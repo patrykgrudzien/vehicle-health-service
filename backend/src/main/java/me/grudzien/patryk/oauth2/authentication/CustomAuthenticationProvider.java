@@ -25,9 +25,11 @@ import com.google.common.base.Preconditions;
 import java.util.Map;
 import java.util.Optional;
 
+import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
 import me.grudzien.patryk.domain.dto.login.JwtUser;
 import me.grudzien.patryk.oauth2.authentication.checkers.AdditionalChecks;
 import me.grudzien.patryk.oauth2.service.google.GooglePrincipalService;
+import me.grudzien.patryk.oauth2.utils.CacheHelper;
 import me.grudzien.patryk.service.security.MyUserDetailsService;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 
@@ -45,28 +47,37 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
 	private final UserDetailsChecker customPreAuthenticationChecks;
 	private final UserDetailsChecker customPostAuthenticationChecks;
-	private final AdditionalChecks additionalChecks;
+	private final AdditionalChecks<JwtUser> additionalChecks;
+
+	private final CacheHelper cacheHelper;
 
 	public CustomAuthenticationProvider(@Qualifier(MyUserDetailsService.BEAN_NAME) final UserDetailsService userDetailsService,
-	                                    final LocaleMessagesCreator localeMessagesCreator, final GooglePrincipalService googlePrincipalService,
-	                                    final UserDetailsChecker customPreAuthenticationChecks,
-	                                    final UserDetailsChecker customPostAuthenticationChecks,
-	                                    final AdditionalChecks additionalChecks) {
-		Preconditions.checkNotNull(userDetailsService, "userDetailsService cannot be null!");
-		Preconditions.checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
-		Preconditions.checkNotNull(googlePrincipalService, "googlePrincipalService cannot be null!");
-		Preconditions.checkNotNull(customPreAuthenticationChecks, "customPreAuthenticationChecks cannot be null!");
-		Preconditions.checkNotNull(customPostAuthenticationChecks, "customPostAuthenticationChecks cannot be null!");
-		Preconditions.checkNotNull(additionalChecks, "additionalChecks cannot be null!");
+                                        final LocaleMessagesCreator localeMessagesCreator, final GooglePrincipalService googlePrincipalService,
+                                        final UserDetailsChecker customPreAuthenticationChecks,
+                                        final UserDetailsChecker customPostAuthenticationChecks,
+                                        final AdditionalChecks<JwtUser> additionalChecks,
+                                        final CacheHelper cacheHelper) {
+        Preconditions.checkNotNull(userDetailsService, "userDetailsService cannot be null!");
+        Preconditions.checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
+        Preconditions.checkNotNull(googlePrincipalService, "googlePrincipalService cannot be null!");
+        Preconditions.checkNotNull(customPreAuthenticationChecks, "customPreAuthenticationChecks cannot be null!");
+        Preconditions.checkNotNull(customPostAuthenticationChecks, "customPostAuthenticationChecks cannot be null!");
+        Preconditions.checkNotNull(additionalChecks, "additionalChecks cannot be null!");
+        Preconditions.checkNotNull(cacheHelper, "cacheHelper cannot be null!");
 
-		this.userDetailsService = userDetailsService;
-		this.localeMessagesCreator = localeMessagesCreator;
-		this.googlePrincipalService = googlePrincipalService;
-		this.customPreAuthenticationChecks = customPreAuthenticationChecks;
-		this.customPostAuthenticationChecks = customPostAuthenticationChecks;
-		this.additionalChecks = additionalChecks;
-	}
+        this.userDetailsService = userDetailsService;
+        this.localeMessagesCreator = localeMessagesCreator;
+        this.googlePrincipalService = googlePrincipalService;
+        this.customPreAuthenticationChecks = customPreAuthenticationChecks;
+        this.customPostAuthenticationChecks = customPostAuthenticationChecks;
+        this.additionalChecks = additionalChecks;
+        this.cacheHelper = cacheHelper;
+    }
 
+    /**
+     * This method is called by:
+     * {@link me.grudzien.patryk.service.login.impl.UserAuthenticationServiceImpl#authenticateUser(JwtAuthenticationRequest)}
+     */
 	@Override
 	public Authentication authenticate(final Authentication authentication) throws AuthenticationException {
 	    log.info(SECURITY_MARKER, "Starting custom authentication...");
@@ -93,6 +104,9 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 		final String jwtSubjectIdentifier = Optional.ofNullable(authInfo)
 		                                            .map(map -> map.get(StandardClaimNames.SUB))
 		                                            .orElseThrow(() -> new RuntimeException("ERROR while obtaining \"(Subject identifier)\"! It should be always present!"));
+
+		// cleaning user from cache because it's been saved (with "enabled" status = FALSE) before email confirmation
+        cacheHelper.clearCacheByName(MyUserDetailsService.PRINCIPAL_USER_CACHE_NAME);
 
         // loading user from DB
 		final JwtUser jwtUser = Optional.ofNullable((JwtUser) userDetailsService.loadUserByUsername(email))
