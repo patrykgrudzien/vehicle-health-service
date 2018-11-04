@@ -31,6 +31,7 @@ import me.grudzien.patryk.domain.entities.registration.Role;
 import me.grudzien.patryk.domain.entities.vehicle.Vehicle;
 import me.grudzien.patryk.domain.enums.engine.EngineType;
 import me.grudzien.patryk.domain.enums.registration.PrivilegeName;
+import me.grudzien.patryk.domain.enums.registration.RegistrationProvider;
 import me.grudzien.patryk.domain.enums.registration.RoleName;
 import me.grudzien.patryk.domain.enums.vehicle.VehicleType;
 import me.grudzien.patryk.events.registration.OnRegistrationCompleteEvent;
@@ -46,10 +47,7 @@ import me.grudzien.patryk.service.registration.UserRegistrationService;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.web.RequestsDecoder;
 
-import static me.grudzien.patryk.domain.enums.AppFLow.ACCOUNT_ALREADY_ENABLED;
-import static me.grudzien.patryk.domain.enums.AppFLow.CONFIRM_REGISTRATION;
-import static me.grudzien.patryk.domain.enums.AppFLow.VERIFICATION_TOKEN_EXPIRED;
-import static me.grudzien.patryk.domain.enums.AppFLow.VERIFICATION_TOKEN_NOT_FOUND;
+import static me.grudzien.patryk.domain.enums.AppFLow.*;
 import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
 import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 
@@ -102,6 +100,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 		final String decodedPassword = requestsDecoder.decodeStringParam(userRegistrationDto.getPassword());
 		// (email) & (confirmedEmail) fields are not encoded on UI side because they must be validated by @ValidEmail annotation
 		final String email = userRegistrationDto.getEmail();
+        final RegistrationProvider registrationProvider = userRegistrationDto.getRegistrationProvider();
 
 		if (doesEmailExist(email)) {
 			log.error(EXCEPTION_MARKER, "User with specified email {} already exists.", email);
@@ -109,20 +108,21 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 		}
 		if (!bindingResult.hasErrors()) {
 			log.info("No validation errors during user registration.");
-			final CustomUser customUser = CustomUser.Builder()
-			                                        .firstName(firstName)
-			                                        .lastName(lastName)
-			                                        .email(email)
-			                                        .password(passwordEncoder.encode(decodedPassword))
-			                                        .profilePictureUrl(userRegistrationDto.getProfilePictureUrl())
-			                                        .roles(Collections.singleton(Role.Builder()
+            final CustomUser customUser = CustomUser.Builder()
+                                                    .firstName(firstName)
+                                                    .lastName(lastName)
+                                                    .email(email)
+                                                    .password(passwordEncoder.encode(decodedPassword))
+                                                    .profilePictureUrl(userRegistrationDto.getProfilePictureUrl())
+                                                    .registrationProvider(registrationProvider == null ? RegistrationProvider.CUSTOM : registrationProvider)
+                                                    .roles(Collections.singleton(Role.Builder()
 			                                                                         .roleName(RoleName.ROLE_ADMIN)
 			                                                                         .privileges(Sets.newHashSet(Privilege.Builder()
 			                                                                                                              .privilegeName(PrivilegeName.CAN_DO_EVERYTHING)
 			                                                                                                              .build()))
 			                                                                         .build()))
-			                                        .createdDate(new Date())
-			                                        .build();
+                                                    .createdDate(new Date())
+                                                    .build();
 
 			// TODO: temporary (test purposes)
 			final Engine engine = Engine.Builder().engineType(EngineType.DIESEL).build();
