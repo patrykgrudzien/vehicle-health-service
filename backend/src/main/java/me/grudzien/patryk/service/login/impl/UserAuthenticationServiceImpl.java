@@ -127,13 +127,14 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 				                                                                           new CustomAuthenticationToken(idToken))))
 		          .onSuccess(Optional::get)
 		          .onFailure(throwable -> Match(throwable).of(
-		          		FailedAuthenticationCases.UserDisabledExceptionCase(email, localeMessagesCreator),
-				        FailedAuthenticationCases.BadCredentialsExceptionCase(localeMessagesCreator),
-				        FailedAuthenticationCases.UserAccountIsLockedExceptionCase(localeMessagesCreator),
-				        FailedAuthenticationCases.UserAccountIsExpiredExceptionCase(localeMessagesCreator),
-				        FailedAuthenticationCases.CredentialsExpiredExceptionCase(localeMessagesCreator),
-				        FailedAuthenticationCases.JwtTokenNotFoundExceptionCase(localeMessagesCreator),
-				        FailedAuthenticationCases.UsernameNotFoundExceptionCase(email, localeMessagesCreator)
+                          FailedAuthenticationCases.UsernameNotFoundExceptionCase(email, localeMessagesCreator),
+                          FailedAuthenticationCases.UserAccountIsLockedExceptionCase(localeMessagesCreator),
+                          FailedAuthenticationCases.UserIsDisabledExceptionCase(email, localeMessagesCreator),
+                          FailedAuthenticationCases.UserAccountIsExpiredExceptionCase(localeMessagesCreator),
+                          FailedAuthenticationCases.CredentialsHaveExpiredExceptionCase(localeMessagesCreator),
+                          FailedAuthenticationCases.JwtTokenNotFoundExceptionCase(localeMessagesCreator),
+                          FailedAuthenticationCases.RegistrationProviderMismatchExceptionCase(localeMessagesCreator),
+                          FailedAuthenticationCases.BadCredentialsExceptionCase(localeMessagesCreator)
 		          ))
 		          .getOrElse(Optional.empty());
 	}
