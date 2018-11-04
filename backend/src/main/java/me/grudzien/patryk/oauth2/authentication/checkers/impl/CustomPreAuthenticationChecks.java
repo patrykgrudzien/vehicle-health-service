@@ -28,6 +28,11 @@ public class CustomPreAuthenticationChecks implements UserDetailsChecker {
 		this.localeMessagesCreator = localeMessagesCreator;
 	}
 
+    /**
+     * In case of the Exceptions thrown below, code flow is caught by one of the "Case" inside:
+     * {@link me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases} and translation to JSON format is done by:
+     * {@link me.grudzien.patryk.handlers.exception.ExceptionHandlingController}
+     */
 	@Override
 	public void check(final UserDetails user) {
 		if (!user.isAccountNonLocked()) {
