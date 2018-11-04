@@ -22,6 +22,8 @@ public final class JwtUserFactory {
 		              .firstname(customUser.getFirstName())
 		              .lastname(customUser.getLastName())
 		              .password(customUser.getPassword())
+                      .profilePictureUrl(customUser.getProfilePictureUrl())
+                      .registrationProvider(customUser.getRegistrationProvider())
 		              .email(customUser.getEmail())
 		              .roles(mapRolesToAuthorities(customUser.getRoles()))
 		              .enabled(customUser.isEnabled())

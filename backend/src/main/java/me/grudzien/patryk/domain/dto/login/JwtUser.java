@@ -15,6 +15,8 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 
+import me.grudzien.patryk.domain.enums.registration.RegistrationProvider;
+
 @Getter
 @AllArgsConstructor
 @Builder(builderMethodName = "Builder")
@@ -22,7 +24,7 @@ import java.util.Date;
                        "authorities", "username", "enabled", "roles"})
 public class JwtUser implements UserDetails, Serializable {
 
-	private static final long serialVersionUID = -5701766234662554950L;
+	private static final long serialVersionUID = -948573255025057869L;
 
 	private final Long id;
 	private final String firstname;
@@ -31,7 +33,9 @@ public class JwtUser implements UserDetails, Serializable {
 	private final String email;
 	private final Date lastPasswordResetDate;
 	@Setter
-	private String photoUrl;
+	private String profilePictureUrl;
+	@Setter
+    private RegistrationProvider registrationProvider;
 
 	// disabling getter for "roles" to stay consistent and force usage of "getAuthorities()" instead
 	@Getter(AccessLevel.NONE)
