@@ -1,10 +1,5 @@
 package me.grudzien.patryk.oauth2.handlers;
 
-import static io.vavr.API.$;
-import static io.vavr.API.Case;
-import static io.vavr.API.Match;
-import static io.vavr.Predicates.is;
-
 import io.vavr.Tuple2;
 import lombok.extern.log4j.Log4j2;
 
@@ -20,15 +15,19 @@ import com.google.common.base.Preconditions;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser.AccountStatus;
-import static me.grudzien.patryk.utils.log.LogMarkers.OAUTH2_MARKER;
-import static me.grudzien.patryk.utils.web.CustomURLBuilder.AdditionalParamsDelimiterType.REQUEST_PARAM;
-import static me.grudzien.patryk.utils.web.CustomURLBuilder.buildURL;
-
 import me.grudzien.patryk.PropertiesKeeper;
 import me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser;
 import me.grudzien.patryk.oauth2.repository.CacheBasedOAuth2AuthorizationRequestRepository;
 import me.grudzien.patryk.utils.jwt.JwtTokenUtil;
+import me.grudzien.patryk.utils.web.CustomURLBuilder;
+
+import static io.vavr.API.$;
+import static io.vavr.API.Case;
+import static io.vavr.API.Match;
+import static io.vavr.Predicates.is;
+
+import static me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser.AccountStatus;
+import static me.grudzien.patryk.utils.log.LogMarkers.OAUTH2_MARKER;
 
 @Log4j2
 @Component
@@ -51,7 +50,8 @@ public class CustomOAuth2AuthenticationSuccessHandler extends SimpleUrlAuthentic
 	@Override
 	protected String determineTargetUrl(final HttpServletRequest request, final HttpServletResponse response) {
 		log.info(OAUTH2_MARKER, ">>>> OAUTH2 <<<< determineTargetUrl()");
-		final CustomOAuth2OidcPrincipalUser customOidcPrincipalUser = (CustomOAuth2OidcPrincipalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		final CustomOAuth2OidcPrincipalUser customOidcPrincipalUser = (CustomOAuth2OidcPrincipalUser) SecurityContextHolder.getContext().getAuthentication()
+                                                                                                                           .getPrincipal();
 		cacheBasedOAuth2AuthorizationRequestRepository.evictOAuth2AuthorizationRequestCache();
 		return defineSuccessTargetURL(customOidcPrincipalUser);
 	}
@@ -63,7 +63,8 @@ public class CustomOAuth2AuthenticationSuccessHandler extends SimpleUrlAuthentic
 				Case($(is(AccountStatus.LOGGED)), () -> {
 					final String shortLivedAuthToken = JwtTokenUtil.Creator.generateShortLivedToken(customOAuth2OidcPrincipalUser);
 					final Tuple2<String, String> additionalUrlParameters = new Tuple2<>(SHORT_LIVED_AUTH_TOKEN_NAME, shortLivedAuthToken);
-					return buildURL(propertiesKeeper.oAuth2().USER_LOGGED_IN_USING_GOOGLE, REQUEST_PARAM, additionalUrlParameters);
+					return CustomURLBuilder.buildURL(propertiesKeeper.oAuth2().USER_LOGGED_IN_USING_GOOGLE,
+                                                     CustomURLBuilder.AdditionalParamsDelimiterType.REQUEST_PARAM, additionalUrlParameters);
 				}),
 				Case($(), StringUtils.EMPTY)
 		);
