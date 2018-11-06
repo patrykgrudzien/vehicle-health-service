@@ -126,31 +126,18 @@ final class SecurityConfigContext {
         static void authorizeRequests(final HttpSecurity httpSecurity, final PropertiesKeeper propertiesKeeper) throws Exception {
             httpSecurity
                     .authorizeRequests()
-                    // allow calls for request methods of "OPTIONS" type -> (CORS purpose) without checking JWT token
-                    // (this helps to avoid duplicate calls before the specific ones)
-                    .mvcMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                    // /auth
-                    .mvcMatchers(HttpMethod.POST, propertiesKeeper.endpoints().REFRESH_TOKEN).permitAll()
-                    // /auth/**
-                    .mvcMatchers(HttpMethod.POST, propertiesKeeper.endpoints().AUTH + "/**").permitAll()
-                    // /registration/**  (/register-user-account)
-                    .mvcMatchers(HttpMethod.POST, propertiesKeeper.endpoints().REGISTRATION + "/**").permitAll()
-                    // /registration/**
-                    .mvcMatchers(HttpMethod.GET, propertiesKeeper.endpoints().REGISTRATION + "/**").permitAll()
-                    // /refresh-token
-                    .mvcMatchers(HttpMethod.POST, propertiesKeeper.endpoints().REFRESH_TOKEN).permitAll()
-                    // //user-logged-in-using-google**
-                    .mvcMatchers(propertiesKeeper.oAuth2().USER_LOGGED_IN_USING_GOOGLE + "**").permitAll()
-                    // /user-not-found
-                    .mvcMatchers(propertiesKeeper.oAuth2().USER_NOT_FOUND + "**").permitAll()
-                    // /user-is-disabled
-                    .mvcMatchers(propertiesKeeper.oAuth2().USER_IS_DISABLED + "**").permitAll()
-                    // /user-registered-using-google
-                    .mvcMatchers(propertiesKeeper.oAuth2().USER_REGISTERED_USING_GOOGLE + "**").permitAll()
-                    // /user-account-already-exists
-                    .mvcMatchers(propertiesKeeper.oAuth2().USER_ACCOUNT_ALREADY_EXISTS + "**").permitAll()
-                    // /failure-target-url
-                    .mvcMatchers(propertiesKeeper.oAuth2().FAILURE_TARGET_URL + "**").permitAll()
+                    .mvcMatchers(HttpMethod.OPTIONS, MvcPatterns.homeWildcard()).permitAll()
+                    .mvcMatchers(HttpMethod.POST, MvcPatterns.auth(propertiesKeeper)).permitAll()
+                    .mvcMatchers(HttpMethod.POST, MvcPatterns.authWildcard(propertiesKeeper)).permitAll()
+                    .mvcMatchers(HttpMethod.POST, MvcPatterns.registrationWildcard(propertiesKeeper)).permitAll()
+                    .mvcMatchers(HttpMethod.GET, MvcPatterns.registrationWildcard(propertiesKeeper)).permitAll()
+                    .mvcMatchers(HttpMethod.POST, MvcPatterns.refreshToken(propertiesKeeper)).permitAll()
+                    .mvcMatchers(MvcPatterns.userLoggedInUsingGoogleWildcard(propertiesKeeper)).permitAll()
+                    .mvcMatchers(MvcPatterns.userNotFoundWildcard(propertiesKeeper)).permitAll()
+                    .mvcMatchers(MvcPatterns.userIsDisabledWildcard(propertiesKeeper)).permitAll()
+                    .mvcMatchers(MvcPatterns.userRegisteredUsingGoogleWildcard(propertiesKeeper)).permitAll()
+                    .mvcMatchers(MvcPatterns.userAccountAlreadyExistsWildcard(propertiesKeeper)).permitAll()
+                    .mvcMatchers(MvcPatterns.failureTargetUrlWildcard(propertiesKeeper)).permitAll()
                     // require authentication via JWT
                     .anyRequest().authenticated();
         }
@@ -161,44 +148,24 @@ final class SecurityConfigContext {
      */
     static class Web {
         static void configureIgnoredRequests(final WebSecurity webSecurity, final PropertiesKeeper propertiesKeeper) {
-            webSecurity.ignoring()
-                            // allow calls for request methods of "OPTIONS" type -> (CORS purpose) without checking JWT token
-                            // (this helps to avoid duplicate calls before the specific ones)
-                            .mvcMatchers(HttpMethod.OPTIONS, "/**")
-                                .and()
-                       .ignoring()
-                            // /auth
-                            .mvcMatchers(HttpMethod.POST, propertiesKeeper.endpoints().AUTH)
-                                .and()
-                        .ignoring()
-                            // /auth/**
-                            .mvcMatchers(HttpMethod.POST, propertiesKeeper.endpoints().AUTH + "/**")
-                                .and()
-                        .ignoring()
-                            // /registration/**  (/register-user-account)
-                            .mvcMatchers(HttpMethod.POST, propertiesKeeper.endpoints().REGISTRATION + "/**")
-                                .and()
-                        .ignoring()
-                            // /registration/**
-                            .mvcMatchers(HttpMethod.GET, propertiesKeeper.endpoints().REGISTRATION + "/**")
-                                .and()
-                        .ignoring()
-                            // /refresh-token
-                            .mvcMatchers(HttpMethod.POST, propertiesKeeper.endpoints().REFRESH_TOKEN)
-                                .and()
-                        .ignoring()
-                            .mvcMatchers(HttpMethod.GET, StaticResources.ALL)
-                                .and()
-                        .ignoring()
-                            .mvcMatchers(HttpMethod.GET,
-                                         FrontendRoutes.ABOUT_ME,
-                                         FrontendRoutes.REGISTRATION_FORM,
-                                         FrontendRoutes.REGISTRATION_CONFIRMED,
-                                         FrontendRoutes.REGISTRATION_CONFIRMED_WILDCARD,
-                                         FrontendRoutes.LOGIN,
-                                         FrontendRoutes.MAIN_BOARD,
-                                         FrontendRoutes.MAIN_BOARD_WILDCARD,
-                                         FrontendRoutes.AUTHENTICATION_REQUIRED);
+            webSecurity
+                    .ignoring()
+                        .mvcMatchers(HttpMethod.OPTIONS, MvcPatterns.homeWildcard())
+                        .mvcMatchers(HttpMethod.POST, MvcPatterns.auth(propertiesKeeper))
+                        .mvcMatchers(HttpMethod.POST, MvcPatterns.authWildcard(propertiesKeeper))
+                        .mvcMatchers(HttpMethod.POST, MvcPatterns.registrationWildcard(propertiesKeeper))
+                        .mvcMatchers(HttpMethod.GET, MvcPatterns.registrationWildcard(propertiesKeeper))
+                        .mvcMatchers(HttpMethod.POST, MvcPatterns.refreshToken(propertiesKeeper))
+                        .mvcMatchers(HttpMethod.GET, StaticResources.ALL)
+                        .mvcMatchers(HttpMethod.GET,
+                                     FrontendRoutes.ABOUT_ME,
+                                     FrontendRoutes.REGISTRATION_FORM,
+                                     FrontendRoutes.REGISTRATION_CONFIRMED,
+                                     FrontendRoutes.REGISTRATION_CONFIRMED_WILDCARD,
+                                     FrontendRoutes.LOGIN,
+                                     FrontendRoutes.MAIN_BOARD,
+                                     FrontendRoutes.MAIN_BOARD_WILDCARD,
+                                     FrontendRoutes.AUTHENTICATION_REQUIRED);
         }
     }
 }
