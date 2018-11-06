@@ -122,10 +122,6 @@ spring:
             client-id: 677962172580314
             client-secret: a9eac62a4cd5d78d49aa6dd87582cf86
             client-name: FACEBOOK
-        provider:
-          facebook:
-            # Provider's (user-info-uri) specified below, overrides default because Facebook has changed API and this link is provided after Spring Boot 2.0.0
-            user-info-uri: https://graph.facebook.com/me?fields=id,name,email
 
 ---
 
@@ -168,10 +164,6 @@ spring:
             client-id: 677962172580314
             client-secret: a9eac62a4cd5d78d49aa6dd87582cf86
             client-name: FACEBOOK
-        provider:
-          facebook:
-            # Provider's (user-info-uri) specified below, overrides default because Facebook has changed API and this link is provided after Spring Boot 2.0.0
-            user-info-uri: https://graph.facebook.com/me?fields=id,name,email
 
 ---
 

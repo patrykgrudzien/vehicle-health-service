@@ -49,7 +49,7 @@
 
         <!--########################### DEPENDENCIES' VERSIONS ###########################-->
         <!-- Spring -->
-        <spring.boot.version>2.0.0.RELEASE</spring.boot.version>
+        <spring.boot.version>2.1.0.RELEASE</spring.boot.version>
         <spring.security.version>5.0.1.RELEASE</spring.security.version>
         <!-- Node -->
         <node.js.version>v8.9.4</node.js.version>

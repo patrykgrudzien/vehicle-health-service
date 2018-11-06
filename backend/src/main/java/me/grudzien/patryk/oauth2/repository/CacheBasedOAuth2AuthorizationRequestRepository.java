@@ -73,11 +73,23 @@ public class CacheBasedOAuth2AuthorizationRequestRepository implements Authoriza
 		return cacheHelper.loadCache(OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME, OAUTH2_AUTHORIZATION_REQUEST_CACHE_KEY, () -> null);
 	}
 
-	@Override
+    /**
+     * @since 5.1 - it's been deprecated !!!
+     */
+    @Deprecated
+    @Override
 	public OAuth2AuthorizationRequest removeAuthorizationRequest(final HttpServletRequest request) {
-		log.info(OAUTH2_MARKER, ">>>> OAUTH2 <<<< removeAuthorizationRequest()");
+		log.info(OAUTH2_MARKER, ">>>> OAUTH2 <<<< removeAuthorizationRequest() !DEPRECATED!");
+        Preconditions.checkNotNull(request, "request cannot be null!");
 		return this.loadAuthorizationRequest(request);
 	}
+
+    @Override
+    public OAuth2AuthorizationRequest removeAuthorizationRequest(final HttpServletRequest request, final HttpServletResponse response) {
+        log.info(OAUTH2_MARKER, ">>>> OAUTH2 <<<< removeAuthorizationRequest() !CORRECT!");
+        Preconditions.checkNotNull(response, "response cannot be null!");
+        return this.removeAuthorizationRequest(request);
+    }
 
 	public void evictOAuth2AuthorizationRequestCache() {
 		log.info(OAUTH2_MARKER, ">>>> OAUTH2 <<<< evictOAuth2AuthorizationRequestCache()");
