@@ -307,11 +307,16 @@
             <artifactId>postgresql</artifactId>
             <version>${postgre.sql.version}</version>
         </dependency>
-        <!-- BEAN UTILS -->
+        <!-- APACHE COMMONS BEAN UTILS -->
         <dependency>
             <groupId>commons-beanutils</groupId>
             <artifactId>commons-beanutils</artifactId>
             <version>${apache.commons.bean-utils.version}</version>
+        </dependency>
+        <!-- APACHE COMMONS LANG -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
         </dependency>
         <!-- GUAVA -->
         <dependency>
