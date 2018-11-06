@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -14,30 +13,22 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
-import org.springframework.security.web.savedrequest.RequestCache;
 
 import com.google.common.base.Preconditions;
 
 import me.grudzien.patryk.PropertiesKeeper;
-import me.grudzien.patryk.config.filters.GenericJwtTokenFilter;
-import me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter;
 import me.grudzien.patryk.oauth2.authentication.CustomAuthenticationProvider;
 import me.grudzien.patryk.oauth2.handlers.CustomOAuth2AuthenticationFailureHandler;
 import me.grudzien.patryk.oauth2.handlers.CustomOAuth2AuthenticationSuccessHandler;
-import me.grudzien.patryk.oauth2.repository.CacheBasedOAuth2AuthorizationRequestRepository;
 import me.grudzien.patryk.oauth2.service.CustomOAuth2UserService;
 import me.grudzien.patryk.oauth2.service.CustomOidcUserService;
 import me.grudzien.patryk.oauth2.utils.CacheHelper;
 import me.grudzien.patryk.service.security.MyUserDetailsService;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 
-import static me.grudzien.patryk.PropertiesKeeper.FrontendRoutes;
-import static me.grudzien.patryk.PropertiesKeeper.StaticResources;
 import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
 
 @Log4j2
@@ -126,189 +117,42 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(final HttpSecurity httpSecurity) throws Exception {
 		// don't create session - set creation policy to STATELESS
-		sessionCreationPolicy(httpSecurity);
-		httpSessionRequestCache(httpSecurity, httpSessionRequestCache());
+		SecurityConfigContext.sessionCreationPolicy(httpSecurity);
+		SecurityConfigContext.httpSessionRequestCache(httpSecurity, httpSessionRequestCache());
 
 		// we are stateless so these things are not needed
-		disableFormLogin(httpSecurity);
-		disableHttpBasic(httpSecurity);
-		disableLogout(httpSecurity);
+        SecurityConfigContext.disableFormLogin(httpSecurity);
+        SecurityConfigContext.disableHttpBasic(httpSecurity);
+        SecurityConfigContext.disableLogout(httpSecurity);
 
 		// show message to the user that some resource requires authentication
-		exceptionHandling(httpSecurity, customAuthenticationEntryPoint);
+		SecurityConfigContext.exceptionHandling(httpSecurity, customAuthenticationEntryPoint);
+
+        // don't need CSRF because JWT token is invulnerable
+        SecurityConfigContext.disableCSRF(httpSecurity);
+
+        // CORS configuration
+        SecurityConfigContext.addCORSFilter(httpSecurity);
 
 		/**
 		 * {@link me.grudzien.patryk.config.filters.GenericJwtTokenFilter}
 		 * &&
 		 * {@link me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter}
 		 */
-		addTokenAuthenticationFilters(httpSecurity, localeMessageCreator);
-
-		// don't need CSRF because JWT token is invulnerable
-		disableCSRF(httpSecurity);
-
-		// CORS configuration
-		addCORSFilter(httpSecurity);
+		SecurityConfigContext.Filters.addTokenAuthenticationFilters(httpSecurity, super.userDetailsService(), propertiesKeeper, localeMessageCreator);
 
 		// oauth2 clients
-		configureOAuth2Client(httpSecurity, cacheHelper);
-
+        SecurityConfigContext.OAuth2.configureOAuth2Client(httpSecurity, propertiesKeeper, cacheHelper, customOAuth2AuthenticationSuccessHandler,
+                                                           customOAuth2AuthenticationFailureHandler, customOidcUserService, customOAuth2UserService);
 		// mvcMatchers
-		authorizeRequests(httpSecurity);
+        SecurityConfigContext.Requests.authorizeRequests(httpSecurity, propertiesKeeper);
 	}
 
-
-	private void sessionCreationPolicy(final HttpSecurity httpSecurity) throws Exception {
-		httpSecurity.sessionManagement()
-		            .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-	}
-
-	private void httpSessionRequestCache(final HttpSecurity httpSecurity, final RequestCache requestCache) throws Exception {
-		httpSecurity.requestCache()
-		            .requestCache(requestCache);
-	}
-
-	private void disableLogout(final HttpSecurity httpSecurity) throws Exception {
-		httpSecurity.logout()
-		            .disable();
-	}
-
-	private void disableFormLogin(final HttpSecurity httpSecurity) throws Exception {
-		httpSecurity.formLogin()
-		            .disable();
-	}
-
-	private void disableHttpBasic(final HttpSecurity httpSecurity) throws Exception {
-		httpSecurity.httpBasic()
-		            .disable();
-	}
-
-	private void disableCSRF(final HttpSecurity httpSecurity) throws Exception {
-		httpSecurity.csrf()
-		            .disable();
-	}
-
-	private void addCORSFilter(final HttpSecurity httpSecurity) throws Exception {
-		httpSecurity.cors();
-	}
-
-	private void exceptionHandling(final HttpSecurity httpSecurity, final CustomAuthenticationEntryPoint customAuthenticationEntryPoint) throws Exception {
-		httpSecurity.exceptionHandling()
-		            .authenticationEntryPoint(customAuthenticationEntryPoint);
-	}
-
-	private void addTokenAuthenticationFilters(final HttpSecurity httpSecurity, final LocaleMessagesCreator localeMessagesCreator) {
-
-        // JWT filter
-        final GenericJwtTokenFilter genericJwtTokenFilter = new GenericJwtTokenFilter(super.userDetailsService(), propertiesKeeper, localeMessagesCreator);
-
-        httpSecurity.addFilterBefore(genericJwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
-
-        // ServletExceptionHandlerFilter (it is first and allows GenericJwtTokenFilter to process).
-        // Catches exceptions thrown by GenericJwtTokenFilter.
-        final ServletExceptionHandlerFilter servletExceptionHandlerFilter = new ServletExceptionHandlerFilter();
-        httpSecurity.addFilterBefore(servletExceptionHandlerFilter, GenericJwtTokenFilter.class);
-
-        /**
-         * There is also another filter {@link me.grudzien.patryk.config.filters.LocaleDeterminerFilter} which is registered in
-         * {@link me.grudzien.patryk.config.filters.registry.FiltersRegistryConfig#registerLocaleDeterminerFilter()}
-         * to disable Spring Security on some endpoints like:
-         * 1) "/auth"
-         * 2) "/registration"
-         * This filter is required to determine "Locale" which is needed to create appropriate messages using:
-         * {@link me.grudzien.patryk.utils.i18n.LocaleMessagesCreator#buildLocaleMessage(String)} or to take right email template inside:
-         * {@link me.grudzien.patryk.service.registration.impl.EmailServiceImpl#sendMessageUsingTemplate(me.grudzien.patryk.domain.dto.registration.EmailDto)}.
-         */
-	}
-
-	private void configureOAuth2Client(final HttpSecurity httpSecurity, final CacheHelper cacheHelper) throws Exception {
-		httpSecurity.oauth2Login()
-		            .loginPage(propertiesKeeper.oAuth2().LOGIN_PAGE)
-		            .authorizationEndpoint()
-		                .authorizationRequestRepository(new CacheBasedOAuth2AuthorizationRequestRepository(cacheHelper))
-		                    .and()
-		            .successHandler(customOAuth2AuthenticationSuccessHandler)
-					.failureHandler(customOAuth2AuthenticationFailureHandler)
-					.userInfoEndpoint()
-		                // OpenID Connect (Google)
-						.oidcUserService(customOidcUserService)
-		                // OAuth2 2.0 (Facebook)
-                        .userService(customOAuth2UserService);
-	}
-
-	private void authorizeRequests(final HttpSecurity httpSecurity) throws Exception {
-		httpSecurity
-				.authorizeRequests()
-				// allow calls for request methods of "OPTIONS" type -> (CORS purpose) without checking JWT token
-				// (this helps to avoid duplicate calls before the specific ones)
-				.mvcMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-				// /auth
-				.mvcMatchers(HttpMethod.POST, propertiesKeeper.endpoints().REFRESH_TOKEN).permitAll()
-				// /auth/**
-				.mvcMatchers(HttpMethod.POST, propertiesKeeper.endpoints().AUTH + "/**").permitAll()
-				// /registration/**  (/register-user-account)
-				.mvcMatchers(HttpMethod.POST, propertiesKeeper.endpoints().REGISTRATION + "/**").permitAll()
-				// /registration/**
-				.mvcMatchers(HttpMethod.GET, propertiesKeeper.endpoints().REGISTRATION + "/**").permitAll()
-				// /refresh-token
-				.mvcMatchers(HttpMethod.POST, propertiesKeeper.endpoints().REFRESH_TOKEN).permitAll()
-				// //user-logged-in-using-google**
-				.mvcMatchers(propertiesKeeper.oAuth2().USER_LOGGED_IN_USING_GOOGLE + "**").permitAll()
-				// /user-not-found
-				.mvcMatchers(propertiesKeeper.oAuth2().USER_NOT_FOUND + "**").permitAll()
-                // TODO: extract all patterns to external class
-                // /user-is-disabled
-				.mvcMatchers(propertiesKeeper.oAuth2().USER_IS_DISABLED + "**").permitAll()
-				// /user-registered-using-google
-				.mvcMatchers(propertiesKeeper.oAuth2().USER_REGISTERED_USING_GOOGLE + "**").permitAll()
-				// /user-account-already-exists
-				.mvcMatchers(propertiesKeeper.oAuth2().USER_ACCOUNT_ALREADY_EXISTS + "**").permitAll()
-				// /failure-target-url
-				.mvcMatchers(propertiesKeeper.oAuth2().FAILURE_TARGET_URL + "**").permitAll()
-				// require authentication via JWT
-				.anyRequest().authenticated();
-	}
-
+    /**
+     * Configuring which requests should be ignored.
+     */
 	@Override
 	public void configure(final WebSecurity web) {
-		// AuthenticationTokenFilter will ignore the below paths
-		web.ignoring()
-		        // allow calls for request methods of "OPTIONS" type -> (CORS purpose) without checking JWT token
-		        // (this helps to avoid duplicate calls before the specific ones)
-		        .mvcMatchers(HttpMethod.OPTIONS, "/**")
-		            .and()
-		   .ignoring()
-		        // /auth
-		        .mvcMatchers(HttpMethod.POST, propertiesKeeper.endpoints().AUTH)
-					.and()
-		    .ignoring()
-		        // /auth/**
-		        .mvcMatchers(HttpMethod.POST, propertiesKeeper.endpoints().AUTH + "/**")
-		            .and()
-			.ignoring()
-		        // /registration/**  (/register-user-account)
-				.mvcMatchers(HttpMethod.POST, propertiesKeeper.endpoints().REGISTRATION + "/**")
-					.and()
-			.ignoring()
-		        // /registration/**
-				.mvcMatchers(HttpMethod.GET, propertiesKeeper.endpoints().REGISTRATION + "/**")
-					.and()
-		   .ignoring()
-		        // /refresh-token
-		        .mvcMatchers(HttpMethod.POST, propertiesKeeper.endpoints().REFRESH_TOKEN)
-		            .and()
-			.ignoring()
-                .mvcMatchers(HttpMethod.GET, StaticResources.ALL)
-					.and()
-			.ignoring()
-				.mvcMatchers(HttpMethod.GET,
-				             FrontendRoutes.ABOUT_ME,
-				             FrontendRoutes.REGISTRATION_FORM,
-				             FrontendRoutes.REGISTRATION_CONFIRMED,
-				             FrontendRoutes.REGISTRATION_CONFIRMED_WILDCARD,
-				             FrontendRoutes.LOGIN,
-				             FrontendRoutes.MAIN_BOARD,
-				             FrontendRoutes.MAIN_BOARD_WILDCARD,
-				             FrontendRoutes.AUTHENTICATION_REQUIRED);
+	    SecurityConfigContext.Web.configureIgnoredRequests(web, propertiesKeeper);
 	}
 }
