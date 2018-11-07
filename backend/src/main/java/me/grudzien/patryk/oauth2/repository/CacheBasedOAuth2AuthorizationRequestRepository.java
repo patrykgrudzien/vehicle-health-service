@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
+import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.Assert;
 
 import com.google.common.base.Preconditions;
 
@@ -45,6 +47,19 @@ public class CacheBasedOAuth2AuthorizationRequestRepository implements Authoriza
 	}
 
 	@Override
+	public OAuth2AuthorizationRequest loadAuthorizationRequest(final HttpServletRequest request) {
+		log.info(OAUTH2_MARKER, ">>>> OAUTH2 <<<< loadAuthorizationRequest()");
+		Preconditions.checkNotNull(request, "request cannot be null!");
+
+		final String stateParameter = this.getStateParameter(request);
+		log.info(OAUTH2_MARKER, ">>>> OAUTH2 <<<< stateParameter == null ? -> ({})", stateParameter == null);
+		if (stateParameter == null) {
+			return null;
+		}
+		return cacheHelper.loadCache(OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME, OAUTH2_AUTHORIZATION_REQUEST_CACHE_KEY, () -> null);
+	}
+
+	@Override
 	public void saveAuthorizationRequest(final OAuth2AuthorizationRequest authorizationRequest, final HttpServletRequest request,
 	                                     final HttpServletResponse response) {
 		log.info(OAUTH2_MARKER, ">>>> OAUTH2 <<<< saveAuthorizationRequest()");
@@ -55,10 +70,11 @@ public class CacheBasedOAuth2AuthorizationRequestRepository implements Authoriza
 			this.evictOAuth2AuthorizationRequestCache();
 			return;
 		}
+		final String state = authorizationRequest.getState();
+		Assert.hasText(state, "authorizationRequest.state cannot be empty");
 		/**
 		 * Saving additional cache which will be required in:
-		 * {@link me.grudzien.patryk.oauth2.service.CustomOAuth2UserService#determineFlowAndPreparePrincipal(
-		 * org.springframework.security.oauth2.core.user.OAuth2User, org.springframework.security.oauth2.client.registration.ClientRegistration)}
+		 * {@link me.grudzien.patryk.oauth2.utils.OAuth2FlowDelegator#determineFlowBasedOnUrl(String)}
 		 * to decide if user should be (log in) or (register).
 		 */
 		URLParser.retrieveEndpointFromURL(request.getHeader(HttpHeaders.REFERER))
@@ -66,34 +82,43 @@ public class CacheBasedOAuth2AuthorizationRequestRepository implements Authoriza
 		cacheHelper.saveCache(OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME, OAUTH2_AUTHORIZATION_REQUEST_CACHE_KEY, authorizationRequest);
 	}
 
+	/**
+	 * @since 5.1 - it's been deprecated !!!
+	 */
+	@Deprecated
 	@Override
-	public OAuth2AuthorizationRequest loadAuthorizationRequest(final HttpServletRequest request) {
-		log.info(OAUTH2_MARKER, ">>>> OAUTH2 <<<< loadAuthorizationRequest()");
-		Preconditions.checkNotNull(request, "request cannot be null!");
-		return cacheHelper.loadCache(OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME, OAUTH2_AUTHORIZATION_REQUEST_CACHE_KEY, () -> null);
-	}
-
-    /**
-     * @since 5.1 - it's been deprecated !!!
-     */
-    @Deprecated
-    @Override
 	public OAuth2AuthorizationRequest removeAuthorizationRequest(final HttpServletRequest request) {
 		log.info(OAUTH2_MARKER, ">>>> OAUTH2 <<<< removeAuthorizationRequest() !DEPRECATED!");
-        Preconditions.checkNotNull(request, "request cannot be null!");
+		Preconditions.checkNotNull(request, "request cannot be null!");
+
+		final String stateParameter = this.getStateParameter(request);
+		log.info(OAUTH2_MARKER, ">>>> OAUTH2 <<<< stateParameter == null ? -> ({})", stateParameter == null);
+		if (stateParameter == null) {
+			return null;
+		}
 		return this.loadAuthorizationRequest(request);
 	}
 
-    @Override
-    public OAuth2AuthorizationRequest removeAuthorizationRequest(final HttpServletRequest request, final HttpServletResponse response) {
-        log.info(OAUTH2_MARKER, ">>>> OAUTH2 <<<< removeAuthorizationRequest() !CORRECT!");
-        Preconditions.checkNotNull(response, "response cannot be null!");
-        return this.removeAuthorizationRequest(request);
-    }
+	@Override
+	public OAuth2AuthorizationRequest removeAuthorizationRequest(final HttpServletRequest request, final HttpServletResponse response) {
+		log.info(OAUTH2_MARKER, ">>>> OAUTH2 <<<< removeAuthorizationRequest() !CORRECT!");
+		Preconditions.checkNotNull(response, "response cannot be null!");
+
+		return this.removeAuthorizationRequest(request);
+	}
 
 	public void evictOAuth2AuthorizationRequestCache() {
 		log.info(OAUTH2_MARKER, ">>>> OAUTH2 <<<< evictOAuth2AuthorizationRequestCache()");
 		cacheHelper.evictCacheByNameAndKey(OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME, OAUTH2_AUTHORIZATION_REQUEST_CACHE_KEY);
+	}
+
+	/**
+	 * Gets the state parameter from the {@link HttpServletRequest}
+	 * @param request the request to use
+	 * @return the state parameter or null if not found
+	 */
+	private String getStateParameter(final HttpServletRequest request) {
+		return request.getParameter(OAuth2ParameterNames.STATE);
 	}
 }
 
