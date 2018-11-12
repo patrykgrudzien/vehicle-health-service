@@ -23,12 +23,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 import me.grudzien.patryk.domain.dto.registration.EmailDto;
-import me.grudzien.patryk.domain.entities.registration.CustomUser;
-import me.grudzien.patryk.domain.entities.registration.EmailVerificationToken;
+import me.grudzien.patryk.domain.entity.registration.CustomUser;
+import me.grudzien.patryk.domain.entity.registration.EmailVerificationToken;
 import me.grudzien.patryk.repository.registration.EmailVerificationTokenRepository;
 import me.grudzien.patryk.service.registration.EmailService;
-import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
-import me.grudzien.patryk.utils.i18n.LocaleMessagesHelper;
+import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
+import me.grudzien.patryk.util.i18n.LocaleMessagesHelper;
 
 import static io.vavr.API.$;
 import static io.vavr.API.Case;
@@ -36,8 +36,8 @@ import static io.vavr.API.Match;
 import static io.vavr.API.run;
 import static io.vavr.Predicates.instanceOf;
 
-import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
-import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
+import static me.grudzien.patryk.util.log.LogMarkers.EXCEPTION_MARKER;
+import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
 
 @Log4j2
 @Service

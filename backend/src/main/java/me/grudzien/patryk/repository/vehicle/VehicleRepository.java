@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import me.grudzien.patryk.domain.dto.vehicle.VehicleDto;
-import me.grudzien.patryk.domain.entities.vehicle.Vehicle;
+import me.grudzien.patryk.domain.entity.vehicle.Vehicle;
 
 public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 

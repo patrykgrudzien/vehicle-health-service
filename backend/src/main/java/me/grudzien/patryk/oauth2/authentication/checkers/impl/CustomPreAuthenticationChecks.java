@@ -11,10 +11,10 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.base.Preconditions;
 
-import me.grudzien.patryk.exceptions.login.UserDisabledAuthenticationException;
-import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
+import me.grudzien.patryk.exception.login.UserDisabledAuthenticationException;
+import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
 
-import static me.grudzien.patryk.utils.log.LogMarkers.SECURITY_MARKER;
+import static me.grudzien.patryk.util.log.LogMarkers.SECURITY_MARKER;
 
 @Log4j2
 @Component
@@ -31,7 +31,7 @@ public class CustomPreAuthenticationChecks implements UserDetailsChecker {
     /**
      * In case of the Exceptions thrown below, code flow is caught by one of the "Case" inside:
      * {@link me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases} and translation to JSON format is done by:
-     * {@link me.grudzien.patryk.handlers.exception.ExceptionHandlingController}
+     * {@link me.grudzien.patryk.handler.exception.ExceptionHandlingController}
      */
 	@Override
 	public void check(final UserDetails user) {

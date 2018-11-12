@@ -9,11 +9,11 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import me.grudzien.patryk.exceptions.login.BadCredentialsAuthenticationException;
-import me.grudzien.patryk.exceptions.login.UserDisabledAuthenticationException;
-import me.grudzien.patryk.oauth2.exceptions.JwtTokenNotFoundException;
-import me.grudzien.patryk.oauth2.exceptions.RegistrationProviderMismatchException;
-import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
+import me.grudzien.patryk.exception.login.BadCredentialsAuthenticationException;
+import me.grudzien.patryk.exception.login.UserDisabledAuthenticationException;
+import me.grudzien.patryk.oauth2.exception.JwtTokenNotFoundException;
+import me.grudzien.patryk.oauth2.exception.RegistrationProviderMismatchException;
+import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
 
 import static io.vavr.API.$;
 import static io.vavr.API.Case;
@@ -21,7 +21,7 @@ import static io.vavr.API.Match;
 import static io.vavr.API.run;
 import static io.vavr.Predicates.instanceOf;
 
-import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
+import static me.grudzien.patryk.util.log.LogMarkers.EXCEPTION_MARKER;
 
 @Log4j2
 public abstract class FailedAuthenticationCases {

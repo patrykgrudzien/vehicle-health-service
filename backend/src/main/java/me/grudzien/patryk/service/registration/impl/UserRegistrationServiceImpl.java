@@ -23,33 +23,33 @@ import java.util.Date;
 import java.util.stream.Collectors;
 
 import me.grudzien.patryk.domain.dto.registration.UserRegistrationDto;
-import me.grudzien.patryk.domain.entities.engine.Engine;
-import me.grudzien.patryk.domain.entities.registration.CustomUser;
-import me.grudzien.patryk.domain.entities.registration.EmailVerificationToken;
-import me.grudzien.patryk.domain.entities.registration.Privilege;
-import me.grudzien.patryk.domain.entities.registration.Role;
-import me.grudzien.patryk.domain.entities.vehicle.Vehicle;
+import me.grudzien.patryk.domain.entity.engine.Engine;
+import me.grudzien.patryk.domain.entity.registration.CustomUser;
+import me.grudzien.patryk.domain.entity.registration.EmailVerificationToken;
+import me.grudzien.patryk.domain.entity.registration.Privilege;
+import me.grudzien.patryk.domain.entity.registration.Role;
+import me.grudzien.patryk.domain.entity.vehicle.Vehicle;
 import me.grudzien.patryk.domain.enums.engine.EngineType;
 import me.grudzien.patryk.domain.enums.registration.PrivilegeName;
 import me.grudzien.patryk.domain.enums.registration.RegistrationProvider;
 import me.grudzien.patryk.domain.enums.registration.RoleName;
 import me.grudzien.patryk.domain.enums.vehicle.VehicleType;
-import me.grudzien.patryk.events.registration.OnRegistrationCompleteEvent;
-import me.grudzien.patryk.exceptions.registration.CustomUserValidationException;
-import me.grudzien.patryk.exceptions.registration.TokenExpiredException;
-import me.grudzien.patryk.exceptions.registration.TokenNotFoundException;
-import me.grudzien.patryk.exceptions.registration.UserAlreadyExistsException;
-import me.grudzien.patryk.handlers.web.HttpResponseHandler;
+import me.grudzien.patryk.event.registration.OnRegistrationCompleteEvent;
+import me.grudzien.patryk.exception.registration.CustomUserValidationException;
+import me.grudzien.patryk.exception.registration.TokenExpiredException;
+import me.grudzien.patryk.exception.registration.TokenNotFoundException;
+import me.grudzien.patryk.exception.registration.UserAlreadyExistsException;
+import me.grudzien.patryk.handler.web.HttpResponseHandler;
 import me.grudzien.patryk.repository.registration.CustomUserRepository;
 import me.grudzien.patryk.repository.registration.EmailVerificationTokenRepository;
 import me.grudzien.patryk.service.registration.EmailService;
 import me.grudzien.patryk.service.registration.UserRegistrationService;
-import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
-import me.grudzien.patryk.utils.web.RequestsDecoder;
+import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
+import me.grudzien.patryk.util.web.RequestsDecoder;
 
 import static me.grudzien.patryk.domain.enums.AppFLow.*;
-import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
-import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
+import static me.grudzien.patryk.util.log.LogMarkers.EXCEPTION_MARKER;
+import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
 
 @Log4j2
 @Service

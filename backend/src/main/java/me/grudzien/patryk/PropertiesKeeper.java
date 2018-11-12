@@ -77,7 +77,7 @@ public final class PropertiesKeeper {
 		String MAIN_BOARD_WILDCARD = "/main-board/**";
 		String AUTHENTICATION_REQUIRED = "/authentication-required";
 		/**
-		 * Used for now only in: {@link me.grudzien.patryk.oauth2.utils.OAuth2FlowDelegator#determineFlowBasedOnUrl(String)}
+		 * Used for now only in: {@link me.grudzien.patryk.oauth2.util.OAuth2FlowDelegator#determineFlowBasedOnUrl(String)}
 		 */
 		String LOGOUT = "/logout";
 	}

@@ -26,19 +26,19 @@ import java.util.stream.Collectors;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationResponse;
 import me.grudzien.patryk.domain.dto.login.JwtUser;
-import me.grudzien.patryk.exceptions.registration.CustomUserValidationException;
+import me.grudzien.patryk.exception.registration.CustomUserValidationException;
 import me.grudzien.patryk.oauth2.authentication.CustomAuthenticationToken;
 import me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases;
 import me.grudzien.patryk.service.login.UserAuthenticationService;
 import me.grudzien.patryk.service.security.MyUserDetailsService;
-import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
-import me.grudzien.patryk.utils.jwt.JwtTokenUtil;
-import me.grudzien.patryk.utils.validators.ValidatorCreator;
-import me.grudzien.patryk.utils.web.RequestsDecoder;
+import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
+import me.grudzien.patryk.util.jwt.JwtTokenUtil;
+import me.grudzien.patryk.util.validator.ValidatorCreator;
+import me.grudzien.patryk.util.web.RequestsDecoder;
 
 import static io.vavr.API.Match;
 
-import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
+import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
 
 @Log4j2
 @Service
@@ -101,8 +101,8 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 
 	/**
 	 * Authenticates the user. If something is wrong, an
-	 * {@link me.grudzien.patryk.exceptions.login.BadCredentialsAuthenticationException} or
-	 * {@link me.grudzien.patryk.exceptions.login.UserDisabledAuthenticationException} will be thrown
+	 * {@link me.grudzien.patryk.exception.login.BadCredentialsAuthenticationException} or
+	 * {@link me.grudzien.patryk.exception.login.UserDisabledAuthenticationException} will be thrown
 	 */
 	@Override
 	public Optional<Authentication> authenticateUser(final JwtAuthenticationRequest authenticationRequest) {

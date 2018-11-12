@@ -16,7 +16,7 @@ import me.grudzien.patryk.domain.enums.registration.RegistrationProvider;
 import me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser;
 import me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUserFactory;
 
-import static me.grudzien.patryk.oauth2.utils.OAuth2OidcAttributesExtractor.getOAuth2AttributeValue;
+import static me.grudzien.patryk.oauth2.util.OAuth2OidcAttributesExtractor.getOAuth2AttributeValue;
 
 @Log4j2
 @Component

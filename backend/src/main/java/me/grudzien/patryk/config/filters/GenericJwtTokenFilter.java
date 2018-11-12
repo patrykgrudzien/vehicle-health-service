@@ -4,8 +4,8 @@ import com.google.common.base.Preconditions;
 import lombok.extern.log4j.Log4j2;
 import me.grudzien.patryk.PropertiesKeeper;
 import me.grudzien.patryk.service.security.MyUserDetailsService;
-import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
-import me.grudzien.patryk.utils.jwt.JwtTokenUtil;
+import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
+import me.grudzien.patryk.util.jwt.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,8 +22,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 
-import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
-import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
+import static me.grudzien.patryk.util.log.LogMarkers.EXCEPTION_MARKER;
+import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
 
 /**
  * Filters CANNOT be managed by Spring explicitly !!!

@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull;
 
 import java.io.Serializable;
 
-import me.grudzien.patryk.validators.registration.ValidEmail;
+import me.grudzien.patryk.annotation.ValidEmail;
 
 @Getter
 @Setter

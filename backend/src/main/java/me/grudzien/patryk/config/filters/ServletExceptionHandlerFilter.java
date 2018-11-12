@@ -16,13 +16,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import me.grudzien.patryk.domain.dto.responses.CustomResponse.SecurityStatus;
 import me.grudzien.patryk.domain.dto.responses.ExceptionResponse;
-import me.grudzien.patryk.utils.web.HttpResponseCustomizer;
+import me.grudzien.patryk.util.web.HttpResponseCustomizer;
 
 import static io.vavr.API.*;
 import static io.vavr.Predicates.instanceOf;
 
-import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
-import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
+import static me.grudzien.patryk.util.log.LogMarkers.EXCEPTION_MARKER;
+import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
 
 /**
  * Filters CANNOT be managed by Spring explicitly !!!
@@ -32,9 +32,9 @@ import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
  * {@link me.grudzien.patryk.config.filters.GenericJwtTokenFilter}
  *
  * This filter is used in case of unsuccessful JWT operations which are performed in:
- * {@link me.grudzien.patryk.utils.jwt.JwtTokenUtil.Retriever}
+ * {@link me.grudzien.patryk.util.jwt.JwtTokenUtil.Retriever}
  * e.g. when token is expired there is no option to
- * {@link me.grudzien.patryk.utils.jwt.JwtTokenUtil.Retriever#getAllClaimsFromToken(String)}.
+ * {@link me.grudzien.patryk.util.jwt.JwtTokenUtil.Retriever#getAllClaimsFromToken(String)}.
  * In such case one of the exceptions listed below is thrown.
  */
 @Log4j2

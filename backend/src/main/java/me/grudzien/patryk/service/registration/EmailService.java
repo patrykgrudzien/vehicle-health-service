@@ -1,8 +1,8 @@
 package me.grudzien.patryk.service.registration;
 
 import me.grudzien.patryk.domain.dto.registration.EmailDto;
-import me.grudzien.patryk.domain.entities.registration.CustomUser;
-import me.grudzien.patryk.domain.entities.registration.EmailVerificationToken;
+import me.grudzien.patryk.domain.entity.registration.CustomUser;
+import me.grudzien.patryk.domain.entity.registration.EmailVerificationToken;
 
 public interface EmailService {
 

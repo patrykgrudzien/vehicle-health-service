@@ -21,15 +21,15 @@ import com.google.common.base.Preconditions;
 
 import me.grudzien.patryk.PropertiesKeeper;
 import me.grudzien.patryk.oauth2.authentication.CustomAuthenticationProvider;
-import me.grudzien.patryk.oauth2.handlers.CustomOAuth2AuthenticationFailureHandler;
-import me.grudzien.patryk.oauth2.handlers.CustomOAuth2AuthenticationSuccessHandler;
+import me.grudzien.patryk.oauth2.handler.CustomOAuth2AuthenticationFailureHandler;
+import me.grudzien.patryk.oauth2.handler.CustomOAuth2AuthenticationSuccessHandler;
 import me.grudzien.patryk.oauth2.service.CustomOAuth2UserService;
 import me.grudzien.patryk.oauth2.service.CustomOidcUserService;
-import me.grudzien.patryk.oauth2.utils.CacheHelper;
+import me.grudzien.patryk.oauth2.util.CacheHelper;
 import me.grudzien.patryk.service.security.MyUserDetailsService;
-import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
+import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
 
-import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
+import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
 
 @Log4j2
 @Configuration

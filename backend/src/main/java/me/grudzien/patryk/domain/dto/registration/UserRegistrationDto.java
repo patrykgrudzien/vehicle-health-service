@@ -10,8 +10,8 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import me.grudzien.patryk.domain.enums.registration.RegistrationProvider;
-import me.grudzien.patryk.validators.registration.FieldMatcher;
-import me.grudzien.patryk.validators.registration.ValidEmail;
+import me.grudzien.patryk.annotation.FieldMatcher;
+import me.grudzien.patryk.annotation.ValidEmail;
 
 @Getter
 @Setter

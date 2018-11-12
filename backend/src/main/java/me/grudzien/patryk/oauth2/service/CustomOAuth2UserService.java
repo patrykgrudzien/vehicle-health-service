@@ -16,9 +16,9 @@ import com.google.common.base.Preconditions;
 
 import java.util.Optional;
 
-import me.grudzien.patryk.oauth2.utils.CacheHelper;
-import me.grudzien.patryk.oauth2.utils.OAuth2FlowDelegator;
-import me.grudzien.patryk.oauth2.utils.OAuth2FlowDelegator.OAuth2Flow;
+import me.grudzien.patryk.oauth2.util.CacheHelper;
+import me.grudzien.patryk.oauth2.util.OAuth2FlowDelegator;
+import me.grudzien.patryk.oauth2.util.OAuth2FlowDelegator.OAuth2Flow;
 
 import static io.vavr.API.$;
 import static io.vavr.API.Case;

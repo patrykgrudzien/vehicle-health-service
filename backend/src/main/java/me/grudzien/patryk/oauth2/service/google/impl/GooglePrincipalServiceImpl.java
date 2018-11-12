@@ -33,13 +33,13 @@ import me.grudzien.patryk.domain.dto.registration.UserRegistrationDto;
 import me.grudzien.patryk.domain.dto.responses.CustomResponse.ResponseProperties;
 import me.grudzien.patryk.domain.enums.AppFLow;
 import me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser;
-import me.grudzien.patryk.oauth2.exceptions.UnknownOAuth2FlowException;
+import me.grudzien.patryk.oauth2.exception.UnknownOAuth2FlowException;
 import me.grudzien.patryk.oauth2.service.google.GooglePrincipalService;
 import me.grudzien.patryk.oauth2.service.google.helper.GooglePrincipalServiceHelper;
-import me.grudzien.patryk.oauth2.utils.OAuth2FlowDelegator;
-import me.grudzien.patryk.oauth2.utils.rest.CustomRestTemplateFactory;
-import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
-import me.grudzien.patryk.utils.web.ContextPathsResolver;
+import me.grudzien.patryk.oauth2.util.OAuth2FlowDelegator;
+import me.grudzien.patryk.oauth2.util.rest.CustomRestTemplateFactory;
+import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
+import me.grudzien.patryk.util.web.ContextPathsResolver;
 
 import static io.vavr.API.$;
 import static io.vavr.API.Case;
@@ -47,10 +47,10 @@ import static io.vavr.API.Match;
 import static io.vavr.Predicates.is;
 
 import static me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser.AccountStatus;
-import static me.grudzien.patryk.oauth2.utils.OAuth2FlowDelegator.OAuth2Flow.LOGIN;
-import static me.grudzien.patryk.oauth2.utils.OAuth2FlowDelegator.OAuth2Flow.REGISTRATION;
-import static me.grudzien.patryk.oauth2.utils.OAuth2FlowDelegator.OAuth2Flow.UNKNOWN;
-import static me.grudzien.patryk.utils.log.LogMarkers.OAUTH2_MARKER;
+import static me.grudzien.patryk.oauth2.util.OAuth2FlowDelegator.OAuth2Flow.LOGIN;
+import static me.grudzien.patryk.oauth2.util.OAuth2FlowDelegator.OAuth2Flow.REGISTRATION;
+import static me.grudzien.patryk.oauth2.util.OAuth2FlowDelegator.OAuth2Flow.UNKNOWN;
+import static me.grudzien.patryk.util.log.LogMarkers.OAUTH2_MARKER;
 
 @Log4j2
 @Service
@@ -118,7 +118,7 @@ public class GooglePrincipalServiceImpl implements GooglePrincipalService {
 		/**
 		 * {@code customRestTemplate} is specific to this case!
 		 * Look inside:
-		 * {@link me.grudzien.patryk.oauth2.utils.rest.CustomRestTemplateFactory#createRestTemplate()}
+		 * {@link me.grudzien.patryk.oauth2.util.rest.CustomRestTemplateFactory#createRestTemplate()}
 		 */
 		final ResponseEntity<Object> responseEntity = customRestTemplate.postForEntity(URI.create(endpointAbsolutePath), jwtAuthenticationRequest, Object.class);
 
@@ -139,7 +139,7 @@ public class GooglePrincipalServiceImpl implements GooglePrincipalService {
 		/**
 		 * {@code customRestTemplate} is specific to this case!
 		 * Look inside:
-		 * {@link me.grudzien.patryk.oauth2.utils.rest.CustomRestTemplateFactory#createRestTemplate()}
+		 * {@link me.grudzien.patryk.oauth2.util.rest.CustomRestTemplateFactory#createRestTemplate()}
 		 */
 		final ResponseEntity<Object> responseEntity = customRestTemplate.postForEntity(URI.create(endpointAbsolutePath), userRegistrationDto, Object.class);
 

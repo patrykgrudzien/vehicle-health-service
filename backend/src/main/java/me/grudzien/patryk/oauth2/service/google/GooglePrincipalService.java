@@ -9,7 +9,7 @@ import com.auth0.jwk.JwkException;
 import java.net.MalformedURLException;
 
 import me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser;
-import me.grudzien.patryk.oauth2.utils.OAuth2FlowDelegator;
+import me.grudzien.patryk.oauth2.util.OAuth2FlowDelegator;
 
 public interface GooglePrincipalService {
 
