@@ -8,7 +8,7 @@ import lombok.Getter;
 public enum SpringAppProfiles {
 
 	DEV_HOME(YmlName.DEV_HOME),
-	DEV_OFFICE(YmlName.DEV_OFFICE),
+	H2_IN_MEMORY(YmlName.H2_IN_MEMORY),
 	HEROKU_DEPLOYMENT(YmlName.HEROKU_DEPLOYMENT);
 
 	private final String ymlName;
@@ -21,7 +21,7 @@ public enum SpringAppProfiles {
 		}
 
 		public static final String DEV_HOME = "dev-home";
-		public static final String DEV_OFFICE = "dev-office";
+		public static final String H2_IN_MEMORY = "h2-in-memory";
 		public static final String HEROKU_DEPLOYMENT = "heroku-deployment";
 	}
 }

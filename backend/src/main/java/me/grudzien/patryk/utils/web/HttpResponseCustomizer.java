@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 import me.grudzien.patryk.domain.dto.responses.CustomResponse;
 
 import static me.grudzien.patryk.domain.enums.SpringAppProfiles.DEV_HOME;
-import static me.grudzien.patryk.domain.enums.SpringAppProfiles.DEV_OFFICE;
+import static me.grudzien.patryk.domain.enums.SpringAppProfiles.H2_IN_MEMORY;
 import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
 
 @Log4j2
@@ -41,7 +41,7 @@ public class HttpResponseCustomizer {
 		response.addHeader(CustomResponse.Headers.CONTENT_TYPE.getKey(), CustomResponse.Headers.CONTENT_TYPE.getValue());
 		// CORS - if the header below is not specified during development, JSON created by this method cannot be displayed in the Client
 		Stream.of(environment.getActiveProfiles()).forEach(activeProfile -> {
-			if (DEV_HOME.getYmlName().equals(activeProfile) || DEV_OFFICE.getYmlName().equals(activeProfile)) {
+			if (DEV_HOME.getYmlName().equals(activeProfile) || H2_IN_MEMORY.getYmlName().equals(activeProfile)) {
 				response.addHeader(CustomResponse.Headers.ACCESS_CONTROL_ALLOW_ORIGIN.getKey(), CustomResponse.Headers.ACCESS_CONTROL_ALLOW_ORIGIN.getValue());
 			}
 		});
