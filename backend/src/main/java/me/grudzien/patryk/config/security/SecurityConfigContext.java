@@ -156,6 +156,8 @@ final class SecurityConfigContext {
                         .mvcMatchers(HttpMethod.POST, MvcPatterns.registrationWildcard(propertiesKeeper))
                         .mvcMatchers(HttpMethod.GET, MvcPatterns.registrationWildcard(propertiesKeeper))
                         .mvcMatchers(HttpMethod.POST, MvcPatterns.refreshToken(propertiesKeeper))
+                        // mvcMatchers() here doesn't want to work
+                        .antMatchers(MvcPatterns.h2InMemoryWebConsole())
                         .mvcMatchers(HttpMethod.GET, StaticResources.ALL)
                         .mvcMatchers(HttpMethod.GET,
                                      FrontendRoutes.ABOUT_ME,

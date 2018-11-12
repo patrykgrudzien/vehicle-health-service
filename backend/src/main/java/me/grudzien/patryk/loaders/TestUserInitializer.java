@@ -60,7 +60,7 @@ public class TestUserInitializer implements CommandLineRunner {
 
 		// it's done just to avoid creating new account each time Spring Application is restarted
 		if (activeSpringProfile.isPresent() && (activeSpringProfile.get().equals(SpringAppProfiles.DEV_HOME.getYmlName()) ||
-		                                        activeSpringProfile.get().equals(SpringAppProfiles.DEV_OFFICE.getYmlName()))) {
+		                                        activeSpringProfile.get().equals(SpringAppProfiles.H2_IN_MEMORY.getYmlName()))) {
 
 			log.info(FLOW_MARKER, "Creating test user...");
 			final CustomUser testUser = CustomUser.Builder()

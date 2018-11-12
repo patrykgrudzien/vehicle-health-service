@@ -9,7 +9,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import me.grudzien.patryk.domain.enums.SpringAppProfiles;
 
 @Configuration
-@Profile({SpringAppProfiles.YmlName.DEV_HOME, SpringAppProfiles.YmlName.DEV_OFFICE})
+@Profile({SpringAppProfiles.YmlName.DEV_HOME, SpringAppProfiles.YmlName.H2_IN_MEMORY})
 public class CorsConfig {
 
 	@Bean

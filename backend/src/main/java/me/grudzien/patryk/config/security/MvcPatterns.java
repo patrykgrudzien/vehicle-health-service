@@ -65,4 +65,8 @@ final class MvcPatterns {
         // /failure-target-url**
         return propertiesKeeper.oAuth2().FAILURE_TARGET_URL + "**";
     }
+
+    static String h2InMemoryWebConsole() {
+        return "/h2-console/**";
+    }
 }
