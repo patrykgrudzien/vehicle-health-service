@@ -35,7 +35,7 @@ import me.grudzien.patryk.controller.login.UserAuthenticationController;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationResponse;
 import me.grudzien.patryk.service.login.UserAuthenticationService;
-import me.grudzien.patryk.utils.validators.ValidatorCreator;
+import me.grudzien.patryk.util.validator.ValidatorCreator;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(controllers = UserAuthenticationController.class, secure = false)

@@ -16,11 +16,11 @@ import com.google.common.base.Preconditions;
 import java.util.Optional;
 
 import me.grudzien.patryk.repository.registration.CustomUserRepository;
-import me.grudzien.patryk.utils.jwt.JwtUserFactory;
+import me.grudzien.patryk.util.jwt.JwtUserFactory;
 
-import static me.grudzien.patryk.utils.log.LogMarkers.EXCEPTION_MARKER;
-import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
-import static me.grudzien.patryk.utils.log.LogMarkers.METHOD_INVOCATION_MARKER;
+import static me.grudzien.patryk.util.log.LogMarkers.EXCEPTION_MARKER;
+import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
+import static me.grudzien.patryk.util.log.LogMarkers.METHOD_INVOCATION_MARKER;
 
 @Log4j2
 @Service
@@ -42,8 +42,8 @@ public class MyUserDetailsService implements UserDetailsService {
 	/**
 	 * Method returning object that implements {@link org.springframework.security.core.userdetails.UserDetails} interface, null otherwise.
 	 *
-	 * @param email used to retrieve {@link me.grudzien.patryk.domain.entities.registration.CustomUser} entity.
-	 * @return {@link me.grudzien.patryk.domain.entities.registration.CustomUser} entity, null otherwise.
+	 * @param email used to retrieve {@link me.grudzien.patryk.domain.entity.registration.CustomUser} entity.
+	 * @return {@link me.grudzien.patryk.domain.entity.registration.CustomUser} entity, null otherwise.
 	 */
 	@Override
 	@Cacheable(key = "#email", condition = "#email != null && !#email.equals(\"\")", unless = "#result == null")

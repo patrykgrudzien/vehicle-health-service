@@ -7,7 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import me.grudzien.patryk.domain.enums.SpringAppProfiles;
-import me.grudzien.patryk.utils.log.LogMarkers;
+import me.grudzien.patryk.util.log.LogMarkers;
 
 import static me.grudzien.patryk.PropertiesKeeper.FrontendRoutes;
 

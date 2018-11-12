@@ -1,7 +1,7 @@
 package me.grudzien.patryk.service.vehicle;
 
 import me.grudzien.patryk.domain.dto.vehicle.VehicleDto;
-import me.grudzien.patryk.domain.entities.vehicle.Vehicle;
+import me.grudzien.patryk.domain.entity.vehicle.Vehicle;
 
 public interface VehicleService {
 

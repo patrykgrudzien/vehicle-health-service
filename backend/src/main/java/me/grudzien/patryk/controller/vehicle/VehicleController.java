@@ -16,7 +16,7 @@ import com.google.common.base.Preconditions;
 
 import me.grudzien.patryk.domain.dto.vehicle.VehicleDto;
 import me.grudzien.patryk.service.vehicle.VehicleService;
-import me.grudzien.patryk.utils.web.RequestsDecoder;
+import me.grudzien.patryk.util.web.RequestsDecoder;
 
 @Log4j2
 @RestController

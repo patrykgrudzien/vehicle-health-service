@@ -14,13 +14,13 @@ import me.grudzien.patryk.PropertiesKeeper.FrontendRoutes;
 import me.grudzien.patryk.PropertiesKeeper.StaticResources;
 import me.grudzien.patryk.config.filters.GenericJwtTokenFilter;
 import me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter;
-import me.grudzien.patryk.oauth2.handlers.CustomOAuth2AuthenticationFailureHandler;
-import me.grudzien.patryk.oauth2.handlers.CustomOAuth2AuthenticationSuccessHandler;
+import me.grudzien.patryk.oauth2.handler.CustomOAuth2AuthenticationFailureHandler;
+import me.grudzien.patryk.oauth2.handler.CustomOAuth2AuthenticationSuccessHandler;
 import me.grudzien.patryk.oauth2.repository.CacheBasedOAuth2AuthorizationRequestRepository;
 import me.grudzien.patryk.oauth2.service.CustomOAuth2UserService;
 import me.grudzien.patryk.oauth2.service.CustomOidcUserService;
-import me.grudzien.patryk.oauth2.utils.CacheHelper;
-import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
+import me.grudzien.patryk.oauth2.util.CacheHelper;
+import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
 
 final class SecurityConfigContext {
 
@@ -89,7 +89,7 @@ final class SecurityConfigContext {
              * 1) "/auth"
              * 2) "/registration"
              * This filter is required to determine "Locale" which is needed to create appropriate messages using:
-             * {@link me.grudzien.patryk.utils.i18n.LocaleMessagesCreator#buildLocaleMessage(String)} or to take right email template inside:
+             * {@link me.grudzien.patryk.util.i18n.LocaleMessagesCreator#buildLocaleMessage(String)} or to take right email template inside:
              * {@link me.grudzien.patryk.service.registration.impl.EmailServiceImpl#sendMessageUsingTemplate(me.grudzien.patryk.domain.dto.registration.EmailDto)}.
              */
         }

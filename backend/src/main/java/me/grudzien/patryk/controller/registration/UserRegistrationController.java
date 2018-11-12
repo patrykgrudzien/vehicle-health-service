@@ -23,7 +23,7 @@ import me.grudzien.patryk.domain.dto.registration.UserRegistrationDto;
 import me.grudzien.patryk.domain.dto.responses.CustomResponse;
 import me.grudzien.patryk.domain.dto.responses.SuccessResponse;
 import me.grudzien.patryk.service.registration.UserRegistrationService;
-import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
+import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
 
 @Log4j2
 @RestController

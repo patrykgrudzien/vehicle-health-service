@@ -16,14 +16,14 @@ import com.google.common.base.Preconditions;
 import java.util.Optional;
 
 import me.grudzien.patryk.domain.dto.vehicle.VehicleDto;
-import me.grudzien.patryk.domain.entities.vehicle.Vehicle;
-import me.grudzien.patryk.exceptions.vehicle.VehicleNotFoundException;
+import me.grudzien.patryk.domain.entity.vehicle.Vehicle;
+import me.grudzien.patryk.exception.vehicle.VehicleNotFoundException;
 import me.grudzien.patryk.repository.vehicle.VehicleRepository;
 import me.grudzien.patryk.service.vehicle.VehicleService;
-import me.grudzien.patryk.utils.web.RequestsDecoder;
+import me.grudzien.patryk.util.web.RequestsDecoder;
 
-import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
-import static me.grudzien.patryk.utils.log.LogMarkers.METHOD_INVOCATION_MARKER;
+import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
+import static me.grudzien.patryk.util.log.LogMarkers.METHOD_INVOCATION_MARKER;
 
 @Log4j2
 @Service

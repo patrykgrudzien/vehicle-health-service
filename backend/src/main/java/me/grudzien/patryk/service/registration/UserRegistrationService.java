@@ -6,7 +6,7 @@ import org.springframework.web.context.request.WebRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import me.grudzien.patryk.domain.dto.registration.UserRegistrationDto;
-import me.grudzien.patryk.domain.entities.registration.CustomUser;
+import me.grudzien.patryk.domain.entity.registration.CustomUser;
 
 public interface UserRegistrationService {
 

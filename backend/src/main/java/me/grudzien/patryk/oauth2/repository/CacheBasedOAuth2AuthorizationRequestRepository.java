@@ -15,10 +15,10 @@ import com.google.common.base.Preconditions;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import me.grudzien.patryk.oauth2.utils.CacheHelper;
-import me.grudzien.patryk.oauth2.utils.URLParser;
+import me.grudzien.patryk.oauth2.util.CacheHelper;
+import me.grudzien.patryk.oauth2.util.URLParser;
 
-import static me.grudzien.patryk.utils.log.LogMarkers.OAUTH2_MARKER;
+import static me.grudzien.patryk.util.log.LogMarkers.OAUTH2_MARKER;
 
 /**
  * For storing the {@link org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest},
@@ -74,7 +74,7 @@ public class CacheBasedOAuth2AuthorizationRequestRepository implements Authoriza
 		Assert.hasText(state, "authorizationRequest.state cannot be empty");
 		/**
 		 * Saving additional cache which will be required in:
-		 * {@link me.grudzien.patryk.oauth2.utils.OAuth2FlowDelegator#determineFlowBasedOnUrl(String)}
+		 * {@link me.grudzien.patryk.oauth2.util.OAuth2FlowDelegator#determineFlowBasedOnUrl(String)}
 		 * to decide if user should be (log in) or (register).
 		 */
 		URLParser.retrieveEndpointFromURL(request.getHeader(HttpHeaders.REFERER))

@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static me.grudzien.patryk.domain.enums.SpringAppProfiles.HEROKU_DEPLOYMENT;
-import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
+import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
 
 /**
  * This class is used by exec-maven-plugin which is gonna execute this main() method and create files which are triggers for

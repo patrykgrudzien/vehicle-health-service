@@ -20,12 +20,12 @@ import me.grudzien.patryk.domain.dto.login.JwtAuthenticationResponse;
 import me.grudzien.patryk.domain.dto.login.JwtUser;
 import me.grudzien.patryk.domain.dto.responses.ExceptionResponse;
 import me.grudzien.patryk.domain.dto.responses.SuccessResponse;
-import me.grudzien.patryk.handlers.web.HttpResponseHandler;
+import me.grudzien.patryk.handler.web.HttpResponseHandler;
 import me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser.AccountStatus;
-import me.grudzien.patryk.utils.jwt.JwtTokenUtil;
+import me.grudzien.patryk.util.jwt.JwtTokenUtil;
 
 import static me.grudzien.patryk.domain.enums.AppFLow.USER_LOGGED_IN_USING_GOOGLE;
-import static me.grudzien.patryk.oauth2.handlers.CustomOAuth2AuthenticationSuccessHandler.SHORT_LIVED_AUTH_TOKEN_NAME;
+import static me.grudzien.patryk.oauth2.handler.CustomOAuth2AuthenticationSuccessHandler.SHORT_LIVED_AUTH_TOKEN_NAME;
 
 @Log4j2
 @RestController

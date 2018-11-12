@@ -13,13 +13,13 @@ import com.google.common.base.Preconditions;
 
 import me.grudzien.patryk.domain.dto.login.JwtUser;
 import me.grudzien.patryk.domain.enums.registration.RegistrationProvider;
-import me.grudzien.patryk.exceptions.login.BadCredentialsAuthenticationException;
+import me.grudzien.patryk.exception.login.BadCredentialsAuthenticationException;
 import me.grudzien.patryk.oauth2.authentication.checkers.AdditionalChecks;
-import me.grudzien.patryk.oauth2.exceptions.JwtTokenNotFoundException;
-import me.grudzien.patryk.oauth2.exceptions.RegistrationProviderMismatchException;
-import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
+import me.grudzien.patryk.oauth2.exception.JwtTokenNotFoundException;
+import me.grudzien.patryk.oauth2.exception.RegistrationProviderMismatchException;
+import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
 
-import static me.grudzien.patryk.utils.log.LogMarkers.SECURITY_MARKER;
+import static me.grudzien.patryk.util.log.LogMarkers.SECURITY_MARKER;
 
 @Log4j2
 @Component
@@ -39,7 +39,7 @@ public class CustomAdditionalAuthenticationChecks implements AdditionalChecks<Jw
     /**
      * In case of the Exceptions thrown below, code flow is caught by one of the "Case" inside:
      * {@link me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases} and translation to JSON format is done by:
-     * {@link me.grudzien.patryk.handlers.exception.ExceptionHandlingController}
+     * {@link me.grudzien.patryk.handler.exception.ExceptionHandlingController}
      */
 	@Override
 	public void additionalAuthenticationChecks(final JwtUser jwtUser, final Authentication authentication, final String jwtSubjectIdentifier) {

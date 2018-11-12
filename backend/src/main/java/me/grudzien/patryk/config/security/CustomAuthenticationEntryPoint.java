@@ -15,14 +15,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import me.grudzien.patryk.domain.dto.responses.AuthenticationEntryPointResponse;
 import me.grudzien.patryk.domain.dto.responses.CustomResponse.SecurityStatus;
-import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
-import me.grudzien.patryk.utils.web.HttpResponseCustomizer;
+import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
+import me.grudzien.patryk.util.web.HttpResponseCustomizer;
 
-import static me.grudzien.patryk.utils.log.LogMarkers.FLOW_MARKER;
+import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
 
 /**
  * IMPORTANT NOTE:
- * {@link me.grudzien.patryk.handlers.exception.ExceptionHandlingController} only handles exceptions come from @Controller classes that's
+ * {@link me.grudzien.patryk.handler.exception.ExceptionHandlingController} only handles exceptions come from @Controller classes that's
  * why all exceptions which come from JWT will be omitted (they are specific to Servlet itself) !!!
  *
  * Exceptions come from JWT are handled by {@link me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter}
