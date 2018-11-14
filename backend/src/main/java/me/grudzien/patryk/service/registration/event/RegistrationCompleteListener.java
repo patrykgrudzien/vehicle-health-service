@@ -1,4 +1,4 @@
-package me.grudzien.patryk.event.registration;
+package me.grudzien.patryk.service.registration.event;
 
 import lombok.extern.log4j.Log4j2;
 
