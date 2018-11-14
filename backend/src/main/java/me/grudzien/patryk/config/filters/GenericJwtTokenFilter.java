@@ -1,11 +1,7 @@
 package me.grudzien.patryk.config.filters;
 
-import com.google.common.base.Preconditions;
 import lombok.extern.log4j.Log4j2;
-import me.grudzien.patryk.PropertiesKeeper;
-import me.grudzien.patryk.service.security.MyUserDetailsService;
-import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
-import me.grudzien.patryk.util.jwt.JwtTokenUtil;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,12 +11,20 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.google.common.base.Preconditions;
+
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.util.Optional;
+
+import me.grudzien.patryk.PropertiesKeeper;
+import me.grudzien.patryk.service.security.MyUserDetailsService;
+import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
+import me.grudzien.patryk.util.jwt.JwtTokenUtil;
 
 import static me.grudzien.patryk.util.log.LogMarkers.EXCEPTION_MARKER;
 import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;

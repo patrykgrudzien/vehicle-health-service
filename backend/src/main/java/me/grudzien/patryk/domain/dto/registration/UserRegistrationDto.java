@@ -9,9 +9,9 @@ import lombok.Setter;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
-import me.grudzien.patryk.domain.enums.registration.RegistrationProvider;
 import me.grudzien.patryk.annotation.FieldMatcher;
 import me.grudzien.patryk.annotation.ValidEmail;
+import me.grudzien.patryk.domain.enums.registration.RegistrationProvider;
 
 @Getter
 @Setter

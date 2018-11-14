@@ -12,18 +12,18 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static me.grudzien.patryk.util.web.CustomURLBuilder.PATH_VARIABLE_DELIMITER;
+import me.grudzien.patryk.util.web.CustomURLBuilder;
 
 public class URLParser {
 
 	private static final Set<String> HTTP_PROTOCOLS = Sets.newHashSet("http://", "https://");
-	private static final Function<String[], String> GET_ARRAY_LAST_ELEMENT = array -> PATH_VARIABLE_DELIMITER + array[array.length - 1];
+	private static final Function<String[], String> GET_ARRAY_LAST_ELEMENT = array -> CustomURLBuilder.PATH_VARIABLE_DELIMITER + array[array.length - 1];
 
 	public static Optional<String> retrieveEndpointFromURL(final String url) {
 		return StringUtils.isEmpty(url) ? Optional.empty() : HTTP_PROTOCOLS.stream()
 		                                                                   .map(protocol -> url.contains(protocol) ? url.replace(protocol, Strings.EMPTY) : null)
 		                                                                   .filter(Objects::nonNull)
-		                                                                   .map(cleanUrl -> cleanUrl.split(PATH_VARIABLE_DELIMITER))
+		                                                                   .map(cleanUrl -> cleanUrl.split(CustomURLBuilder.PATH_VARIABLE_DELIMITER))
 		                                                                   .collect(Collectors.toList())
 		                                                                   .stream()
 		                                                                   .map(GET_ARRAY_LAST_ELEMENT)

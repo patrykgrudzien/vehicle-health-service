@@ -23,6 +23,7 @@ import static io.vavr.API.Case;
 import static io.vavr.API.Match;
 import static io.vavr.API.run;
 import static io.vavr.Predicates.is;
+
 import static me.grudzien.patryk.domain.enums.AppFLow.ACCOUNT_ALREADY_ENABLED;
 import static me.grudzien.patryk.domain.enums.AppFLow.CONFIRM_REGISTRATION;
 import static me.grudzien.patryk.domain.enums.AppFLow.USER_LOGGED_IN_USING_GOOGLE;
