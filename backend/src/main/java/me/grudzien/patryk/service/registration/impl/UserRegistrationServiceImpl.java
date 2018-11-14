@@ -34,7 +34,6 @@ import me.grudzien.patryk.domain.enums.registration.PrivilegeName;
 import me.grudzien.patryk.domain.enums.registration.RegistrationProvider;
 import me.grudzien.patryk.domain.enums.registration.RoleName;
 import me.grudzien.patryk.domain.enums.vehicle.VehicleType;
-import me.grudzien.patryk.event.registration.OnRegistrationCompleteEvent;
 import me.grudzien.patryk.exception.registration.CustomUserValidationException;
 import me.grudzien.patryk.exception.registration.TokenExpiredException;
 import me.grudzien.patryk.exception.registration.TokenNotFoundException;
@@ -44,10 +43,14 @@ import me.grudzien.patryk.repository.registration.CustomUserRepository;
 import me.grudzien.patryk.repository.registration.EmailVerificationTokenRepository;
 import me.grudzien.patryk.service.registration.EmailService;
 import me.grudzien.patryk.service.registration.UserRegistrationService;
+import me.grudzien.patryk.service.registration.event.OnRegistrationCompleteEvent;
 import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.util.web.RequestsDecoder;
 
-import static me.grudzien.patryk.domain.enums.AppFLow.*;
+import static me.grudzien.patryk.domain.enums.AppFLow.ACCOUNT_ALREADY_ENABLED;
+import static me.grudzien.patryk.domain.enums.AppFLow.CONFIRM_REGISTRATION;
+import static me.grudzien.patryk.domain.enums.AppFLow.VERIFICATION_TOKEN_EXPIRED;
+import static me.grudzien.patryk.domain.enums.AppFLow.VERIFICATION_TOKEN_NOT_FOUND;
 import static me.grudzien.patryk.util.log.LogMarkers.EXCEPTION_MARKER;
 import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
 

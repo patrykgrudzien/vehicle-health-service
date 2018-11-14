@@ -12,9 +12,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
-
 import me.grudzien.patryk.util.i18n.LocaleMessagesHelper;
+
+import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
 
 /**
  * This filter is registered in {@link me.grudzien.patryk.config.filters.registry.FiltersRegistryConfig}

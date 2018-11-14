@@ -18,7 +18,10 @@ import me.grudzien.patryk.domain.dto.responses.CustomResponse.SecurityStatus;
 import me.grudzien.patryk.domain.dto.responses.ExceptionResponse;
 import me.grudzien.patryk.util.web.HttpResponseCustomizer;
 
-import static io.vavr.API.*;
+import static io.vavr.API.$;
+import static io.vavr.API.Case;
+import static io.vavr.API.Match;
+import static io.vavr.API.run;
 import static io.vavr.Predicates.instanceOf;
 
 import static me.grudzien.patryk.util.log.LogMarkers.EXCEPTION_MARKER;

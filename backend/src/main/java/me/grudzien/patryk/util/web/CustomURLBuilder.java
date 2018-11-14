@@ -1,11 +1,5 @@
 package me.grudzien.patryk.util.web;
 
-import static io.vavr.API.$;
-import static io.vavr.API.Case;
-import static io.vavr.API.Match;
-import static io.vavr.Predicates.is;
-import static org.springframework.util.ObjectUtils.isEmpty;
-
 import io.vavr.Tuple2;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,6 +10,13 @@ import org.apache.logging.log4j.util.Strings;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static io.vavr.API.$;
+import static io.vavr.API.Case;
+import static io.vavr.API.Match;
+import static io.vavr.Predicates.is;
+
+import static org.springframework.util.ObjectUtils.isEmpty;
 
 import static me.grudzien.patryk.util.web.CustomURLBuilder.AdditionalParamsDelimiterType.NONE;
 import static me.grudzien.patryk.util.web.CustomURLBuilder.AdditionalParamsDelimiterType.PATH_VARIABLE;
