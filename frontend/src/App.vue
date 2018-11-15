@@ -248,7 +248,7 @@
         if (this.$route.path.includes(componentsDetails.loginForm.path) ||
           this.$route.path.includes(componentsDetails.registrationForm.path) ||
           this.$route.path.includes(componentsDetails.confirmRegistration.path) ||
-          this.$route.path.includes('/logout') ||
+          this.$route.path.includes(componentsDetails.logoutSuccessfulWildcard.path) ||
           this.$route.fullPath.includes(componentsDetails.logoutSuccessful.path)) {
 
           this.$router.app.$emit(EVENTS.OPEN_DIALOG_AND_SEND_LANG_EVENT, {
