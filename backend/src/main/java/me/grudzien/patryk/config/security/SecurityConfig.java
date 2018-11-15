@@ -42,6 +42,14 @@ import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
  *     {@linkplain @Bean} of type {@link org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter} and decorate the class
  *     with {@linkplain @Order}.
  * </p>
+ *
+ * <h2>Request matching for Dispatch and Authorization</h2>
+ * <p>
+ *     A security filter chain (or equivalently a {@link org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter}) has
+ *     a request matcher that is used for deciding whether to apply it to an HTTP request. Once the decision is made to apply a particular filter chain,
+ *     <b>NO OTHERS ARE APPLIED!</b> But within a filter chain you can have more fine grained control of authorization by setting additional matchers in the
+ *     {@link org.springframework.security.config.annotation.web.builders.HttpSecurity} configurer.
+ * </p>
  */
 @SuppressWarnings("JavadocReference")   // disabling errors caused by "security.basic.enabled" mentioned above
 @Log4j2
@@ -104,6 +112,38 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		return new BCryptPasswordEncoder();
 	}
 
+	/**
+	 * <h2>Note:</h2>
+	 * <p>
+	 *     The {@link org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder} is {@linkplain @Autowired} into a method -
+	 *     that is what makes it build the <b>global (parent)</b> {@link org.springframework.security.authentication.AuthenticationManager}.
+	 *     In contrast if we had done it this way:
+	 *     <pre>
+	 *         &#064;Configuration
+	 *         public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
+	 *
+	 *         &#064;Autowired
+	 *         DataSource dataSource;
+	 *
+	 *         ... // web stuff here
+	 *
+	 *           &#064;Override
+	 *           public configure(AuthenticationManagerBuilder builder) {
+	 *           builder.jdbcAuthentication().dataSource(dataSource).withUser("dave")
+	 *           .password("secret").roles("USER");
+	 *           }
+	 *         }
+	 *     </pre>
+	 *     (using an {@linkplain @Override} for a method in the configurer) then the
+	 *     {@link org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder} is only used to build a "local"
+	 *     {@link org.springframework.security.authentication.AuthenticationManager}, which is a <b>child of the global one</b>. In a Spring Boot application you can
+	 *     {@linkplain @Autowire} the global one into another bean, but you <b>can't do that with the local one unless you explicitly expose it yourself.</b>
+	 *     <br><br>
+	 *     Spring Boot provides a default global {@link org.springframework.security.authentication.AuthenticationManager} (with just one user) unless you pre-empt it
+	 *     by providing your own bean of type {@link org.springframework.security.authentication.AuthenticationManager}. The default is secure enough on its own for
+	 *     you not to have to worry about it much, unless you actively need a custom global {@link org.springframework.security.authentication.AuthenticationManager}.
+	 * </p>
+	 */
 	@Autowired
 	protected void configureGlobal(final AuthenticationManagerBuilder auth) throws Exception {
 		auth.userDetailsService(userDetailsService)
