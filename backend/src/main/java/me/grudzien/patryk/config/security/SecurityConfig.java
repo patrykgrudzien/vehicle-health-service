@@ -4,8 +4,10 @@ import lombok.extern.log4j.Log4j2;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -31,10 +33,23 @@ import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
 
 import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
 
+/**
+ * <h2>Creating and Customizing Filter Chains</h2>
+ * <p>
+ *     The default fallback filter chain in a Spring Boot app (the one with the {@linkplain /**} request matcher) has a predefined order of
+ *     {@link org.springframework.boot.autoconfigure.security.SecurityProperties#BASIC_AUTH_ORDER}. You can switch it off completely by setting
+ *     {@linkplain security.basic.enabled} = false, or you can use it as a fallback and just define other rules with a lower order. To do that just add a
+ *     {@linkplain @Bean} of type {@link org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter} and decorate the class
+ *     with {@linkplain @Order}.
+ * </p>
+ */
+@SuppressWarnings("JavadocReference")   // disabling errors caused by "security.basic.enabled" mentioned above
 @Log4j2
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+// This will cause Spring Security to add a new filter chain and order it before the fallback.
+@Order(SecurityProperties.BASIC_AUTH_ORDER - 10)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	private final UserDetailsService userDetailsService;
@@ -50,7 +65,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private final CustomAuthenticationProvider customAuthenticationProvider;
 
 	/**
-	 * @Qualifier for {@link org.springframework.security.core.userdetails.UserDetailsService} is used here because there is also
+	 * {@linkplain @Qualifier} for {@link org.springframework.security.core.userdetails.UserDetailsService} is used here because there is also
 	 * {@link org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration} available and Spring
 	 * does not know that I want to use my custom implementation.
 	 */
