@@ -57,6 +57,7 @@ import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
  * {@link me.grudzien.patryk.util.jwt.JwtTokenUtil.Retriever#getAllClaimsFromToken(String)}.
  * In such case one of the exceptions listed below is thrown.
  */
+@SuppressWarnings("JavadocReference")
 @Log4j2
 public class ServletExceptionHandlerFilter extends OncePerRequestFilter {
 

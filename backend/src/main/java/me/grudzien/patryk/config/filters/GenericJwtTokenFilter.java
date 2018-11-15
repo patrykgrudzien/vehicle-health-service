@@ -53,6 +53,7 @@ import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
  * Another filter:
  * {@link me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter}
  */
+@SuppressWarnings("JavadocReference")
 @Log4j2
 public class GenericJwtTokenFilter extends OncePerRequestFilter {
 
