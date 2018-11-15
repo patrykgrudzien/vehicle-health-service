@@ -14,11 +14,6 @@ import UserRegisteredUsingGoogle from '../components/oauth2/google/UserRegistere
 
 export default [
   {
-    name: 'Wildcard',
-    path: '*',
-    component: Home
-  },
-  {
     name: componentsDetails.home.name,
     path: componentsDetails.home.path,
     component: Home
