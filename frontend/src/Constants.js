@@ -1,3 +1,8 @@
+const CONTEXT_PATHS = {
+  UI: '/ui',
+  API: '/api'
+};
+
 const DEPLOYMENT_MODES = {
   PROD: 'PROD',
   DEV: 'DEV'
@@ -58,5 +63,6 @@ export {
   DEPLOYMENT_MODES,
   MUTATIONS,
   ACTIONS,
-  EVENTS
+  EVENTS,
+  CONTEXT_PATHS
 }
