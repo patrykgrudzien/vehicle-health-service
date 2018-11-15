@@ -1,16 +1,16 @@
-import Home                        from '../components/home/Home';
-import AboutMe                     from '../components/AboutMe';
-import RegistrationForm            from '../components/registration/RegistrationForm';
-import ConfirmRegistration         from '../components/registration/ConfirmRegistration';
-import LoginForm                   from '../components/login/LoginForm';
-import Wrapper                     from '../components/Wrapper';
-import MainBoard                   from '../components/home/MainBoard';
-import Engine                      from '../components/vehicle/Engine';
-import Fluids                      from '../components/vehicle/Fluids';
-import Tires                       from '../components/vehicle/Tires';
-import MaintenanceCosts            from '../components/vehicle/MaintenanceCosts';
-import componentsDetails           from '../componentsDetails';
-import GoogleRedirectionSuccessful from '../components/oauth2/GoogleRedirectionSuccessful';
+import Home                      from '../components/home/Home';
+import AboutMe                   from '../components/AboutMe';
+import RegistrationForm          from '../components/registration/RegistrationForm';
+import ConfirmRegistration       from '../components/registration/ConfirmRegistration';
+import LoginForm                 from '../components/login/LoginForm';
+import MainBoard                 from '../components/home/MainBoard';
+import Engine                    from '../components/vehicle/Engine';
+import Fluids                    from '../components/vehicle/Fluids';
+import Tires                     from '../components/vehicle/Tires';
+import MaintenanceCosts          from '../components/vehicle/MaintenanceCosts';
+import componentsDetails         from '../componentsDetails';
+import UserLoggedInUsingGoogle   from '../components/oauth2/google/UserLoggedInUsingGoogle';
+import UserRegisteredUsingGoogle from '../components/oauth2/google/UserRegisteredUsingGoogle';
 
 export default [
   {
@@ -60,24 +60,24 @@ export default [
   },
   /*
    * {
-    // WrapperForMainBoardAndChildren
-    path: componentsDetails.mainBoard.path, // after login I want to have main-board as main URL
-    component: Wrapper,
-    children: [
-      {
-        name: componentsDetails.mainBoard.name,
-        path: '',
-        component: MainBoard,
-        meta: {requiresLoginUser: true}
-      },
-      {
-        name: 'Engine',
-        path: componentsDetails.engine,
-        component: Engine,
-        meta: {requiresLoginUser: true}
-      }
-    ]
-  }
+   // WrapperForMainBoardAndChildren
+   path: componentsDetails.mainBoard.path, // after login I want to have main-board as main URL
+   component: Wrapper,
+   children: [
+   {
+   name: componentsDetails.mainBoard.name,
+   path: '',
+   component: MainBoard,
+   meta: {requiresLoginUser: true}
+   },
+   {
+   name: 'Engine',
+   path: componentsDetails.engine,
+   component: Engine,
+   meta: {requiresLoginUser: true}
+   }
+   ]
+   }
    */
   {
     name: componentsDetails.mainBoard.name,
@@ -110,8 +110,13 @@ export default [
     meta: {requiresAuth: true}
   },
   {
-    name: componentsDetails.googleRedirectionSuccessful.name,
-    path: componentsDetails.googleRedirectionSuccessful.path,
-    component: GoogleRedirectionSuccessful
+    name: componentsDetails.userLoggedInUsingGoogle.name,
+    path: componentsDetails.userLoggedInUsingGoogle.path,
+    component: UserLoggedInUsingGoogle
+  },
+  {
+    name: componentsDetails.userRegisteredUsingGoogle.name,
+    path: componentsDetails.userRegisteredUsingGoogle.path,
+    component: UserRegisteredUsingGoogle
   }
 ];
