@@ -69,7 +69,7 @@
         <v-card disabled
                 class="elevation-12">
           <v-card-media
-            src="../../../static/engine-1.jpg"
+            src="../../assets/engine-1.jpg"
             :height="cardMediaHeight"
             class="white--text text-xs-center">
           </v-card-media>
@@ -104,7 +104,7 @@
         <v-card disabled
                 class="elevation-12">
           <v-card-media
-            src="../../../static/engine-2.jpg"
+            src="../../assets/engine-2.jpg"
             :height="cardMediaHeight"
             class="white--text text-xs-center">
           </v-card-media>
@@ -139,7 +139,7 @@
         <v-card disabled
                 class="elevation-12">
           <v-card-media
-            src="../../../static/engine-3.jpg"
+            src="../../assets/engine-3.jpg"
             :height="cardMediaHeight"
             class="white--text text-xs-center">
           </v-card-media>
@@ -174,7 +174,7 @@
         <v-card disabled
                 class="elevation-12">
           <v-card-media
-            src="../../../static/engine-4.jpg"
+            src="../../assets/engine-4.jpg"
             :height="cardMediaHeight"
             class="white--text text-xs-center">
           </v-card-media>

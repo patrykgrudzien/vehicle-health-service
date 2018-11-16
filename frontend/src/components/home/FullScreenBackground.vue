@@ -14,23 +14,23 @@
         images: [{
           id: 1,
           title: 'background-text-1',
-          path: '../../static/engine-1.jpg'
+          path: '../../assets/engine-1.jpg'
         }, {
           id: 2,
           title: 'background-text-2',
-          path: '../../static/engine-2.jpg'
+          path: '../../assets/engine-2.jpg'
         }, {
           id: 3,
           title: 'background-text-3',
-          path: '../../static/engine-3.jpg'
+          path: '../../assets/engine-3.jpg'
         }, {
           id: 4,
           title: 'background-text-4',
-          path: '../../static/engine-4.jpg'
+          path: '../../assets/engine-4.jpg'
         }, {
           id: 5,
           title: 'background-text-5',
-          path: '../../static/engine-5.jpg'
+          path: '../../assets/engine-5.jpg'
         }]
       }
     },
