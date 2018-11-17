@@ -86,11 +86,9 @@ export function getMessageFromLocale(key) {
 export const eventBus = new Vue();
 
 // --------- APP ---------
-export const app = new Vue({
-  el: '#app',
-  router: myRouter,
-  store,
-  i18n,
-  components: {App},
-  template: '<App/>'
-});
+new Vue({
+    router: myRouter,
+    store,
+    i18n,
+    render: h => h(App)
+}).$mount('#app');
