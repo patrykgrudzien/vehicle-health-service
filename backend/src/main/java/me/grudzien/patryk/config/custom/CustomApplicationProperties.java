@@ -32,7 +32,7 @@ public class CustomApplicationProperties {
 	@Getter
 	@Setter
 	public static class Endpoints {
-
+		private String apiContextPath;
 		private Registration registration = new Registration();
 		private Authentication authentication = new Authentication();
 		private Heroku heroku = new Heroku();
