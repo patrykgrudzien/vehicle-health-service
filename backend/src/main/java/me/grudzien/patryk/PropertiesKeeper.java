@@ -80,6 +80,6 @@ public final class PropertiesKeeper {
 	}
 
 	public interface StaticResources {
-		String[] ALL = {"/index.html", "/favicon.ico", "/static/**", "/static/css/**", "/static/img/**", "/static/js/**", "/public**"};
+		String[] ALL = {"/assets/**", "/index.html", "/favicon.ico", "/static/**", "/static/css/**", "/static/img/**", "/static/js/**", "/public**"};
 	}
 }
