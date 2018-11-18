@@ -224,7 +224,7 @@
         </v-card-actions>
         <v-card-text class="pl-3 ml-1 notSelectable">
           {{ $t('already-registered') }}
-          <router-link to="/login" exact>{{ $t('login-here') }}</router-link>
+          <router-link to="/ui/login" exact>{{ $t('login-here') }}</router-link>
         </v-card-text>
       </v-card>
       <!-- FORM -->
