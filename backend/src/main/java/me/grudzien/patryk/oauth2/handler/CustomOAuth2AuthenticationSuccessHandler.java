@@ -58,12 +58,13 @@ public class CustomOAuth2AuthenticationSuccessHandler extends SimpleUrlAuthentic
 
 	private String defineSuccessTargetURL(final CustomOAuth2OidcPrincipalUser customOAuth2OidcPrincipalUser) {
 		final AccountStatus userAccountStatus = customOAuth2OidcPrincipalUser.getAccountStatus();
+        final String API_CONTEXT_PATH = propertiesKeeper.endpoints().API_CONTEXT_PATH;
 		return Match(userAccountStatus).of(
-				Case($(is(AccountStatus.REGISTERED)), () -> propertiesKeeper.oAuth2().USER_REGISTERED_USING_GOOGLE),
+				Case($(is(AccountStatus.REGISTERED)), () -> API_CONTEXT_PATH + propertiesKeeper.oAuth2().USER_REGISTERED_USING_GOOGLE),
 				Case($(is(AccountStatus.LOGGED)), () -> {
 					final String shortLivedAuthToken = JwtTokenUtil.Creator.generateShortLivedToken(customOAuth2OidcPrincipalUser);
 					final Tuple2<String, String> additionalUrlParameters = new Tuple2<>(SHORT_LIVED_AUTH_TOKEN_NAME, shortLivedAuthToken);
-					return CustomURLBuilder.buildURL(propertiesKeeper.oAuth2().USER_LOGGED_IN_USING_GOOGLE,
+					return CustomURLBuilder.buildURL(API_CONTEXT_PATH + propertiesKeeper.oAuth2().USER_LOGGED_IN_USING_GOOGLE,
                                                      CustomURLBuilder.AdditionalParamsDelimiterType.REQUEST_PARAM, additionalUrlParameters);
 				}),
 				Case($(), StringUtils.EMPTY)

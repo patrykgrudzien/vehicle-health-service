@@ -58,17 +58,18 @@ public class CustomOAuth2AuthenticationFailureHandler extends SimpleUrlAuthentic
 	}
 
 	private String defineFailureTargetURL(final OAuth2Error oAuth2Error) {
+	    final String API_CONTEXT_PATH = propertiesKeeper.endpoints().API_CONTEXT_PATH;
 		return Match(oAuth2Error.getErrorCode()).of(
-                Case($(isEqual(AccountStatus.NOT_FOUND.name())), propertiesKeeper.oAuth2().USER_NOT_FOUND),
-                Case($(isEqual(AccountStatus.USER_ACCOUNT_IS_LOCKED.name())), propertiesKeeper.oAuth2().USER_ACCOUNT_IS_LOCKED),
-                Case($(isEqual(AccountStatus.USER_IS_DISABLED.name())), propertiesKeeper.oAuth2().USER_IS_DISABLED),
-                Case($(isEqual(AccountStatus.USER_ACCOUNT_IS_EXPIRED.name())), propertiesKeeper.oAuth2().USER_ACCOUNT_IS_EXPIRED),
-                Case($(isEqual(AccountStatus.ALREADY_EXISTS.name())), propertiesKeeper.oAuth2().USER_ACCOUNT_ALREADY_EXISTS),
-                Case($(isEqual(AccountStatus.CREDENTIALS_HAVE_EXPIRED.name())), propertiesKeeper.oAuth2().CREDENTIALS_HAVE_EXPIRED),
-                Case($(isEqual(AccountStatus.JWT_TOKEN_NOT_FOUND.name())), propertiesKeeper.oAuth2().JWT_TOKEN_NOT_FOUND),
-                Case($(isEqual(AccountStatus.REGISTRATION_PROVIDER_MISMATCH.name())), propertiesKeeper.oAuth2().REGISTRATION_PROVIDER_MISMATCH),
-                Case($(isEqual(AccountStatus.BAD_CREDENTIALS.name())), propertiesKeeper.oAuth2().BAD_CREDENTIALS),
-				Case($(isIn(UNKNOWN_OAUTH2_USER_ERROR_CODE, UNKNOWN_OIDC_USER_ERROR_CODE)), propertiesKeeper.oAuth2().FAILURE_TARGET_URL)
+                Case($(isEqual(AccountStatus.NOT_FOUND.name())), API_CONTEXT_PATH + propertiesKeeper.oAuth2().USER_NOT_FOUND),
+                Case($(isEqual(AccountStatus.USER_ACCOUNT_IS_LOCKED.name())), API_CONTEXT_PATH + propertiesKeeper.oAuth2().USER_ACCOUNT_IS_LOCKED),
+                Case($(isEqual(AccountStatus.USER_IS_DISABLED.name())), API_CONTEXT_PATH + propertiesKeeper.oAuth2().USER_IS_DISABLED),
+                Case($(isEqual(AccountStatus.USER_ACCOUNT_IS_EXPIRED.name())), API_CONTEXT_PATH + propertiesKeeper.oAuth2().USER_ACCOUNT_IS_EXPIRED),
+                Case($(isEqual(AccountStatus.ALREADY_EXISTS.name())), API_CONTEXT_PATH + propertiesKeeper.oAuth2().USER_ACCOUNT_ALREADY_EXISTS),
+                Case($(isEqual(AccountStatus.CREDENTIALS_HAVE_EXPIRED.name())), API_CONTEXT_PATH + propertiesKeeper.oAuth2().CREDENTIALS_HAVE_EXPIRED),
+                Case($(isEqual(AccountStatus.JWT_TOKEN_NOT_FOUND.name())), API_CONTEXT_PATH + propertiesKeeper.oAuth2().JWT_TOKEN_NOT_FOUND),
+                Case($(isEqual(AccountStatus.REGISTRATION_PROVIDER_MISMATCH.name())), API_CONTEXT_PATH + propertiesKeeper.oAuth2().REGISTRATION_PROVIDER_MISMATCH),
+                Case($(isEqual(AccountStatus.BAD_CREDENTIALS.name())), API_CONTEXT_PATH + propertiesKeeper.oAuth2().BAD_CREDENTIALS),
+				Case($(isIn(UNKNOWN_OAUTH2_USER_ERROR_CODE, UNKNOWN_OIDC_USER_ERROR_CODE)), API_CONTEXT_PATH + propertiesKeeper.oAuth2().FAILURE_TARGET_URL)
 		);
 	}
 }
