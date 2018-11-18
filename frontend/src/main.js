@@ -26,7 +26,7 @@ const appSettingsHelper = new AppSettingsHelper()
 if (appSettingsHelper.isModeActive(DEPLOYMENT_MODES.PROD)) {
   Vue.use(VueAxios, axios)
 } else if (appSettingsHelper.isModeActive(DEPLOYMENT_MODES.DEV)) {
-  console.log(`baseURL: http://localhost:8088/${contextPaths.API}`)
+  console.log(`Axios baseURL that connects to Spring Boot server: http://localhost:8088/${contextPaths.API}`)
   Vue.use(VueAxios, axios.create({
     baseURL: `http://localhost:8088/${contextPaths.API}`
   }))
