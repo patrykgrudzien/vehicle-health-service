@@ -4,6 +4,7 @@
 custom:
   properties:
     endpoints:
+      api-context-path: /api
       registration:
         root: /registration
         register-user-account: /register-user-account
@@ -20,7 +21,7 @@ custom:
         principal-user: /principal-user
         refresh-token: /refresh-token
       heroku:
-        context-path: https://vehicle-health-service.herokuapp.com
+        context-path: https://vehicle-health-service.herokuapp.com/ui
       vehicle-resource:
         root: /vehicles
         get-vehicle: "/vehicle/{ownerEmailAddress}"
@@ -43,8 +44,8 @@ custom:
         exchange-short-lived-token: /exchange-short-lived-token
         failure-target-url: /failure-target-url
     cors-origins:
-      front-end-module: http://localhost:8080
-      back-end-module: http://localhost:8088
+      front-end-module: http://localhost:8080/ui
+      back-end-module: http://localhost:8088/api
     jwt:
       header: Authorization
       secret: super-secret-authorization-token-password
