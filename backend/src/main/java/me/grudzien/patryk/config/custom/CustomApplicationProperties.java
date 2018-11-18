@@ -55,6 +55,7 @@ public class CustomApplicationProperties {
             private String registrationProviderMismatch;
             private String badCredentials;
             private String userRegisteredUsingGoogle;
+            private String exchangeShortLivedToken;
 			private String failureTargetUrl;
 		}
 
