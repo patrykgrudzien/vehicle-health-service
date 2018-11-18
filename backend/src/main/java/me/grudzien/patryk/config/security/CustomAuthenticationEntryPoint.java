@@ -48,7 +48,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 	                     final AuthenticationException authException) {
 		log.info(FLOW_MARKER, authException.getMessage());
 		final String bodyMessage = localeMessagesCreator.buildLocaleMessage("secured-resource-message");
-        HttpResponseCustomizer.customizeHttpResponse(response, HttpStatus.FORBIDDEN,
+        HttpResponseCustomizer.customizeHttpResponse(response, HttpStatus.UNAUTHORIZED,
                                                      AuthenticationEntryPointResponse.buildBodyMessage(bodyMessage, SecurityStatus.UNAUTHENTICATED));
 	}
 }
