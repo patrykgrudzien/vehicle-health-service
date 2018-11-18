@@ -10,8 +10,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 
 import me.grudzien.patryk.PropertiesKeeper;
-import me.grudzien.patryk.PropertiesKeeper.FrontendRoutes;
-import me.grudzien.patryk.PropertiesKeeper.StaticResources;
 import me.grudzien.patryk.config.filters.GenericJwtTokenFilter;
 import me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter;
 import me.grudzien.patryk.oauth2.handler.CustomOAuth2AuthenticationFailureHandler;
@@ -124,22 +122,34 @@ final class SecurityConfigContext {
      */
     static class Requests {
         static void authorizeRequests(final HttpSecurity httpSecurity, final PropertiesKeeper propertiesKeeper) throws Exception {
-            httpSecurity
-                    .authorizeRequests()
-                    .mvcMatchers(HttpMethod.OPTIONS, MvcPatterns.homeWildcard()).permitAll()
-                    .mvcMatchers(HttpMethod.POST, MvcPatterns.auth(propertiesKeeper)).permitAll()
-                    .mvcMatchers(HttpMethod.POST, MvcPatterns.authWildcard(propertiesKeeper)).permitAll()
-                    .mvcMatchers(HttpMethod.POST, MvcPatterns.registrationWildcard(propertiesKeeper)).permitAll()
-                    .mvcMatchers(HttpMethod.GET, MvcPatterns.registrationWildcard(propertiesKeeper)).permitAll()
-                    .mvcMatchers(HttpMethod.POST, MvcPatterns.refreshToken(propertiesKeeper)).permitAll()
-                    .mvcMatchers(MvcPatterns.userLoggedInUsingGoogleWildcard(propertiesKeeper)).permitAll()
-                    .mvcMatchers(MvcPatterns.userNotFoundWildcard(propertiesKeeper)).permitAll()
-                    .mvcMatchers(MvcPatterns.userIsDisabledWildcard(propertiesKeeper)).permitAll()
-                    .mvcMatchers(MvcPatterns.userRegisteredUsingGoogleWildcard(propertiesKeeper)).permitAll()
-                    .mvcMatchers(MvcPatterns.userAccountAlreadyExistsWildcard(propertiesKeeper)).permitAll()
-                    .mvcMatchers(MvcPatterns.failureTargetUrlWildcard(propertiesKeeper)).permitAll()
+	        httpSecurity
+                    // creating custom SecurityFilterChain
+			        .mvcMatcher(MvcPatterns.APIContextPathWildcard(propertiesKeeper))
+			            .authorizeRequests()
+                    // creating custom SecurityFilterChain
+			        .mvcMatchers(HttpMethod.POST, MvcPatterns.authWildcard(propertiesKeeper))
+			            .permitAll()
+                    .mvcMatchers(MvcPatterns.registrationWildcard(propertiesKeeper))
+                        .permitAll()
+                    .mvcMatchers(HttpMethod.POST, MvcPatterns.refreshToken(propertiesKeeper))
+                        .permitAll()
+                    .mvcMatchers(MvcPatterns.userLoggedInUsingGoogleWildcard(propertiesKeeper))
+                        .permitAll()
+                    .mvcMatchers(MvcPatterns.userLoggedInUsingGoogleWildcard(propertiesKeeper))
+                        .permitAll()
+                    .mvcMatchers(MvcPatterns.userNotFoundWildcard(propertiesKeeper))
+                        .permitAll()
+                    .mvcMatchers(MvcPatterns.userIsDisabledWildcard(propertiesKeeper))
+                        .permitAll()
+                    .mvcMatchers(MvcPatterns.userRegisteredUsingGoogleWildcard(propertiesKeeper))
+                        .permitAll()
+                    .mvcMatchers(MvcPatterns.userAccountAlreadyExistsWildcard(propertiesKeeper))
+                        .permitAll()
+                    .mvcMatchers(MvcPatterns.failureTargetUrlWildcard(propertiesKeeper))
+                        .permitAll()
                     // require authentication via JWT
-                    .anyRequest().authenticated();
+			        .anyRequest()
+			            .authenticated();
         }
     }
 
@@ -147,27 +157,13 @@ final class SecurityConfigContext {
      * Configuring which requests should be ignored.
      */
     static class Web {
-        static void configureIgnoredRequests(final WebSecurity webSecurity, final PropertiesKeeper propertiesKeeper) {
-            webSecurity
+        static void configureIgnoredRequests(final WebSecurity webSecurity) {
+        	webSecurity
                     .ignoring()
-                        .mvcMatchers(HttpMethod.OPTIONS, MvcPatterns.homeWildcard())
-                        .mvcMatchers(HttpMethod.POST, MvcPatterns.auth(propertiesKeeper))
-                        .mvcMatchers(HttpMethod.POST, MvcPatterns.authWildcard(propertiesKeeper))
-                        .mvcMatchers(HttpMethod.POST, MvcPatterns.registrationWildcard(propertiesKeeper))
-                        .mvcMatchers(HttpMethod.GET, MvcPatterns.registrationWildcard(propertiesKeeper))
-                        .mvcMatchers(HttpMethod.POST, MvcPatterns.refreshToken(propertiesKeeper))
-                        // mvcMatchers() here doesn't want to work
-                        .antMatchers(MvcPatterns.h2InMemoryWebConsole())
-                        .mvcMatchers(HttpMethod.GET, StaticResources.ALL)
-                        .mvcMatchers(HttpMethod.GET,
-                                     FrontendRoutes.ABOUT_ME,
-                                     FrontendRoutes.REGISTRATION_FORM,
-                                     FrontendRoutes.REGISTRATION_CONFIRMED,
-                                     FrontendRoutes.REGISTRATION_CONFIRMED_WILDCARD,
-                                     FrontendRoutes.LOGIN,
-                                     FrontendRoutes.MAIN_BOARD,
-                                     FrontendRoutes.MAIN_BOARD_WILDCARD,
-                                     FrontendRoutes.AUTHENTICATION_REQUIRED);
+                        .mvcMatchers(MvcPatterns.h2InMemoryWebConsole())
+                        .mvcMatchers(HttpMethod.OPTIONS, MvcPatterns.rootWildcard())
+                        .mvcMatchers(HttpMethod.GET, MvcPatterns.staticResources())
+	                    .mvcMatchers(HttpMethod.GET, MvcPatterns.UIContextPathWildcard());
         }
     }
 }
