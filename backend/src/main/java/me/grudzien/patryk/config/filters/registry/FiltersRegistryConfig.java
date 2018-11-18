@@ -36,19 +36,21 @@ public class FiltersRegistryConfig {
 	@Bean
 	public FilterRegistrationBean<LocaleDeterminerFilter> registerLocaleDeterminerFilter() {
 
+		final String API_CONTEXT_PATH = propertiesKeeper.endpoints().API_CONTEXT_PATH;
+
 		final FilterRegistrationBean<LocaleDeterminerFilter> registrationBean = new FilterRegistrationBean<>();
 		registrationBean.setFilter(new LocaleDeterminerFilter());
 		registrationBean.addUrlPatterns(
-				// -> /auth
-				propertiesKeeper.endpoints().AUTH,
-				// -> /registration
-				propertiesKeeper.endpoints().REGISTRATION,
-				// -> /register-user-account
-				propertiesKeeper.endpoints().REGISTER_USER_ACCOUNT,
-				// -> /registration/register-user-account
-				propertiesKeeper.endpoints().REGISTRATION +
-				propertiesKeeper.endpoints().REGISTER_USER_ACCOUNT,
-				// //oauth2/authorization**
+				// -> /api/auth
+				API_CONTEXT_PATH + propertiesKeeper.endpoints().AUTH,
+				// -> /api/registration
+				API_CONTEXT_PATH + propertiesKeeper.endpoints().REGISTRATION,
+				// -> /api/register-user-account
+				API_CONTEXT_PATH + propertiesKeeper.endpoints().REGISTER_USER_ACCOUNT,
+				// -> /api/registration/register-user-account
+				API_CONTEXT_PATH + propertiesKeeper.endpoints().REGISTRATION +
+				API_CONTEXT_PATH + propertiesKeeper.endpoints().REGISTER_USER_ACCOUNT,
+				// -> /oauth2/authorization**
 				// TODO: clicking google button on UI, "Language" header should bo somehow attached to allow filter build appropriate messages
 				OAuth2AuthorizationRequestRedirectFilter.DEFAULT_AUTHORIZATION_REQUEST_BASE_URI + "**"
 		);
