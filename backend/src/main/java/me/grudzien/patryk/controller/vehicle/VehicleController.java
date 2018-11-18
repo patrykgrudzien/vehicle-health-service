@@ -20,7 +20,7 @@ import me.grudzien.patryk.util.web.RequestsDecoder;
 
 @Log4j2
 @RestController
-@RequestMapping("${custom.properties.endpoints.vehicle-resource.root}")
+@RequestMapping("${custom.properties.endpoints.api-context-path}" + "${custom.properties.endpoints.vehicle-resource.root}")
 public class VehicleController {
 
 	private final VehicleService vehicleService;

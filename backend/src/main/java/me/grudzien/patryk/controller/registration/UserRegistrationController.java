@@ -27,7 +27,7 @@ import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
 
 @Log4j2
 @RestController
-@RequestMapping("${custom.properties.endpoints.registration.root}")
+@RequestMapping("${custom.properties.endpoints.api-context-path}" + "${custom.properties.endpoints.registration.root}")
 public class UserRegistrationController {
 
 	private final UserRegistrationService userRegistrationService;

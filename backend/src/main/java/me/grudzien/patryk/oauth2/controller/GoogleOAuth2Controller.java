@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mobile.device.Device;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,6 +30,7 @@ import static me.grudzien.patryk.oauth2.handler.CustomOAuth2AuthenticationSucces
 
 @Log4j2
 @RestController
+@RequestMapping("${custom.properties.endpoints.api-context-path}")
 public class GoogleOAuth2Controller {
 
 	private final HttpResponseHandler httpResponseHandler;
