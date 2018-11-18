@@ -85,11 +85,11 @@ public class GenericJwtTokenFilter extends OncePerRequestFilter {
         if (requestHeader != null && requestHeader.startsWith(JwtTokenUtil.BEARER)) {
             accessToken = requestHeader.substring(JwtTokenUtil.JWT_TOKEN_BEGIN_INDEX);
             email = JwtTokenUtil.Retriever.getUserEmailFromToken(accessToken);
+            log.info(FLOW_MARKER, "Authentication will be performed against user email: {}.", email);
         } else {
-            log.warn(EXCEPTION_MARKER, "Couldn't find bearer string, will ignore the header");
+            log.warn(EXCEPTION_MARKER, "Couldn't find {} string, it will be ignored!", JwtTokenUtil.BEARER.trim());
         }
 
-        log.info(FLOW_MARKER, "Checking authentication for user email {}.", email);
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             log.debug(FLOW_MARKER, "Security context was null, starting authenticating the user...");
             /*
@@ -131,6 +131,7 @@ public class GenericJwtTokenFilter extends OncePerRequestFilter {
                 throw new UsernameNotFoundException(localeMessagesCreator.buildLocaleMessageWithParam("user-not-found-by-email", email));
             }
         }
+        log.info("Spring Security disabled on requested \"{}\" endpoint.", request.getRequestURI());
         filterChain.doFilter(request, response);
     }
 }
