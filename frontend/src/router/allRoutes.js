@@ -1,16 +1,16 @@
-import Home                      from '../components/home/Home';
-import AboutMe                   from '../components/AboutMe';
-import RegistrationForm          from '../components/registration/RegistrationForm';
-import ConfirmRegistration       from '../components/registration/ConfirmRegistration';
-import LoginForm                 from '../components/login/LoginForm';
-import MainBoard                 from '../components/home/MainBoard';
-import Engine                    from '../components/vehicle/Engine';
-import Fluids                    from '../components/vehicle/Fluids';
-import Tires                     from '../components/vehicle/Tires';
-import MaintenanceCosts          from '../components/vehicle/MaintenanceCosts';
-import componentsDetails         from '../componentsDetails';
-import UserLoggedInUsingGoogle   from '../components/oauth2/google/UserLoggedInUsingGoogle';
-import UserRegisteredUsingGoogle from '../components/oauth2/google/UserRegisteredUsingGoogle';
+import Home from '../components/home/Home'
+import AboutMe from '../components/AboutMe'
+import RegistrationForm from '../components/registration/RegistrationForm'
+import ConfirmRegistration from '../components/registration/ConfirmRegistration'
+import LoginForm from '../components/login/LoginForm'
+import MainBoard from '../components/home/MainBoard'
+import Engine from '../components/vehicle/Engine'
+import Fluids from '../components/vehicle/Fluids'
+import Tires from '../components/vehicle/Tires'
+import MaintenanceCosts from '../components/vehicle/MaintenanceCosts'
+import componentsDetails from '../componentsDetails'
+import UserLoggedInUsingGoogle from '../components/oauth2/google/UserLoggedInUsingGoogle'
+import UserRegisteredUsingGoogle from '../components/oauth2/google/UserRegisteredUsingGoogle'
 
 export default [
   {
@@ -78,31 +78,31 @@ export default [
     name: componentsDetails.mainBoard.name,
     path: componentsDetails.mainBoard.path,
     component: MainBoard,
-    meta: {requiresAuth: true}
+    meta: { requiresAuth: true }
   },
   {
     name: componentsDetails.engine.name,
     path: componentsDetails.engine.path,
     component: Engine,
-    meta: {requiresAuth: true}
+    meta: { requiresAuth: true }
   },
   {
     name: componentsDetails.fluids.name,
     path: componentsDetails.fluids.path,
     component: Fluids,
-    meta: {requiresAuth: true}
+    meta: { requiresAuth: true }
   },
   {
     name: componentsDetails.tires.name,
     path: componentsDetails.tires.path,
     component: Tires,
-    meta: {requiresAuth: true}
+    meta: { requiresAuth: true }
   },
   {
     name: componentsDetails.maintenanceCosts.name,
     path: componentsDetails.maintenanceCosts.path,
     component: MaintenanceCosts,
-    meta: {requiresAuth: true}
+    meta: { requiresAuth: true }
   },
   {
     name: componentsDetails.userLoggedInUsingGoogle.name,
@@ -114,4 +114,4 @@ export default [
     path: componentsDetails.userRegisteredUsingGoogle.path,
     component: UserRegisteredUsingGoogle
   }
-];
+]

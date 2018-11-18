@@ -17,13 +17,13 @@
 </template>
 
 <script>
-  export default {
-    data() {
-      return {
-        name: 'Patryk',
-        lastName: 'Grudzień',
-        profession: 'Software Engineer'
-      }
+export default {
+  data () {
+    return {
+      name: 'Patryk',
+      lastName: 'Grudzień',
+      profession: 'Software Engineer'
     }
   }
+}
 </script>

@@ -51,57 +51,57 @@
 </template>
 
 <script>
-  export default {
-    data() {
-      return {
-        showAfterCreated: false
-      }
-    },
-    computed: {
-      text1ComputedClasses() {
-        return {
-          'text-xs-center': true,
-          'display-2': this.$vuetify.breakpoint.lgAndUp || this.$vuetify.breakpoint.smAndUp,
-          'display-1': this.$vuetify.breakpoint.smAndDown,
-          'headline': this.$vuetify.breakpoint.xsOnly,
-          'pt-1': true,
-          'pl-0': true,
-          'pr-0': true,
-          'pb-2': this.$vuetify.breakpoint.smAndUp,
-          'pb-0': this.$vuetify.breakpoint.xsOnly
-        }
-      },
-      text23ComputedClasses() {
-        return {
-          'headline': this.$vuetify.breakpoint.mdAndUp,
-          'title': this.$vuetify.breakpoint.smOnly,
-          'subheading': this.$vuetify.breakpoint.xsOnly,
-          'text-xs-center': true,
-          'pa-1': this.$vuetify.breakpoint.smAndUp,
-          'pa-0': this.$vuetify.breakpoint.xsOnly
-        }
-      },
-      text45ComputedClasses() {
-        return {
-          'headline': this.$vuetify.breakpoint.mdAndUp,
-          'title': this.$vuetify.breakpoint.smOnly,
-          'subheading': this.$vuetify.breakpoint.xsOnly,
-          'text-xs-center': true,
-          'pb-2': true,
-          'pl-1': this.$vuetify.breakpoint.smAndUp,
-          'pr-1': this.$vuetify.breakpoint.smAndUp,
-          'pt-1': this.$vuetify.breakpoint.smAndUp,
-          'pa-0': this.$vuetify.breakpoint.xsOnly
-        }
-      }
-    },
-    created() {
-      // for transition purpose
-      setTimeout(() => {
-        this.showAfterCreated = true;
-      }, 0);
+export default {
+  data () {
+    return {
+      showAfterCreated: false
     }
+  },
+  computed: {
+    text1ComputedClasses () {
+      return {
+        'text-xs-center': true,
+        'display-2': this.$vuetify.breakpoint.lgAndUp || this.$vuetify.breakpoint.smAndUp,
+        'display-1': this.$vuetify.breakpoint.smAndDown,
+        'headline': this.$vuetify.breakpoint.xsOnly,
+        'pt-1': true,
+        'pl-0': true,
+        'pr-0': true,
+        'pb-2': this.$vuetify.breakpoint.smAndUp,
+        'pb-0': this.$vuetify.breakpoint.xsOnly
+      }
+    },
+    text23ComputedClasses () {
+      return {
+        'headline': this.$vuetify.breakpoint.mdAndUp,
+        'title': this.$vuetify.breakpoint.smOnly,
+        'subheading': this.$vuetify.breakpoint.xsOnly,
+        'text-xs-center': true,
+        'pa-1': this.$vuetify.breakpoint.smAndUp,
+        'pa-0': this.$vuetify.breakpoint.xsOnly
+      }
+    },
+    text45ComputedClasses () {
+      return {
+        'headline': this.$vuetify.breakpoint.mdAndUp,
+        'title': this.$vuetify.breakpoint.smOnly,
+        'subheading': this.$vuetify.breakpoint.xsOnly,
+        'text-xs-center': true,
+        'pb-2': true,
+        'pl-1': this.$vuetify.breakpoint.smAndUp,
+        'pr-1': this.$vuetify.breakpoint.smAndUp,
+        'pt-1': this.$vuetify.breakpoint.smAndUp,
+        'pa-0': this.$vuetify.breakpoint.xsOnly
+      }
+    }
+  },
+  created () {
+    // for transition purpose
+    setTimeout(() => {
+      this.showAfterCreated = true
+    }, 0)
   }
+}
 </script>
 
 <style scoped>

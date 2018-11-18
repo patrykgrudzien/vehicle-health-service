@@ -1,4 +1,4 @@
-import { DEPLOYMENT_MODES } from './Constants';
+import { DEPLOYMENT_MODES } from './Constants'
 
 export default {
   deploymentModes: [

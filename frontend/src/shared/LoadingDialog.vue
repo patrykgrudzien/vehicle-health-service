@@ -26,46 +26,46 @@
 </template>
 
 <script>
-  export default {
-    props: {
-      visibility: {
-        default: false,
-        type: Boolean
-      },
-      dialogTitle: {
-        default: 'loading-dialog-title',
-        type: String
+export default {
+  props: {
+    visibility: {
+      default: false,
+      type: Boolean
+    },
+    dialogTitle: {
+      default: 'loading-dialog-title',
+      type: String
+    }
+  },
+  computed: {
+    determineResponsiveSize () {
+      if (this.$vuetify.breakpoint.lgAndUp) {
+        return 75
+      } else {
+        return 50
       }
     },
-    computed: {
-      determineResponsiveSize() {
-        if (this.$vuetify.breakpoint.lgAndUp) {
-          return 75;
-        } else {
-          return 50;
+    determineResponsiveMaxWidth () {
+      if (this.$vuetify.breakpoint.lgAndUp) {
+        return 300
+      } else {
+        return 225
+      }
+    },
+    determineResponsiveClasses () {
+      if (this.$vuetify.breakpoint.lgAndUp) {
+        return {
+          'headline': true,
+          'notSelectable': true
         }
-      },
-      determineResponsiveMaxWidth() {
-        if (this.$vuetify.breakpoint.lgAndUp) {
-          return 300;
-        } else {
-          return 225;
-        }
-      },
-      determineResponsiveClasses() {
-        if (this.$vuetify.breakpoint.lgAndUp) {
-          return {
-            'headline': true,
-            'notSelectable': true
-          };
-        } else {
-          return {
-            'notSelectable': true
-          };
+      } else {
+        return {
+          'notSelectable': true
         }
       }
     }
   }
+}
 </script>
 
 <style scoped>

@@ -1,4 +1,4 @@
-import { CONTEXT_PATHS as contextPaths } from './Constants';
+import { CONTEXT_PATHS as contextPaths } from './Constants'
 
 export default {
   home: {
