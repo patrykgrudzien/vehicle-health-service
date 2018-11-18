@@ -6,10 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mobile.device.Device;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 
@@ -22,6 +23,7 @@ import me.grudzien.patryk.service.login.UserAuthenticationService;
 
 @Log4j2
 @RestController
+@RequestMapping("${custom.properties.endpoints.api-context-path}")
 public class UserAuthenticationController {
 
 	private final UserAuthenticationService userAuthenticationService;
@@ -49,7 +51,8 @@ public class UserAuthenticationController {
 
 	@GetMapping("${custom.properties.endpoints.authentication.principal-user}")
 	@PreAuthorize("isAuthenticated()")
-	public JwtUser getPrincipalUser(@SuppressWarnings("unused") final WebRequest webRequest) {
-		return (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+	public JwtUser getPrincipalUser(@SuppressWarnings("unused") final WebRequest webRequest,
+                                    @AuthenticationPrincipal final JwtUser jwtUser) {
+		return jwtUser;
 	}
 }
