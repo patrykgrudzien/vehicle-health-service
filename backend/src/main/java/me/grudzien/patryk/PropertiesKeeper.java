@@ -25,6 +25,7 @@ public final class PropertiesKeeper {
 	public CorsOrigins corsOrigins() {return new CorsOrigins();}
 
 	public class Endpoints {
+		public String API_CONTEXT_PATH = customApplicationProperties.getEndpoints().getApiContextPath();
 		public String AUTH = customApplicationProperties.getEndpoints().getAuthentication().getRoot();
 		public String REGISTRATION = customApplicationProperties.getEndpoints().getRegistration().getRoot();
 		public String REFRESH_TOKEN = customApplicationProperties.getEndpoints().getAuthentication().getRefreshToken();
@@ -68,14 +69,10 @@ public final class PropertiesKeeper {
 	}
 
 	public interface FrontendRoutes {
-		String ABOUT_ME = "/about-me";
+		String UI_CONTEXT_PATH = "/ui";
 		String REGISTRATION_FORM = "/registration-form";
 		String REGISTRATION_CONFIRMED = "/registration-confirmed";
-		String REGISTRATION_CONFIRMED_WILDCARD = "/registration-confirmed/**";
 		String LOGIN = "/login";
-		String MAIN_BOARD = "/main-board";
-		String MAIN_BOARD_WILDCARD = "/main-board/**";
-		String AUTHENTICATION_REQUIRED = "/authentication-required";
 		/**
 		 * Used for now only in: {@link me.grudzien.patryk.oauth2.util.OAuth2FlowDelegator#determineFlowBasedOnUrl(String)}
 		 */
@@ -83,6 +80,6 @@ public final class PropertiesKeeper {
 	}
 
 	public interface StaticResources {
-		String[] ALL = {"/", "/favicon.ico", "/static/**", "/static/*.html", "/static/*.jpg", "/static/css/**", "/static/js/**"};
+		String[] ALL = {"/index.html", "/favicon.ico", "/static/**", "/static/css/**", "/static/img/**", "/static/js/**", "/public**"};
 	}
 }
