@@ -89,7 +89,7 @@
                         <executions>
                             <!-- Copy Vue.js frontend content -->
                             <execution>
-                                <id>copy Vue.js content to backend/public</id>
+                                <id>Copy Vue.js content to backend/public</id>
                                 <phase>generate-resources</phase>
                                 <goals>
                                     <goal>copy-resources</goal>
