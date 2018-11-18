@@ -14,4 +14,4 @@ export default {
   isJwtAccessTokenExpired: state => state.jwtAccessTokenExpired,
   getLastRequestedPath: state => state.lastRequestedPath,
   getLastRequestMethod: state => state.lastRequestMethod
-};
+}

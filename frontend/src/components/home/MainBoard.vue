@@ -89,7 +89,7 @@
             <v-btn flat
                    color="primary"
                    router
-                   :to.native="enginePath"
+                   :to="enginePath"
                    ripple >
               {{ $t('details-button') }}
             </v-btn>
@@ -124,7 +124,7 @@
             <v-btn flat
                    color="primary"
                    router
-                   :to.native="fluidsPath"
+                   :to="fluidsPath"
                    ripple >
               {{ $t('details-button') }}
             </v-btn>
@@ -159,7 +159,7 @@
             <v-btn flat
                    color="primary"
                    router
-                   :to.native="tiresPath"
+                   :to="tiresPath"
                    ripple >
               {{ $t('details-button') }}
             </v-btn>
@@ -194,7 +194,7 @@
             <v-btn flat
                    color="primary"
                    router
-                   :to.native="maintenanceCostsPath"
+                   :to="maintenanceCostsPath"
                    ripple >
               {{ $t('details-button') }}
             </v-btn>
@@ -220,232 +220,232 @@
 </template>
 
 <script>
-  import {mapGetters}                 from 'vuex';
-  import componentsDetails            from '../../componentsDetails';
-  import serverEndpoints              from '../../serverEndpoints';
-  import {eventBus}                   from '../../main';
-  import {MUTATIONS, ACTIONS, EVENTS} from '../../Constants';
+import { mapGetters } from 'vuex'
+import componentsDetails from '../../componentsDetails'
+import serverEndpoints from '../../serverEndpoints'
+import { eventBus } from '../../main'
+import { MUTATIONS, ACTIONS, EVENTS } from '../../Constants'
 
-  export default {
-    data() {
-      return {
-        mileage: {
-          editMode: false,
-          current: null,
-          new: null
-        },
-        ownerEmailAddress: null,
-        ownerId: null,
-        dialogInputFieldValue: null,
-        inputFieldAutofocus: false,
-        enginePath: componentsDetails.engine.path,
-        fluidsPath: componentsDetails.fluids.path,
-        tiresPath: componentsDetails.tires.path,
-        maintenanceCostsPath: componentsDetails.maintenanceCosts.path
-      }
+export default {
+  data () {
+    return {
+      mileage: {
+        editMode: false,
+        current: null,
+        new: null
+      },
+      ownerEmailAddress: null,
+      ownerId: null,
+      dialogInputFieldValue: null,
+      inputFieldAutofocus: false,
+      enginePath: componentsDetails.engine.path,
+      fluidsPath: componentsDetails.fluids.path,
+      tiresPath: componentsDetails.tires.path,
+      maintenanceCostsPath: componentsDetails.maintenanceCosts.path
+    }
+  },
+  methods: {
+    toggleDialogWindow () {
+      this.mileage.editMode = !this.mileage.editMode
+      this.inputFieldAutofocus = !this.inputFieldAutofocus
     },
-    methods: {
-      toggleDialogWindow() {
-        this.mileage.editMode = !this.mileage.editMode;
-        this.inputFieldAutofocus = !this.inputFieldAutofocus;
-      },
-      catchChangeEvent() {
-        this.mileage.new = this.dialogInputFieldValue;
-      },
-      catchInputEvent(payload) {
-        this.dialogInputFieldValue = parseInt(payload);
-        // noinspection JSValidateTypes
-        this.mileage.new = parseInt(payload);
-      },
-      closeDialogAndRevertTemporaryValue() {
-        this.toggleDialogWindow();
-        this.mileage.new = this.mileage.current;
-        this.dialogInputFieldValue = this.mileage.current;
-      },
-      getCurrentMileage() {
-        this.$store.dispatch(ACTIONS.GET_CURRENT_MILEAGE, window.btoa(this.ownerEmailAddress))
-              .then(response => {
-                this.mileage.current = response.data;
-                this.mileage.new = this.mileage.current;
-                this.dialogInputFieldValue = this.mileage.current;
+    catchChangeEvent () {
+      this.mileage.new = this.dialogInputFieldValue
+    },
+    catchInputEvent (payload) {
+      this.dialogInputFieldValue = parseInt(payload)
+      // noinspection JSValidateTypes
+      this.mileage.new = parseInt(payload)
+    },
+    closeDialogAndRevertTemporaryValue () {
+      this.toggleDialogWindow()
+      this.mileage.new = this.mileage.current
+      this.dialogInputFieldValue = this.mileage.current
+    },
+    getCurrentMileage () {
+      this.$store.dispatch(ACTIONS.GET_CURRENT_MILEAGE, window.btoa(this.ownerEmailAddress))
+        .then(response => {
+          this.mileage.current = response.data
+          this.mileage.new = this.mileage.current
+          this.dialogInputFieldValue = this.mileage.current
 
-                this.$store.commit(MUTATIONS.SET_LOADING, false);
-              })
-              // need to catch() here, not in (actions.js) because I'm setting some component properties above
-              .catch(() => {
-                this.$store.commit(MUTATIONS.SET_LOADING, false);
-                this.$store.commit(MUTATIONS.SET_JWT_ACCESS_TOKEN_EXPIRED, true);
-                window.scrollTo(0, 0);
-              });
-      },
-      updateCurrentMileage() {
-        this.toggleDialogWindow();
-        this.$store.commit(MUTATIONS.SET_LOADING, true);
-        this.axios.put(`${serverEndpoints.vehiclesController.updateCurrentMileage}/${window.btoa(this.ownerEmailAddress)}`, {
-          encodedMileage: window.btoa(this.mileage.new)
-        }).then(() => {
-          // --- CURRENT MILEAGE --- //
-          this.getCurrentMileage();
-          // --- CURRENT MILEAGE --- //
-          })
-          // need to catch() here, not in (actions.js) because I'm setting some component properties above
-          .catch(() => {
-            this.$store.commit(MUTATIONS.SET_LOADING, false);
-            this.$store.commit(MUTATIONS.SET_JWT_ACCESS_TOKEN_EXPIRED, true);
-            window.scrollTo(0, 0);
-          })
-      }
+          this.$store.commit(MUTATIONS.SET_LOADING, false)
+        })
+      // need to catch() here, not in (actions.js) because I'm setting some component properties above
+        .catch(() => {
+          this.$store.commit(MUTATIONS.SET_LOADING, false)
+          this.$store.commit(MUTATIONS.SET_JWT_ACCESS_TOKEN_EXPIRED, true)
+          window.scrollTo(0, 0)
+        })
     },
-    computed: {
-      ...mapGetters([
-        'isLogged',
-        'isLoading',
-        'getLoginUser'
-      ]),
-      snackbarVisibility() {
-        return (this.mileage.current < 0 || isNaN(this.mileage.current)) ||
+    updateCurrentMileage () {
+      this.toggleDialogWindow()
+      this.$store.commit(MUTATIONS.SET_LOADING, true)
+      this.axios.put(`${serverEndpoints.vehiclesController.updateCurrentMileage}/${window.btoa(this.ownerEmailAddress)}`, {
+        encodedMileage: window.btoa(this.mileage.new)
+      }).then(() => {
+        // --- CURRENT MILEAGE --- //
+        this.getCurrentMileage()
+        // --- CURRENT MILEAGE --- //
+      })
+      // need to catch() here, not in (actions.js) because I'm setting some component properties above
+        .catch(() => {
+          this.$store.commit(MUTATIONS.SET_LOADING, false)
+          this.$store.commit(MUTATIONS.SET_JWT_ACCESS_TOKEN_EXPIRED, true)
+          window.scrollTo(0, 0)
+        })
+    }
+  },
+  computed: {
+    ...mapGetters([
+      'isLogged',
+      'isLoading',
+      'getLoginUser'
+    ]),
+    snackbarVisibility () {
+      return (this.mileage.current < 0 || isNaN(this.mileage.current)) ||
           (this.mileage.new < 0 || isNaN(this.mileage.new)) ||
-          (this.dialogInputFieldValue < 0 || isNaN(this.dialogInputFieldValue));
-      },
-      card1Classes () {
-        if (this.$vuetify.breakpoint.lgAndUp) {
-          return {
-            'mr-4': true,
-            'ml-5': true
-          }
-        }
-      },
-      card2Classes () {
-        if (this.$vuetify.breakpoint.lgAndUp) {
-          return {
-            'mr-5': true,
-            'ml-4': true
-          }
-        }
-      },
-      card3Classes () {
-        if (this.$vuetify.breakpoint.lgAndUp) {
-          return {
-            'mr-4': true,
-            'ml-5': true
-          }
-        }
-      },
-      card4Classes () {
-        if (this.$vuetify.breakpoint.lgAndUp) {
-          return {
-            'mr-5': true,
-            'ml-4': true
-          }
-        }
-      },
-      cardMediaHeight() {
-        if (this.$vuetify.breakpoint.lgAndUp) {
-          return '250px';
-        } else {
-          return '150px';
-        }
-      },
-      rowColumnDeterminer() {
-        const binding = {};
-        if (this.$vuetify.breakpoint.xsOnly) {
-          binding.column = true;
-        } else {
-          binding.row = true;
-        }
-        return binding;
-      },
-      mileageTitleClasses() {
-        if (this.$vuetify.breakpoint.xsOnly) {
-          return {
-            'text-xs-center': true,
-            'pt-0': true,
-            'pb-0': true,
-            'mt-0': true,
-            'mb-0': true
-          }
-        } else {
-          return {
-            'text-xs-right': true,
-            'pt-1': true,
-            'pb-1': true,
-            'mt-0': true,
-            'mb-0': true,
-            'pr-1': true
-          }
-        }
-      },
-      mileageValueClasses() {
-        if (this.$vuetify.breakpoint.xsOnly) {
-          return {
-            'text-xs-center': true,
-            'pt-0': true,
-            'pb-0': true,
-            'mt-0': true,
-            'mb-0': true
-          }
-        } else {
-          return {
-            'text-xs-left': true,
-            'pt-1': true,
-            'pb-1': true,
-            'mt-0': true,
-            'mb-0': true,
-            'pl-1': true
-          }
+          (this.dialogInputFieldValue < 0 || isNaN(this.dialogInputFieldValue))
+    },
+    card1Classes () {
+      if (this.$vuetify.breakpoint.lgAndUp) {
+        return {
+          'mr-4': true,
+          'ml-5': true
         }
       }
     },
-    mounted() {
-      if (this.isLogged === 1) {
-        // --- PAGE REFRESH EVENT --- //
-        this.$router.onReady(() => {
-          this.$store.commit(MUTATIONS.SET_LOADING, true);
-          // --- PRINCIPAL USER --- //
-          this.$store.dispatch(ACTIONS.GET_PRINCIPAL_USER_FIRST_NAME)
-              .then(response => {
-                this.ownerEmailAddress = response.data.email;
-                this.ownerId = response.data.id;
-
-                this.$store.commit(MUTATIONS.SET_LOGIN_USER, response.data);
-
-                // --- CURRENT MILEAGE --- //
-                this.getCurrentMileage();
-                // --- CURRENT MILEAGE --- //
-              })
-              // need to catch() here, not in (actions.js) because I'm setting some component properties above
-              .catch(() => {
-                this.$store.commit(MUTATIONS.SET_LOADING, false);
-                this.$store.commit(MUTATIONS.SET_JWT_ACCESS_TOKEN_EXPIRED, true);
-                window.scrollTo(0, 0);
-              });
-          // --- PRINCIPAL USER --- //
-            })
-        // --- PAGE REFRESH EVENT --- //
+    card2Classes () {
+      if (this.$vuetify.breakpoint.lgAndUp) {
+        return {
+          'mr-5': true,
+          'ml-4': true
+        }
       }
     },
-    created() {
-      eventBus.$on(EVENTS.STAY_LOG_IN_EVENT, () => {
-        this.$store.commit(MUTATIONS.SET_LOADING, true);
+    card3Classes () {
+      if (this.$vuetify.breakpoint.lgAndUp) {
+        return {
+          'mr-4': true,
+          'ml-5': true
+        }
+      }
+    },
+    card4Classes () {
+      if (this.$vuetify.breakpoint.lgAndUp) {
+        return {
+          'mr-5': true,
+          'ml-4': true
+        }
+      }
+    },
+    cardMediaHeight () {
+      if (this.$vuetify.breakpoint.lgAndUp) {
+        return '250px'
+      } else {
+        return '150px'
+      }
+    },
+    rowColumnDeterminer () {
+      const binding = {}
+      if (this.$vuetify.breakpoint.xsOnly) {
+        binding.column = true
+      } else {
+        binding.row = true
+      }
+      return binding
+    },
+    mileageTitleClasses () {
+      if (this.$vuetify.breakpoint.xsOnly) {
+        return {
+          'text-xs-center': true,
+          'pt-0': true,
+          'pb-0': true,
+          'mt-0': true,
+          'mb-0': true
+        }
+      } else {
+        return {
+          'text-xs-right': true,
+          'pt-1': true,
+          'pb-1': true,
+          'mt-0': true,
+          'mb-0': true,
+          'pr-1': true
+        }
+      }
+    },
+    mileageValueClasses () {
+      if (this.$vuetify.breakpoint.xsOnly) {
+        return {
+          'text-xs-center': true,
+          'pt-0': true,
+          'pb-0': true,
+          'mt-0': true,
+          'mb-0': true
+        }
+      } else {
+        return {
+          'text-xs-left': true,
+          'pt-1': true,
+          'pb-1': true,
+          'mt-0': true,
+          'mb-0': true,
+          'pl-1': true
+        }
+      }
+    }
+  },
+  mounted () {
+    if (this.isLogged === 1) {
+      // --- PAGE REFRESH EVENT --- //
+      this.$router.onReady(() => {
+        this.$store.commit(MUTATIONS.SET_LOADING, true)
         // --- PRINCIPAL USER --- //
         this.$store.dispatch(ACTIONS.GET_PRINCIPAL_USER_FIRST_NAME)
-            .then(response => {
-              this.ownerEmailAddress = response.data.email;
-              this.ownerId = response.data.id;
-              // --- CURRENT MILEAGE --- //
-              this.getCurrentMileage();
-              // --- CURRENT MILEAGE --- //
-            })
-            // need to catch() here, not in (actions.js) because I'm setting some component properties above
-            .catch(() => {
-              this.$store.commit(MUTATIONS.SET_LOADING, false);
-              this.$store.commit(MUTATIONS.SET_JWT_ACCESS_TOKEN_EXPIRED, true);
-              window.scrollTo(0, 0);
-            });
+          .then(response => {
+            this.ownerEmailAddress = response.data.email
+            this.ownerId = response.data.id
+
+            this.$store.commit(MUTATIONS.SET_LOGIN_USER, response.data)
+
+            // --- CURRENT MILEAGE --- //
+            this.getCurrentMileage()
+            // --- CURRENT MILEAGE --- //
+          })
+        // need to catch() here, not in (actions.js) because I'm setting some component properties above
+          .catch(() => {
+            this.$store.commit(MUTATIONS.SET_LOADING, false)
+            this.$store.commit(MUTATIONS.SET_JWT_ACCESS_TOKEN_EXPIRED, true)
+            window.scrollTo(0, 0)
+          })
         // --- PRINCIPAL USER --- //
-      });
+      })
+      // --- PAGE REFRESH EVENT --- //
     }
+  },
+  created () {
+    eventBus.$on(EVENTS.STAY_LOG_IN_EVENT, () => {
+      this.$store.commit(MUTATIONS.SET_LOADING, true)
+      // --- PRINCIPAL USER --- //
+      this.$store.dispatch(ACTIONS.GET_PRINCIPAL_USER_FIRST_NAME)
+        .then(response => {
+          this.ownerEmailAddress = response.data.email
+          this.ownerId = response.data.id
+          // --- CURRENT MILEAGE --- //
+          this.getCurrentMileage()
+          // --- CURRENT MILEAGE --- //
+        })
+      // need to catch() here, not in (actions.js) because I'm setting some component properties above
+        .catch(() => {
+          this.$store.commit(MUTATIONS.SET_LOADING, false)
+          this.$store.commit(MUTATIONS.SET_JWT_ACCESS_TOKEN_EXPIRED, true)
+          window.scrollTo(0, 0)
+        })
+      // --- PRINCIPAL USER --- //
+    })
   }
+}
 </script>
 
 <style scoped>

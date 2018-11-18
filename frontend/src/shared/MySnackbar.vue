@@ -20,41 +20,41 @@
 </template>
 
 <script>
-    export default {
-      props: {
-        timeout: {
-          default: 0,
-          type: Number
-        },
-        bottom: {
-          default: true,
-          type: Boolean
-        },
-        color: {
-          default: 'secondary',
-          type: String
-        },
-        snackbarVisibility: {
-          default: false,
-          type: Boolean
-        },
-        snackbarSpanText: {
-          default: '',
-          type: String
-        },
-        snackbarButtonFunction: {
-          type: Function
-        },
-        snackbarButtonVisibility: {
-          default: false,
-          type: Boolean
-        },
-        snackbarButtonText: {
-          default: '',
-          type: String
-        }
-      }
+export default {
+  props: {
+    timeout: {
+      default: 0,
+      type: Number
+    },
+    bottom: {
+      default: true,
+      type: Boolean
+    },
+    color: {
+      default: 'secondary',
+      type: String
+    },
+    snackbarVisibility: {
+      default: false,
+      type: Boolean
+    },
+    snackbarSpanText: {
+      default: '',
+      type: String
+    },
+    snackbarButtonFunction: {
+      type: Function
+    },
+    snackbarButtonVisibility: {
+      default: false,
+      type: Boolean
+    },
+    snackbarButtonText: {
+      default: '',
+      type: String
     }
+  }
+}
 </script>
 
 <style scoped>

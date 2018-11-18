@@ -1,13 +1,13 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
-import getters from './getters';
-import actions from './actions';
-import mutations from './mutations';
+import Vue from 'vue'
+import Vuex from 'vuex'
+import getters from './getters'
+import actions from './actions'
+import mutations from './mutations'
 
-import createPersistedState from 'vuex-persistedstate';
-import * as Cookies from 'js-cookie';
+import createPersistedState from 'vuex-persistedstate'
+import * as Cookies from 'js-cookie'
 
-Vue.use(Vuex);
+Vue.use(Vuex)
 
 const state = {
   logged: null,
@@ -28,7 +28,7 @@ const state = {
     confirmedEmail: '',
     password: '',
     confirmedPassword: '',
-    valid: true,
+    valid: true
   },
   sideNavigation: false,
   loginUser: null,
@@ -36,7 +36,7 @@ const state = {
   jwtAccessTokenExpired: false,
   lastRequestedPath: null,
   lastRequestMethod: null
-};
+}
 
 export default new Vuex.Store({
   state,
@@ -47,17 +47,17 @@ export default new Vuex.Store({
     createPersistedState({
       getState: () => {
         if (Cookies.getJSON('lang')) {
-          state.lang = Cookies.getJSON('lang');
+          state.lang = Cookies.getJSON('lang')
         } else {
-          state.lang = 'pl';
+          state.lang = 'pl'
         }
         if (localStorage.getItem('access_token')) {
-          state.logged = 1;
+          state.logged = 1
         }
       },
       setState: () => {
-        Cookies.set('lang', state.lang);
+        Cookies.set('lang', state.lang)
       }
     })
   ]
-});
+})

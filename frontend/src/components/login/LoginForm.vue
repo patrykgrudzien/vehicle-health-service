@@ -143,7 +143,6 @@
                 name="password"
                 :label="$t('password-label')"
                 id="password"
-                type="password"
                 v-model="password"
                 :hint="$t('password-input-hint')"
                 required
@@ -195,191 +194,190 @@
 </template>
 
 <script>
-  import {getMessageFromLocale}       from "../../main";
-  import {mapGetters, mapMutations}   from 'vuex';
-  import componentsDetails            from '../../componentsDetails';
-  import {MUTATIONS, ACTIONS, EVENTS} from '../../Constants';
+import { getMessageFromLocale } from '../../main'
+import { mapGetters, mapMutations } from 'vuex'
+import componentsDetails from '../../componentsDetails'
+import { MUTATIONS, ACTIONS, EVENTS } from '../../Constants'
 
-  export default {
-    props: ['confirmationMessage', 'dismissDialog', 'showDialog', 'type'],
-    data() {
-      return {
-        tempLanguage: null,
-        tempDialogWindowActive: false,
-        hidePasswords: true,
-        passwordRules: [
-          v => !!v || `${getMessageFromLocale('password-required')}`,
-          v => (v && v.length >= 4) || `${getMessageFromLocale('min-chars-length')}`,
-          v => (v && v.length <= 50) || `${getMessageFromLocale('max-chars-length')}`,
-        ],
-        emailRules: [
-          v => !!v || `${getMessageFromLocale('email-required')}`,
-          v => (v && v.length >= 4) || `${getMessageFromLocale('min-chars-length')}`,
-          v => (v && v.length <= 50) || `${getMessageFromLocale('max-chars-length')}`,
-          v => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || `${getMessageFromLocale('email-must-be-valid')}`
-        ]
+export default {
+  props: ['confirmationMessage', 'dismissDialog', 'showDialog', 'type'],
+  data () {
+    return {
+      tempLanguage: null,
+      tempDialogWindowActive: false,
+      hidePasswords: true,
+      passwordRules: [
+        v => !!v || `${getMessageFromLocale('password-required')}`,
+        v => (v && v.length >= 4) || `${getMessageFromLocale('min-chars-length')}`,
+        v => (v && v.length <= 50) || `${getMessageFromLocale('max-chars-length')}`
+      ],
+      emailRules: [
+        v => !!v || `${getMessageFromLocale('email-required')}`,
+        v => (v && v.length >= 4) || `${getMessageFromLocale('min-chars-length')}`,
+        v => (v && v.length <= 50) || `${getMessageFromLocale('max-chars-length')}`,
+        v => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || `${getMessageFromLocale('email-must-be-valid')}`
+      ]
+    }
+  },
+  methods: {
+    ...mapMutations({
+      clearServerExceptionResponse: MUTATIONS.CLEAR_SERVER_EXCEPTION_RESPONSE,
+      clearServerSuccessResponse: MUTATIONS.CLEAR_SERVER_SUCCESS_RESPONSE
+    }),
+    submit () {
+      if (this.$refs.myLoginForm.validate()) {
+        this.$store.dispatch(ACTIONS.LOGIN, this.getLoginForm)
+      } else {
+        this.$store.commit(MUTATIONS.SET_SERVER_EXCEPTION_RESPONSE, 'Form filled incorrectly!')
+        window.scrollTo(0, 0)
       }
     },
-    methods: {
-      ...mapMutations({
-        clearServerExceptionResponse: MUTATIONS.CLEAR_SERVER_EXCEPTION_RESPONSE,
-        clearServerSuccessResponse: MUTATIONS.CLEAR_SERVER_SUCCESS_RESPONSE
-      }),
-      submit() {
-        if (this.$refs.myLoginForm.validate()) {
-          this.$store.dispatch(ACTIONS.LOGIN, this.getLoginForm);
-        } else {
-          this.$store.commit(MUTATIONS.SET_SERVER_EXCEPTION_RESPONSE, 'Form filled incorrectly!');
-          window.scrollTo(0, 0);
-        }
-      },
-      clearFormFields() {
-        this.$refs.myLoginForm.reset();
-        this.$store.commit(MUTATIONS.SET_LOGIN_FORM_VALID, true);
-        // without that code below it does not work
-        this.$nextTick(() => {
-          this.$store.commit(MUTATIONS.SET_LOGIN_FORM_VALID, true);
-        });
-      },
-      hideDialogWindow() {
-        this.tempDialogWindowActive = false;
-      },
-      changeLanguageAndHideDialog() {
-        this.tempDialogWindowActive = false;
-        setTimeout(() => {
-          this.$store.dispatch(ACTIONS.SET_LANG, this.tempLanguage)
-            .then(() => {
-              this.clearFormFields();
-              this.$store.commit(MUTATIONS.SET_SERVER_RUNNING, true);
-              this.$store.commit(MUTATIONS.SET_SIDE_NAVIGATION, false);
-              this.$store.commit('clearServerExceptionResponse');
-              this.$store.commit('clearServerSuccessResponse');
-            });
-        }, 200);
-      },
-      setServerRunning() {
-        this.$store.commit(MUTATIONS.SET_SERVER_RUNNING, true);
-      },
-      googleButtonClicked() {
-        console.log('googleButtonClicked');
-        this.$store.commit(MUTATIONS.SET_LOADING, true);
-        window.location.href = 'http://localhost:8088/oauth2/authorization/google';
-      },
-      facebookButtonClicked() {
-        console.log('facebookButtonClicked');
-        window.location.href = 'http://localhost:8088/oauth2/authorization/facebook';
-      }
-    },
-    created() {
-      this.$router.app.$on(EVENTS.OPEN_DIALOG_AND_SEND_LANG_EVENT, (payload) => {
-        this.tempDialogWindowActive = payload.showDialog;
-        this.tempLanguage = payload.lang;
+    clearFormFields () {
+      this.$refs.myLoginForm.reset()
+      this.$store.commit(MUTATIONS.SET_LOGIN_FORM_VALID, true)
+      // without that code below it does not work
+      this.$nextTick(() => {
+        this.$store.commit(MUTATIONS.SET_LOGIN_FORM_VALID, true)
       })
     },
-    computed: {
-      ...mapGetters([
-        'getLoginForm',
-        'isServerRunning',
-        'getServerExceptionResponse',
-        'getServerSuccessResponse',
-        'isLoading'
-      ]),
-      formFilledIncorrectlyMessage() {
-        return this.getServerExceptionResponse;
-      },
-      getServerExceptionResponseMessage() {
-        return this.getServerExceptionResponse.message;
-      },
-      getServerExceptionResponseErrors() {
-        return this.getServerExceptionResponse.errors;
-      },
-      getServerSuccessResponseMessage() {
-        return this.getServerSuccessResponse.message;
-      },
-      urlContainsLogoutSuccessfulTrue() {
-        return this.$route.fullPath.includes(componentsDetails.logoutSuccessful.path.path);
-      },
-      urlContainsAuthenticationRequired() {
-        return this.$route.fullPath.includes(componentsDetails.authenticationRequired.path);
-      },
-      email: {
-        get() {return this.$store.getters.getLoginForm.email;},
-        set(value) {this.$store.commit(MUTATIONS.SET_LOGIN_FORM_EMAIL, value);}
-      },
-      password: {
-        get() {return this.$store.getters.getLoginForm.password;},
-        set(value) {this.$store.commit(MUTATIONS.SET_LOGIN_FORM_PASSWORD, value);}
-      },
-      valid: {
-        get() {return this.$store.getters.getLoginForm.valid;},
-        set(value) {this.$store.commit(MUTATIONS.SET_LOGIN_FORM_VALID, value);}
-      },
-      loginButtonDisabled() {
-        return this.email === '' || !this.email || this.password === '' || !this.password
-          || this.valid === false || this.isLoading === true;
-      },
-      clearButtonDisabled() {
-        return (
-                  (this.email === '' || !this.email) && (this.password === '' || !this.password) &&
+    hideDialogWindow () {
+      this.tempDialogWindowActive = false
+    },
+    changeLanguageAndHideDialog () {
+      this.tempDialogWindowActive = false
+      setTimeout(() => {
+        this.$store.dispatch(ACTIONS.SET_LANG, this.tempLanguage)
+          .then(() => {
+            this.clearFormFields()
+            this.$store.commit(MUTATIONS.SET_SERVER_RUNNING, true)
+            this.$store.commit(MUTATIONS.SET_SIDE_NAVIGATION, false)
+            this.$store.commit('clearServerExceptionResponse')
+            this.$store.commit('clearServerSuccessResponse')
+          })
+      }, 200)
+    },
+    setServerRunning () {
+      this.$store.commit(MUTATIONS.SET_SERVER_RUNNING, true)
+    },
+    googleButtonClicked () {
+      console.log('googleButtonClicked')
+      this.$store.commit(MUTATIONS.SET_LOADING, true)
+      window.location.href = 'http://localhost:8088/oauth2/authorization/google'
+    },
+    facebookButtonClicked () {
+      console.log('facebookButtonClicked')
+      window.location.href = 'http://localhost:8088/oauth2/authorization/facebook'
+    }
+  },
+  created () {
+    this.$router.app.$on(EVENTS.OPEN_DIALOG_AND_SEND_LANG_EVENT, (payload) => {
+      this.tempDialogWindowActive = payload.showDialog
+      this.tempLanguage = payload.lang
+    })
+  },
+  computed: {
+    ...mapGetters([
+      'getLoginForm',
+      'isServerRunning',
+      'getServerExceptionResponse',
+      'getServerSuccessResponse',
+      'isLoading'
+    ]),
+    formFilledIncorrectlyMessage () {
+      return this.getServerExceptionResponse
+    },
+    getServerExceptionResponseMessage () {
+      return this.getServerExceptionResponse.message
+    },
+    getServerExceptionResponseErrors () {
+      return this.getServerExceptionResponse.errors
+    },
+    getServerSuccessResponseMessage () {
+      return this.getServerSuccessResponse.message
+    },
+    urlContainsLogoutSuccessfulTrue () {
+      return this.$route.fullPath.includes(componentsDetails.logoutSuccessful.path.path)
+    },
+    urlContainsAuthenticationRequired () {
+      return this.$route.fullPath.includes(componentsDetails.authenticationRequired.path)
+    },
+    email: {
+      get () { return this.$store.getters.getLoginForm.email },
+      set (value) { this.$store.commit(MUTATIONS.SET_LOGIN_FORM_EMAIL, value) }
+    },
+    password: {
+      get () { return this.$store.getters.getLoginForm.password },
+      set (value) { this.$store.commit(MUTATIONS.SET_LOGIN_FORM_PASSWORD, value) }
+    },
+    valid: {
+      get () { return this.$store.getters.getLoginForm.valid },
+      set (value) { this.$store.commit(MUTATIONS.SET_LOGIN_FORM_VALID, value) }
+    },
+    loginButtonDisabled () {
+      return this.email === '' || !this.email || this.password === '' || !this.password ||
+          this.valid === false || this.isLoading === true
+    },
+    clearButtonDisabled () {
+      return (
+        (this.email === '' || !this.email) && (this.password === '' || !this.password) &&
                   (this.valid === true || !this.valid) && (this.isLoading === true || !this.isLoading)
-               )
-                  ||
+      ) ||
                (
-                  (this.email === '' || this.email) && (this.password === '' || this.password) &&
+                 (this.email === '' || this.email) && (this.password === '' || this.password) &&
                   (this.isLoading === true || this.isLoading)
-               );
-      },
-      rowColumnDeterminer() {
-        const binding = {};
-        if (this.$vuetify.breakpoint.mdAndDown) {
-          binding.column = true;
-        } else {
-          binding.row = true;
+               )
+    },
+    rowColumnDeterminer () {
+      const binding = {}
+      if (this.$vuetify.breakpoint.mdAndDown) {
+        binding.column = true
+      } else {
+        binding.row = true
+      }
+      return binding
+    },
+    googleFlexClasses () {
+      if (this.$vuetify.breakpoint.mdAndUp) {
+        return {
+          'text-xs-center': true,
+          'googleButtonColor': true,
+          'mb-2': true,
+          'mr-1': true,
+          'elevation-12': true,
+          'google-button-style': true
         }
-        return binding;
-      },
-      googleFlexClasses() {
-        if (this.$vuetify.breakpoint.mdAndUp) {
-          return {
-            'text-xs-center': true,
-            'googleButtonColor': true,
-            'mb-2': true,
-            'mr-1': true,
-            'elevation-12': true,
-            'google-button-style': true
-          }
-        } else {
-          return {
-            'text-xs-center': true,
-            'googleButtonColor': true,
-            'mb-2': true,
-            'elevation-12': true,
-            'google-button-style': true
-          }
+      } else {
+        return {
+          'text-xs-center': true,
+          'googleButtonColor': true,
+          'mb-2': true,
+          'elevation-12': true,
+          'google-button-style': true
         }
-      },
-      facebookFlexClasses() {
-        if (this.$vuetify.breakpoint.mdAndUp) {
-          return {
-            'text-xs-center': true,
-            'facebookButtonColor': true,
-            'mb-2': true,
-            'ml-1': true,
-            'elevation-12': true,
-            'facebook-button-style': true
-          }
-        } else {
-          return {
-            'text-xs-center': true,
-            'facebookButtonColor': true,
-            'mb-2': true,
-            'elevation-12': true,
-            'facebook-button-style': true
-          }
+      }
+    },
+    facebookFlexClasses () {
+      if (this.$vuetify.breakpoint.mdAndUp) {
+        return {
+          'text-xs-center': true,
+          'facebookButtonColor': true,
+          'mb-2': true,
+          'ml-1': true,
+          'elevation-12': true,
+          'facebook-button-style': true
+        }
+      } else {
+        return {
+          'text-xs-center': true,
+          'facebookButtonColor': true,
+          'mb-2': true,
+          'elevation-12': true,
+          'facebook-button-style': true
         }
       }
     }
-  };
+  }
+}
 </script>
 
 <style scoped>

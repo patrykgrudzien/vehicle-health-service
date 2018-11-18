@@ -1,14 +1,14 @@
 const CONTEXT_PATHS = {
   UI: '/ui',
-  API: '/api'
-};
+  API: 'api'
+}
 
 const DEPLOYMENT_MODES = {
   PROD: 'PROD',
   DEV: 'DEV'
-};
+}
 
-const mutationSuffix = '_mutation';
+const mutationSuffix = '_mutation'
 const MUTATIONS = {
   LOGIN: 'login' + mutationSuffix,
   LOGOUT: 'logout' + mutationSuffix,
@@ -40,9 +40,9 @@ const MUTATIONS = {
   CLEAR_LAST_REQUESTED_PATH: 'clearLastRequestedPath' + mutationSuffix,
   SET_LAST_REQUEST_METHOD: 'setLastRequestMethod' + mutationSuffix,
   CLEAR_LAST_REQUEST_METHOD: 'clearLastRequestMethod' + mutationSuffix
-};
+}
 
-const actionSuffix = '_action';
+const actionSuffix = '_action'
 const ACTIONS = {
   REGISTER_USER_ACCOUNT: 'registerUserAccount' + actionSuffix,
   LOGIN: 'login' + actionSuffix,
@@ -51,13 +51,13 @@ const ACTIONS = {
   GET_PRINCIPAL_USER_FIRST_NAME: 'getPrincipalUserFirstName' + actionSuffix,
   STAY_LOG_IN: 'stayLogIn' + actionSuffix,
   SET_LANG: 'setLang' + actionSuffix
-};
+}
 
-const eventSuffix = '_event';
+const eventSuffix = '_event'
 const EVENTS = {
   STAY_LOG_IN_EVENT: 'stayLogInEvent' + eventSuffix,
   OPEN_DIALOG_AND_SEND_LANG_EVENT: 'open-dialog-and-send-lang' + eventSuffix
-};
+}
 
 export {
   DEPLOYMENT_MODES,

@@ -17,4 +17,4 @@ module.exports = {
   outputDir: 'target/dist',
   assetsDir: 'static',
   baseUrl: '/ui'
-};
+}

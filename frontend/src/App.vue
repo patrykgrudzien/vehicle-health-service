@@ -53,12 +53,14 @@
         <!-- LOGOUT -->
 
         <!-- LANGUAGES -->
+        <!-- eslint-disable -->
         <v-list-group
           v-if="!isLogged"
           v-for="language in languagesNavDrawer"
           v-model="language.active"
           :key="language.title"
           :prepend-icon="language.icon">
+        <!-- eslint-enable -->
 
           <!-- HEADER -->
           <v-list-tile ripple slot="activator">
@@ -223,130 +225,126 @@
 </template>
 
 <script>
-  import {mapGetters}                 from 'vuex';
-  import {mapActions}                 from 'vuex';
-  import componentsDetails            from './componentsDetails';
-  import {MUTATIONS, ACTIONS, EVENTS} from './Constants';
+import { mapGetters, mapActions } from 'vuex'
+import componentsDetails from './componentsDetails'
+import { MUTATIONS, ACTIONS, EVENTS } from './Constants'
 
-  export default {
-    data() {
-      return {
-        languagesNavDrawer: [
-          {
-            icon: 'language',
-            title: 'language-menu-button'
-          },
-        ]
-      }
-    },
-    methods: {
-      ...mapActions({
-                      logout: ACTIONS.LOGOUT
-                    }),
-      showModalAndSendLang: function (lang) {
-
-        if (this.$route.path.includes(componentsDetails.loginForm.path) ||
+export default {
+  data () {
+    return {
+      languagesNavDrawer: [
+        {
+          icon: 'language',
+          title: 'language-menu-button'
+        }
+      ]
+    }
+  },
+  methods: {
+    ...mapActions({
+      logout: ACTIONS.LOGOUT
+    }),
+    showModalAndSendLang: function (lang) {
+      if (this.$route.path.includes(componentsDetails.loginForm.path) ||
           this.$route.path.includes(componentsDetails.registrationForm.path) ||
           this.$route.path.includes(componentsDetails.confirmRegistration.path) ||
           this.$route.path.includes(componentsDetails.logoutSuccessfulWildcard.path) ||
           this.$route.fullPath.includes(componentsDetails.logoutSuccessful.path)) {
-
-          this.$router.app.$emit(EVENTS.OPEN_DIALOG_AND_SEND_LANG_EVENT, {
-            showDialog: true,
-            lang: lang
-          });
-
-        } else {
-          this.$store.dispatch(ACTIONS.SET_LANG, lang)
-              .then(() => {
-                this.$store.commit(MUTATIONS.SET_SIDE_NAVIGATION, false);
-              });
-        }
-      },
-      switchSideNavigation(value) {
-        this.$store.commit(MUTATIONS.SET_SIDE_NAVIGATION, value);
-      },
-      homeIconClicked() {
-        this.$router.push(this.determineHomeLink);
-      },
-      stayLogInButtonClicked() {
-        this.$store.dispatch(ACTIONS.STAY_LOG_IN);
-      },
-      logoutButtonClicked() {
-        this.logout()
-            .then(() => {
-              this.$store.commit(MUTATIONS.SET_LOADING, false);
-              this.$store.commit(MUTATIONS.SET_JWT_ACCESS_TOKEN_EXPIRED, false);
-            });
+        this.$router.app.$emit(EVENTS.OPEN_DIALOG_AND_SEND_LANG_EVENT, {
+          showDialog: true,
+          lang: lang
+        })
+      } else {
+        this.$store.dispatch(ACTIONS.SET_LANG, lang)
+          .then(() => {
+            this.$store.commit(MUTATIONS.SET_SIDE_NAVIGATION, false)
+          })
       }
     },
-    computed: {
-      ...mapGetters([
-                      'getSideNavigation',
-                      'isLogged',
-                      'getPrincipalUserFirstName',
-                      'isJwtAccessTokenExpired',
-                      'isLoading'
-                    ]),
-      menuItems() {
-        if (this.isLogged) {
-          return [
-            // FOR NOW THERE ARE ONLY "LOGOUT", "LANGUAGE" AND "PRINCIPAL USER (AVATAR)" BUTTONS
-          ]
-        } else {
-          return [
-            {
-              icon: 'face',
-              title: 'sign-up-menu-button',
-              link: componentsDetails.registrationForm.path
-            },
-            {
-              icon: 'lock_open',
-              title: 'sign-in-menu-button',
-              link: componentsDetails.loginForm.path
-            },
-            {
-              icon: 'person',
-              title: 'about-me-menu-button',
-              link: componentsDetails.aboutMe.path
-            }
-          ]
-        }
-      },
-      sideNavigation: {
-        get() {return this.$store.getters.getSideNavigation;},
-        set(value) {this.$store.commit(MUTATIONS.SET_SIDE_NAVIGATION, value);}
-      },
-      languages() {
-        if (this.$store.getters.getLang === 'pl') {
-          return [
-            {
-              title: 'language-title-english',
-              langCode: 'en'
-            }
-          ]
-        } else {
-          if (this.$store.getters.getLang === 'en') {
-            return [
-              {
-                title: 'language-title-polish',
-                langCode: 'pl'
-              }
-            ]
-          }
-        }
-      },
-      determineHomeLink() {
-        return this.isLogged === 1 ? componentsDetails.mainBoard.path : componentsDetails.home.path;
-      },
-      showHomeVisibility() {
-        return this.$route.name !== 'Home' && this.$route.name !== 'MainBoard';
-      }
+    switchSideNavigation (value) {
+      this.$store.commit(MUTATIONS.SET_SIDE_NAVIGATION, value)
     },
-    created() {
-      this.$i18n.locale = this.$store.getters.getLang;
+    homeIconClicked () {
+      this.$router.push(this.determineHomeLink)
+    },
+    stayLogInButtonClicked () {
+      this.$store.dispatch(ACTIONS.STAY_LOG_IN)
+    },
+    logoutButtonClicked () {
+      this.logout()
+        .then(() => {
+          this.$store.commit(MUTATIONS.SET_LOADING, false)
+          this.$store.commit(MUTATIONS.SET_JWT_ACCESS_TOKEN_EXPIRED, false)
+        })
     }
-  };
+  },
+  computed: {
+    ...mapGetters([
+      'getSideNavigation',
+      'isLogged',
+      'getPrincipalUserFirstName',
+      'isJwtAccessTokenExpired',
+      'isLoading'
+    ]),
+    menuItems () {
+      if (this.isLogged) {
+        return [
+          // FOR NOW THERE ARE ONLY "LOGOUT", "LANGUAGE" AND "PRINCIPAL USER (AVATAR)" BUTTONS
+        ]
+      } else {
+        return [
+          {
+            icon: 'face',
+            title: 'sign-up-menu-button',
+            link: componentsDetails.registrationForm.path
+          },
+          {
+            icon: 'lock_open',
+            title: 'sign-in-menu-button',
+            link: componentsDetails.loginForm.path
+          },
+          {
+            icon: 'person',
+            title: 'about-me-menu-button',
+            link: componentsDetails.aboutMe.path
+          }
+        ]
+      }
+    },
+    sideNavigation: {
+      get () { return this.$store.getters.getSideNavigation },
+      set (value) { this.$store.commit(MUTATIONS.SET_SIDE_NAVIGATION, value) }
+    },
+    languages () {
+      if (this.$store.getters.getLang === 'pl') {
+        return [
+          {
+            title: 'language-title-english',
+            langCode: 'en'
+          }
+        ]
+      } else {
+        if (this.$store.getters.getLang === 'en') {
+          return [
+            {
+              title: 'language-title-polish',
+              langCode: 'pl'
+            }
+          ]
+        }
+      }
+    },
+    determineHomeLink () {
+      return this.isLogged === 1 ? componentsDetails.mainBoard.path : componentsDetails.home.path
+    },
+    showHomeVisibility () {
+      return this.$route.name !== 'Home' && this.$route.name !== 'MainBoard'
+    }
+  },
+  created () {
+    this.$i18n.locale = this.$store.getters.getLang
+  }
+}
 </script>
 
 <style>

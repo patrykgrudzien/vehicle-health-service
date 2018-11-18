@@ -1,15 +1,14 @@
 export default class {
-
-  constructor(serverEndpoint, calledMethodName) {
-    this.serverEndpoint = serverEndpoint;
-    this.calledMethodName = calledMethodName;
+  constructor (serverEndpoint, calledMethodName) {
+    this.serverEndpoint = serverEndpoint
+    this.calledMethodName = calledMethodName
   }
 
-  getServerEndpoint() {
-    return this.serverEndpoint;
+  getServerEndpoint () {
+    return this.serverEndpoint
   }
 
-  getCalledMethodName() {
-    return this.calledMethodName;
+  getCalledMethodName () {
+    return this.calledMethodName
   }
 }

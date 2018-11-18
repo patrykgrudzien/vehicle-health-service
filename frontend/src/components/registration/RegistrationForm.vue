@@ -175,7 +175,6 @@
                     name="password"
                     :label="$t('password-label')"
                     id="password"
-                    type="password"
                     v-model="password"
                     :hint="passwordsMatcherErrorMessage"
                     :persistent-hint="passwordsDoNotMatch"
@@ -197,7 +196,6 @@
                     name="confirmPassword"
                     :label="$t('confirm-password-label')"
                     id="confirmPassword"
-                    type="password"
                     v-model="confirmedPassword"
                     :hint="passwordsMatcherErrorMessage"
                     :persistent-hint="passwordsDoNotMatch"
@@ -250,252 +248,251 @@
 </template>
 
 <script>
-  import {getMessageFromLocale}       from '../../main';
-  import {mapGetters, mapMutations}   from 'vuex';
-  import {MUTATIONS, ACTIONS, EVENTS} from '../../Constants';
+import { getMessageFromLocale } from '../../main'
+import { mapGetters, mapMutations } from 'vuex'
+import { MUTATIONS, ACTIONS, EVENTS } from '../../Constants'
 
-  export default {
-    data() {
-      return {
-        tempLanguage: null,
-        tempDialogWindowActive: false,
-        hidePasswords: true,
-        firstNameRules: [
-          v => !!v || `${getMessageFromLocale('first-name-required')}`,
-          v => (v && v.length >= 4) || `${getMessageFromLocale('min-chars-length')}`,
-          v => (v && v.length <= 50) || `${getMessageFromLocale('max-chars-length')}`
-        ],
-        lastNameRules: [
-          v => !!v || `${getMessageFromLocale('last-name-required')}`,
-          v => (v && v.length >= 4) || `${getMessageFromLocale('min-chars-length')}`,
-          v => (v && v.length <= 50) || `${getMessageFromLocale('max-chars-length')}`
-        ],
-        emailRules: [
-          v => !!v || `${getMessageFromLocale('email-required')}`,
-          v => (v && v.length >= 4) || `${getMessageFromLocale('min-chars-length')}`,
-          v => (v && v.length <= 50) || `${getMessageFromLocale('max-chars-length')}`,
-          v => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || `${getMessageFromLocale('email-must-be-valid')}`
-        ],
-        confirmEmailRules: [
-          v => !!v || `${getMessageFromLocale('confirm-email-required')}`,
-          v => (v && v.length >= 4) || `${getMessageFromLocale('min-chars-length')}`,
-          v => (v && v.length <= 50) || `${getMessageFromLocale('max-chars-length')}`,
-          v => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || `${getMessageFromLocale('email-must-be-valid')}`
-        ],
-        passwordRules: [
-          v => !!v || `${getMessageFromLocale('password-required')}`,
-          v => (v && v.length >= 4) || `${getMessageFromLocale('min-chars-length')}`,
-          v => (v && v.length <= 50) || `${getMessageFromLocale('max-chars-length')}`,
-        ],
-        confirmPasswordRules: [
-          v => !!v || `${getMessageFromLocale('confirm-password-required')}`,
-          v => (v && v.length >= 4) || `${getMessageFromLocale('min-chars-length')}`,
-          v => (v && v.length <= 50) || `${getMessageFromLocale('max-chars-length')}`
-        ]
+export default {
+  data () {
+    return {
+      tempLanguage: null,
+      tempDialogWindowActive: false,
+      hidePasswords: true,
+      firstNameRules: [
+        v => !!v || `${getMessageFromLocale('first-name-required')}`,
+        v => (v && v.length >= 4) || `${getMessageFromLocale('min-chars-length')}`,
+        v => (v && v.length <= 50) || `${getMessageFromLocale('max-chars-length')}`
+      ],
+      lastNameRules: [
+        v => !!v || `${getMessageFromLocale('last-name-required')}`,
+        v => (v && v.length >= 4) || `${getMessageFromLocale('min-chars-length')}`,
+        v => (v && v.length <= 50) || `${getMessageFromLocale('max-chars-length')}`
+      ],
+      emailRules: [
+        v => !!v || `${getMessageFromLocale('email-required')}`,
+        v => (v && v.length >= 4) || `${getMessageFromLocale('min-chars-length')}`,
+        v => (v && v.length <= 50) || `${getMessageFromLocale('max-chars-length')}`,
+        v => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || `${getMessageFromLocale('email-must-be-valid')}`
+      ],
+      confirmEmailRules: [
+        v => !!v || `${getMessageFromLocale('confirm-email-required')}`,
+        v => (v && v.length >= 4) || `${getMessageFromLocale('min-chars-length')}`,
+        v => (v && v.length <= 50) || `${getMessageFromLocale('max-chars-length')}`,
+        v => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || `${getMessageFromLocale('email-must-be-valid')}`
+      ],
+      passwordRules: [
+        v => !!v || `${getMessageFromLocale('password-required')}`,
+        v => (v && v.length >= 4) || `${getMessageFromLocale('min-chars-length')}`,
+        v => (v && v.length <= 50) || `${getMessageFromLocale('max-chars-length')}`
+      ],
+      confirmPasswordRules: [
+        v => !!v || `${getMessageFromLocale('confirm-password-required')}`,
+        v => (v && v.length >= 4) || `${getMessageFromLocale('min-chars-length')}`,
+        v => (v && v.length <= 50) || `${getMessageFromLocale('max-chars-length')}`
+      ]
+    }
+  },
+  methods: {
+    ...mapMutations({
+      clearServerExceptionResponse: MUTATIONS.CLEAR_SERVER_EXCEPTION_RESPONSE,
+      clearServerSuccessResponse: MUTATIONS.CLEAR_SERVER_SUCCESS_RESPONSE
+    }),
+    submit () {
+      if (this.$refs.myRegistrationForm.validate()) {
+        this.$store.dispatch(ACTIONS.REGISTER_USER_ACCOUNT, this.getRegistrationForm)
+      } else {
+        this.$store.commit(MUTATIONS.SET_SERVER_EXCEPTION_RESPONSE, 'Form filled incorrectly!')
+        window.scrollTo(0, 0)
       }
     },
-    methods: {
-      ...mapMutations({
-        clearServerExceptionResponse: MUTATIONS.CLEAR_SERVER_EXCEPTION_RESPONSE,
-        clearServerSuccessResponse: MUTATIONS.CLEAR_SERVER_SUCCESS_RESPONSE
-      }),
-      submit() {
-        if (this.$refs.myRegistrationForm.validate()) {
-          this.$store.dispatch(ACTIONS.REGISTER_USER_ACCOUNT, this.getRegistrationForm);
-        } else {
-          this.$store.commit(MUTATIONS.SET_SERVER_EXCEPTION_RESPONSE, 'Form filled incorrectly!');
-          window.scrollTo(0, 0);
-        }
-      },
-      clearFormFields() {
-        this.$refs.myRegistrationForm.reset();
-        this.$store.commit(MUTATIONS.SET_REGISTRATION_FORM_VALID, true);
-        // without that code below it does not work
-        this.$nextTick(() => {
-          this.$store.commit(MUTATIONS.SET_REGISTRATION_FORM_VALID, true);
-        });
-      },
-      hideDialogWindow() {
-        this.tempDialogWindowActive = false;
-      },
-      changeLanguageAndHideDialog() {
-        this.tempDialogWindowActive = false;
-        setTimeout(() => {
-          this.$store.dispatch(ACTIONS.SET_LANG, this.tempLanguage)
-            .then(() => {
-              this.clearFormFields();
-              this.$store.commit(MUTATIONS.SET_SERVER_RUNNING, true);
-              this.$store.commit(MUTATIONS.SET_SIDE_NAVIGATION, false);
-              this.$store.commit('clearServerExceptionResponse');
-              this.$store.commit('clearServerSuccessResponse');
-            });
-        }, 200);
-      },
-      setServerRunning() {
-        this.$store.commit(MUTATIONS.SET_SERVER_RUNNING, true);
-      },
-      googleButtonClicked() {
-        console.log('googleButtonClicked');
-        this.$store.commit(MUTATIONS.SET_LOADING, true);
-        window.location.href = 'http://localhost:8088/oauth2/authorization/google';
-      },
-      facebookButtonClicked() {
-        console.log('facebookButtonClicked');
-        window.location.href = 'http://localhost:8088/oauth2/authorization/facebook';
-      }
-    },
-    created() {
-      this.$router.app.$on(EVENTS.OPEN_DIALOG_AND_SEND_LANG_EVENT, (payload) => {
-        this.tempDialogWindowActive = payload.showDialog;
-        this.tempLanguage = payload.lang;
+    clearFormFields () {
+      this.$refs.myRegistrationForm.reset()
+      this.$store.commit(MUTATIONS.SET_REGISTRATION_FORM_VALID, true)
+      // without that code below it does not work
+      this.$nextTick(() => {
+        this.$store.commit(MUTATIONS.SET_REGISTRATION_FORM_VALID, true)
       })
     },
-    computed: {
-      ...mapGetters([
-        'getRegistrationForm',
-        'isLoading',
-        'isServerRunning',
-        'getServerExceptionResponse',
-        'getServerSuccessResponse',
-        'isLoading'
-      ]),
-      getServerExceptionResponseMessage() {
-        return this.getServerExceptionResponse.message;
-      },
-      getServerExceptionResponseErrors() {
-        return this.getServerExceptionResponse.errors;
-      },
-      getServerSuccessResponseMessage() {
-        return this.getServerSuccessResponse.message;
-      },
-      rowColumnDeterminer() {
-        const binding = {};
-        if (this.$vuetify.breakpoint.mdAndDown) {
-          binding.column = true;
-        } else {
-          binding.row = true;
-        }
-        return binding;
-      },
-      firstName: {
-        get() {return this.$store.getters.getRegistrationForm.firstName;},
-        set(value) {this.$store.commit(MUTATIONS.SET_REGISTRATION_FORM_FIRST_NAME, value);}
-      },
-      lastName: {
-        get() {return this.$store.getters.getRegistrationForm.lastName;},
-        set(value) {this.$store.commit(MUTATIONS.SET_REGISTRATION_FORM_LAST_NAME, value);}
-      },
-      email: {
-        get() {return this.$store.getters.getRegistrationForm.email;},
-        set(value) {this.$store.commit(MUTATIONS.SET_REGISTRATION_FORM_EMAIL, value);}
-      },
-      confirmedEmail: {
-        get() {return this.$store.getters.getRegistrationForm.confirmedEmail;},
-        set(value) {this.$store.commit(MUTATIONS.SET_REGISTRATION_FORM_CONFIRMED_EMAIL, value);}
-      },
-      password: {
-        get() {return this.$store.getters.getRegistrationForm.password;},
-        set(value) {this.$store.commit(MUTATIONS.SET_REGISTRATION_FORM_PASSWORD, value);}
-      },
-      confirmedPassword: {
-        get() {return this.$store.getters.getRegistrationForm.confirmedPassword;},
-        set(value) {this.$store.commit(MUTATIONS.SET_REGISTRATION_FORM_CONFIRMED_PASSWORD, value);}
-      },
-      valid: {
-        get() {return this.$store.getters.getRegistrationForm.valid;},
-        set(value) {this.$store.commit(MUTATIONS.SET_REGISTRATION_FORM_VALID, value);}
-      },
-      registerButtonDisabled() {
-        return this.firstName === '' || !this.firstName || this.lastName === '' || !this.lastName ||
+    hideDialogWindow () {
+      this.tempDialogWindowActive = false
+    },
+    changeLanguageAndHideDialog () {
+      this.tempDialogWindowActive = false
+      setTimeout(() => {
+        this.$store.dispatch(ACTIONS.SET_LANG, this.tempLanguage)
+          .then(() => {
+            this.clearFormFields()
+            this.$store.commit(MUTATIONS.SET_SERVER_RUNNING, true)
+            this.$store.commit(MUTATIONS.SET_SIDE_NAVIGATION, false)
+            this.$store.commit('clearServerExceptionResponse')
+            this.$store.commit('clearServerSuccessResponse')
+          })
+      }, 200)
+    },
+    setServerRunning () {
+      this.$store.commit(MUTATIONS.SET_SERVER_RUNNING, true)
+    },
+    googleButtonClicked () {
+      console.log('googleButtonClicked')
+      this.$store.commit(MUTATIONS.SET_LOADING, true)
+      window.location.href = 'http://localhost:8088/oauth2/authorization/google'
+    },
+    facebookButtonClicked () {
+      console.log('facebookButtonClicked')
+      window.location.href = 'http://localhost:8088/oauth2/authorization/facebook'
+    }
+  },
+  created () {
+    this.$router.app.$on(EVENTS.OPEN_DIALOG_AND_SEND_LANG_EVENT, (payload) => {
+      this.tempDialogWindowActive = payload.showDialog
+      this.tempLanguage = payload.lang
+    })
+  },
+  computed: {
+    ...mapGetters([
+      'getRegistrationForm',
+      'isLoading',
+      'isServerRunning',
+      'getServerExceptionResponse',
+      'getServerSuccessResponse',
+      'isLoading'
+    ]),
+    getServerExceptionResponseMessage () {
+      return this.getServerExceptionResponse.message
+    },
+    getServerExceptionResponseErrors () {
+      return this.getServerExceptionResponse.errors
+    },
+    getServerSuccessResponseMessage () {
+      return this.getServerSuccessResponse.message
+    },
+    rowColumnDeterminer () {
+      const binding = {}
+      if (this.$vuetify.breakpoint.mdAndDown) {
+        binding.column = true
+      } else {
+        binding.row = true
+      }
+      return binding
+    },
+    firstName: {
+      get () { return this.$store.getters.getRegistrationForm.firstName },
+      set (value) { this.$store.commit(MUTATIONS.SET_REGISTRATION_FORM_FIRST_NAME, value) }
+    },
+    lastName: {
+      get () { return this.$store.getters.getRegistrationForm.lastName },
+      set (value) { this.$store.commit(MUTATIONS.SET_REGISTRATION_FORM_LAST_NAME, value) }
+    },
+    email: {
+      get () { return this.$store.getters.getRegistrationForm.email },
+      set (value) { this.$store.commit(MUTATIONS.SET_REGISTRATION_FORM_EMAIL, value) }
+    },
+    confirmedEmail: {
+      get () { return this.$store.getters.getRegistrationForm.confirmedEmail },
+      set (value) { this.$store.commit(MUTATIONS.SET_REGISTRATION_FORM_CONFIRMED_EMAIL, value) }
+    },
+    password: {
+      get () { return this.$store.getters.getRegistrationForm.password },
+      set (value) { this.$store.commit(MUTATIONS.SET_REGISTRATION_FORM_PASSWORD, value) }
+    },
+    confirmedPassword: {
+      get () { return this.$store.getters.getRegistrationForm.confirmedPassword },
+      set (value) { this.$store.commit(MUTATIONS.SET_REGISTRATION_FORM_CONFIRMED_PASSWORD, value) }
+    },
+    valid: {
+      get () { return this.$store.getters.getRegistrationForm.valid },
+      set (value) { this.$store.commit(MUTATIONS.SET_REGISTRATION_FORM_VALID, value) }
+    },
+    registerButtonDisabled () {
+      return this.firstName === '' || !this.firstName || this.lastName === '' || !this.lastName ||
           this.email === '' || !this.email || this.confirmedEmail === '' || !this.confirmedEmail ||
           this.password === '' || !this.password || this.confirmedPassword === '' || !this.confirmedPassword ||
           this.valid === false || this.emailsDoNotMatch === true || this.passwordsDoNotMatch === true ||
-          this.isLoading === true;
-      },
-      clearButtonDisabled() {
-        return (
-                  (this.firstName === '' || !this.firstName) && (this.lastName === '' || !this.lastName) &&
+          this.isLoading === true
+    },
+    clearButtonDisabled () {
+      return (
+        (this.firstName === '' || !this.firstName) && (this.lastName === '' || !this.lastName) &&
                   (this.email === '' || !this.email) && (this.confirmedEmail === '' || !this.confirmedEmail) &&
                   (this.password === '' || !this.password) && (this.confirmedPassword === '' || !this.confirmedPassword) &&
                   (this.valid === true || !this.valid) && (this.isLoading === true || !this.isLoading)
-               )
-                  ||
+      ) ||
                (
-                  (this.firstName === '' || this.firstName) && (this.lastName === '' || this.lastName) &&
+                 (this.firstName === '' || this.firstName) && (this.lastName === '' || this.lastName) &&
                   (this.email === '' || this.email) && (this.confirmedEmail === '' || this.confirmedEmail) &&
                   (this.password === '' || this.password) && (this.confirmedPassword === '' || this.confirmedPassword) &&
                   (this.isLoading === true || this.isLoading)
-               );
-      },
-      emailsDoNotMatch() {
-        if (this.email !== '' && this.confirmedEmail !== '' && this.email !== this.confirmedEmail) {
-          return true;
+               )
+    },
+    emailsDoNotMatch () {
+      if (this.email !== '' && this.confirmedEmail !== '' && this.email !== this.confirmedEmail) {
+        return true
+      }
+    },
+    passwordsDoNotMatch () {
+      if (this.password !== '' && this.confirmedPassword !== '' && this.password !== this.confirmedPassword) {
+        return true
+      }
+    },
+    emailsMatcherErrorMessage () {
+      if (this.email !== '' && this.confirmedEmail !== '' && this.email !== this.confirmedEmail) {
+        return `${getMessageFromLocale('emails-do-not-match')}`
+      } else {
+        return `${getMessageFromLocale('email-input-hint')}`
+      }
+    },
+    passwordsMatcherErrorMessage () {
+      if (this.password !== '' && this.confirmedPassword !== '' && this.password !== this.confirmedPassword) {
+        return `${getMessageFromLocale('passwords-do-not-match')}`
+      } else {
+        return `${getMessageFromLocale('password-input-hint')}`
+      }
+    },
+    formFilledIncorrectlyMessage () {
+      return this.getServerExceptionResponse
+    },
+    googleFlexClasses () {
+      if (this.$vuetify.breakpoint.mdAndUp) {
+        return {
+          'text-xs-center': true,
+          'googleButtonColor': true,
+          'mb-2': true,
+          'mr-1': true,
+          'elevation-12': true,
+          'google-button-style': true
         }
-      },
-      passwordsDoNotMatch() {
-        if (this.password !== '' && this.confirmedPassword !== '' && this.password !== this.confirmedPassword) {
-          return true;
+      } else {
+        return {
+          'text-xs-center': true,
+          'googleButtonColor': true,
+          'mb-2': true,
+          'elevation-12': true,
+          'google-button-style': true
         }
-      },
-      emailsMatcherErrorMessage() {
-        if (this.email !== '' && this.confirmedEmail !== '' && this.email !== this.confirmedEmail) {
-          return `${getMessageFromLocale('emails-do-not-match')}`;
-        } else {
-          return `${getMessageFromLocale('email-input-hint')}`;
+      }
+    },
+    facebookFlexClasses () {
+      if (this.$vuetify.breakpoint.mdAndUp) {
+        return {
+          'text-xs-center': true,
+          'facebookButtonColor': true,
+          'mb-2': true,
+          'ml-1': true,
+          'elevation-12': true,
+          'facebook-button-style': true
         }
-      },
-      passwordsMatcherErrorMessage() {
-        if (this.password !== '' && this.confirmedPassword !== '' && this.password !== this.confirmedPassword) {
-          return `${getMessageFromLocale('passwords-do-not-match')}`;
-        } else {
-          return `${getMessageFromLocale('password-input-hint')}`;
-        }
-      },
-      formFilledIncorrectlyMessage() {
-        return this.getServerExceptionResponse;
-      },
-      googleFlexClasses() {
-        if (this.$vuetify.breakpoint.mdAndUp) {
-          return {
-            'text-xs-center': true,
-            'googleButtonColor': true,
-            'mb-2': true,
-            'mr-1': true,
-            'elevation-12': true,
-            'google-button-style': true
-          }
-        } else {
-          return {
-            'text-xs-center': true,
-            'googleButtonColor': true,
-            'mb-2': true,
-            'elevation-12': true,
-            'google-button-style': true
-          }
-        }
-      },
-      facebookFlexClasses() {
-        if (this.$vuetify.breakpoint.mdAndUp) {
-          return {
-            'text-xs-center': true,
-            'facebookButtonColor': true,
-            'mb-2': true,
-            'ml-1': true,
-            'elevation-12': true,
-            'facebook-button-style': true
-          }
-        } else {
-          return {
-            'text-xs-center': true,
-            'facebookButtonColor': true,
-            'mb-2': true,
-            'elevation-12': true,
-            'facebook-button-style': true
-          }
+      } else {
+        return {
+          'text-xs-center': true,
+          'facebookButtonColor': true,
+          'mb-2': true,
+          'elevation-12': true,
+          'facebook-button-style': true
         }
       }
     }
-  };
+  }
+}
 </script>
 
 <style scoped>
