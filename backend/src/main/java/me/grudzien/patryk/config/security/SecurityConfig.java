@@ -208,6 +208,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      */
 	@Override
 	public void configure(final WebSecurity webSecurity) {
-	    SecurityConfigContext.Web.configureIgnoredRequests(webSecurity, propertiesKeeper);
+	    SecurityConfigContext.Web.configureIgnoredRequests(webSecurity);
 	}
 }
