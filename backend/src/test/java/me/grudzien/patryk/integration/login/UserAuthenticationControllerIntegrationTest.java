@@ -1,7 +1,5 @@
 package me.grudzien.patryk.integration.login;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -18,6 +16,8 @@ import me.grudzien.patryk.config.custom.CustomApplicationProperties;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationResponse;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class UserAuthenticationControllerIntegrationTest {
@@ -32,11 +32,14 @@ public class UserAuthenticationControllerIntegrationTest {
 	public void testSuccessfulLogin() {
 		final String password = Base64.getEncoder().encodeToString("admin".getBytes());
 		// arrange
-		final JwtAuthenticationRequest loginRequest = JwtAuthenticationRequest.Builder().email("admin.root@gmail.com").password(password).build();
+		final JwtAuthenticationRequest loginRequest = JwtAuthenticationRequest.Builder()
+		                                                                      .email("admin.root@gmail.com")
+		                                                                      .password(password).build();
 
 		// act
-		final ResponseEntity<JwtAuthenticationResponse> response = testRestTemplate.postForEntity(
-				customApplicationProperties.getEndpoints().getAuthentication().getRoot(), loginRequest, JwtAuthenticationResponse.class);
+		final String loginEndpoint = customApplicationProperties.getEndpoints().getApiContextPath() +
+		                             customApplicationProperties.getEndpoints().getAuthentication().getRoot();
+		final ResponseEntity<JwtAuthenticationResponse> response = testRestTemplate.postForEntity(loginEndpoint, loginRequest, JwtAuthenticationResponse.class);
 
 		// assert
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
