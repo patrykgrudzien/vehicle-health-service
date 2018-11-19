@@ -10,6 +10,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -35,7 +36,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -79,10 +79,10 @@ public class UserAuthenticationControllerUnitTest {
 		// request builder
 		final String loginEndpoint = customApplicationProperties.getEndpoints().getApiContextPath() +
 		                             customApplicationProperties.getEndpoints().getAuthentication().getRoot();
-		final RequestBuilder requestBuilder = post(loginEndpoint)
-				                                      .accept(MediaType.APPLICATION_JSON)
-				                                      .content(jsonLoginRequest)
-				                                      .contentType(MediaType.APPLICATION_JSON);
+		final RequestBuilder requestBuilder = MockMvcRequestBuilders.post(loginEndpoint)
+		                                                            .accept(MediaType.APPLICATION_JSON)
+		                                                            .content(jsonLoginRequest)
+		                                                            .contentType(MediaType.APPLICATION_JSON);
 		// mock call
 		final MvcResult mvcResult = mockMvc.perform(requestBuilder)
 		                                   .andDo(print())
@@ -118,10 +118,10 @@ public class UserAuthenticationControllerUnitTest {
 		// request builder
 		final String loginEndpoint = customApplicationProperties.getEndpoints().getApiContextPath() +
 		                             customApplicationProperties.getEndpoints().getAuthentication().getRoot();
-		final RequestBuilder requestBuilder = post(loginEndpoint)
-				                                      .accept(MediaType.APPLICATION_JSON)
-				                                      .content(jsonLoginRequest)
-				                                      .contentType(MediaType.APPLICATION_JSON);
+		final RequestBuilder requestBuilder = MockMvcRequestBuilders.post(loginEndpoint)
+		                                                            .accept(MediaType.APPLICATION_JSON)
+		                                                            .content(jsonLoginRequest)
+		                                                            .contentType(MediaType.APPLICATION_JSON);
 		// mock call
 		final MvcResult mvcResult = mockMvc.perform(requestBuilder)
 		                                   .andDo(print())
