@@ -20,6 +20,7 @@ import me.grudzien.patryk.oauth2.service.CustomOidcUserService;
 import me.grudzien.patryk.oauth2.util.CacheHelper;
 import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
 
+@SuppressWarnings("JavadocReference")
 final class SecurityConfigContext {
 
     private SecurityConfigContext() {
