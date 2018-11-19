@@ -131,7 +131,6 @@ public class GenericJwtTokenFilter extends OncePerRequestFilter {
                 throw new UsernameNotFoundException(localeMessagesCreator.buildLocaleMessageWithParam("user-not-found-by-email", email));
             }
         }
-        log.info("Spring Security disabled on requested \"{}\" endpoint.", request.getRequestURI());
         filterChain.doFilter(request, response);
     }
 }
