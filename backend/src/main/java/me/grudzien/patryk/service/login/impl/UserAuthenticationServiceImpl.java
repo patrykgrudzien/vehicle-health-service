@@ -16,12 +16,9 @@ import org.springframework.util.StringUtils;
 
 import com.google.common.base.Preconditions;
 
-import javax.validation.ConstraintViolation;
-
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationResponse;
@@ -33,7 +30,7 @@ import me.grudzien.patryk.service.login.UserAuthenticationService;
 import me.grudzien.patryk.service.security.MyUserDetailsService;
 import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.util.jwt.JwtTokenUtil;
-import me.grudzien.patryk.util.validator.ValidatorCreator;
+import me.grudzien.patryk.util.validator.CustomValidator;
 import me.grudzien.patryk.util.web.RequestsDecoder;
 
 import static io.vavr.API.Match;
@@ -69,16 +66,13 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 	@Override
 	public JwtAuthenticationResponse login(final JwtAuthenticationRequest authenticationRequest, final Device device) {
 		final JwtAuthenticationResponse jwtAuthenticationResponseFailure = JwtAuthenticationResponse.Builder().isSuccessful(Boolean.FALSE).build();
-		final String email = requestsDecoder.decodeStringParam(authenticationRequest.getEmail());
-		final Set<ConstraintViolation<String>> validation = ValidatorCreator.getDefaultValidator().validate(email);
-		if (!validation.isEmpty()) {
+		final List<String> translatedValidationResult = CustomValidator.getTranslatedValidationResult(authenticationRequest, localeMessagesCreator);
+		if (!translatedValidationResult.isEmpty()) {
 			log.error("Validation errors present during login.");
 			throw new CustomUserValidationException(localeMessagesCreator.buildLocaleMessage("login-form-validation-errors"),
-			                                        validation.stream()
-			                                                  .map(ConstraintViolation::getMessage)
-			                                                  .map(localeMessagesCreator::buildLocaleMessage)
-			                                                  .collect(Collectors.toList()));
+			                                        translatedValidationResult);
 		} else {
+			final String email = authenticationRequest.getEmail();
 			log.info(FLOW_MARKER, "Login request is correct. Starting authenticating the user with ({}) email.", email);
 			final Optional<Authentication> authentication = authenticateUser(authenticationRequest);
 			if (authentication.isPresent()) {
