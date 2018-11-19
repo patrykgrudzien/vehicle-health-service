@@ -56,7 +56,12 @@ final class SecurityConfigContext {
                     .disable();
     }
 
-    static void addCORSFilter(final HttpSecurity httpSecurity) throws Exception {
+	/**
+	 * Adds a {@link org.springframework.web.filter.CorsFilter} to be used. If a bean by the name of {@linkplain corsFilter} is provided, that CorsFilter is used.
+	 * Else if {@link org.springframework.web.cors.CorsConfigurationSource} is defined, then that {@linkplain CorsConfiguration} is used.
+	 * Otherwise, if Spring MVC is on the classpath a {@link org.springframework.web.servlet.handler.HandlerMappingIntrospector} is used.
+	 */
+	static void addCORSFilter(final HttpSecurity httpSecurity) throws Exception {
         httpSecurity.cors();
     }
 
