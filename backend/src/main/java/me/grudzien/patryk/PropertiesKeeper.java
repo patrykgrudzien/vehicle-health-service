@@ -36,6 +36,12 @@ public final class PropertiesKeeper {
 		public String REGISTRATION_CONFIRMED = customApplicationProperties.getEndpoints().getRegistration().getConfirmed();
 		public String CONFIRMATION_TOKEN_NOT_FOUND = customApplicationProperties.getEndpoints().getRegistration().getConfirmedTokenNotFound();
 		public String CONFIRMATION_TOKEN_EXPIRED = customApplicationProperties.getEndpoints().getRegistration().getConfirmedTokenExpired();
+
+		public Authentication authentication() {return new Authentication();}
+
+		public class Authentication {
+			public String GET_PRINCIPAL_USER = customApplicationProperties.getEndpoints().getAuthentication().getPrincipalUser();
+		}
 	}
 
 	public class JWT {
