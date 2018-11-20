@@ -28,7 +28,7 @@ import me.grudzien.patryk.controller.login.UserAuthenticationController;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationResponse;
 import me.grudzien.patryk.service.login.UserAuthenticationService;
-import me.grudzien.patryk.util.validator.ValidatorCreator;
+import me.grudzien.patryk.util.validator.CustomValidator;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -57,11 +57,11 @@ public class UserAuthenticationControllerUnitTest {
 
 	@Before
 	public void setUp() {
-		validator = ValidatorCreator.getDefaultValidator();
+		validator = CustomValidator.getDefaultValidator();
 	}
 
 	@Test
-	public void testSuccessfulLogin() throws Exception {
+	public void login_successful_responseStatusOk() throws Exception {
 		final JwtAuthenticationResponse expectedResponse = JwtAuthenticationResponse.Builder()
 		                                                                            .accessToken("test_access_token")
 		                                                                            .refreshToken("test_refresh_token")
@@ -99,7 +99,7 @@ public class UserAuthenticationControllerUnitTest {
 	}
 
 	@Test
-	public void testLoginEmptyEmail() throws Exception {
+	public void login_failed_emptyEmail_badRequest() throws Exception {
 		// expected response
 		final JwtAuthenticationResponse emptyResponse = new JwtAuthenticationResponse();
 		// login request
@@ -127,5 +127,11 @@ public class UserAuthenticationControllerUnitTest {
 		                                   .andDo(print())
 		                                   .andExpect(status().isBadRequest())
 		                                   .andReturn();
+
+		final String actualResponse = mvcResult.getResponse().getContentAsString();
+
+		// then
+		verify(userAuthenticationService, times(1)).login(any(), any());
+		assertEquals("", actualResponse);
 	}
 }
