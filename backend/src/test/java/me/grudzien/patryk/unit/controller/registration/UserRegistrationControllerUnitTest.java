@@ -1,14 +1,11 @@
 package me.grudzien.patryk.unit.controller.registration;
 
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
-import org.junit.Ignore;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Disabled;
 
 import me.grudzien.patryk.controller.registration.UserRegistrationController;
 
-@Ignore
-@RunWith(SpringRunner.class)
+@Disabled
 @WebMvcTest(controllers = UserRegistrationController.class)
 public class UserRegistrationControllerUnitTest {}

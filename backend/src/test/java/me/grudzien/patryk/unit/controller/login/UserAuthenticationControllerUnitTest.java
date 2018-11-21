@@ -6,15 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -30,7 +28,7 @@ import me.grudzien.patryk.domain.dto.login.JwtAuthenticationResponse;
 import me.grudzien.patryk.service.login.UserAuthenticationService;
 import me.grudzien.patryk.util.validator.CustomValidator;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -39,9 +37,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
 @WebMvcTest(controllers = UserAuthenticationController.class, secure = false)
-public class UserAuthenticationControllerUnitTest {
+class UserAuthenticationControllerUnitTest {
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -55,13 +52,13 @@ public class UserAuthenticationControllerUnitTest {
 	private final ObjectMapper objectMapper = new ObjectMapper();
 	private Validator validator;
 
-	@Before
-	public void setUp() {
+	@BeforeEach
+	void setUp() {
 		validator = CustomValidator.getDefaultValidator();
 	}
 
 	@Test
-	public void login_successful_responseStatusOk() throws Exception {
+	void login_successful_responseStatusOk() throws Exception {
 		final JwtAuthenticationResponse expectedResponse = JwtAuthenticationResponse.Builder()
 		                                                                            .accessToken("test_access_token")
 		                                                                            .refreshToken("test_refresh_token")
@@ -99,7 +96,7 @@ public class UserAuthenticationControllerUnitTest {
 	}
 
 	@Test
-	public void login_failed_emptyEmail_badRequest() throws Exception {
+	void login_failed_emptyEmail_badRequest() throws Exception {
 		// expected response
 		final JwtAuthenticationResponse emptyResponse = new JwtAuthenticationResponse();
 		// login request
