@@ -47,6 +47,16 @@
         <!-- Exec Maven Plugin -->
         <exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
 
+        <!-- Required versions of plugin during migration to JUnit5: -->
+        <!-- Use the most recent "failsafe" and "surefire" plugin versions -->
+
+        <!-- The (Failsafe Plugin) is designed to run integration tests while the
+             (Surefire Plugin) is designed to run unit tests. The name (failsafe) was chosen both
+             because it is a synonym of surefire and because it implies that when it fails, it does so in a safe way.
+        -->
+        <maven-failsafe-plugin.version>2.22.1</maven-failsafe-plugin.version>
+        <maven-surefire-plugin.version>2.22.1</maven-surefire-plugin.version>
+
         <!--########################### DEPENDENCIES' VERSIONS ###########################-->
         <!-- Spring -->
         <spring.boot.version>2.1.0.RELEASE</spring.boot.version>
