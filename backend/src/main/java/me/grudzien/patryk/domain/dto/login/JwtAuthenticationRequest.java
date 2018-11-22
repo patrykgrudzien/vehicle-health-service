@@ -25,13 +25,11 @@ public class JwtAuthenticationRequest implements Serializable {
 
 	private static final long serialVersionUID = 5980286062602002568L;
 
-	@SuppressWarnings("NullableProblems")
 	@NotNull(message = "email-cannot-be-null")
 	@NotEmpty(message = "email-cannot-be-empty")
 	@ValidEmail
 	private String email;
 
-	@SuppressWarnings("NullableProblems")
 	@NotNull(message = "password-cannot-be-null")
 	@NotEmpty(message = "password-cannot-be-empty")
 	private String password;
