@@ -66,7 +66,12 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 	@Override
 	public JwtAuthenticationResponse login(final JwtAuthenticationRequest authenticationRequest, final Device device) {
 		final JwtAuthenticationResponse jwtAuthenticationResponseFailure = JwtAuthenticationResponse.Builder().isSuccessful(Boolean.FALSE).build();
-		final List<String> translatedValidationResult = CustomValidator.getTranslatedValidationResult(authenticationRequest, localeMessagesCreator);
+		final JwtAuthenticationRequest decodedAuthRequest = JwtAuthenticationRequest
+				                                                    .Builder()
+				                                                    .email(requestsDecoder.decodeStringParam(authenticationRequest.getEmail()))
+				                                                    .password(requestsDecoder.decodeStringParam(authenticationRequest.getPassword()))
+				                                                    .build();
+		final List<String> translatedValidationResult = CustomValidator.getTranslatedValidationResult(decodedAuthRequest, localeMessagesCreator);
 		if (!translatedValidationResult.isEmpty()) {
 			log.error("Validation errors present during login.");
 			throw new CustomUserValidationException(localeMessagesCreator.buildLocaleMessage("login-form-validation-errors"),
