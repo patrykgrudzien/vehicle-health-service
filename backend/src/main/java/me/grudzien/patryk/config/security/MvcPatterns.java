@@ -21,7 +21,7 @@ final class MvcPatterns {
 
     static String registrationWildcard(final PropertiesKeeper propertiesKeeper) {
         // /api/registration**
-        return propertiesKeeper.endpoints().API_CONTEXT_PATH + propertiesKeeper.endpoints().REGISTRATION + "**";
+        return propertiesKeeper.endpoints().API_CONTEXT_PATH + propertiesKeeper.endpoints().REGISTRATION + "/**";
     }
 
     static String refreshToken(final PropertiesKeeper propertiesKeeper) {
