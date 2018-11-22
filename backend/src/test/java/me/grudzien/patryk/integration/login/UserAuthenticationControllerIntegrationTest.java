@@ -12,6 +12,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -70,7 +71,8 @@ class UserAuthenticationControllerIntegrationTest {
 		// arrange
 		final JwtAuthenticationRequest loginRequest = JwtAuthenticationRequest.Builder()
 		                                                                      .email("admin.root@gmail.com")
-		                                                                      .password(password).build();
+		                                                                      .password(password)
+		                                                                      .build();
 		// act
 		final ResponseEntity<JwtAuthenticationResponse> response = testRestTemplate.postForEntity(loginEndpoint, loginRequest, JwtAuthenticationResponse.class);
 
@@ -89,7 +91,8 @@ class UserAuthenticationControllerIntegrationTest {
 		final JwtAuthenticationRequest loginRequest = JwtAuthenticationRequest.Builder()
 		                                                                      .email("admin.root@gmail.com")
 		                                                                      .password("")
-		                                                                      .refreshToken("test_refresh_token").build();
+		                                                                      .refreshToken(RandomStringUtils.randomAlphanumeric(25))
+		                                                                      .build();
 		final String jsonLoginRequest = objectMapper.writeValueAsString(loginRequest);
 
 		// act
@@ -126,7 +129,7 @@ class UserAuthenticationControllerIntegrationTest {
 		final JwtAuthenticationRequest loginRequest = JwtAuthenticationRequest.Builder()
 		                                                                      .email("admin.root@gmail.com")
 		                                                                      .password("")
-		                                                                      .refreshToken("test_refresh_token").build();
+		                                                                      .refreshToken(RandomStringUtils.randomAlphanumeric(25)).build();
 		final String jsonLoginRequest = objectMapper.writeValueAsString(loginRequest);
 
 		// act
