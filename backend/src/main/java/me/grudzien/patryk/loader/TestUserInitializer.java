@@ -67,6 +67,7 @@ public class TestUserInitializer implements CommandLineRunner {
 			                                      .firstName("Admin")
 			                                      .lastName("Root")
 			                                      .email("admin.root@gmail.com")
+			                                      .hasFakeEmail(true)
 			                                      .password(passwordEncoder.encode("admin"))
                                                   .profilePictureUrl("www.my-profile-photo.fakeUrl.com")
                                                   .registrationProvider(RegistrationProvider.CUSTOM)

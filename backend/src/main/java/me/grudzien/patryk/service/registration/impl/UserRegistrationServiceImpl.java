@@ -115,6 +115,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
                                                     .firstName(firstName)
                                                     .lastName(lastName)
                                                     .email(email)
+                                                    .hasFakeEmail(userRegistrationDto.isHasFakeEmail())
                                                     .password(passwordEncoder.encode(decodedPassword))
                                                     .profilePictureUrl(userRegistrationDto.getProfilePictureUrl())
                                                     .registrationProvider(registrationProvider == null ? RegistrationProvider.CUSTOM : registrationProvider)
