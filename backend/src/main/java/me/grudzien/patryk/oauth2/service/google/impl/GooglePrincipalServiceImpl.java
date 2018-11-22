@@ -131,8 +131,7 @@ public class GooglePrincipalServiceImpl implements GooglePrincipalService {
 
     private CustomOAuth2OidcPrincipalUser registerOAuth2Principal(final OAuth2User oAuth2User, final String password) {
 		// 1. Request's URL
-		final String registrationEndpoint = propertiesKeeper.endpoints().API_CONTEXT_PATH +
-                propertiesKeeper.endpoints().REGISTRATION + propertiesKeeper.endpoints().REGISTER_USER_ACCOUNT;
+		final String registrationEndpoint = propertiesKeeper.endpoints().REGISTRATION + propertiesKeeper.endpoints().REGISTER_USER_ACCOUNT;
 		// 2. Request's payload
 		final UserRegistrationDto userRegistrationDto = googlePrincipalServiceHelper.prepareRegistrationPayload(oAuth2User, password);
 		// 3. Call endpoint as POST request
