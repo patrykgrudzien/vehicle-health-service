@@ -64,6 +64,9 @@ public class CustomUser {
 	@Size(min = 4, max = 50)
 	private String email;
 
+	@Column(name = "HAS_FAKE_EMAIL")
+	private boolean hasFakeEmail;
+
 	@Column(name = "PASSWORD")
 	@NotNull
 	@Size(min = 4)

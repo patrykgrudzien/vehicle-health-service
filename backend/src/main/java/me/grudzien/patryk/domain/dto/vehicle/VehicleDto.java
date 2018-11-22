@@ -1,6 +1,7 @@
 package me.grudzien.patryk.domain.dto.vehicle;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import me.grudzien.patryk.domain.enums.vehicle.VehicleType;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder(builderMethodName = "Builder")
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class VehicleDto {
 

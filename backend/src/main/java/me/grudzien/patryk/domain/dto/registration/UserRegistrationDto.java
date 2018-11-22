@@ -52,4 +52,7 @@ public class UserRegistrationDto {
 
 	private String profilePictureUrl;
 	private RegistrationProvider registrationProvider;
+
+	// this field is created in purpose of integration test just to avoid sending emails to fake email addresses
+	private boolean hasFakeEmail;
 }
