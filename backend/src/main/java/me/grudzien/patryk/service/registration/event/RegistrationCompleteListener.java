@@ -66,18 +66,22 @@ public class RegistrationCompleteListener implements ApplicationListener<OnRegis
 		final String subject = localeMessagesCreator.buildLocaleMessage("registration-email-subject");
 		final String confirmationUrl = event.getApplicationUrl() + propertiesKeeper.endpoints().REGISTRATION_CONFIRMATION + token;
 
-		emailService.sendMessageUsingTemplate(EmailDto.Builder()
-		                                              .to(recipientAddress)
-		                                              .subject(subject)
-		                                              .content(propertiesKeeper.corsOrigins().FRONT_END_MODULE + confirmationUrl)
-		                                              .templatePlaceholders(
-				                                              ImmutableMap.<String, Object>
+		if (userBeingRegistered.isHasFakeEmail())
+			log.info(FLOW_MARKER, "Fake email address. Confirmation has NOT been sent.");
+		else {
+			emailService.sendMessageUsingTemplate(EmailDto.Builder()
+			                                              .to(recipientAddress)
+			                                              .subject(subject)
+			                                              .content(propertiesKeeper.corsOrigins().FRONT_END_MODULE + confirmationUrl)
+			                                              .templatePlaceholders(
+			                                              		ImmutableMap.<String, Object>
 					                                                 builder()
 					                                                .put("userFirstName", userBeingRegistered.getFirstName())
 			                                                        .put("confirmationUrl",
 			                                                             contextPathsResolver.determineUrlFor(VERIFICATION_TOKEN_CREATION) + confirmationUrl)
 			                                                        .build())
-		                                              .build());
-		log.info(FLOW_MARKER, "Registration confirmation email has been sent to {}", recipientAddress);
+			                                              .build());
+			log.info(FLOW_MARKER, "Registration confirmation email has been sent to {}", recipientAddress);
+		}
 	}
 }
