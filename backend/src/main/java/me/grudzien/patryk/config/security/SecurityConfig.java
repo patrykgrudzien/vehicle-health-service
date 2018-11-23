@@ -4,7 +4,6 @@ import lombok.extern.log4j.Log4j2;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -53,12 +52,9 @@ import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
  */
 @SuppressWarnings("JavadocReference")   // disabling errors caused by "security.basic.enabled" mentioned above
 @Log4j2
-@Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-// This will cause Spring Security to add a new filter chain and order it before the fallback.
-@Order(SecurityProperties.BASIC_AUTH_ORDER - 10)
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig {
 
 	private final UserDetailsService userDetailsService;
 	private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
@@ -107,11 +103,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		this.customAuthenticationProvider = customAuthenticationProvider;
 	}
 
-	@Bean
-	public BCryptPasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
-
 	/**
 	 * <h2>Note:</h2>
 	 * <p>
@@ -153,15 +144,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		log.info(FLOW_MARKER, "Authentication Provider configured globally.");
 	}
 
-	/**
-	 * This method is overriden to expose the {@link org.springframework.security.authentication.AuthenticationManager} bean from
-	 * {@link WebSecurityConfigurerAdapter#configure(org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder)}
-	 */
-	@Bean
-	@Override
-	public AuthenticationManager authenticationManagerBean() throws Exception {
-		return super.authenticationManagerBean();
-	}
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
 	private HttpSessionRequestCache httpSessionRequestCache() {
 		final HttpSessionRequestCache httpSessionRequestCache = new HttpSessionRequestCache();
@@ -169,45 +155,100 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		return httpSessionRequestCache;
 	}
 
-	@Override
-	protected void configure(final HttpSecurity httpSecurity) throws Exception {
-		// don't create session - set creation policy to STATELESS
-		SecurityConfigContext.sessionCreationPolicy(httpSecurity);
-		SecurityConfigContext.httpSessionRequestCache(httpSecurity, httpSessionRequestCache());
+    /**
+     * First custom {@link org.springframework.security.web.SecurityFilterChain} that is invoked before:
+     * {@link SecurityConfig.OAuth2SecurityFilterChainConfiguration} and matches all requests starting from: "/api/**"
+     */
+    @Configuration
+    @Order(1)
+	public class APISecurityFilterChainConfiguration extends WebSecurityConfigurerAdapter {
 
-		// we are stateless so these things are not needed
-        SecurityConfigContext.disableFormLogin(httpSecurity);
-        SecurityConfigContext.disableHttpBasic(httpSecurity);
-        SecurityConfigContext.disableLogout(httpSecurity);
+        /**
+         * This method is overriden to expose the {@link org.springframework.security.authentication.AuthenticationManager} bean from
+         * {@link WebSecurityConfigurerAdapter#configure(org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder)}
+         */
+        @Bean
+        @Override
+        public AuthenticationManager authenticationManagerBean() throws Exception {
+            return super.authenticationManagerBean();
+        }
 
-		// show message to the user that some resource requires authentication
-		SecurityConfigContext.exceptionHandling(httpSecurity, customAuthenticationEntryPoint);
+        @SuppressWarnings("DanglingJavadoc")
+        @Override
+        protected void configure(final HttpSecurity httpSecurity) throws Exception {
+            // don't create session - set creation policy to STATELESS
+            SecurityConfigContext.sessionCreationPolicy(httpSecurity);
+            SecurityConfigContext.httpSessionRequestCache(httpSecurity, httpSessionRequestCache());
 
-        // don't need CSRF because JWT token is invulnerable
-        SecurityConfigContext.disableCSRF(httpSecurity);
+            // we are stateless so these things are not needed
+            SecurityConfigContext.disableFormLogin(httpSecurity);
+            SecurityConfigContext.disableHttpBasic(httpSecurity);
+            SecurityConfigContext.disableLogout(httpSecurity);
 
-        // CORS configuration
-        SecurityConfigContext.addCORSFilter(httpSecurity);
+            // show message to the user that some resource requires authentication
+            SecurityConfigContext.exceptionHandling(httpSecurity, customAuthenticationEntryPoint);
 
-		/**
-		 * {@link me.grudzien.patryk.config.filters.GenericJwtTokenFilter}
-		 * &&
-		 * {@link me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter}
-		 */
-		SecurityConfigContext.Filters.addTokenAuthenticationFilters(httpSecurity, super.userDetailsService(), propertiesKeeper, localeMessageCreator);
+            // don't need CSRF because JWT token is invulnerable
+            SecurityConfigContext.disableCSRF(httpSecurity);
 
-		// oauth2 clients
-        SecurityConfigContext.OAuth2.configureOAuth2Client(httpSecurity, propertiesKeeper, cacheHelper, customOAuth2AuthenticationSuccessHandler,
-                                                           customOAuth2AuthenticationFailureHandler, customOidcUserService, customOAuth2UserService);
-		// mvcMatchers
-        SecurityConfigContext.Requests.authorizeRequests(httpSecurity, propertiesKeeper);
-	}
+            // CORS configuration
+            SecurityConfigContext.addCORSFilter(httpSecurity);
+
+            /**
+             * {@link me.grudzien.patryk.config.filters.GenericJwtTokenFilter}
+             * &&
+             * {@link me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter}
+             */
+            SecurityConfigContext.Filters.addTokenAuthenticationFilters(httpSecurity, super.userDetailsService(), propertiesKeeper, localeMessageCreator);
+
+            // mvcMatchers
+            SecurityConfigContext.Requests.authorizeRequests(httpSecurity, propertiesKeeper);
+        }
+
+        /**
+         * Configuring which requests should be ignored.
+         */
+        @Override
+        public void configure(final WebSecurity webSecurity) {
+            SecurityConfigContext.Web.configureIgnoredRequests(webSecurity);
+        }
+    }
 
     /**
-     * Configuring which requests should be ignored.
+     * Second custom {@link org.springframework.security.web.SecurityFilterChain} that is invoked after:
+     * {@link SecurityConfig.APISecurityFilterChainConfiguration} and matches all requests starting from: "/**" which are configured to be permitted.
+     * Main purpose is the OAuth2 & OpenID configuration.
      */
-	@Override
-	public void configure(final WebSecurity webSecurity) {
-	    SecurityConfigContext.Web.configureIgnoredRequests(webSecurity);
-	}
+    @Configuration
+    @Order(2)
+    public class OAuth2SecurityFilterChainConfiguration extends WebSecurityConfigurerAdapter {
+
+        @Override
+        protected void configure(final HttpSecurity httpSecurity) throws Exception {
+            // don't create session - set creation policy to STATELESS
+            SecurityConfigContext.sessionCreationPolicy(httpSecurity);
+            SecurityConfigContext.httpSessionRequestCache(httpSecurity, httpSessionRequestCache());
+
+            // we are stateless so these things are not needed
+            SecurityConfigContext.disableFormLogin(httpSecurity);
+            SecurityConfigContext.disableHttpBasic(httpSecurity);
+            SecurityConfigContext.disableLogout(httpSecurity);
+
+            // show message to the user that some resource requires authentication
+            SecurityConfigContext.exceptionHandling(httpSecurity, customAuthenticationEntryPoint);
+
+            // don't need CSRF because JWT token is invulnerable
+            SecurityConfigContext.disableCSRF(httpSecurity);
+
+            // CORS configuration
+            SecurityConfigContext.addCORSFilter(httpSecurity);
+
+            // oauth2 clients
+            SecurityConfigContext.OAuth2.configureOAuth2Client(httpSecurity, propertiesKeeper, cacheHelper, customOAuth2AuthenticationSuccessHandler,
+                                                               customOAuth2AuthenticationFailureHandler, customOidcUserService, customOAuth2UserService);
+            // mvcMatchers
+            httpSecurity.authorizeRequests()
+                        .anyRequest().permitAll();
+        }
+    }
 }
