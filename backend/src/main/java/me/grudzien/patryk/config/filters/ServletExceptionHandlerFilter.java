@@ -48,8 +48,9 @@ import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
  *
  * <br><br><hr><br>
  *
- * Another filter:
- * {@link me.grudzien.patryk.config.filters.GenericJwtTokenFilter}
+ * Another filters:
+ * {@link GenericJwtTokenFilter},
+ * {@link LocaleDeterminerFilter}
  *
  * This filter is used in case of unsuccessful JWT operations which are performed in:
  * {@link me.grudzien.patryk.util.jwt.JwtTokenUtil.Retriever}

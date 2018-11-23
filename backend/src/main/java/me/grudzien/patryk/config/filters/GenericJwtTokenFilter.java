@@ -50,8 +50,9 @@ import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
  *
  * <br><br><hr><br>
  *
- * Another filter:
- * {@link me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter}
+ * Another filters:
+ * {@link ServletExceptionHandlerFilter},
+ * {@link LocaleDeterminerFilter}
  */
 @SuppressWarnings("JavadocReference")
 @Log4j2
