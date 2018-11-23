@@ -11,6 +11,7 @@ import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 
 import me.grudzien.patryk.PropertiesKeeper;
 import me.grudzien.patryk.config.filters.GenericJwtTokenFilter;
+import me.grudzien.patryk.config.filters.LocaleDeterminerFilter;
 import me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter;
 import me.grudzien.patryk.oauth2.handler.CustomOAuth2AuthenticationFailureHandler;
 import me.grudzien.patryk.oauth2.handler.CustomOAuth2AuthenticationSuccessHandler;
@@ -75,27 +76,27 @@ final class SecurityConfigContext {
      * Registering custom security filters.
      */
     static class Filters {
+        @SuppressWarnings("DanglingJavadoc")
         static void addTokenAuthenticationFilters(final HttpSecurity httpSecurity, final UserDetailsService userDetailsService,
                                                   final PropertiesKeeper propertiesKeeper, final LocaleMessagesCreator localeMessageCreator) {
             // JWT filter
             final GenericJwtTokenFilter genericJwtTokenFilter = new GenericJwtTokenFilter(userDetailsService, propertiesKeeper, localeMessageCreator);
             httpSecurity.addFilterBefore(genericJwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
-            // ServletExceptionHandlerFilter (it is first and allows GenericJwtTokenFilter to process).
-            // Catches exceptions thrown by GenericJwtTokenFilter.
+            /**
+             * ServletExceptionHandlerFilter (it is first and allows GenericJwtTokenFilter to process).
+             * Catches exceptions thrown by GenericJwtTokenFilter.
+             */
             final ServletExceptionHandlerFilter servletExceptionHandlerFilter = new ServletExceptionHandlerFilter();
             httpSecurity.addFilterBefore(servletExceptionHandlerFilter, GenericJwtTokenFilter.class);
 
             /**
-             * There is also another filter {@link me.grudzien.patryk.config.filters.LocaleDeterminerFilter} which is registered in
-             * {@link me.grudzien.patryk.config.filters.registry.FiltersRegistryConfig#registerLocaleDeterminerFilter()}
-             * to disable Spring Security on some endpoints like:
-             * 1) "/auth"
-             * 2) "/registration"
              * This filter is required to determine "Locale" which is needed to create appropriate messages using:
              * {@link me.grudzien.patryk.util.i18n.LocaleMessagesCreator#buildLocaleMessage(String)} or to take right email template inside:
              * {@link me.grudzien.patryk.service.registration.impl.EmailServiceImpl#sendMessageUsingTemplate(me.grudzien.patryk.domain.dto.registration.EmailDto)}.
              */
+            final LocaleDeterminerFilter localeDeterminerFilter = new LocaleDeterminerFilter();
+            httpSecurity.addFilterBefore(localeDeterminerFilter, ServletExceptionHandlerFilter.class);
         }
     }
 
