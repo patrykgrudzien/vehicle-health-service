@@ -4,8 +4,9 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.http.Method;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -18,15 +19,15 @@ import java.util.stream.Stream;
 
 import static io.restassured.RestAssured.given;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class GoogleOAuth2ControllerIntegrationTest {
 
-    @Value("${server.port}")
-    private int serverPort;
+    @LocalServerPort
+    private int localServerPort;
 
     @BeforeEach
     void setUp() {
-        RestAssured.port = serverPort;
+        RestAssured.port = localServerPort;
         RestAssured.baseURI = "http://localhost";
     }
 
