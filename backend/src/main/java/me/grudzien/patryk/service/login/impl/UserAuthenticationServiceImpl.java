@@ -77,7 +77,7 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 			throw new CustomUserValidationException(localeMessagesCreator.buildLocaleMessage("login-form-validation-errors"),
 			                                        translatedValidationResult);
 		} else {
-			final String email = authenticationRequest.getEmail();
+			final String email = decodedAuthRequest.getEmail();
 			log.info(FLOW_MARKER, "Login request is correct. Starting authenticating the user with ({}) email.", email);
 			final Optional<Authentication> authentication = authenticateUser(authenticationRequest);
 			if (authentication.isPresent()) {
