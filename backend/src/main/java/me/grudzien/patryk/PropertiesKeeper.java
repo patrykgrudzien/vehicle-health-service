@@ -63,6 +63,7 @@ public final class PropertiesKeeper {
         public String BAD_CREDENTIALS = customApplicationProperties.getEndpoints().getOAuth2().getBadCredentials();
         public String USER_REGISTERED_USING_GOOGLE = customApplicationProperties.getEndpoints().getOAuth2().getUserRegisteredUsingGoogle();
 		public String FAILURE_TARGET_URL = customApplicationProperties.getEndpoints().getOAuth2().getFailureTargetUrl();
+		public String EXCHANGE_SHORT_LIVED_TOKEN = customApplicationProperties.getEndpoints().getOAuth2().getExchangeShortLivedToken();
 	}
 
 	public class Heroku {
