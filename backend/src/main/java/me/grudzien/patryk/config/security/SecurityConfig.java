@@ -173,7 +173,7 @@ public class SecurityConfig {
             return super.authenticationManagerBean();
         }
 
-        @SuppressWarnings("DanglingJavadoc")
+        @SuppressWarnings({"DanglingJavadoc", "Duplicates"})
         @Override
         protected void configure(final HttpSecurity httpSecurity) throws Exception {
             // don't create session - set creation policy to STATELESS
@@ -219,6 +219,7 @@ public class SecurityConfig {
      * {@link SecurityConfig.APISecurityFilterChainConfiguration} and matches all requests starting from: "/**" which are configured to be permitted.
      * Main purpose is the OAuth2 & OpenID configuration.
      */
+    @SuppressWarnings("Duplicates")
     @Configuration
     @Order(2)
     public class OAuth2SecurityFilterChainConfiguration extends WebSecurityConfigurerAdapter {
