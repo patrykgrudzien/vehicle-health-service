@@ -1,9 +1,10 @@
 package me.grudzien.patryk.domain.entity.registration;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -12,6 +13,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -29,27 +31,32 @@ import java.util.Date;
 @Entity
 @Table(name = "EMAIL_VERIFICATION_TOKEN")
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@Builder(builderMethodName = "Builder")
+@SequenceGenerator(name = "emailVerificationTokenGenerator", sequenceName = "emailVerificationTokenSequence", allocationSize = 1)
 public class EmailVerificationToken {
 
 	private static final int EXPIRATION_IN_MINUTES = 24 * 60;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "emailVerificationTokenGenerator")
 	@Column(name = "ID", nullable = false)
 	private Long id;
 
 	@Column(name = "TOKEN")
 	private String token;
 
-	@OneToOne(fetch = FetchType.EAGER)
+	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinColumn(name = "CUSTOM_USER_ID", nullable = false)
 	private CustomUser customUser;
 
 	@Column(name = "EXPIRY_DATE")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date expiryDate;
+
+	public EmailVerificationToken() {
+	    // hibernate purpose
+    }
 
 	public EmailVerificationToken(final String token) {
 		this.token = token;
