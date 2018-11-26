@@ -46,6 +46,8 @@ class UserAuthenticationControllerIntegrationTest {
 	@LocalServerPort
 	private int localServerPort;
 
+	private static final String LOGIN_ENDPOINT = "/api/auth";
+
 	@BeforeEach
 	void setUp() {
 		RestAssured.port = localServerPort;
@@ -62,7 +64,7 @@ class UserAuthenticationControllerIntegrationTest {
 		                                                                      .password(encoder.encodeToString("admin".getBytes()))
 		                                                                      .build();
 		// act
-		final ResponseEntity<JwtAuthenticationResponse> response = testRestTemplate.postForEntity("/api/auth", loginRequest, JwtAuthenticationResponse.class);
+		final ResponseEntity<JwtAuthenticationResponse> response = testRestTemplate.postForEntity(LOGIN_ENDPOINT, loginRequest, JwtAuthenticationResponse.class);
 
 		// assertions
 		Assertions.assertAll(
@@ -75,36 +77,31 @@ class UserAuthenticationControllerIntegrationTest {
 
     private static Stream<Arguments> loginTestDataWithENLocale() throws JsonProcessingException {
         // arrange
-	    final String loginEndpoint = "/api/auth";
-
 	    final String emptyEmail = prepareAuthJSONRequest("", "admin");
 	    final String invalidEmailFormat = prepareAuthJSONRequest("invalid-email-format", "admin");
 	    final String emptyPassword = prepareAuthJSONRequest("admin.root@gmail.com", "");
 	    final String noCredentialsProvided = prepareAuthJSONRequest("", "");
 
         return Stream.of(
-                Arguments.arguments(Method.POST, emptyEmail, loginEndpoint,
-                                    new String[] {"Email address cannot be empty.", "Provided email has incorrect format."}),
-                Arguments.arguments(Method.POST, invalidEmailFormat, loginEndpoint,
-                                    new String[] {"Provided email has incorrect format."}),
-                Arguments.arguments(Method.POST, emptyPassword, loginEndpoint,
-                                    new String[] {"Password cannot be empty."}),
-                Arguments.arguments(Method.POST, noCredentialsProvided, loginEndpoint,
+                Arguments.arguments(Method.POST, emptyEmail, new String[] {"Email address cannot be empty.", "Provided email has incorrect format."}),
+                Arguments.arguments(Method.POST, invalidEmailFormat, new String[] {"Provided email has incorrect format."}),
+                Arguments.arguments(Method.POST, emptyPassword, new String[] {"Password cannot be empty."}),
+                Arguments.arguments(Method.POST, noCredentialsProvided,
                                     new String[] {"Email address cannot be empty.", "Password cannot be empty.", "Provided email has incorrect format."})
         );
     }
 
 	@DisplayName("Login failed. 400 Bad Request. \"Language=en\" header. Validation errors: ")
-    @ParameterizedTest(name = "{3}")
+    @ParameterizedTest(name = "{2}")
     @MethodSource("loginTestDataWithENLocale")
-	void testLoginFailedWithENLocale(final Method httpMethod, final String jsonBody, final String loginEndpoint, final String... errorItems) {
+	void testLoginFailedWithENLocale(final Method httpMethod, final String jsonBody, final String... errorItems) {
 		given().log().all()
                .header("Language", "en")
                .with().body(jsonBody)
                .contentType(ContentType.JSON)
                .accept(ContentType.JSON)
                .when()
-               .request(httpMethod, loginEndpoint)
+               .request(httpMethod, LOGIN_ENDPOINT)
                .then()
                .log().body()
                .assertThat()
@@ -115,36 +112,31 @@ class UserAuthenticationControllerIntegrationTest {
 
     private static Stream<Arguments> loginTestDataWithPLLocale() throws JsonProcessingException {
         // arrange
-        final String loginEndpoint = "/api/auth";
-
         final String emptyEmail = prepareAuthJSONRequest("", "admin");
         final String invalidEmailFormat = prepareAuthJSONRequest("invalid-email-format", "admin");
         final String emptyPassword = prepareAuthJSONRequest("admin.root@gmail.com", "");
         final String noCredentialsProvided = prepareAuthJSONRequest("", "");
 
         return Stream.of(
-                Arguments.arguments(Method.POST, emptyEmail, loginEndpoint,
-                                    new String[] {"Adres email nie może być pusty.", "Wprowadzony email ma nieprawidłowy format."}),
-                Arguments.arguments(Method.POST, invalidEmailFormat, loginEndpoint,
-                                    new String[] {"Wprowadzony email ma nieprawidłowy format."}),
-                Arguments.arguments(Method.POST, emptyPassword, loginEndpoint,
-                                    new String[] {"Hasło nie może być puste."}),
-                Arguments.arguments(Method.POST, noCredentialsProvided, loginEndpoint,
+                Arguments.arguments(Method.POST, emptyEmail, new String[] {"Adres email nie może być pusty.", "Wprowadzony email ma nieprawidłowy format."}),
+                Arguments.arguments(Method.POST, invalidEmailFormat, new String[] {"Wprowadzony email ma nieprawidłowy format."}),
+                Arguments.arguments(Method.POST, emptyPassword, new String[] {"Hasło nie może być puste."}),
+                Arguments.arguments(Method.POST, noCredentialsProvided,
                                     new String[] {"Adres email nie może być pusty.", "Hasło nie może być puste.", "Wprowadzony email ma nieprawidłowy format."})
         );
     }
 
     @DisplayName("Login failed. 400 Bad Request. \"Language=pl\" header. Validation errors: ")
-    @ParameterizedTest(name = "{3}")
+    @ParameterizedTest(name = "{2}")
     @MethodSource("loginTestDataWithPLLocale")
-    void testLoginFailedWithPLLocale(final Method httpMethod, final String jsonBody, final String loginEndpoint, final String... errorItems) {
+    void testLoginFailedWithPLLocale(final Method httpMethod, final String jsonBody, final String... errorItems) {
         given().log().all()
                .header("Language", "pl")
                .with().body(jsonBody)
                .contentType(ContentType.JSON)
                .accept(ContentType.JSON)
                .when()
-               .request(httpMethod, loginEndpoint)
+               .request(httpMethod, LOGIN_ENDPOINT)
                .then()
                .log().body()
                .assertThat()
