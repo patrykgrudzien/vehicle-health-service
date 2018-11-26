@@ -46,7 +46,7 @@ public class CustomUser {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "customUserGenerator")
-	@Column(name = "ID")
+	@Column(name = "ID", nullable = false)
 	private Long id;
 
 	@Column(name = "FIRST_NAME", length = 50)
