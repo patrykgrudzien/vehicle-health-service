@@ -17,7 +17,7 @@ import me.grudzien.patryk.repository.registration.EmailVerificationTokenReposito
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-class EmailVerificationTokenRepositoryTest {
+class EmailVerificationTokenRepositoryIT {
 
     @Autowired
     private TestEntityManager testEntityManager;

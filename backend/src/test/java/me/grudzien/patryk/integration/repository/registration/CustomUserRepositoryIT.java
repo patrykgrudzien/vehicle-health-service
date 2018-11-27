@@ -21,7 +21,7 @@ import me.grudzien.patryk.repository.registration.CustomUserRepository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-class CustomUserRepositoryIntegrationTest {
+class CustomUserRepositoryIT {
 
     @Autowired
     private TestEntityManager testEntityManager;

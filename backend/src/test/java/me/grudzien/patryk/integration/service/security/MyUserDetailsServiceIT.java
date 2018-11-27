@@ -33,7 +33,7 @@ import static org.mockito.Mockito.verify;
 
 @Disabled("Disabled because of: net.sf.ehcache.CacheException: Another unnamed CacheManager already exists in the same VM.")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class MyUserDetailsServiceIntegrationTest {
+class MyUserDetailsServiceIT {
 
 	@Autowired
 	@Qualifier(MyUserDetailsService.BEAN_NAME)

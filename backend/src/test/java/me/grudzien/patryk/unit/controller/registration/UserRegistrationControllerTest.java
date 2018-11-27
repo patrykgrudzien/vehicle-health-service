@@ -8,4 +8,4 @@ import me.grudzien.patryk.controller.registration.UserRegistrationController;
 
 @Disabled
 @WebMvcTest(controllers = UserRegistrationController.class)
-public class UserRegistrationControllerUnitTest {}
+public class UserRegistrationControllerTest {}
