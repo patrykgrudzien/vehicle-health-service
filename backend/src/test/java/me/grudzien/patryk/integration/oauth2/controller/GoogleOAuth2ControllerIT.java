@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 import static io.restassured.RestAssured.given;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class GoogleOAuth2ControllerIntegrationTest {
+class GoogleOAuth2ControllerIT {
 
     @LocalServerPort
     private int localServerPort;

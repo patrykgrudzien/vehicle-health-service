@@ -31,7 +31,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class SecurityConfigIntegrationTest {
+class SecurityConfigIT {
 
 	@LocalServerPort
 	private int localServerPort;

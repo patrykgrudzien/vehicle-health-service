@@ -8,4 +8,4 @@ import me.grudzien.patryk.controller.registration.UserRegistrationController;
 
 @Disabled
 @SpringBootTest(classes = UserRegistrationController.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class UserRegistrationControllerIntegrationTest {}
+public class UserRegistrationControllerIT {}

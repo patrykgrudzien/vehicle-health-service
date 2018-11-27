@@ -38,7 +38,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class UserAuthenticationControllerIntegrationTest {
+class UserAuthenticationControllerIT {
 
 	@Autowired
 	private TestRestTemplate testRestTemplate;

@@ -44,7 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = UserAuthenticationController.class, secure = false)
-class UserAuthenticationControllerUnitTest {
+class UserAuthenticationControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
