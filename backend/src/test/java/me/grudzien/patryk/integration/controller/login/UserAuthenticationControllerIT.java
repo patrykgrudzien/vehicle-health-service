@@ -1,4 +1,4 @@
-package me.grudzien.patryk.integration.login;
+package me.grudzien.patryk.integration.controller.login;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;

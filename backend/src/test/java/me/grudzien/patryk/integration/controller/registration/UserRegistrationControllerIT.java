@@ -1,4 +1,4 @@
-package me.grudzien.patryk.integration.registration;
+package me.grudzien.patryk.integration.controller.registration;
 
 import org.springframework.boot.test.context.SpringBootTest;
 
