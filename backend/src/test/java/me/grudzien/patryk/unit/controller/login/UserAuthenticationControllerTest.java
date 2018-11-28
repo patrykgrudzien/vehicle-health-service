@@ -162,6 +162,8 @@ class UserAuthenticationControllerTest {
                 () -> assertThat(loginValidationResult).hasSize(1)
         );
     }
+    
+    // TODO: prepare Controller and Service for TokenGeneration as it'll be required for tests with security enabled
 
     @SuppressWarnings("Duplicates")
     private String prepareAuthJSONRequest(final String plainEmail, final String plainPassword) throws JsonProcessingException {
