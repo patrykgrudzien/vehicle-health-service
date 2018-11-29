@@ -125,7 +125,7 @@ public class GenericJwtTokenFilter extends OncePerRequestFilter {
                      * an "HttpServletRequest" object.
                      */
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    log.info(FLOW_MARKER, "Authorized user '{}', setting security context.", email);
+                    log.info(FLOW_MARKER, "User has been successfully authenticated. Setting security context.");
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             } else {
