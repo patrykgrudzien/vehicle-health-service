@@ -46,7 +46,7 @@ public class EmailVerificationToken {
 	@Column(name = "TOKEN")
 	private String token;
 
-	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
 	@JoinColumn(name = "CUSTOM_USER_ID", nullable = false)
 	private CustomUser customUser;
 
