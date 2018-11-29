@@ -11,11 +11,15 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.BDDMockito;
 
 import com.google.common.collect.Sets;
 
 import java.util.Date;
+import java.util.stream.Stream;
 
 import me.grudzien.patryk.domain.dto.login.JwtUser;
 import me.grudzien.patryk.domain.entity.registration.CustomUser;
@@ -56,7 +60,7 @@ class MyUserDetailsServiceIT {
 	}
 
 	@Test
-	@DisplayName("User loaded successfully. Cache: (" + MyUserDetailsService.PRINCIPAL_USER_CACHE_NAME + ") populated. Second fetch doesn't invoke database.")
+	@DisplayName("User loaded successfully from cache. Cache: (" + MyUserDetailsService.PRINCIPAL_USER_CACHE_NAME + ") populated. Second fetch doesn't invoke database.")
 	void testLoadUserByUsernameSuccessful() {
 		// given
 		BDDMockito.given(customUserRepository.findByEmail(anyString())).willReturn(getTestCustomUser());
@@ -72,6 +76,36 @@ class MyUserDetailsServiceIT {
 		Assertions.assertAll(
 				() -> Assertions.assertNotNull(cachedJwtUser),
 				() -> assertThat(cachedJwtUser).isInstanceOf(JwtUser.class)
+		);
+	}
+
+	private static Stream<Arguments> cacheNotPopulatedTestData() {
+		return Stream.of(
+				Arguments.arguments((Object) null),
+				Arguments.arguments(""),
+				Arguments.arguments(TEST_EMAIL)
+		);
+	}
+
+	@DisplayName("Cannot load user from cache. Cache: (" + MyUserDetailsService.PRINCIPAL_USER_CACHE_NAME + ") NOT populated!")
+	@ParameterizedTest(name = "Given ({0}) will return (null). @Cacheable \"condition\", \"unless\" attributes don't match!")
+	@MethodSource("cacheNotPopulatedTestData")
+	void cacheNotPopulated(final String username) {
+		// given
+		BDDMockito.given(customUserRepository.findByEmail(null)).willReturn(null);
+		BDDMockito.given(customUserRepository.findByEmail("")).willReturn(null);
+		BDDMockito.given(customUserRepository.findByEmail(username)).willReturn(null);
+
+		// when
+		userDetailsService.loadUserByUsername(username);
+		userDetailsService.loadUserByUsername(username);
+
+		// then
+		cachedJwtUser = cacheHelper.loadCache(MyUserDetailsService.PRINCIPAL_USER_CACHE_NAME, TEST_EMAIL, () -> null);
+
+		verify(customUserRepository, times(2)).findByEmail(username);
+		Assertions.assertAll(
+				() -> Assertions.assertNull(cachedJwtUser)
 		);
 	}
 
