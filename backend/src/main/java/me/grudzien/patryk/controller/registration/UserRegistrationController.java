@@ -5,7 +5,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,8 +16,8 @@ import org.springframework.web.context.request.WebRequest;
 import com.google.common.base.Preconditions;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 
+import me.grudzien.patryk.domain.dto.registration.RegistrationResponse;
 import me.grudzien.patryk.domain.dto.registration.UserRegistrationDto;
 import me.grudzien.patryk.domain.dto.responses.CustomResponse;
 import me.grudzien.patryk.domain.dto.responses.SuccessResponse;
@@ -45,11 +44,11 @@ public class UserRegistrationController {
 	}
 
 	@PostMapping("${custom.properties.endpoints.registration.register-user-account}")
-	public ResponseEntity<CustomResponse> registerUserAccount(@RequestBody @Valid final UserRegistrationDto userRegistrationDto,
-	                                                          final BindingResult bindingResult, final WebRequest webRequest) {
-		final String message = localeMessagesCreator.buildLocaleMessageWithParam("register-user-account-success", userRegistrationDto.getEmail());
-		userRegistrationService.registerNewCustomUserAccount(userRegistrationDto, bindingResult, webRequest);
-		return new ResponseEntity<>(new SuccessResponse(message), HttpStatus.OK);
+	public ResponseEntity<CustomResponse> registerUserAccount(@RequestBody final UserRegistrationDto userRegistrationDto, final WebRequest webRequest) {
+        final RegistrationResponse registrationResponse = userRegistrationService.registerNewCustomUserAccount(userRegistrationDto, webRequest);
+        return registrationResponse.isSuccessful() ?
+                new ResponseEntity<>(new SuccessResponse(registrationResponse.getMessage()), HttpStatus.OK) :
+                ResponseEntity.badRequest().build();
 	}
 
 	@GetMapping("${custom.properties.endpoints.registration.confirm-registration}")
