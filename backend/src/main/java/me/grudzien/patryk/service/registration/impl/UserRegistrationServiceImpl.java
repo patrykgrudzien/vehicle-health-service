@@ -4,11 +4,9 @@ import lombok.extern.log4j.Log4j2;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.context.request.WebRequest;
 
 import com.google.common.base.Preconditions;
@@ -20,8 +18,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.stream.Collectors;
+import java.util.List;
 
+import me.grudzien.patryk.domain.dto.registration.RegistrationResponse;
 import me.grudzien.patryk.domain.dto.registration.UserRegistrationDto;
 import me.grudzien.patryk.domain.entity.engine.Engine;
 import me.grudzien.patryk.domain.entity.registration.CustomUser;
@@ -39,12 +38,15 @@ import me.grudzien.patryk.exception.registration.TokenExpiredException;
 import me.grudzien.patryk.exception.registration.TokenNotFoundException;
 import me.grudzien.patryk.exception.registration.UserAlreadyExistsException;
 import me.grudzien.patryk.handler.web.HttpResponseHandler;
+import me.grudzien.patryk.oauth2.util.CacheHelper;
 import me.grudzien.patryk.repository.registration.CustomUserRepository;
 import me.grudzien.patryk.repository.registration.EmailVerificationTokenRepository;
 import me.grudzien.patryk.service.registration.EmailService;
 import me.grudzien.patryk.service.registration.UserRegistrationService;
 import me.grudzien.patryk.service.registration.event.OnRegistrationCompleteEvent;
+import me.grudzien.patryk.service.security.MyUserDetailsService;
 import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
+import me.grudzien.patryk.util.validator.CustomValidator;
 import me.grudzien.patryk.util.web.RequestsDecoder;
 
 import static me.grudzien.patryk.domain.enums.AppFLow.ACCOUNT_ALREADY_ENABLED;
@@ -67,12 +69,13 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 	private final EmailService emailService;
 	private final LocaleMessagesCreator localeMessagesCreator;
 	private final RequestsDecoder requestsDecoder;
+	private final CacheHelper cacheHelper;
 
 	@Autowired
 	public UserRegistrationServiceImpl(final CustomUserRepository customUserRepository, final BCryptPasswordEncoder passwordEncoder,
 	                                   final ApplicationEventPublisher eventPublisher, final EmailVerificationTokenRepository emailVerificationTokenRepository,
-	                                   final HttpResponseHandler httpResponseHandler, final EmailService emailService,
-	                                   final LocaleMessagesCreator localeMessagesCreator, final RequestsDecoder requestsDecoder) {
+	                                   final HttpResponseHandler httpResponseHandler, final EmailService emailService, final LocaleMessagesCreator localeMessagesCreator,
+	                                   final RequestsDecoder requestsDecoder, final CacheHelper cacheHelper) {
 
 		Preconditions.checkNotNull(customUserRepository, "customUserRepository cannot be null!");
 		Preconditions.checkNotNull(passwordEncoder, "passwordEncoder cannot be null!");
@@ -82,6 +85,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 		Preconditions.checkNotNull(emailService, "emailService cannot be null!");
 		Preconditions.checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
 		Preconditions.checkNotNull(requestsDecoder, "requestsDecoder cannot be null!");
+		Preconditions.checkNotNull(cacheHelper, "cacheHelper cannot be null!");
 
 		this.customUserRepository = customUserRepository;
 		this.passwordEncoder = passwordEncoder;
@@ -91,32 +95,29 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 		this.emailService = emailService;
 		this.localeMessagesCreator = localeMessagesCreator;
 		this.requestsDecoder = requestsDecoder;
+		this.cacheHelper = cacheHelper;
 	}
 
 	@Override
-	public void registerNewCustomUserAccount(final UserRegistrationDto userRegistrationDto, final BindingResult bindingResult,
-	                                         final WebRequest webRequest) {
+	public RegistrationResponse registerNewCustomUserAccount(final UserRegistrationDto userRegistrationDto, final WebRequest webRequest) {
+		final UserRegistrationDto decodedUserRegistrationDto = decodeUserRegistrationDto(userRegistrationDto);
+		final String email = decodedUserRegistrationDto.getEmail();
+		final RegistrationProvider registrationProvider = userRegistrationDto.getRegistrationProvider();
 
-		// (firstName) & (lastName) are not encoded because (firstName) goes to confirmation email as variable in template
-		final String firstName = userRegistrationDto.getFirstName();
-		final String lastName = userRegistrationDto.getLastName();
-		final String decodedPassword = requestsDecoder.decodeStringParam(userRegistrationDto.getPassword());
-		// (email) & (confirmedEmail) fields are not encoded on UI side because they must be validated by @ValidEmail annotation
-		final String email = userRegistrationDto.getEmail();
-        final RegistrationProvider registrationProvider = userRegistrationDto.getRegistrationProvider();
+		final List<String> translatedValidationResult = CustomValidator.getTranslatedValidationResult(decodedUserRegistrationDto, localeMessagesCreator);
 
 		if (doesEmailExist(email)) {
 			log.error(EXCEPTION_MARKER, "User with specified email {} already exists.", email);
 			throw new UserAlreadyExistsException(localeMessagesCreator.buildLocaleMessageWithParam("user-already-exists", email));
 		}
-		if (!bindingResult.hasErrors()) {
+		if (translatedValidationResult.isEmpty()) {
 			log.info("No validation errors during user registration.");
             final CustomUser customUser = CustomUser.Builder()
-                                                    .firstName(firstName)
-                                                    .lastName(lastName)
+                                                    .firstName(decodedUserRegistrationDto.getFirstName())
+                                                    .lastName(decodedUserRegistrationDto.getLastName())
                                                     .email(email)
                                                     .hasFakeEmail(userRegistrationDto.isHasFakeEmail())
-                                                    .password(passwordEncoder.encode(decodedPassword))
+                                                    .password(passwordEncoder.encode(decodedUserRegistrationDto.getPassword()))
                                                     .profilePictureUrl(userRegistrationDto.getProfilePictureUrl())
                                                     .registrationProvider(registrationProvider == null ? RegistrationProvider.CUSTOM : registrationProvider)
                                                     .roles(Collections.singleton(Role.Builder()
@@ -141,20 +142,28 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 			// we use Spring Event to create the token and send verification email (it should not be performed by controller directly)
 			log.info("Publisher published event for verification token generation.");
 			eventPublisher.publishEvent(new OnRegistrationCompleteEvent(customUser, webRequest.getContextPath()));
+
+			return RegistrationResponse.Builder()
+                                       .message(localeMessagesCreator.buildLocaleMessageWithParam("register-user-account-success", email))
+                                       .isSuccessful(true)
+                                       .build();
 		} else {
 			log.error("Validation errors present during user registration.");
 			throw new CustomUserValidationException(localeMessagesCreator.buildLocaleMessage("registration-form-validation-errors"),
-			                                        bindingResult.getAllErrors()
-			                                                     .stream()
-			                                                     .map(DefaultMessageSourceResolvable::getDefaultMessage)
-			                                                     // I'm checking two fields for email and two for password but there is
-			                                                     // no need to duplicate the same message
-			                                                     .distinct()
-			                                                     // translate "messageCode" to i18n message
-			                                                     .map(localeMessagesCreator::buildLocaleMessage)
-			                                                     .collect(Collectors.toList()));
+			                                        translatedValidationResult);
 		}
 	}
+
+    private UserRegistrationDto decodeUserRegistrationDto(final UserRegistrationDto userRegistrationDto) {
+        return UserRegistrationDto.Builder()
+                                  .firstName(requestsDecoder.decodeStringParam(userRegistrationDto.getFirstName()))
+                                  .lastName(requestsDecoder.decodeStringParam(userRegistrationDto.getLastName()))
+                                  .email(requestsDecoder.decodeStringParam(userRegistrationDto.getEmail()))
+                                  .confirmedEmail(requestsDecoder.decodeStringParam(userRegistrationDto.getConfirmedEmail()))
+                                  .password(requestsDecoder.decodeStringParam(userRegistrationDto.getPassword()))
+                                  .confirmedPassword(requestsDecoder.decodeStringParam(userRegistrationDto.getConfirmedPassword()))
+                                  .build();
+    }
 
 	@Override
 	public void confirmRegistration(final String emailVerificationToken, final HttpServletResponse response) {
@@ -171,9 +180,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 					httpResponseHandler.redirectUserTo(VERIFICATION_TOKEN_EXPIRED, response);
 					throw new TokenExpiredException(localeMessagesCreator.buildLocaleMessage("verification-token-expired"));
 				}
-				customUser.setEnabled(Boolean.TRUE);
-				saveRegisteredCustomUser(customUser);
-				log.info("User account has been activated.");
+				enableRegisteredCustomUser(customUser);
 
 				emailVerificationTokenRepository.delete(token);
 				log.info("Token confirmed and deleted from database.");
@@ -199,8 +206,13 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 	}
 
 	@Override
-	public void saveRegisteredCustomUser(final CustomUser customUser) {
+	public void enableRegisteredCustomUser(final CustomUser customUser) {
+		// cleaning user from cache because it's been saved (with "enabled" status = FALSE) before email confirmation
+		cacheHelper.clearCacheByName(MyUserDetailsService.PRINCIPAL_USER_CACHE_NAME);
+
+        customUser.setEnabled(Boolean.TRUE);
 		customUserRepository.save(customUser);
+        log.info("User account has been activated.");
 	}
 
 	@Override
