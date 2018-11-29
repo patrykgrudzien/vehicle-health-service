@@ -12,10 +12,10 @@ export default {
     commit(MUTATIONS.CLEAR_SERVER_EXCEPTION_RESPONSE)
     commit(MUTATIONS.CLEAR_SERVER_SUCCESS_RESPONSE)
     Vue.axios.post(serverEndpoints.registration.registerUserAccount, {
-      firstName: form.firstName,
-      lastName: form.lastName,
-      email: form.email,
-      confirmedEmail: form.confirmedEmail,
+      firstName: window.btoa(form.firstName),
+      lastName: window.btoa(form.lastName),
+      email: window.btoa(form.email),
+      confirmedEmail: window.btoa(form.confirmedEmail),
       password: window.btoa(form.password),
       confirmedPassword: window.btoa(form.confirmedPassword)
     })
