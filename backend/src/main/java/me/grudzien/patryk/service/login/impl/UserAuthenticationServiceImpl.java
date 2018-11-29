@@ -66,18 +66,16 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 	@Override
 	public JwtAuthenticationResponse login(final JwtAuthenticationRequest authenticationRequest, final Device device) {
 		final JwtAuthenticationResponse jwtAuthenticationResponseFailure = JwtAuthenticationResponse.Builder().isSuccessful(Boolean.FALSE).build();
-		final JwtAuthenticationRequest decodedAuthRequest = JwtAuthenticationRequest
-				                                                    .Builder()
-				                                                    .email(requestsDecoder.decodeStringParam(authenticationRequest.getEmail()))
-				                                                    .password(requestsDecoder.decodeStringParam(authenticationRequest.getPassword()))
-				                                                    .build();
-		final List<String> translatedValidationResult = CustomValidator.getTranslatedValidationResult(decodedAuthRequest, localeMessagesCreator);
+
+		final JwtAuthenticationRequest decodedAuthenticationRequest = decodeAuthenticationRequest(authenticationRequest);
+		final List<String> translatedValidationResult = CustomValidator.getTranslatedValidationResult(decodedAuthenticationRequest, localeMessagesCreator);
+
 		if (!translatedValidationResult.isEmpty()) {
 			log.error("Validation errors present during login.");
 			throw new CustomUserValidationException(localeMessagesCreator.buildLocaleMessage("login-form-validation-errors"),
 			                                        translatedValidationResult);
 		} else {
-			final String email = decodedAuthRequest.getEmail();
+			final String email = decodedAuthenticationRequest.getEmail();
 			log.info(FLOW_MARKER, "Login request is correct. Starting authenticating the user with ({}) email.", email);
 			final Optional<Authentication> authentication = authenticateUser(authenticationRequest);
 			if (authentication.isPresent()) {
@@ -96,6 +94,14 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 			}
 		}
 		return jwtAuthenticationResponseFailure;
+	}
+
+	private JwtAuthenticationRequest decodeAuthenticationRequest(final JwtAuthenticationRequest authenticationRequest) {
+		return JwtAuthenticationRequest
+				       .Builder()
+				       .email(requestsDecoder.decodeStringParam(authenticationRequest.getEmail()))
+				       .password(requestsDecoder.decodeStringParam(authenticationRequest.getPassword()))
+				       .build();
 	}
 
 	/**
