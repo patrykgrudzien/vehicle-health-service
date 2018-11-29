@@ -194,6 +194,9 @@ public class SecurityConfig {
             // CORS configuration
             SecurityConfigContext.addCORSFilter(httpSecurity);
 
+            // Disabling frame options
+	        SecurityConfigContext.frameOptionsSameOrigin(httpSecurity);
+
             /**
              * {@link me.grudzien.patryk.config.filters.GenericJwtTokenFilter}
              * &&
@@ -243,6 +246,9 @@ public class SecurityConfig {
 
             // CORS configuration
             SecurityConfigContext.addCORSFilter(httpSecurity);
+
+	        // Disabling frame options
+	        SecurityConfigContext.frameOptionsSameOrigin(httpSecurity);
 
             // oauth2 clients
             SecurityConfigContext.OAuth2.configureOAuth2Client(httpSecurity, propertiesKeeper, cacheHelper, customOAuth2AuthenticationSuccessHandler,

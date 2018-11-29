@@ -67,6 +67,12 @@ final class SecurityConfigContext {
         httpSecurity.cors();
     }
 
+    static void frameOptionsSameOrigin(final HttpSecurity httpSecurity) throws Exception {
+		httpSecurity.headers()
+		            .frameOptions()
+		            .sameOrigin();
+    }
+
     static void exceptionHandling(final HttpSecurity httpSecurity, final AuthenticationEntryPoint authenticationEntryPoint) throws Exception {
         httpSecurity.exceptionHandling()
                     .authenticationEntryPoint(authenticationEntryPoint);
