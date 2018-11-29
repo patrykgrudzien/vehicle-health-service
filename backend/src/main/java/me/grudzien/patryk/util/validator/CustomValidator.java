@@ -20,6 +20,10 @@ public interface CustomValidator {
 		final Set<ConstraintViolation<T>> validation = getDefaultValidator().validate(input);
 		return validation.stream()
 		                 .map(ConstraintViolation::getMessage)
+		                 // I'm checking two fields for email and two for password but there is
+		                 // no need to duplicate the same message
+		                 .distinct()
+		                 // translate "messageCode" to i18n message
 		                 .map(localeMessagesCreator::buildLocaleMessage)
 		                 .collect(Collectors.toList());
 	}
