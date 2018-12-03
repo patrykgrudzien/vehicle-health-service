@@ -12,7 +12,6 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,14 +21,13 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.Base64;
 import java.util.Base64.Encoder;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Stream;
 
+import me.grudzien.patryk.TestsUtils;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationResponse;
 
@@ -47,6 +45,8 @@ class UserAuthenticationControllerIT {
 	private int localServerPort;
 
 	private static final String LOGIN_ENDPOINT = "/api/auth";
+
+    private static final boolean ENABLE_ENCODING = true;
 
 	@BeforeEach
 	void setUp() {
@@ -77,10 +77,10 @@ class UserAuthenticationControllerIT {
 
     private static Stream<Arguments> loginTestDataWithENLocale() throws JsonProcessingException {
         // arrange
-	    final String emptyEmail = prepareAuthJSONRequest("", "admin");
-	    final String invalidEmailFormat = prepareAuthJSONRequest("invalid-email-format", "admin");
-	    final String emptyPassword = prepareAuthJSONRequest("admin.root@gmail.com", "");
-	    final String noCredentialsProvided = prepareAuthJSONRequest("", "");
+	    final String emptyEmail = TestsUtils.prepareAuthJSONRequest("", "admin", ENABLE_ENCODING);
+	    final String invalidEmailFormat = TestsUtils.prepareAuthJSONRequest("invalid-email-format", "admin", ENABLE_ENCODING);
+	    final String emptyPassword = TestsUtils.prepareAuthJSONRequest("admin.root@gmail.com", "", ENABLE_ENCODING);
+	    final String noCredentialsProvided = TestsUtils.prepareAuthJSONRequest("", "", ENABLE_ENCODING);
 
         return Stream.of(
                 Arguments.arguments(Method.POST, emptyEmail, new String[] {"Email address cannot be empty.", "Provided email has incorrect format."}),
@@ -112,10 +112,10 @@ class UserAuthenticationControllerIT {
 
     private static Stream<Arguments> loginTestDataWithPLLocale() throws JsonProcessingException {
         // arrange
-        final String emptyEmail = prepareAuthJSONRequest("", "admin");
-        final String invalidEmailFormat = prepareAuthJSONRequest("invalid-email-format", "admin");
-        final String emptyPassword = prepareAuthJSONRequest("admin.root@gmail.com", "");
-        final String noCredentialsProvided = prepareAuthJSONRequest("", "");
+        final String emptyEmail = TestsUtils.prepareAuthJSONRequest("", "admin", ENABLE_ENCODING);
+        final String invalidEmailFormat = TestsUtils.prepareAuthJSONRequest("invalid-email-format", "admin", ENABLE_ENCODING);
+        final String emptyPassword = TestsUtils.prepareAuthJSONRequest("admin.root@gmail.com", "", ENABLE_ENCODING);
+        final String noCredentialsProvided = TestsUtils.prepareAuthJSONRequest("", "", ENABLE_ENCODING);
 
         return Stream.of(
                 Arguments.arguments(Method.POST, emptyEmail, new String[] {"Adres email nie może być pusty.", "Wprowadzony email ma nieprawidłowy format."}),
@@ -143,19 +143,5 @@ class UserAuthenticationControllerIT {
                .statusCode(HttpStatus.BAD_REQUEST.value())
                .body("message", equalTo("Nie można zalogować użytkownika. Formularz logowania zawiera błędy."))
                .body("errors", hasItems(errorItems));
-    }
-
-    private static String prepareAuthJSONRequest(final String email, final String password) throws JsonProcessingException {
-        final Encoder encoder = Base64.getEncoder();
-        final ObjectMapper objectMapper = new ObjectMapper();
-
-        final String encodedEmail = Optional.ofNullable(email).map(notEmptyEmail -> encoder.encodeToString(notEmptyEmail.getBytes())).orElse(null);
-        final String encodedPassword = Optional.ofNullable(password).map(notEmptyPassword -> encoder.encodeToString(notEmptyPassword.getBytes())).orElse(null);
-
-	    return objectMapper.writeValueAsString(JwtAuthenticationRequest.Builder()
-                                                                       .email(encodedEmail)
-                                                                       .password(encodedPassword)
-                                                                       .refreshToken(RandomStringUtils.randomAlphanumeric(25))
-                                                                       .build());
     }
 }
