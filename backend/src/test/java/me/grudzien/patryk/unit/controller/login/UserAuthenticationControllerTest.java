@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -28,9 +27,9 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 
 import java.io.IOException;
-import java.util.Optional;
 import java.util.Set;
 
+import me.grudzien.patryk.TestsUtils;
 import me.grudzien.patryk.controller.login.UserAuthenticationController;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationResponse;
@@ -67,6 +66,8 @@ class UserAuthenticationControllerTest {
     private static final String TEST_PASSWORD = "password";
     private static final String LOGIN_ENDPOINT = "/api/auth";
 
+    private static final boolean DISABLE_ENCODING = false;
+
 	@Test
     @DisplayName("Login successful. Response status -> 200 OK.")
 	void testLoginSuccessful() throws Exception {
@@ -80,7 +81,7 @@ class UserAuthenticationControllerTest {
 		when(userAuthenticationService.login(any(), any())).thenReturn(expectedResponse);
 		final RequestBuilder requestBuilder = MockMvcRequestBuilders.post(LOGIN_ENDPOINT)
 		                                                            .accept(MediaType.APPLICATION_JSON)
-		                                                            .content(prepareAuthJSONRequest(TEST_EMAIL, TEST_PASSWORD))
+		                                                            .content(TestsUtils.prepareAuthJSONRequest(TEST_EMAIL, TEST_PASSWORD, DISABLE_ENCODING))
 		                                                            .contentType(MediaType.APPLICATION_JSON);
 		final MvcResult mvcResult = mockMvc.perform(requestBuilder)
 		                                   .andDo(print())
@@ -104,7 +105,7 @@ class UserAuthenticationControllerTest {
     @DisplayName("Login failed. Empty email! Response status -> 400 Bad Request.")
 	void testLoginFailed_emptyEmail() throws Exception {
         // given
-		final String jsonLoginRequest = prepareAuthJSONRequest("", TEST_PASSWORD);
+		final String jsonLoginRequest = TestsUtils.prepareAuthJSONRequest("", TEST_PASSWORD, DISABLE_ENCODING);
 
 		// when
 		when(userAuthenticationService.login(any(), any())).thenReturn(new JwtAuthenticationResponse());
@@ -134,7 +135,7 @@ class UserAuthenticationControllerTest {
     @DisplayName("Login failed. Empty password! Response status -> 400 Bad Request.")
     void testLoginFailed_emptyPassword() throws IOException {
 	    // given
-        final String jsonLoginRequest = prepareAuthJSONRequest(TEST_EMAIL, "");
+        final String jsonLoginRequest = TestsUtils.prepareAuthJSONRequest(TEST_EMAIL, "", DISABLE_ENCODING);
 
         // when
         when(userAuthenticationService.login(any(), any())).thenReturn(new JwtAuthenticationResponse());
@@ -161,17 +162,5 @@ class UserAuthenticationControllerTest {
                 () -> Assertions.assertNotNull(loginValidationResult),
                 () -> assertThat(loginValidationResult).hasSize(1)
         );
-    }
-    
-    @SuppressWarnings("Duplicates")
-    private String prepareAuthJSONRequest(final String plainEmail, final String plainPassword) throws JsonProcessingException {
-        final String email = Optional.ofNullable(plainEmail).orElse(null);
-        final String password = Optional.ofNullable(plainPassword).orElse(null);
-
-        return objectMapper.writeValueAsString(JwtAuthenticationRequest.Builder()
-                                                                       .email(email)
-                                                                       .password(password)
-                                                                       .refreshToken(RandomStringUtils.randomAlphanumeric(25))
-                                                                       .build());
     }
 }
