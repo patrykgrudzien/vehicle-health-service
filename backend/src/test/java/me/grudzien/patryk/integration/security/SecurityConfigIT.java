@@ -17,14 +17,12 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.util.Base64;
+import java.util.Date;
 import java.util.stream.Stream;
 
-import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
-import me.grudzien.patryk.domain.dto.registration.UserRegistrationDto;
-import me.grudzien.patryk.domain.dto.vehicle.VehicleDto;
+import me.grudzien.patryk.TestsUtils;
+import me.grudzien.patryk.util.jwt.JwtTokenUtil;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
@@ -33,8 +31,11 @@ import static org.hamcrest.Matchers.hasEntry;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class SecurityConfigIT {
 
-	@LocalServerPort
+    @LocalServerPort
 	private int localServerPort;
+
+    private static final String TEST_EMAIL = "test@email.com";
+    private static final String PASSWORD = "password";
 
 	@BeforeEach
 	void setUp() {
@@ -43,15 +44,12 @@ class SecurityConfigIT {
 	}
 
     private static Stream<Arguments> protectedResourcesTestData() throws JsonProcessingException {
-        final VehicleDto putBody = VehicleDto.Builder().encodedMileage(Base64.getEncoder().encodeToString("123456".getBytes())).build();
-        final ObjectMapper objectMapper = new ObjectMapper();
-        final String jsonBody = objectMapper.writeValueAsString(putBody);
-
+        final String vehicleJSONBody = TestsUtils.prepareVehicleJSONBody("123456");
         return Stream.of(
                 Arguments.arguments(Method.GET, "", "/api/principal-user"),
                 Arguments.arguments(Method.GET, "", "/api/vehicles/vehicle/test@email.com"),
                 Arguments.arguments(Method.GET, "", "/api/vehicles/vehicle/get-current-mileage/test@email.com"),
-                Arguments.arguments(Method.PUT, jsonBody, "/api/vehicles/vehicle/update-current-mileage/test@email.com")
+                Arguments.arguments(Method.PUT, vehicleJSONBody, "/api/vehicles/vehicle/update-current-mileage/test@email.com")
         );
     }
 
@@ -96,44 +94,28 @@ class SecurityConfigIT {
     }
 
     private static Stream<Arguments> permittedResourcesTestData() throws JsonProcessingException {
-        final Base64.Encoder encoder = Base64.getEncoder();
         // -> /api/auth
-        final JwtAuthenticationRequest authBody = JwtAuthenticationRequest.Builder()
-                                                                          .email(encoder.encodeToString("test@email.com".getBytes()))
-                                                                          .password(encoder.encodeToString("password".getBytes()))
-                                                                          .build();
+        final String authJSONBody = TestsUtils.prepareAuthJSONBody(TEST_EMAIL, PASSWORD, true);
         // -> /api/refresh-token
-        final JwtAuthenticationRequest refreshBody = JwtAuthenticationRequest.Builder().refreshToken(RandomStringUtils.randomAlphanumeric(25)).build();
-
+        final String refreshAccessTokenJSONBody = TestsUtils.prepareRefreshAccessTokenJSONBody();
         // -> /api/registration/register-user-account
-        final UserRegistrationDto registrationBody = UserRegistrationDto.Builder()
-                                                                        .firstName("admin")
-                                                                        .lastName("root")
-                                                                        .email("test@email.com")
-                                                                        .confirmedEmail("test@email.com")
-                                                                        .hasFakeEmail(true)
-                                                                        .password(encoder.encodeToString("password".getBytes()))
-                                                                        .confirmedPassword(encoder.encodeToString("password".getBytes()))
-                                                                        .build();
-        final ObjectMapper objectMapper = new ObjectMapper();
-        final String jsonAuthBody = objectMapper.writeValueAsString(authBody);
-        final String jsonRefreshBody = objectMapper.writeValueAsString(refreshBody);
-        final String jsonRegistrationBody = objectMapper.writeValueAsString(registrationBody);
+        final String registrationJSONBody = TestsUtils.prepareRegistrationJSONBody("John", "Snow", TEST_EMAIL, PASSWORD, true);
 
         return Stream.of(
-                Arguments.arguments(Method.POST, jsonAuthBody, "/api/auth"),
-                Arguments.arguments(Method.POST, jsonRefreshBody, "/api/refresh-token"),
-                Arguments.arguments(Method.POST, jsonRegistrationBody, "/api/registration/register-user-account")
+                Arguments.arguments(Method.POST, authJSONBody, "/api/auth"),
+                Arguments.arguments(Method.POST, registrationJSONBody, "/api/registration/register-user-account"),
+                Arguments.arguments(Method.POST, refreshAccessTokenJSONBody, "/api/token/refresh-access-token")
         );
     }
 
-	@DisplayName("Testing permitted endpoints:")
-	@ParameterizedTest(name = "Method -> ({0}), URL -> ({2}). 200 OK.")
+	@DisplayName("Testing permitted endpoints with (incorrectly) constructed JWT token:")
+	@ParameterizedTest(name = "Method -> ({0}), URL -> ({2}). 406 Not Acceptable.")
 	@MethodSource("permittedResourcesTestData")
-	void testPermittedEndpoints(final Method httpMethod, final String jsonBody, final String permittedEndpoint) {
+	void testPermittedEndpoints_withIncorrectlyConstructedToken(final Method httpMethod, final String jsonBody, final String permittedEndpoint) {
 		given().log().all()
 		       .with().body(jsonBody)
                .header("Language", "en")
+               .header("Authorization", JwtTokenUtil.BEARER + RandomStringUtils.randomAlphanumeric(20))
 		       .contentType(ContentType.JSON)
 		       .accept(ContentType.JSON)
 		       .when()
@@ -141,6 +123,49 @@ class SecurityConfigIT {
 		       .then()
 		       .log().body()
 		       .assertThat()
-		       .statusCode(HttpStatus.OK.value());
+		       .statusCode(HttpStatus.NOT_ACCEPTABLE.value())
+               .and()
+               .body("securityStatus", hasEntry("securityStatusCode", "JWT_TOKEN_NOT_CORRECTLY_CONSTRUCTED"))
+               .body("securityStatus", hasEntry("securityStatusDescription", "JWT token has NOT been correctly constructed!"));
 	}
+
+    @DisplayName("Testing permitted endpoints with (correctly) constructed JWT token:")
+    @ParameterizedTest(name = "Method -> ({0}), URL -> ({2}). 200 OK.")
+    @MethodSource("permittedResourcesTestData")
+    void testPermittedEndpoints_withCorrectlyConstructedToken(final Method httpMethod, final String jsonBody, final String permittedEndpoint) {
+        given().log().all()
+               .with().body(jsonBody)
+               .header("Language", "en")
+               .header("Authorization", JwtTokenUtil.BEARER + JwtTokenUtil.Creator.generateAccessToken(TestsUtils.prepareTestJwtUser(), TestsUtils.testDevice()))
+               .contentType(ContentType.JSON)
+               .accept(ContentType.JSON)
+               .when()
+               .request(httpMethod, permittedEndpoint)
+               .then()
+               .log().body()
+               .assertThat()
+               .statusCode(HttpStatus.OK.value());
+    }
+
+    @DisplayName("Testing permitted endpoints with (correctly) constructed (but expired) JWT token:")
+    @ParameterizedTest(name = "Method -> ({0}), URL -> ({2}). 401 Unauthorized.")
+    @MethodSource("permittedResourcesTestData")
+    void testPermittedEndpoints_withCorrectlyConstructedButExpiredToken(final Method httpMethod, final String jsonBody, final String permittedEndpoint) {
+        given().log().all()
+               .with().body(jsonBody)
+               .header("Language", "en")
+               .header("Authorization", JwtTokenUtil.BEARER +
+                       JwtTokenUtil.Creator.generateAccessToken(TestsUtils.prepareTestJwtUser(), new Date(), TestsUtils.testDevice()))
+               .contentType(ContentType.JSON)
+               .accept(ContentType.JSON)
+               .when()
+               .request(httpMethod, permittedEndpoint)
+               .then()
+               .log().body()
+               .assertThat()
+               .statusCode(HttpStatus.UNAUTHORIZED.value())
+               .and()
+               .body("securityStatus", hasEntry("securityStatusCode", "JWT_TOKEN_EXPIRED"))
+               .body("securityStatus", hasEntry("securityStatusDescription", "JWT Token Expired!"));
+    }
 }
