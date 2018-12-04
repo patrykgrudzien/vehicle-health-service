@@ -31,7 +31,7 @@ public final class JwtUserFactory {
 		              .build();
 	}
 
-	private static Collection<? extends GrantedAuthority> mapRolesToAuthorities(final Collection<Role> roles) {
+	public static Collection<? extends GrantedAuthority> mapRolesToAuthorities(final Collection<Role> roles) {
 		return roles.stream()
 		            .map(role -> new SimpleGrantedAuthority(role.getRoleName().name()))
 		            .collect(Collectors.toList());
