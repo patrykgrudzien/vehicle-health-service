@@ -81,7 +81,7 @@ class UserAuthenticationControllerTest {
 		when(userAuthenticationService.login(any(), any())).thenReturn(expectedResponse);
 		final RequestBuilder requestBuilder = MockMvcRequestBuilders.post(LOGIN_ENDPOINT)
 		                                                            .accept(MediaType.APPLICATION_JSON)
-		                                                            .content(TestsUtils.prepareAuthJSONRequest(TEST_EMAIL, TEST_PASSWORD, DISABLE_ENCODING))
+		                                                            .content(TestsUtils.prepareAuthJSONBody(TEST_EMAIL, TEST_PASSWORD, DISABLE_ENCODING))
 		                                                            .contentType(MediaType.APPLICATION_JSON);
 		final MvcResult mvcResult = mockMvc.perform(requestBuilder)
 		                                   .andDo(print())
@@ -105,7 +105,7 @@ class UserAuthenticationControllerTest {
     @DisplayName("Login failed. Empty email! Response status -> 400 Bad Request.")
 	void testLoginFailed_emptyEmail() throws Exception {
         // given
-		final String jsonLoginRequest = TestsUtils.prepareAuthJSONRequest("", TEST_PASSWORD, DISABLE_ENCODING);
+		final String jsonLoginRequest = TestsUtils.prepareAuthJSONBody("", TEST_PASSWORD, DISABLE_ENCODING);
 
 		// when
 		when(userAuthenticationService.login(any(), any())).thenReturn(new JwtAuthenticationResponse());
@@ -135,7 +135,7 @@ class UserAuthenticationControllerTest {
     @DisplayName("Login failed. Empty password! Response status -> 400 Bad Request.")
     void testLoginFailed_emptyPassword() throws IOException {
 	    // given
-        final String jsonLoginRequest = TestsUtils.prepareAuthJSONRequest(TEST_EMAIL, "", DISABLE_ENCODING);
+        final String jsonLoginRequest = TestsUtils.prepareAuthJSONBody(TEST_EMAIL, "", DISABLE_ENCODING);
 
         // when
         when(userAuthenticationService.login(any(), any())).thenReturn(new JwtAuthenticationResponse());

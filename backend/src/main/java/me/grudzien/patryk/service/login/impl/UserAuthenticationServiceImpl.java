@@ -143,15 +143,4 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 		          ))
 		          .getOrElse(Optional.empty());
 	}
-
-	@Override
-	public String createRefreshedAuthAccessToken(final JwtAuthenticationRequest authenticationRequest, final Device device) {
-		final String refreshToken = authenticationRequest.getRefreshToken();
-		final String email = JwtTokenUtil.Retriever.getUserEmailFromToken(refreshToken);
-
-		final Optional<JwtUser> jwtUser = Optional.ofNullable((JwtUser) userDetailsService.loadUserByUsername(email));
-		return jwtUser.map(user -> JwtTokenUtil.Creator.generateAccessToken(user, device))
-		              .orElseThrow(() -> new UsernameNotFoundException(
-		              		localeMessagesCreator.buildLocaleMessageWithParam("user-not-found-by-email", email)));
-	}
 }
