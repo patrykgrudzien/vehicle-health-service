@@ -44,7 +44,11 @@ public abstract class CustomResponse {
 	public enum SecurityStatus {
 
         JWT_TOKEN_EXPIRED("JWT_TOKEN_EXPIRED", "JWT Token Expired!"),
-        UNAUTHENTICATED("UNAUTHENTICATED", "Unauthenticated! (access_token) has NOT been provided with the request!");
+        UNAUTHENTICATED("UNAUTHENTICATED", "Unauthenticated! (access_token) has NOT been provided with the request!"),
+        ILLEGAL_ARGUMENT("ILLEGAL_ARGUMENT", "An error occurred during getting email from token!"),
+        NO_CRYPTOGRAPHICALLY_SIGNED_TOKEN("NO_CRYPTOGRAPHICALLY_SIGNED_TOKEN", "Application requires JWT token with cryptographically signed Claims!"),
+        JWT_TOKEN_NOT_CORRECTLY_CONSTRUCTED("JWT_TOKEN_NOT_CORRECTLY_CONSTRUCTED", "JWT token has NOT been correctly constructed!"),
+        JWT_TOKEN_INCORRECT_SIGNATURE("JWT_TOKEN_INCORRECT_SIGNATURE", "Either calculating a signature or verifying an existing signature of a JWT failed!");
 
         private final String securityStatusCode;
         private final String securityStatusDescription;
