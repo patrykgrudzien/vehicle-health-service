@@ -18,6 +18,8 @@ import me.grudzien.patryk.exception.registration.CustomUserValidationException;
 import me.grudzien.patryk.exception.registration.EmailVerificationTokenExpiredException;
 import me.grudzien.patryk.exception.registration.EmailVerificationTokenNotFoundException;
 import me.grudzien.patryk.exception.registration.UserAlreadyExistsException;
+import me.grudzien.patryk.exception.security.CannotRefreshAccessTokenException;
+import me.grudzien.patryk.exception.security.NoRefreshTokenProvidedException;
 import me.grudzien.patryk.exception.vehicle.VehicleNotFoundException;
 import me.grudzien.patryk.oauth2.exception.JwtTokenNotFoundException;
 import me.grudzien.patryk.oauth2.exception.RegistrationProviderMismatchException;
@@ -122,4 +124,14 @@ public class ExceptionHandlingController {
 	public ResponseEntity<ExceptionResponse> unknownDelegateException(final UnknownOAuth2FlowException exception) {
 		return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
+
+    @ExceptionHandler(CannotRefreshAccessTokenException.class)
+    public ResponseEntity<ExceptionResponse> cannotRefreshAccessTokenException(final CannotRefreshAccessTokenException exception) {
+	    return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(NoRefreshTokenProvidedException.class)
+    public ResponseEntity<ExceptionResponse> noRefreshTokenProvidedException(final NoRefreshTokenProvidedException exception) {
+        return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), HttpStatus.BAD_REQUEST);
+    }
 }
