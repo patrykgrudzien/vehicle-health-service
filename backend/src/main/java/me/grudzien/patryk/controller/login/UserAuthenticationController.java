@@ -41,18 +41,9 @@ public class UserAuthenticationController {
 		return authenticationResponse.isSuccessful() ? ResponseEntity.ok(authenticationResponse) : ResponseEntity.badRequest().body(authenticationResponse);
 	}
 
-	@PostMapping("${custom.properties.endpoints.authentication.refresh-token}")
-	public ResponseEntity<?> refreshAuthAccessToken(@RequestBody final JwtAuthenticationRequest authenticationRequest, final Device device) {
-		final String newAccessToken = userAuthenticationService.createRefreshedAuthAccessToken(authenticationRequest, device);
-		return ResponseEntity.ok(JwtAuthenticationResponse.Builder()
-		                                                  .accessToken(newAccessToken)
-		                                                  .build());
-	}
-
 	@GetMapping("${custom.properties.endpoints.authentication.principal-user}")
 	@PreAuthorize("isAuthenticated()")
-	public JwtUser getPrincipalUser(@SuppressWarnings("unused") final WebRequest webRequest,
-                                    @AuthenticationPrincipal final JwtUser jwtUser) {
+	public JwtUser getPrincipalUser(@SuppressWarnings("unused") final WebRequest webRequest, @AuthenticationPrincipal final JwtUser jwtUser) {
 		return jwtUser;
 	}
 }

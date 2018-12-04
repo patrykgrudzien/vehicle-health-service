@@ -13,6 +13,4 @@ public interface UserAuthenticationService {
 	JwtAuthenticationResponse login(final JwtAuthenticationRequest authenticationRequest, final Device device);
 
 	Optional<Authentication> authenticateUser(final JwtAuthenticationRequest authenticationRequest);
-
-	String createRefreshedAuthAccessToken(final JwtAuthenticationRequest authenticationRequest, final Device device);
 }

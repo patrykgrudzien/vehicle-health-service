@@ -77,10 +77,10 @@ class UserAuthenticationControllerIT {
 
     private static Stream<Arguments> loginTestDataWithENLocale() throws JsonProcessingException {
         // arrange
-	    final String emptyEmail = TestsUtils.prepareAuthJSONRequest("", "admin", ENABLE_ENCODING);
-	    final String invalidEmailFormat = TestsUtils.prepareAuthJSONRequest("invalid-email-format", "admin", ENABLE_ENCODING);
-	    final String emptyPassword = TestsUtils.prepareAuthJSONRequest("admin.root@gmail.com", "", ENABLE_ENCODING);
-	    final String noCredentialsProvided = TestsUtils.prepareAuthJSONRequest("", "", ENABLE_ENCODING);
+	    final String emptyEmail = TestsUtils.prepareAuthJSONBody("", "admin", ENABLE_ENCODING);
+	    final String invalidEmailFormat = TestsUtils.prepareAuthJSONBody("invalid-email-format", "admin", ENABLE_ENCODING);
+	    final String emptyPassword = TestsUtils.prepareAuthJSONBody("admin.root@gmail.com", "", ENABLE_ENCODING);
+	    final String noCredentialsProvided = TestsUtils.prepareAuthJSONBody("", "", ENABLE_ENCODING);
 
         return Stream.of(
                 Arguments.arguments(Method.POST, emptyEmail, new String[] {"Email address cannot be empty.", "Provided email has incorrect format."}),
@@ -112,10 +112,10 @@ class UserAuthenticationControllerIT {
 
     private static Stream<Arguments> loginTestDataWithPLLocale() throws JsonProcessingException {
         // arrange
-        final String emptyEmail = TestsUtils.prepareAuthJSONRequest("", "admin", ENABLE_ENCODING);
-        final String invalidEmailFormat = TestsUtils.prepareAuthJSONRequest("invalid-email-format", "admin", ENABLE_ENCODING);
-        final String emptyPassword = TestsUtils.prepareAuthJSONRequest("admin.root@gmail.com", "", ENABLE_ENCODING);
-        final String noCredentialsProvided = TestsUtils.prepareAuthJSONRequest("", "", ENABLE_ENCODING);
+        final String emptyEmail = TestsUtils.prepareAuthJSONBody("", "admin", ENABLE_ENCODING);
+        final String invalidEmailFormat = TestsUtils.prepareAuthJSONBody("invalid-email-format", "admin", ENABLE_ENCODING);
+        final String emptyPassword = TestsUtils.prepareAuthJSONBody("admin.root@gmail.com", "", ENABLE_ENCODING);
+        final String noCredentialsProvided = TestsUtils.prepareAuthJSONBody("", "", ENABLE_ENCODING);
 
         return Stream.of(
                 Arguments.arguments(Method.POST, emptyEmail, new String[] {"Adres email nie może być pusty.", "Wprowadzony email ma nieprawidłowy format."}),
