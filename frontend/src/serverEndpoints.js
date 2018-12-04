@@ -2,7 +2,7 @@ export default {
   authentication: {
     root: `/auth`,
     principalUser: `/principal-user`,
-    refreshToken: `/refresh-token`
+    refreshToken: `/token/refresh-access-token`
   },
   registration: {
     root: `/registration`,
