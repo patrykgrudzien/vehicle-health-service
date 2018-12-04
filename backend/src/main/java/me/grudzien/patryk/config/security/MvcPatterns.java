@@ -24,9 +24,8 @@ final class MvcPatterns {
         return propertiesKeeper.endpoints().API_CONTEXT_PATH + propertiesKeeper.endpoints().REGISTRATION + "/**";
     }
 
-    static String refreshToken(final PropertiesKeeper propertiesKeeper) {
-        // /api/refresh-token
-        return propertiesKeeper.endpoints().API_CONTEXT_PATH + propertiesKeeper.endpoints().REFRESH_TOKEN;
+    static String refreshAccessToken(final PropertiesKeeper propertiesKeeper) {
+        return propertiesKeeper.endpoints().API_CONTEXT_PATH + propertiesKeeper.endpoints().REFRESH_ACCESS_TOKEN;
     }
 
     static String userLoggedInUsingGoogleWildcard(final PropertiesKeeper propertiesKeeper) {

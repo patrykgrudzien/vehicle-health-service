@@ -144,7 +144,7 @@ final class SecurityConfigContext {
 			            .permitAll()
                     .mvcMatchers(MvcPatterns.registrationWildcard(propertiesKeeper))
                         .permitAll()
-                    .mvcMatchers(HttpMethod.POST, MvcPatterns.refreshToken(propertiesKeeper))
+                    .mvcMatchers(HttpMethod.POST, MvcPatterns.refreshAccessToken(propertiesKeeper))
                         .permitAll()
                     .mvcMatchers(MvcPatterns.userLoggedInUsingGoogleWildcard(propertiesKeeper))
                         .permitAll()
