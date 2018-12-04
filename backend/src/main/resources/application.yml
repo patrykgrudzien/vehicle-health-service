@@ -19,7 +19,7 @@ custom:
         root: /auth
         failure-url: /login?error=true
         principal-user: /principal-user
-        refresh-token: /refresh-token
+        refresh-access-token: /token/refresh-access-token
       heroku:
         context-path: https://vehicle-health-service.herokuapp.com/ui
       vehicle-resource:

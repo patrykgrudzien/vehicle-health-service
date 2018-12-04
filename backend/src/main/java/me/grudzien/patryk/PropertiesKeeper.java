@@ -28,7 +28,7 @@ public final class PropertiesKeeper {
 		public String API_CONTEXT_PATH = customApplicationProperties.getEndpoints().getApiContextPath();
 		public String AUTH = customApplicationProperties.getEndpoints().getAuthentication().getRoot();
 		public String REGISTRATION = customApplicationProperties.getEndpoints().getRegistration().getRoot();
-		public String REFRESH_TOKEN = customApplicationProperties.getEndpoints().getAuthentication().getRefreshToken();
+		public String REFRESH_ACCESS_TOKEN = customApplicationProperties.getEndpoints().getAuthentication().getRefreshAccessToken();
 		public String REGISTER_USER_ACCOUNT = customApplicationProperties.getEndpoints().getRegistration().getRegisterUserAccount();
 		public String REGISTRATION_CONFIRMATION = customApplicationProperties.getEndpoints().getRegistration().getRoot() +
 		                                          customApplicationProperties.getEndpoints().getRegistration().getConfirmationUrl();
