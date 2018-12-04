@@ -62,7 +62,8 @@ import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
 @Log4j2
 public class ServletExceptionHandlerFilter extends OncePerRequestFilter {
 
-	@Override
+	@SuppressWarnings("NullableProblems")
+    @Override
 	protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response, final FilterChain filterChain) {
 
 		log.info(FLOW_MARKER, "(FILTER) -----> {} ({}) on path -> {}", this.getClass().getSimpleName(), request.getMethod(), request.getRequestURI());
@@ -70,19 +71,35 @@ public class ServletExceptionHandlerFilter extends OncePerRequestFilter {
 		Try.run(() -> filterChain.doFilter(request, response))
 		   .onFailure(throwable -> Match(throwable).of(
 		   		Case($(instanceOf(ExpiredJwtException.class)), ExpiredJwtException -> run(() -> {
-				    log.error(EXCEPTION_MARKER, "The JWT token is expired and not valid anymore, message -> {}", ExpiredJwtException.getMessage());
+				    log.error(EXCEPTION_MARKER, "The JWT token is expired and not valid anymore! Message -> {}", ExpiredJwtException.getMessage());
                     HttpResponseCustomizer.customizeHttpResponse(response, HttpStatus.UNAUTHORIZED,
                                                                  ExceptionResponse.buildBodyMessage(ExpiredJwtException, SecurityStatus.JWT_TOKEN_EXPIRED,
                                                                                                     request.getRequestURI(), request.getMethod()));
 			    })),
-			    Case($(instanceOf(IllegalArgumentException.class)), IllegalArgumentException -> run(() ->
-					log.error(EXCEPTION_MARKER, "An error occurred during getting email from token, message -> {}", IllegalArgumentException.getMessage()))),
-			    Case($(instanceOf(UnsupportedJwtException.class)), UnsupportedJwtException -> run(() ->
-					log.error(EXCEPTION_MARKER, "UnsupportedJwtException message -> {}", UnsupportedJwtException.getMessage()))),
-			    Case($(instanceOf(MalformedJwtException.class)), MalformedJwtException -> run(() ->
-					log.error(EXCEPTION_MARKER, "MalformedJwtException message -> {}", MalformedJwtException.getMessage()))),
-			    Case($(instanceOf(SignatureException.class)), SignatureException -> run(() ->
-					log.error(EXCEPTION_MARKER, "SignatureException message -> {}", SignatureException.getMessage()))),
+			    Case($(instanceOf(IllegalArgumentException.class)), IllegalArgumentException -> run(() -> {
+                    log.error(EXCEPTION_MARKER, "An error occurred during getting email from token! Message -> {}", IllegalArgumentException.getMessage());
+                    HttpResponseCustomizer.customizeHttpResponse(response, HttpStatus.INTERNAL_SERVER_ERROR,
+                                                                 ExceptionResponse.buildBodyMessage(IllegalArgumentException, SecurityStatus.ILLEGAL_ARGUMENT,
+                                                                                                    request.getRequestURI(), request.getMethod()));
+                })),
+			    Case($(instanceOf(UnsupportedJwtException.class)), UnsupportedJwtException -> run(() -> {
+                    log.error(EXCEPTION_MARKER, "Application requires JWT token with cryptographically signed Claims! Message -> {}", UnsupportedJwtException.getMessage());
+                    HttpResponseCustomizer.customizeHttpResponse(response, HttpStatus.NOT_ACCEPTABLE,
+                                                                 ExceptionResponse.buildBodyMessage(UnsupportedJwtException, SecurityStatus.NO_CRYPTOGRAPHICALLY_SIGNED_TOKEN,
+                                                                                                    request.getRequestURI(), request.getMethod()));
+                })),
+			    Case($(instanceOf(MalformedJwtException.class)), MalformedJwtException -> run(() -> {
+                    log.error(EXCEPTION_MARKER, "JWT token has NOT been correctly constructed! Message -> {}", MalformedJwtException.getMessage());
+                    HttpResponseCustomizer.customizeHttpResponse(response, HttpStatus.NOT_ACCEPTABLE,
+                                                                 ExceptionResponse.buildBodyMessage(MalformedJwtException, SecurityStatus.JWT_TOKEN_NOT_CORRECTLY_CONSTRUCTED,
+                                                                                                    request.getRequestURI(), request.getMethod()));
+                })),
+			    Case($(instanceOf(SignatureException.class)), SignatureException -> run(() -> {
+                    log.error(EXCEPTION_MARKER, "Either calculating a signature or verifying an existing signature of a JWT failed! Message -> {}", SignatureException.getMessage());
+                    HttpResponseCustomizer.customizeHttpResponse(response, HttpStatus.INTERNAL_SERVER_ERROR,
+                                                                 ExceptionResponse.buildBodyMessage(SignatureException, SecurityStatus.JWT_TOKEN_INCORRECT_SIGNATURE,
+                                                                                                    request.getRequestURI(), request.getMethod()));
+                })),
 			    // if any other exception
 			    Case($(), () -> new RuntimeException("No specific exception caught inside ServletExceptionHandlerFilter.doFilterInternal()..."))
 		   ));
