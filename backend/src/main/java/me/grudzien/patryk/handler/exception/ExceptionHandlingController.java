@@ -16,7 +16,7 @@ import me.grudzien.patryk.exception.login.BadCredentialsAuthenticationException;
 import me.grudzien.patryk.exception.login.UserDisabledAuthenticationException;
 import me.grudzien.patryk.exception.registration.CustomUserValidationException;
 import me.grudzien.patryk.exception.registration.TokenExpiredException;
-import me.grudzien.patryk.exception.registration.TokenNotFoundException;
+import me.grudzien.patryk.exception.registration.EmailVerificationTokenNotFoundException;
 import me.grudzien.patryk.exception.registration.UserAlreadyExistsException;
 import me.grudzien.patryk.exception.vehicle.VehicleNotFoundException;
 import me.grudzien.patryk.oauth2.exception.JwtTokenNotFoundException;
@@ -87,8 +87,8 @@ public class ExceptionHandlingController {
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}
 
-	@ExceptionHandler(TokenNotFoundException.class)
-	public ResponseEntity<ExceptionResponse> tokenNotFoundException(final TokenNotFoundException exception) {
+	@ExceptionHandler(EmailVerificationTokenNotFoundException.class)
+	public ResponseEntity<ExceptionResponse> emailVerificationTokenNotFoundException(final EmailVerificationTokenNotFoundException exception) {
 		return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), HttpStatus.BAD_REQUEST);
 	}
 
