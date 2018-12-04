@@ -73,8 +73,9 @@ public class GenericJwtTokenFilter extends OncePerRequestFilter {
         this.tokenHeader = propertiesKeeper.jwt().TOKEN_HEADER;
     }
 
+    @SuppressWarnings("NullableProblems")
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response, final FilterChain filterChain)
             throws ServletException, IOException {
 
         log.info(FLOW_MARKER, "(FILTER) -----> {} ({}) on path -> {}", this.getClass().getSimpleName(), request.getMethod(), request.getRequestURI());
@@ -103,7 +104,7 @@ public class GenericJwtTokenFilter extends OncePerRequestFilter {
              * the database compellingly.
              */
             if (userDetails.isPresent()) {
-                if (JwtTokenUtil.Validator.validateToken(accessToken, userDetails.get())) {
+                if (JwtTokenUtil.Validator.validateAccessToken(accessToken, userDetails.get())) {
                     /*
                      * UsernamePasswordAuthenticationToken- an {@link org.springframework.security.core.Authentication} implementation that is
                      * designed for simple presentation of a username and password.
