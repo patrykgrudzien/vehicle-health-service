@@ -145,13 +145,32 @@ public class JwtTokenUtil implements Serializable {
 			ROLES
 		}
 
-		public static String generateAccessToken(final JwtUser jwtUser, final Device device) {
-			final Map<String, Object> claims = new HashMap<>();
-			claims.put(TOKEN_CLAIMS.ROLES.name(), jwtUser.getAuthorities());
-			return buildAccessToken(claims, jwtUser.getEmail(), generateAudience(device));
-		}
+        public static String generateAccessToken(final JwtUser jwtUser, final Date expiration, final Device device) {
+            final Map<String, Object> claims = new HashMap<>();
+            claims.put(TOKEN_CLAIMS.ROLES.name(), jwtUser.getAuthorities());
+            return buildAccessToken(claims, jwtUser.getEmail(), expiration, generateAudience(device));
+        }
 
-		private static String buildAccessToken(final Map<String, Object> claims, final String userEmail, final String audience) {
+        private static String buildAccessToken(final Map<String, Object> claims, final String userEmail, final Date expiration, final String audience) {
+            log.info(METHOD_INVOCATION_MARKER, "(JWT) -----> {}.{}", Creator.class.getCanonicalName(), "buildAccessToken()");
+            return Jwts.builder()
+                       .setClaims(claims)
+                       .setSubject(userEmail)
+                       .setAudience(audience)
+                       .setIssuedAt(new Date())
+                       .setExpiration(expiration)
+                       .signWith(SignatureAlgorithm.HS512, tokenSecret)
+                       .compact();
+        }
+
+        public static String generateAccessToken(final JwtUser jwtUser, final Device device) {
+            final Map<String, Object> claims = new HashMap<>();
+            claims.put(TOKEN_CLAIMS.ROLES.name(), jwtUser.getAuthorities());
+            return buildAccessToken(claims, jwtUser.getEmail(), generateAudience(device));
+        }
+
+
+        private static String buildAccessToken(final Map<String, Object> claims, final String userEmail, final String audience) {
 			log.info(METHOD_INVOCATION_MARKER, "(JWT) -----> {}.{}", Creator.class.getCanonicalName(), "buildAccessToken()");
 			return Jwts.builder()
 			           .setClaims(claims)
@@ -214,7 +233,7 @@ public class JwtTokenUtil implements Serializable {
 			return (lastPasswordReset != null && created.before(lastPasswordReset));
 		}
 
-		public static Boolean validateToken(final String token, final UserDetails userDetails) {
+		public static Boolean validateAccessToken(final String token, final UserDetails userDetails) {
 			final JwtUser user = (JwtUser) userDetails;
 			final String userEmail = Retriever.getUserEmailFromToken(token);
 			final Date created = Retriever.getIssuedAtDateFromToken(token);
