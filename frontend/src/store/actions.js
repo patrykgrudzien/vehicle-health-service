@@ -119,12 +119,14 @@ export default {
   },
 
   [ACTIONS.STAY_LOG_IN] ({ commit }) {
+    // Removing "access_token" because first SecurityFilterChain is trying to decode it but it's expired!
+    localStorage.removeItem('access_token')
     Vue.axios.post(serverEndpoints.authentication.refreshToken, {
       refreshToken: localStorage.getItem('refresh_token')
     })
       .then((response) => {
         commit(MUTATIONS.SET_JWT_ACCESS_TOKEN_EXPIRED, false)
-        localStorage.setItem('access_token', response.data.accessToken)
+        localStorage.setItem('access_token', response.data)
 
         // -------------------------------------------------------------------------------------------------------------
         eventBus.$emit(EVENTS.STAY_LOG_IN_EVENT)
