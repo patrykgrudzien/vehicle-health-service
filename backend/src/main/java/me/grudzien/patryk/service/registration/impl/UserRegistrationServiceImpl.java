@@ -35,7 +35,7 @@ import me.grudzien.patryk.domain.enums.registration.RoleName;
 import me.grudzien.patryk.domain.enums.vehicle.VehicleType;
 import me.grudzien.patryk.exception.registration.CustomUserValidationException;
 import me.grudzien.patryk.exception.registration.TokenExpiredException;
-import me.grudzien.patryk.exception.registration.TokenNotFoundException;
+import me.grudzien.patryk.exception.registration.EmailVerificationTokenNotFoundException;
 import me.grudzien.patryk.exception.registration.UserAlreadyExistsException;
 import me.grudzien.patryk.handler.web.HttpResponseHandler;
 import me.grudzien.patryk.oauth2.util.CacheHelper;
@@ -190,7 +190,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 		} else {
 			log.error("No verification token found in the database. Some error occurred during registration process.");
 			httpResponseHandler.redirectUserTo(VERIFICATION_TOKEN_NOT_FOUND, response);
-			throw new TokenNotFoundException(localeMessagesCreator.buildLocaleMessage("verification-token-not-found"));
+			throw new EmailVerificationTokenNotFoundException(localeMessagesCreator.buildLocaleMessage("verification-token-not-found"));
 		}
 	}
 
