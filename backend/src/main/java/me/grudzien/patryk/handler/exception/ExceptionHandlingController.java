@@ -15,7 +15,7 @@ import me.grudzien.patryk.exception.RedirectionException;
 import me.grudzien.patryk.exception.login.BadCredentialsAuthenticationException;
 import me.grudzien.patryk.exception.login.UserDisabledAuthenticationException;
 import me.grudzien.patryk.exception.registration.CustomUserValidationException;
-import me.grudzien.patryk.exception.registration.TokenExpiredException;
+import me.grudzien.patryk.exception.registration.EmailVerificationTokenExpiredException;
 import me.grudzien.patryk.exception.registration.EmailVerificationTokenNotFoundException;
 import me.grudzien.patryk.exception.registration.UserAlreadyExistsException;
 import me.grudzien.patryk.exception.vehicle.VehicleNotFoundException;
@@ -92,8 +92,8 @@ public class ExceptionHandlingController {
 		return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), HttpStatus.BAD_REQUEST);
 	}
 
-	@ExceptionHandler(TokenExpiredException.class)
-	public ResponseEntity<ExceptionResponse> tokenExpiredException(final TokenExpiredException exception) {
+	@ExceptionHandler(EmailVerificationTokenExpiredException.class)
+	public ResponseEntity<ExceptionResponse> emailVerificationTokenExpiredException(final EmailVerificationTokenExpiredException exception) {
 		return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), HttpStatus.BAD_REQUEST);
 	}
 

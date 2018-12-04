@@ -34,7 +34,7 @@ import me.grudzien.patryk.domain.enums.registration.RegistrationProvider;
 import me.grudzien.patryk.domain.enums.registration.RoleName;
 import me.grudzien.patryk.domain.enums.vehicle.VehicleType;
 import me.grudzien.patryk.exception.registration.CustomUserValidationException;
-import me.grudzien.patryk.exception.registration.TokenExpiredException;
+import me.grudzien.patryk.exception.registration.EmailVerificationTokenExpiredException;
 import me.grudzien.patryk.exception.registration.EmailVerificationTokenNotFoundException;
 import me.grudzien.patryk.exception.registration.UserAlreadyExistsException;
 import me.grudzien.patryk.handler.web.HttpResponseHandler;
@@ -178,7 +178,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 				if (token.getExpiryDate().compareTo(calendar.getTime()) < 0) {
 					log.error("Verification token has expired.");
 					httpResponseHandler.redirectUserTo(VERIFICATION_TOKEN_EXPIRED, response);
-					throw new TokenExpiredException(localeMessagesCreator.buildLocaleMessage("verification-token-expired"));
+					throw new EmailVerificationTokenExpiredException(localeMessagesCreator.buildLocaleMessage("verification-token-expired"));
 				}
 				enableRegisteredCustomUser(customUser);
 
