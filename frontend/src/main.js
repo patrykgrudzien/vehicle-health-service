@@ -34,7 +34,7 @@ if (appSettingsHelper.isModeActive(DEPLOYMENT_MODES.PROD)) {
 
 // Interceptor for HTTP requests (adding Authorization header with JWT accessToken to each request)
 Vue.axios.interceptors.request.use(config => {
-  if (localStorage.getItem('access_token')) {
+  if (localStorage.getItem('access_token') && localStorage.getItem('access_token') !== '') {
     config.headers.Authorization = 'Bearer ' + localStorage.getItem('access_token')
   }
   if (cookieHelper.getCookie('lang') !== '') {
