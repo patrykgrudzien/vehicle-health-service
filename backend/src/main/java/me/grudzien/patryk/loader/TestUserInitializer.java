@@ -11,9 +11,10 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Optional;
 
 import me.grudzien.patryk.domain.entity.engine.Engine;
@@ -21,6 +22,7 @@ import me.grudzien.patryk.domain.entity.registration.CustomUser;
 import me.grudzien.patryk.domain.entity.registration.Privilege;
 import me.grudzien.patryk.domain.entity.registration.Role;
 import me.grudzien.patryk.domain.entity.vehicle.Vehicle;
+import me.grudzien.patryk.domain.enums.ApplicationZone;
 import me.grudzien.patryk.domain.enums.SpringAppProfiles;
 import me.grudzien.patryk.domain.enums.engine.EngineType;
 import me.grudzien.patryk.domain.enums.registration.PrivilegeName;
@@ -78,7 +80,7 @@ public class TestUserInitializer implements CommandLineRunner {
 			                                                                                                            .build()))
 			                                                                       .build()))
 			                                      .isEnabled(Boolean.TRUE)
-			                                      .createdDate(new Date())
+			                                      .createdDate(ZonedDateTime.now(ZoneId.of(ApplicationZone.POLAND.getZoneId())))
 			                                      .build();
 			log.info(FLOW_MARKER, "Test user ({}) created.", testUser.getEmail());
 

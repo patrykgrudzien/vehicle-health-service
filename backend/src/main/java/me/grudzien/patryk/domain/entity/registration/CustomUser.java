@@ -22,17 +22,17 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import java.util.Date;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Set;
 
 import me.grudzien.patryk.domain.entity.vehicle.Vehicle;
+import me.grudzien.patryk.domain.enums.ApplicationZone;
 import me.grudzien.patryk.domain.enums.registration.RegistrationProvider;
 
 @Entity
@@ -84,13 +84,11 @@ public class CustomUser {
 	private RegistrationProvider registrationProvider;
 
 	@Column(name = "CREATED_DATE")
-	@Temporal(TemporalType.TIMESTAMP)
 	@NotNull
-	private Date createdDate;
+	private ZonedDateTime createdDate;
 
 	@Column(name = "LAST_PASSWORD_RESET_DATE")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date lastPasswordResetDate;
+	private ZonedDateTime lastPasswordResetDate;
 
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinTable(name = "USERS_ROLES",
@@ -104,6 +102,6 @@ public class CustomUser {
 
 	public CustomUser() {
 		this.isEnabled = false;
-		this.createdDate = new Date();
+		this.createdDate = ZonedDateTime.now(ZoneId.of(ApplicationZone.POLAND.getZoneId()));
 	}
 }

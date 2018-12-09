@@ -18,12 +18,14 @@ import org.mockito.BDDMockito;
 
 import com.google.common.collect.Sets;
 
-import java.util.Date;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.stream.Stream;
 
 import me.grudzien.patryk.domain.dto.login.JwtUser;
 import me.grudzien.patryk.domain.entity.registration.CustomUser;
 import me.grudzien.patryk.domain.entity.registration.Role;
+import me.grudzien.patryk.domain.enums.ApplicationZone;
 import me.grudzien.patryk.domain.enums.registration.RegistrationProvider;
 import me.grudzien.patryk.domain.enums.registration.RoleName;
 import me.grudzien.patryk.oauth2.util.CacheHelper;
@@ -120,7 +122,7 @@ class MyUserDetailsServiceIT {
 		                 .email(TEST_EMAIL)
 		                 .roles(Sets.newHashSet(new Role(RoleName.ROLE_USER)))
 		                 .isEnabled(false)
-		                 .lastPasswordResetDate(new Date())
+		                 .lastPasswordResetDate(ZonedDateTime.now(ZoneId.of(ApplicationZone.POLAND.getZoneId())))
 		                 .build();
 	}
 }

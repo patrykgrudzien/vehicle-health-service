@@ -12,8 +12,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 import java.util.Collection;
-import java.util.Date;
 
 import me.grudzien.patryk.domain.enums.registration.RegistrationProvider;
 
@@ -24,14 +24,14 @@ import me.grudzien.patryk.domain.enums.registration.RegistrationProvider;
                        "authorities", "username", "enabled", "roles"})
 public class JwtUser implements UserDetails, Serializable {
 
-	private static final long serialVersionUID = -948573255025057869L;
+	private static final long serialVersionUID = 8787822344111596162L;
 
 	private final Long id;
 	private final String firstname;
 	private final String lastname;
 	private final String password;
 	private final String email;
-	private final Date lastPasswordResetDate;
+	private final ZonedDateTime lastPasswordResetDate;
 	@Setter
 	private String profilePictureUrl;
 	@Setter
