@@ -11,11 +11,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Optional;
 
 import me.grudzien.patryk.domain.entity.registration.CustomUser;
 import me.grudzien.patryk.domain.entity.registration.EmailVerificationToken;
+import me.grudzien.patryk.domain.enums.ApplicationZone;
 import me.grudzien.patryk.repository.registration.CustomUserRepository;
 import me.grudzien.patryk.repository.registration.EmailVerificationTokenRepository;
 
@@ -107,7 +110,7 @@ class EmailVerificationTokenRepositoryIT {
                                                            .email("test@email.com")
                                                            .password("password")
                                                            .isEnabled(false)
-                                                           .createdDate(new Date())
+                                                           .createdDate(ZonedDateTime.now(ZoneId.of(ApplicationZone.POLAND.getZoneId())))
                                                            .build())
                                      .expiryDate(new Date(12345L))
                                      .build();

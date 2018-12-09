@@ -15,9 +15,10 @@ import com.google.common.collect.Sets;
 
 import javax.servlet.http.HttpServletResponse;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import me.grudzien.patryk.domain.dto.registration.RegistrationResponse;
@@ -28,6 +29,7 @@ import me.grudzien.patryk.domain.entity.registration.EmailVerificationToken;
 import me.grudzien.patryk.domain.entity.registration.Privilege;
 import me.grudzien.patryk.domain.entity.registration.Role;
 import me.grudzien.patryk.domain.entity.vehicle.Vehicle;
+import me.grudzien.patryk.domain.enums.ApplicationZone;
 import me.grudzien.patryk.domain.enums.engine.EngineType;
 import me.grudzien.patryk.domain.enums.registration.PrivilegeName;
 import me.grudzien.patryk.domain.enums.registration.RegistrationProvider;
@@ -126,7 +128,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 			                                                                                                              .privilegeName(PrivilegeName.CAN_DO_EVERYTHING)
 			                                                                                                              .build()))
 			                                                                         .build()))
-                                                    .createdDate(new Date())
+                                                    .createdDate(ZonedDateTime.now(ZoneId.of(ApplicationZone.POLAND.getZoneId())))
                                                     .build();
 
 			// TODO: temporary (test purposes)

@@ -9,12 +9,14 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Date;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 import me.grudzien.patryk.domain.dto.vehicle.VehicleDto;
 import me.grudzien.patryk.domain.entity.engine.Engine;
 import me.grudzien.patryk.domain.entity.registration.CustomUser;
 import me.grudzien.patryk.domain.entity.vehicle.Vehicle;
+import me.grudzien.patryk.domain.enums.ApplicationZone;
 import me.grudzien.patryk.domain.enums.engine.EngineType;
 import me.grudzien.patryk.domain.enums.vehicle.VehicleType;
 import me.grudzien.patryk.repository.vehicle.VehicleRepository;
@@ -92,7 +94,7 @@ class VehicleRepositoryIT {
 		                                    .email(OWNER_EMAIL_ADDRESS)
 		                                    .password("password")
 		                                    .isEnabled(false)
-		                                    .createdDate(new Date())
+		                                    .createdDate(ZonedDateTime.now(ZoneId.of(ApplicationZone.POLAND.getZoneId())))
 		                                    .build())
 		              .vehicleType(VehicleType.CAR)
 		              .engine(Engine.Builder()

@@ -10,10 +10,14 @@ import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.Sets;
 
-import java.util.Date;
+import java.time.Duration;
+import java.time.Period;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 import me.grudzien.patryk.domain.entity.registration.CustomUser;
 import me.grudzien.patryk.domain.entity.registration.Role;
+import me.grudzien.patryk.domain.enums.ApplicationZone;
 import me.grudzien.patryk.domain.enums.registration.RegistrationProvider;
 import me.grudzien.patryk.domain.enums.registration.RoleName;
 import me.grudzien.patryk.repository.registration.CustomUserRepository;
@@ -29,6 +33,8 @@ class CustomUserRepositoryIT {
     @Autowired
     private CustomUserRepository customUserRepository;
 
+    private final ZonedDateTime createdDate = ZonedDateTime.now(ZoneId.of(ApplicationZone.POLAND.getZoneId()));
+
     @Test
     @DisplayName("findByEmail(String email). Plain database password.")
     void testFindByEmail() {
@@ -38,7 +44,7 @@ class CustomUserRepositoryIT {
                                               .lastName("LastName")
                                               .email("test@email.com")
                                               .password("password")
-                                              .createdDate(new Date(123456789L))
+                                              .createdDate(createdDate)
                                               .hasFakeEmail(true)
                                               .registrationProvider(RegistrationProvider.CUSTOM)
                                               .roles(Sets.newHashSet(new Role(RoleName.ROLE_USER)))
@@ -59,7 +65,8 @@ class CustomUserRepositoryIT {
                 () -> Assertions.assertEquals("LastName", foundUser.getLastName()),
                 () -> Assertions.assertEquals("test@email.com", foundUser.getEmail()),
                 () -> Assertions.assertEquals("password", foundUser.getPassword()),
-                () -> Assertions.assertEquals(new Date(123456789L), foundUser.getCreatedDate()),
+                () -> Assertions.assertEquals(Period.ZERO, Period.between(testUser.getCreatedDate().toLocalDate(), foundUser.getCreatedDate().toLocalDate())),
+                () -> Assertions.assertEquals(Duration.ZERO, Duration.between(testUser.getCreatedDate().toLocalTime(), foundUser.getCreatedDate().toLocalTime())),
                 () -> Assertions.assertTrue(foundUser.isHasFakeEmail()),
                 () -> Assertions.assertEquals(RegistrationProvider.CUSTOM, foundUser.getRegistrationProvider()),
                 () -> assertThat(foundUser.getRoles()).hasSize(1),
