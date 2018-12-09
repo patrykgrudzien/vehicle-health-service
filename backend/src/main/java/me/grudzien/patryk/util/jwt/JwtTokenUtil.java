@@ -36,7 +36,7 @@ import static me.grudzien.patryk.util.log.LogMarkers.METHOD_INVOCATION_MARKER;
 @Component
 public class JwtTokenUtil implements Serializable {
 
-	private static final long serialVersionUID = -5153529441843568936L;
+	private static final long serialVersionUID = -1615985307247391626L;
 
 	/*
 	 * The "sub" (subject) claim identifies the principal that is the subject of the JWT.
@@ -236,8 +236,10 @@ public class JwtTokenUtil implements Serializable {
 		public static Boolean validateAccessToken(final String token, final UserDetails userDetails) {
 			final JwtUser user = (JwtUser) userDetails;
 			final String userEmail = Retriever.getUserEmailFromToken(token);
-			final Date created = Retriever.getIssuedAtDateFromToken(token);
-			return (userEmail.equals(user.getEmail()) && !isTokenExpired(token) && !isCreatedBeforeLastPasswordReset(created, user.getLastPasswordResetDate()));
+			// TODO: fix me for different time zones
+//			final Date created = Retriever.getIssuedAtDateFromToken(token);
+			return (userEmail.equals(user.getEmail()) && !isTokenExpired(token));
+//			return (userEmail.equals(user.getEmail()) && !isTokenExpired(token) && !isCreatedBeforeLastPasswordReset(created, user.getLastPasswordResetDate()));
 		}
 	}
 }
