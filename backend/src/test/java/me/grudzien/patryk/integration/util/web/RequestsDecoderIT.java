@@ -47,6 +47,7 @@ class RequestsDecoderIT {
         Assertions.assertAll(
                 () -> assertFalse(requestsDecoder.isParamEncoded(inputParam)),
                 () -> assertTrue(requestsDecoder.isParamEncoded(encodedInput)),
+                () -> assertFalse(requestsDecoder.isParamEncoded(decodedInput)),
                 () -> assertThat(decodedInput).isEqualTo(inputParam)
         );
     }
