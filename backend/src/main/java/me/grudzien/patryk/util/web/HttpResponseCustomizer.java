@@ -42,6 +42,8 @@ public class HttpResponseCustomizer {
 		// CORS - if the header below is not specified during development, JSON created by this method cannot be displayed in the Client
 		Stream.of(environment.getActiveProfiles()).forEach(activeProfile -> {
 			if (DEV_HOME.getYmlName().equals(activeProfile) || H2_IN_MEMORY.getYmlName().equals(activeProfile)) {
+
+				// TODO: check if it's still required because there was CORS error in browser's console while debugging
 				response.addHeader(CustomResponse.Headers.ACCESS_CONTROL_ALLOW_ORIGIN.getKey(), CustomResponse.Headers.ACCESS_CONTROL_ALLOW_ORIGIN.getValue());
 			}
 		});
