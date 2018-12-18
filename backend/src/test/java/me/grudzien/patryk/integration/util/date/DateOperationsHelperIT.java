@@ -25,8 +25,8 @@ class DateOperationsHelperIT {
 	@BeforeEach
 	void setUp() {
 		pacificZoneDateTime = ZonedDateTime.now(ZoneId.of("Pacific/Majuro"));
-		applicationZoneDateTime = ZonedDateTime.now(ZoneId.of(ApplicationZone.POLAND.getZoneId()));
 		americaCuiaba = ZonedDateTime.now(ZoneId.of("America/Cuiaba"));
+		applicationZoneDateTime = ZonedDateTime.now(ZoneId.of(ApplicationZone.POLAND.getZoneId()));
 	}
 
 	@Test
@@ -78,5 +78,58 @@ class DateOperationsHelperIT {
                 () -> assertThat(adjustedTimeForPacific.toLocalTime().getHour()).isEqualTo(applicationZoneDateTime.toLocalTime().getHour()),
                 () -> assertThat(adjustedTimeForPacific.toLocalTime().getMinute()).isEqualTo(applicationZoneDateTime.toLocalTime().getMinute())
 		);
+	}
+
+	@Test
+	void getDaysDifference() {
+		// when
+		final int daysDifference = dateOperationsHelper.getDaysDifference(applicationZoneDateTime, pacificZoneDateTime);
+
+		// then
+		assertThat(daysDifference).isEqualTo(1);
+	}
+
+	@Test
+	void getHoursDifference() {
+		// given
+		final Double applicationTimeOffset = dateOperationsHelper.getTimeOffset(applicationZoneDateTime, Double.class);
+		final Double pacificTimeOffset = dateOperationsHelper.getTimeOffset(pacificZoneDateTime, Double.class);
+
+		// when
+		final int hoursDifference = dateOperationsHelper.getHoursDifference(applicationTimeOffset, pacificTimeOffset);
+
+		// then
+		assertThat(hoursDifference).isEqualTo(11);
+	}
+
+	@Test
+	void getMinutesDifference() {
+		// given
+		final Double applicationTimeOffset = dateOperationsHelper.getTimeOffset(applicationZoneDateTime, Double.class);
+		final Double pacificTimeOffset = dateOperationsHelper.getTimeOffset(pacificZoneDateTime, Double.class);
+
+		// when
+		final int minutesDifference = dateOperationsHelper.getMinutesDifference(applicationTimeOffset, pacificTimeOffset);
+
+		// then
+		assertThat(minutesDifference).isEqualTo(0);
+	}
+
+	@Test
+	void getHoursFromOffset() {
+		// when
+		final int hoursFromOffset = dateOperationsHelper.getHoursFromOffset(dateOperationsHelper.getTimeOffset(applicationZoneDateTime, Double.class));
+
+		// then
+		assertThat(hoursFromOffset).isEqualTo(1);
+	}
+
+	@Test
+	void getMinutesFromOffset() {
+		// when
+		final int minutesFromOffset = dateOperationsHelper.getMinutesFromOffset(dateOperationsHelper.getTimeOffset(applicationZoneDateTime, Double.class));
+
+		// then
+		assertThat(minutesFromOffset).isEqualTo(0);
 	}
 }
