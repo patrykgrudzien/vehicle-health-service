@@ -137,42 +137,28 @@ final class SecurityConfigContext {
         static void authorizeRequests(final HttpSecurity httpSecurity, final PropertiesKeeper propertiesKeeper) throws Exception {
 	        httpSecurity
                     // creating custom SecurityFilterChain
-			        .mvcMatcher(MvcPatterns.APIContextPathWildcard(propertiesKeeper))
+			        .mvcMatcher(MvcPatterns.API(propertiesKeeper))
 			            .authorizeRequests()
                     // creating custom SecurityFilterChain
-			        .mvcMatchers(HttpMethod.POST, MvcPatterns.authWildcard(propertiesKeeper))
+			        .mvcMatchers(HttpMethod.POST,
+			                     MvcPatterns.auth(propertiesKeeper),
+			                     MvcPatterns.refreshAccessToken(propertiesKeeper))
 			            .permitAll()
-                    .mvcMatchers(MvcPatterns.registrationWildcard(propertiesKeeper))
-                        .permitAll()
-                    .mvcMatchers(HttpMethod.POST, MvcPatterns.refreshAccessToken(propertiesKeeper))
-                        .permitAll()
-                    .mvcMatchers(MvcPatterns.userLoggedInUsingGoogleWildcard(propertiesKeeper))
-                        .permitAll()
-                    .mvcMatchers(MvcPatterns.userLoggedInUsingGoogleWildcard(propertiesKeeper))
-                        .permitAll()
-                    .mvcMatchers(MvcPatterns.userNotFoundWildcard(propertiesKeeper))
-                        .permitAll()
-                    .mvcMatchers(MvcPatterns.userAccountIsLockedWildcard(propertiesKeeper))
-                        .permitAll()
-                    .mvcMatchers(MvcPatterns.userIsDisabledWildcard(propertiesKeeper))
-                        .permitAll()
-                    .mvcMatchers(MvcPatterns.userAccountIsExpiredWildcard(propertiesKeeper))
-                        .permitAll()
-                    .mvcMatchers(MvcPatterns.userRegisteredUsingGoogleWildcard(propertiesKeeper))
-                        .permitAll()
-                    .mvcMatchers(MvcPatterns.userAccountAlreadyExistsWildcard(propertiesKeeper))
-                        .permitAll()
-                    .mvcMatchers(MvcPatterns.credentialsHaveExpiredWildcard(propertiesKeeper))
-                        .permitAll()
-                    .mvcMatchers(MvcPatterns.jwtTokenNotFoundWildcard(propertiesKeeper))
-                        .permitAll()
-                    .mvcMatchers(MvcPatterns.registrationProviderMismatchWildcard(propertiesKeeper))
-                        .permitAll()
-                    .mvcMatchers(MvcPatterns.badCredentialsWildcard(propertiesKeeper))
-                        .permitAll()
-                    .mvcMatchers(MvcPatterns.exchangeShortLivedTokenWildcard(propertiesKeeper))
-                        .permitAll()
-                    .mvcMatchers(MvcPatterns.failureTargetUrlWildcard(propertiesKeeper))
+                    .mvcMatchers(MvcPatterns.registration(propertiesKeeper),
+                                 MvcPatterns.userLoggedInUsingGoogle(propertiesKeeper),
+                                 MvcPatterns.userLoggedInUsingGoogle(propertiesKeeper),
+                                 MvcPatterns.userNotFound(propertiesKeeper),
+                                 MvcPatterns.userAccountIsLocked(propertiesKeeper),
+                                 MvcPatterns.userIsDisabled(propertiesKeeper),
+                                 MvcPatterns.userAccountIsExpired(propertiesKeeper),
+                                 MvcPatterns.userRegisteredUsingGoogle(propertiesKeeper),
+                                 MvcPatterns.userAccountAlreadyExists(propertiesKeeper),
+                                 MvcPatterns.credentialsHaveExpired(propertiesKeeper),
+                                 MvcPatterns.jwtTokenNotFound(propertiesKeeper),
+                                 MvcPatterns.registrationProviderMismatch(propertiesKeeper),
+                                 MvcPatterns.badCredentials(propertiesKeeper),
+                                 MvcPatterns.exchangeShortLivedToken(propertiesKeeper),
+                                 MvcPatterns.failureTargetUrl(propertiesKeeper))
                         .permitAll()
                     // require authentication via JWT
 			        .anyRequest()
@@ -188,9 +174,9 @@ final class SecurityConfigContext {
         	webSecurity
                     .ignoring()
                         .mvcMatchers(MvcPatterns.h2InMemoryWebConsole())
-                        .mvcMatchers(HttpMethod.OPTIONS, MvcPatterns.rootWildcard())
+                        .mvcMatchers(HttpMethod.OPTIONS, MvcPatterns.root())
                         .mvcMatchers(HttpMethod.GET, MvcPatterns.staticResources())
-	                    .mvcMatchers(HttpMethod.GET, MvcPatterns.UIContextPathWildcard());
+	                    .mvcMatchers(HttpMethod.GET, MvcPatterns.UIContextPath());
         }
     }
 }
