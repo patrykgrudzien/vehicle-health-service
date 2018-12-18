@@ -61,38 +61,59 @@ public final class DateOperationsHelper {
 	    return type.isAssignableFrom(Double.class);
     }
 
-	public LocalDateTime adjustTimeToApplicationZone(final ZonedDateTime zoneDateTime) {
-		final Double applicationTimeOffset = getTimeOffset(ApplicationZone.POLAND.getApplicationZonedDateTime(), Double.class);
-        final int appOffsetHours = getLongPartFromOffset(applicationTimeOffset);
-        final int appOffsetMinutes = getDecimalPartFromOffset(applicationTimeOffset);
+	public LocalDateTime adjustTimeToApplicationZone(final ZonedDateTime zoneDateTimeToAdjust) {
+		final ZonedDateTime applicationZonedDateTime = ApplicationZone.POLAND.getApplicationZonedDateTime();
 
-        final Double timeOffsetToAdjust = getTimeOffset(zoneDateTime, Double.class);
-        final int hours = getLongPartFromOffset(timeOffsetToAdjust);
-        final int minutes = getDecimalPartFromOffset(timeOffsetToAdjust);
+		final Double applicationTimeOffset = getTimeOffset(applicationZonedDateTime, Double.class);
+		final Double timeOffsetToAdjust = getTimeOffset(zoneDateTimeToAdjust, Double.class);
 
-        int daysDifference = 0;
-        final int minutesDifference = appOffsetMinutes - minutes;
-        final int hoursDifference = appOffsetHours - hours;
-        if (Math.abs(hoursDifference) >= 12 ||
-                ApplicationZone.POLAND.getApplicationZonedDateTime().toLocalDate().getDayOfMonth() != zoneDateTime.toLocalDate().getDayOfMonth()) {
-            daysDifference++;
-        }
+		final int minutesDifference = getMinutesDifference(applicationTimeOffset, timeOffsetToAdjust);
+		final int hoursDifference = getHoursDifference(applicationTimeOffset, timeOffsetToAdjust);
+		final int daysDifference = getDaysDifference(applicationZonedDateTime, zoneDateTimeToAdjust);
 
-        return timeOffsetToAdjust < applicationTimeOffset ?
-                LocalDateTime.of(zoneDateTime.toLocalDate().plusDays(Math.abs(daysDifference)),
-                                 zoneDateTime.toLocalTime().plusHours(Math.abs(hoursDifference)).plusMinutes(Math.abs(minutesDifference))) :
-                LocalDateTime.of(zoneDateTime.toLocalDate().minusDays(Math.abs(daysDifference)),
-                                 zoneDateTime.toLocalTime().minusHours(Math.abs(hoursDifference)).minusMinutes(Math.abs(minutesDifference)));
+		return getCalculatedLocalDateTime(zoneDateTimeToAdjust, applicationTimeOffset, timeOffsetToAdjust, minutesDifference, hoursDifference, daysDifference);
     }
 
-    private int getLongPartFromOffset(final Double decimalNumber) {
+	private LocalDateTime getCalculatedLocalDateTime(final ZonedDateTime zoneDateTimeToAdjust, final Double applicationTimeOffset, final Double timeOffsetToAdjust,
+	                                                 final int minutesDifference, final int hoursDifference, final int daysDifference) {
+		return timeOffsetToAdjust < applicationTimeOffset ?
+                LocalDateTime.of(zoneDateTimeToAdjust.toLocalDate().plusDays(Math.abs(daysDifference)),
+                                 zoneDateTimeToAdjust.toLocalTime().plusHours(Math.abs(hoursDifference)).plusMinutes(Math.abs(minutesDifference))) :
+                LocalDateTime.of(zoneDateTimeToAdjust.toLocalDate().minusDays(Math.abs(daysDifference)),
+                                 zoneDateTimeToAdjust.toLocalTime().minusHours(Math.abs(hoursDifference)).minusMinutes(Math.abs(minutesDifference)));
+	}
+
+	public int getDaysDifference(final ZonedDateTime zoneDateTime1, final ZonedDateTime zoneDateTime2) {
+		int daysDifference = 0;
+		final Double timeOffset1 = getTimeOffset(zoneDateTime1, Double.class);
+		final Double timeOffset2 = getTimeOffset(zoneDateTime2, Double.class);
+		if (getHoursDifference(timeOffset1, timeOffset2) >= 12 ||
+		    zoneDateTime1.toLocalDate().getDayOfMonth() != zoneDateTime2.toLocalDate().getDayOfMonth()) {
+		    daysDifference++;
+		}
+		return daysDifference;
+	}
+
+	public int getHoursDifference(final Double applicationTimeOffset, final Double timeOffsetToAdjust) {
+		final int appOffsetHours = getHoursFromOffset(applicationTimeOffset);
+		final int hours = getHoursFromOffset(timeOffsetToAdjust);
+		return Math.abs(appOffsetHours - hours);
+	}
+
+	public int getMinutesDifference(final Double applicationTimeOffset, final Double timeOffsetToAdjust) {
+		final int appOffsetMinutes = getMinutesFromOffset(applicationTimeOffset);
+		final int minutes = getMinutesFromOffset(timeOffsetToAdjust);
+		return Math.abs(appOffsetMinutes - minutes);
+	}
+
+	public int getHoursFromOffset(final Double decimalNumber) {
         final String numberAsString = NUMBER_AS_STRING.apply(decimalNumber);
         final Integer indexOfDotSeparator = (Integer) INDEX_OF_DOT_SEPARATOR.apply(numberAsString);
 
         return Integer.valueOf(numberAsString.substring(0, indexOfDotSeparator));
     }
 
-    private int getDecimalPartFromOffset(final Double decimalNumber) {
+    public int getMinutesFromOffset(final Double decimalNumber) {
         final String numberAsString = NUMBER_AS_STRING.apply(decimalNumber);
         final Integer indexOfDotSeparator = (Integer) INDEX_OF_DOT_SEPARATOR.apply(numberAsString);
 
