@@ -83,10 +83,10 @@ class DateOperationsHelperIT {
 	@Test
 	void getDaysDifference() {
 		// when
-		final int daysDifference = dateOperationsHelper.getDaysDifference(applicationZoneDateTime, pacificZoneDateTime);
+		final int daysDifference = dateOperationsHelper.getDaysDifference(applicationZoneDateTime, applicationZoneDateTime);
 
 		// then
-		assertThat(daysDifference).isEqualTo(1);
+		assertThat(daysDifference).isEqualTo(0);
 	}
 
 	@Test
