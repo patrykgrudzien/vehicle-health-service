@@ -88,6 +88,8 @@ public class CustomApplicationProperties {
 			private String root;
 			private String failureUrl;
 			private String principalUser;
+			private String generateAccessToken;
+			private String generateRefreshToken;
 			private String refreshAccessToken;
 		}
 
