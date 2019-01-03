@@ -62,7 +62,7 @@ public final class DateOperationsHelper {
     }
 
 	public LocalDateTime adjustTimeToApplicationZone(final ZonedDateTime zoneDateTimeToAdjust) {
-		final ZonedDateTime applicationZonedDateTime = ApplicationZone.POLAND.getApplicationZonedDateTime();
+		final ZonedDateTime applicationZonedDateTime = ApplicationZone.POLAND.getApplicationZonedDateTimeNow();
 
 		final Double applicationTimeOffset = getTimeOffset(applicationZonedDateTime, Double.class);
 		final Double timeOffsetToAdjust = getTimeOffset(zoneDateTimeToAdjust, Double.class);
