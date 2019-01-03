@@ -28,6 +28,8 @@ public final class PropertiesKeeper {
 		public String API_CONTEXT_PATH = customApplicationProperties.getEndpoints().getApiContextPath();
 		public String AUTH = customApplicationProperties.getEndpoints().getAuthentication().getRoot();
 		public String REGISTRATION = customApplicationProperties.getEndpoints().getRegistration().getRoot();
+		public String GENERATE_ACCESS_TOKEN = customApplicationProperties.getEndpoints().getAuthentication().getGenerateAccessToken();
+		public String GENERATE_REFRESH_TOKEN = customApplicationProperties.getEndpoints().getAuthentication().getGenerateRefreshToken();
 		public String REFRESH_ACCESS_TOKEN = customApplicationProperties.getEndpoints().getAuthentication().getRefreshAccessToken();
 		public String REGISTER_USER_ACCOUNT = customApplicationProperties.getEndpoints().getRegistration().getRegisterUserAccount();
 		public String REGISTRATION_CONFIRMATION = customApplicationProperties.getEndpoints().getRegistration().getRoot() +
@@ -45,12 +47,14 @@ public final class PropertiesKeeper {
 	}
 
 	public class JWT {
+		public String TOKEN_SECRET = customApplicationProperties.getJwt().getSecret();
 		public String TOKEN_HEADER = customApplicationProperties.getJwt().getHeader();
+		public Long ACCESS_TOKEN_EXPIRATION = customApplicationProperties.getJwt().getExpiration();
 	}
 
 	public class OAuth2 {
 		public String LOGIN_PAGE = customApplicationProperties.getEndpoints().getOAuth2().getLoginPage();
-		public Long SHORT_LIVED_MILLIS = customApplicationProperties.getEndpoints().getOAuth2().getShortLivedMillis();
+		public Long SHORT_LIVED_TOKEN_EXPIRATION = customApplicationProperties.getEndpoints().getOAuth2().getShortLivedMillis();
 		public String USER_LOGGED_IN_USING_GOOGLE = customApplicationProperties.getEndpoints().getOAuth2().getUserLoggedInUsingGoogle();
 		public String USER_NOT_FOUND = customApplicationProperties.getEndpoints().getOAuth2().getUserNotFound();
 		public String USER_ACCOUNT_IS_LOCKED = customApplicationProperties.getEndpoints().getOAuth2().getUserAccountIsLocked();

@@ -19,6 +19,8 @@ custom:
         root: /auth
         failure-url: /login?error=true
         principal-user: /principal-user
+        generate-access-token: /token/generate-access-token
+        generate-refresh-token: /token/generate-refresh-token
         refresh-access-token: /token/refresh-access-token
       heroku:
         context-path: https://vehicle-health-service.herokuapp.com/ui
@@ -29,7 +31,7 @@ custom:
         update-current-mileage: "/vehicle/update-current-mileage/{ownerEmailAddress}"
       oauth2:
         login-page: http://localhost:8080/login # TODO: must be updated because on production context is different (for now testing purpose)
-        short-lived-millis: 120000 # 2 minutes
+        short-lived-millis: 2 # minutes (120000 nanoseconds)
         user-logged-in-using-google: /user-logged-in-using-google
         user-not-found: /user-not-found
         user-account-is-locked: /user-account-is-locked
@@ -49,7 +51,7 @@ custom:
     jwt:
       header: Authorization
       secret: super-secret-authorization-token-password
-      expiration: 900000 # 15 minutes
+      expiration: 15 # minutes (900000 nanoseconds)
     messages-language:
       header: Language
 
