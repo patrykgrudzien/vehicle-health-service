@@ -1,4 +1,4 @@
-package me.grudzien.patryk.controller.security;
+package me.grudzien.patryk.controller.jwt;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.google.common.base.Preconditions;
 
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
-import me.grudzien.patryk.service.security.JwtTokenService;
+import me.grudzien.patryk.service.jwt.JwtTokenService;
 
 @Log4j2
 @RestController
-@RequestMapping("/api/token")
+@RequestMapping("${custom.properties.endpoints.api-context-path}")
 public class JwtTokenController {
 
     private final JwtTokenService jwtTokenService;
@@ -29,21 +29,21 @@ public class JwtTokenController {
         this.jwtTokenService = jwtTokenService;
     }
 
-    @PostMapping("/generate-access-token")
+    @PostMapping("${custom.properties.endpoints.authentication.generate-access-token}")
     public ResponseEntity<String> generateAccessToken(@RequestBody final JwtAuthenticationRequest jwtAuthenticationRequest, final Device device) {
         final String accessToken = jwtTokenService.generateAccessToken(jwtAuthenticationRequest, device);
         return StringUtils.isEmpty(accessToken) ?
                 ResponseEntity.badRequest().build() : ResponseEntity.ok(accessToken);
     }
 
-    @PostMapping("/generate-refresh-token")
+    @PostMapping("${custom.properties.endpoints.authentication.generate-refresh-token}")
     public ResponseEntity<String> generateRefreshToken(@RequestBody final JwtAuthenticationRequest jwtAuthenticationRequest, final Device device) {
         final String refreshToken = jwtTokenService.generateRefreshToken(jwtAuthenticationRequest, device);
         return StringUtils.isEmpty(refreshToken) ?
                 ResponseEntity.badRequest().build() : ResponseEntity.ok(refreshToken);
     }
 
-    @PostMapping("/refresh-access-token")
+    @PostMapping("${custom.properties.endpoints.authentication.refresh-access-token}")
     public ResponseEntity<String> refreshAccessToken(@RequestBody final JwtAuthenticationRequest jwtAuthenticationRequest, final Device device) {
         final String refreshedAccessToken = jwtTokenService.refreshAccessToken(jwtAuthenticationRequest, device);
         return StringUtils.isEmpty(refreshedAccessToken) ?
