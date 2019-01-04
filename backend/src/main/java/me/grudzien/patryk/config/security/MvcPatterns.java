@@ -24,6 +24,14 @@ final class MvcPatterns {
         return propertiesKeeper.endpoints().API_CONTEXT_PATH + propertiesKeeper.endpoints().REGISTRATION + "/**";
     }
 
+    static String generateAccessToken(final PropertiesKeeper propertiesKeeper) {
+        return propertiesKeeper.endpoints().API_CONTEXT_PATH + propertiesKeeper.endpoints().GENERATE_ACCESS_TOKEN;
+    }
+
+    static String generateRefreshToken(final PropertiesKeeper propertiesKeeper) {
+        return propertiesKeeper.endpoints().API_CONTEXT_PATH + propertiesKeeper.endpoints().GENERATE_REFRESH_TOKEN;
+    }
+
     static String refreshAccessToken(final PropertiesKeeper propertiesKeeper) {
         return propertiesKeeper.endpoints().API_CONTEXT_PATH + propertiesKeeper.endpoints().REFRESH_ACCESS_TOKEN;
     }
