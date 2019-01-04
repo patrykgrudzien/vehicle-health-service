@@ -13,6 +13,7 @@ import me.grudzien.patryk.exception.login.BadCredentialsAuthenticationException;
 import me.grudzien.patryk.exception.login.UserDisabledAuthenticationException;
 import me.grudzien.patryk.oauth2.exception.JwtTokenNotFoundException;
 import me.grudzien.patryk.oauth2.exception.RegistrationProviderMismatchException;
+import me.grudzien.patryk.service.login.impl.MyUserDetailsService;
 import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
 
 import static io.vavr.API.$;
@@ -87,7 +88,7 @@ public abstract class FailedAuthenticationCases {
 			 * Exception thrown below is determined in:
 			 * {@link org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider#authenticate(org.springframework.security.core.Authentication)}
 			 * which tries to retrieve user using:
-			 * {@link me.grudzien.patryk.service.security.MyUserDetailsService}
+			 * {@link MyUserDetailsService}
 			 */
 			throw new BadCredentialsAuthenticationException(localeMessagesCreator.buildLocaleMessage("bad-credentials-exception"));
 		}));
