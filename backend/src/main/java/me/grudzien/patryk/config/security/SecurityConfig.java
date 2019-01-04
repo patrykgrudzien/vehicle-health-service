@@ -27,7 +27,8 @@ import me.grudzien.patryk.oauth2.handler.CustomOAuth2AuthenticationSuccessHandle
 import me.grudzien.patryk.oauth2.service.CustomOAuth2UserService;
 import me.grudzien.patryk.oauth2.service.CustomOidcUserService;
 import me.grudzien.patryk.oauth2.util.CacheHelper;
-import me.grudzien.patryk.service.security.MyUserDetailsService;
+import me.grudzien.patryk.service.jwt.JwtTokenClaimsRetriever;
+import me.grudzien.patryk.service.login.impl.MyUserDetailsService;
 import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
 
 import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
@@ -65,8 +66,8 @@ public class SecurityConfig {
 	private final PropertiesKeeper propertiesKeeper;
 	private final CacheHelper cacheHelper;
 	private final LocaleMessagesCreator localeMessageCreator;
-
 	private final CustomAuthenticationProvider customAuthenticationProvider;
+	private final JwtTokenClaimsRetriever jwtTokenClaimsRetriever;
 
 	/**
 	 * {@linkplain @Qualifier} for {@link org.springframework.security.core.userdetails.UserDetailsService} is used here because there is also
@@ -75,33 +76,37 @@ public class SecurityConfig {
 	 */
 	@Autowired
 	public SecurityConfig(@Qualifier(MyUserDetailsService.BEAN_NAME) final UserDetailsService userDetailsService,
-	                      final CustomAuthenticationEntryPoint customAuthenticationEntryPoint,
-	                      final CustomOAuth2AuthenticationSuccessHandler customOAuth2AuthenticationSuccessHandler,
-	                      final CustomOAuth2AuthenticationFailureHandler customOAuth2AuthenticationFailureHandler, final CustomOidcUserService customOidcUserService,
-	                      final CustomOAuth2UserService customOAuth2UserService, final PropertiesKeeper propertiesKeeper, final CacheHelper cacheHelper,
-	                      final LocaleMessagesCreator localeMessageCreator, final CustomAuthenticationProvider customAuthenticationProvider) {
+                          final CustomAuthenticationEntryPoint customAuthenticationEntryPoint,
+                          final CustomOAuth2AuthenticationSuccessHandler customOAuth2AuthenticationSuccessHandler,
+                          final CustomOAuth2AuthenticationFailureHandler customOAuth2AuthenticationFailureHandler,
+                          final CustomOidcUserService customOidcUserService,
+                          final CustomOAuth2UserService customOAuth2UserService, final PropertiesKeeper propertiesKeeper, final CacheHelper cacheHelper,
+                          final LocaleMessagesCreator localeMessageCreator, final CustomAuthenticationProvider customAuthenticationProvider,
+                          final JwtTokenClaimsRetriever jwtTokenClaimsRetriever) {
 
-		Preconditions.checkNotNull(userDetailsService, "userDetailsService cannot be null!");
-		Preconditions.checkNotNull(customAuthenticationEntryPoint, "customAuthenticationEntryPoint cannot be null!");
-		Preconditions.checkNotNull(customOAuth2AuthenticationSuccessHandler, "customOAuth2AuthenticationSuccessHandler cannot be null!");
-		Preconditions.checkNotNull(customOAuth2AuthenticationFailureHandler, "customOAuth2AuthenticationFailureHandler cannot be null!");
-		Preconditions.checkNotNull(customOidcUserService, "customOidcUserService cannot be null!");
-		Preconditions.checkNotNull(customOAuth2UserService, "customOAuth2UserService cannot be null!");
-		Preconditions.checkNotNull(propertiesKeeper, "propertiesKeeper cannot be null!");
-		Preconditions.checkNotNull(cacheHelper, "cacheHelper cannot be null!");
-		Preconditions.checkNotNull(localeMessageCreator, "localeMessageCreator cannot be null!");
+        Preconditions.checkNotNull(userDetailsService, "userDetailsService cannot be null!");
+        Preconditions.checkNotNull(customAuthenticationEntryPoint, "customAuthenticationEntryPoint cannot be null!");
+        Preconditions.checkNotNull(customOAuth2AuthenticationSuccessHandler, "customOAuth2AuthenticationSuccessHandler cannot be null!");
+        Preconditions.checkNotNull(customOAuth2AuthenticationFailureHandler, "customOAuth2AuthenticationFailureHandler cannot be null!");
+        Preconditions.checkNotNull(customOidcUserService, "customOidcUserService cannot be null!");
+        Preconditions.checkNotNull(customOAuth2UserService, "customOAuth2UserService cannot be null!");
+        Preconditions.checkNotNull(propertiesKeeper, "propertiesKeeper cannot be null!");
+        Preconditions.checkNotNull(cacheHelper, "cacheHelper cannot be null!");
+        Preconditions.checkNotNull(localeMessageCreator, "localeMessageCreator cannot be null!");
+        Preconditions.checkNotNull(jwtTokenClaimsRetriever, "jwtTokenClaimsRetriever cannot be null!");
 
-		this.userDetailsService = userDetailsService;
-		this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
-		this.customOAuth2AuthenticationSuccessHandler = customOAuth2AuthenticationSuccessHandler;
-		this.customOAuth2AuthenticationFailureHandler = customOAuth2AuthenticationFailureHandler;
-		this.customOidcUserService = customOidcUserService;
-		this.customOAuth2UserService = customOAuth2UserService;
-		this.propertiesKeeper = propertiesKeeper;
-		this.cacheHelper = cacheHelper;
-		this.localeMessageCreator = localeMessageCreator;
-		this.customAuthenticationProvider = customAuthenticationProvider;
-	}
+        this.userDetailsService = userDetailsService;
+        this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
+        this.customOAuth2AuthenticationSuccessHandler = customOAuth2AuthenticationSuccessHandler;
+        this.customOAuth2AuthenticationFailureHandler = customOAuth2AuthenticationFailureHandler;
+        this.customOidcUserService = customOidcUserService;
+        this.customOAuth2UserService = customOAuth2UserService;
+        this.propertiesKeeper = propertiesKeeper;
+        this.cacheHelper = cacheHelper;
+        this.localeMessageCreator = localeMessageCreator;
+        this.customAuthenticationProvider = customAuthenticationProvider;
+        this.jwtTokenClaimsRetriever = jwtTokenClaimsRetriever;
+    }
 
 	/**
 	 * <h2>Note:</h2>
@@ -202,7 +207,8 @@ public class SecurityConfig {
              * &&
              * {@link me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter}
              */
-            SecurityConfigContext.Filters.addTokenAuthenticationFilters(httpSecurity, super.userDetailsService(), propertiesKeeper, localeMessageCreator);
+            SecurityConfigContext.Filters.addTokenAuthenticationFilters(httpSecurity, super.userDetailsService(), propertiesKeeper,
+                                                                        localeMessageCreator, jwtTokenClaimsRetriever);
 
             // mvcMatchers
             SecurityConfigContext.Requests.authorizeRequests(httpSecurity, propertiesKeeper);
