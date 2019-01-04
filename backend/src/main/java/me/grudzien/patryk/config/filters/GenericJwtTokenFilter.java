@@ -22,9 +22,11 @@ import java.io.IOException;
 import java.util.Optional;
 
 import me.grudzien.patryk.PropertiesKeeper;
-import me.grudzien.patryk.service.security.MyUserDetailsService;
+import me.grudzien.patryk.service.jwt.JwtTokenClaimsRetriever;
+import me.grudzien.patryk.util.jwt.JwtTokenConstants;
+import me.grudzien.patryk.service.login.impl.MyUserDetailsService;
 import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
-import me.grudzien.patryk.util.jwt.JwtTokenUtil;
+import me.grudzien.patryk.util.jwt.JwtTokenHelper;
 
 import static me.grudzien.patryk.util.log.LogMarkers.EXCEPTION_MARKER;
 import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
@@ -61,16 +63,20 @@ public class GenericJwtTokenFilter extends OncePerRequestFilter {
     private final String tokenHeader;
     private final UserDetailsService userDetailsService;
     private final LocaleMessagesCreator localeMessagesCreator;
+    private final JwtTokenClaimsRetriever jwtTokenClaimsRetriever;
 
     public GenericJwtTokenFilter(@Qualifier(MyUserDetailsService.BEAN_NAME) final UserDetailsService userDetailsService,
-                                 final PropertiesKeeper propertiesKeeper, final LocaleMessagesCreator localeMessagesCreator) {
+                                 final PropertiesKeeper propertiesKeeper, final LocaleMessagesCreator localeMessagesCreator,
+                                 final JwtTokenClaimsRetriever jwtTokenClaimsRetriever) {
         Preconditions.checkNotNull(userDetailsService, "userDetailsService cannot be null!");
-        Preconditions.checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
         Preconditions.checkNotNull(propertiesKeeper, "propertiesKeeper cannot be null!");
-        this.userDetailsService = userDetailsService;
-        this.localeMessagesCreator = localeMessagesCreator;
+        Preconditions.checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
+        Preconditions.checkNotNull(jwtTokenClaimsRetriever, "jwtTokenClaimsRetriever cannot be null!");
 
+        this.userDetailsService = userDetailsService;
         this.tokenHeader = propertiesKeeper.jwt().TOKEN_HEADER;
+        this.localeMessagesCreator = localeMessagesCreator;
+        this.jwtTokenClaimsRetriever = jwtTokenClaimsRetriever;
     }
 
     @SuppressWarnings("NullableProblems")
@@ -84,12 +90,12 @@ public class GenericJwtTokenFilter extends OncePerRequestFilter {
 
         String email = null;
         String accessToken = null;
-        if (requestHeader != null && requestHeader.startsWith(JwtTokenUtil.BEARER)) {
-            accessToken = requestHeader.substring(JwtTokenUtil.JWT_TOKEN_BEGIN_INDEX);
-            email = JwtTokenUtil.Retriever.getUserEmailFromToken(accessToken);
+        if (requestHeader != null && requestHeader.startsWith(JwtTokenConstants.BEARER)) {
+            accessToken = requestHeader.substring(JwtTokenConstants.JWT_TOKEN_BEGIN_INDEX);
+            email = jwtTokenClaimsRetriever.getUserEmailFromToken(accessToken);
             log.info(FLOW_MARKER, "Authentication will be performed against user email: {}.", email);
         } else {
-            log.warn(EXCEPTION_MARKER, "Couldn't find {} string, it will be ignored!", JwtTokenUtil.BEARER.trim());
+            log.warn(EXCEPTION_MARKER, "Couldn't find {} string, it will be ignored!", JwtTokenConstants.BEARER.trim());
         }
 
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -104,7 +110,7 @@ public class GenericJwtTokenFilter extends OncePerRequestFilter {
              * the database compellingly.
              */
             if (userDetails.isPresent()) {
-                if (JwtTokenUtil.Validator.validateAccessToken(accessToken, userDetails.get())) {
+                if (JwtTokenHelper.Validator.validateAccessToken(accessToken, userDetails.get())) {
                     /*
                      * UsernamePasswordAuthenticationToken- an {@link org.springframework.security.core.Authentication} implementation that is
                      * designed for simple presentation of a username and password.

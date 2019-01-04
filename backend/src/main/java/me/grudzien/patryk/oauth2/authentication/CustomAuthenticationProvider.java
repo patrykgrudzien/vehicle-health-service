@@ -30,7 +30,7 @@ import me.grudzien.patryk.domain.dto.login.JwtUser;
 import me.grudzien.patryk.oauth2.authentication.checkers.AdditionalChecks;
 import me.grudzien.patryk.oauth2.service.google.GooglePrincipalService;
 import me.grudzien.patryk.oauth2.util.CacheHelper;
-import me.grudzien.patryk.service.security.MyUserDetailsService;
+import me.grudzien.patryk.service.login.impl.MyUserDetailsService;
 import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
 
 import static me.grudzien.patryk.util.log.LogMarkers.SECURITY_MARKER;
