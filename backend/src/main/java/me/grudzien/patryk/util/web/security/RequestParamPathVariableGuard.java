@@ -16,7 +16,7 @@ import com.google.common.base.Preconditions;
 import java.util.Optional;
 
 import me.grudzien.patryk.domain.dto.login.JwtUser;
-import me.grudzien.patryk.service.security.MyUserDetailsService;
+import me.grudzien.patryk.service.login.impl.MyUserDetailsService;
 import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.util.web.RequestsDecoder;
 

@@ -12,7 +12,7 @@ import com.google.common.base.Preconditions;
 import me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser;
 import me.grudzien.patryk.oauth2.service.facebook.FacebookPrincipalService;
 import me.grudzien.patryk.oauth2.util.OAuth2FlowDelegator;
-import me.grudzien.patryk.service.security.MyUserDetailsService;
+import me.grudzien.patryk.service.login.impl.MyUserDetailsService;
 import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
 
 @Log4j2

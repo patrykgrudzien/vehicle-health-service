@@ -46,7 +46,7 @@ import me.grudzien.patryk.repository.registration.EmailVerificationTokenReposito
 import me.grudzien.patryk.service.registration.EmailService;
 import me.grudzien.patryk.service.registration.UserRegistrationService;
 import me.grudzien.patryk.service.registration.event.OnRegistrationCompleteEvent;
-import me.grudzien.patryk.service.security.MyUserDetailsService;
+import me.grudzien.patryk.service.login.impl.MyUserDetailsService;
 import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.util.validator.CustomValidator;
 import me.grudzien.patryk.util.web.RequestsDecoder;

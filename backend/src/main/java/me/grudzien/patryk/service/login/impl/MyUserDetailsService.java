@@ -1,4 +1,4 @@
-package me.grudzien.patryk.service.security;
+package me.grudzien.patryk.service.login.impl;
 
 import lombok.extern.log4j.Log4j2;
 

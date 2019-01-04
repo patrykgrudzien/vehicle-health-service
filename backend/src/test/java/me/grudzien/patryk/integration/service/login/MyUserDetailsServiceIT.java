@@ -1,8 +1,9 @@
-package me.grudzien.patryk.integration.service.security;
+package me.grudzien.patryk.integration.service.login;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
@@ -30,7 +31,7 @@ import me.grudzien.patryk.domain.enums.registration.RegistrationProvider;
 import me.grudzien.patryk.domain.enums.registration.RoleName;
 import me.grudzien.patryk.oauth2.util.CacheHelper;
 import me.grudzien.patryk.repository.registration.CustomUserRepository;
-import me.grudzien.patryk.service.security.MyUserDetailsService;
+import me.grudzien.patryk.service.login.impl.MyUserDetailsService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -38,7 +39,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @Disabled("Disabled because of: net.sf.ehcache.CacheException: Another unnamed CacheManager already exists in the same VM.")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.NONE)
 class MyUserDetailsServiceIT {
 
 	@Autowired
