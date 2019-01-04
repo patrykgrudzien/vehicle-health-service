@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import me.grudzien.patryk.PropertiesKeeper;
 import me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser;
 import me.grudzien.patryk.oauth2.repository.CacheBasedOAuth2AuthorizationRequestRepository;
-import me.grudzien.patryk.util.jwt.JwtTokenUtil;
+import me.grudzien.patryk.service.jwt.JwtTokenService;
 import me.grudzien.patryk.util.web.CustomURLBuilder;
 
 import static io.vavr.API.$;
@@ -37,15 +37,18 @@ public class CustomOAuth2AuthenticationSuccessHandler extends SimpleUrlAuthentic
 
 	private final CacheBasedOAuth2AuthorizationRequestRepository cacheBasedOAuth2AuthorizationRequestRepository;
 	private final PropertiesKeeper propertiesKeeper;
+	private final JwtTokenService jwtTokenService;
 
 	@Autowired
 	public CustomOAuth2AuthenticationSuccessHandler(final CacheBasedOAuth2AuthorizationRequestRepository cacheBasedOAuth2AuthorizationRequestRepository,
-	                                                final PropertiesKeeper propertiesKeeper) {
-		Preconditions.checkNotNull(cacheBasedOAuth2AuthorizationRequestRepository, "cacheBasedOAuth2AuthorizationRequestRepository cannot be null!");
-		Preconditions.checkNotNull(propertiesKeeper, "propertiesKeeper cannot be null!");
-		this.cacheBasedOAuth2AuthorizationRequestRepository = cacheBasedOAuth2AuthorizationRequestRepository;
-		this.propertiesKeeper = propertiesKeeper;
-	}
+                                                    final PropertiesKeeper propertiesKeeper, final JwtTokenService jwtTokenService) {
+        Preconditions.checkNotNull(cacheBasedOAuth2AuthorizationRequestRepository, "cacheBasedOAuth2AuthorizationRequestRepository cannot be null!");
+        Preconditions.checkNotNull(propertiesKeeper, "propertiesKeeper cannot be null!");
+        Preconditions.checkNotNull(jwtTokenService, "jwtTokenService cannot be null!");
+        this.cacheBasedOAuth2AuthorizationRequestRepository = cacheBasedOAuth2AuthorizationRequestRepository;
+        this.propertiesKeeper = propertiesKeeper;
+        this.jwtTokenService = jwtTokenService;
+    }
 
 	@Override
 	protected String determineTargetUrl(final HttpServletRequest request, final HttpServletResponse response) {
@@ -62,7 +65,7 @@ public class CustomOAuth2AuthenticationSuccessHandler extends SimpleUrlAuthentic
 		return Match(userAccountStatus).of(
 				Case($(is(AccountStatus.REGISTERED)), () -> API_CONTEXT_PATH + propertiesKeeper.oAuth2().USER_REGISTERED_USING_GOOGLE),
 				Case($(is(AccountStatus.LOGGED)), () -> {
-					final String shortLivedAuthToken = JwtTokenUtil.Creator.generateShortLivedToken(customOAuth2OidcPrincipalUser);
+					final String shortLivedAuthToken = jwtTokenService.generateShortLivedToken(customOAuth2OidcPrincipalUser);
 					final Tuple2<String, String> additionalUrlParameters = new Tuple2<>(SHORT_LIVED_AUTH_TOKEN_NAME, shortLivedAuthToken);
 					return CustomURLBuilder.buildURL(API_CONTEXT_PATH + propertiesKeeper.oAuth2().USER_LOGGED_IN_USING_GOOGLE,
                                                      CustomURLBuilder.AdditionalParamsDelimiterType.REQUEST_PARAM, additionalUrlParameters);
