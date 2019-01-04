@@ -19,6 +19,7 @@ import me.grudzien.patryk.oauth2.repository.CacheBasedOAuth2AuthorizationRequest
 import me.grudzien.patryk.oauth2.service.CustomOAuth2UserService;
 import me.grudzien.patryk.oauth2.service.CustomOidcUserService;
 import me.grudzien.patryk.oauth2.util.CacheHelper;
+import me.grudzien.patryk.service.jwt.JwtTokenClaimsRetriever;
 import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
 
 @SuppressWarnings("JavadocReference")
@@ -84,9 +85,11 @@ final class SecurityConfigContext {
     static class Filters {
         @SuppressWarnings("DanglingJavadoc")
         static void addTokenAuthenticationFilters(final HttpSecurity httpSecurity, final UserDetailsService userDetailsService,
-                                                  final PropertiesKeeper propertiesKeeper, final LocaleMessagesCreator localeMessageCreator) {
+                                                  final PropertiesKeeper propertiesKeeper, final LocaleMessagesCreator localeMessageCreator,
+                                                  final JwtTokenClaimsRetriever jwtTokenClaimsRetriever) {
             // JWT filter
-            final GenericJwtTokenFilter genericJwtTokenFilter = new GenericJwtTokenFilter(userDetailsService, propertiesKeeper, localeMessageCreator);
+            final GenericJwtTokenFilter genericJwtTokenFilter = new GenericJwtTokenFilter(userDetailsService, propertiesKeeper,
+                                                                                          localeMessageCreator, jwtTokenClaimsRetriever);
             httpSecurity.addFilterBefore(genericJwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
             /**
@@ -142,6 +145,8 @@ final class SecurityConfigContext {
                     // creating custom SecurityFilterChain
 			        .mvcMatchers(HttpMethod.POST,
 			                     MvcPatterns.auth(propertiesKeeper),
+			                     MvcPatterns.generateAccessToken(propertiesKeeper),
+			                     MvcPatterns.generateRefreshToken(propertiesKeeper),
 			                     MvcPatterns.refreshAccessToken(propertiesKeeper))
 			            .permitAll()
                     .mvcMatchers(MvcPatterns.registration(propertiesKeeper),
