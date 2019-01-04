@@ -26,6 +26,9 @@ public final class TestsUtils {
     private static final Encoder encoder = Base64.getEncoder();
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
+    public static final String TEST_EMAIL = "admin.root@gmail.com";
+    public static final String TEST_PASSWORD = "admin";
+
     private TestsUtils() {
         throw new UnsupportedOperationException("Creating object of this class is not allowed!");
     }
@@ -38,8 +41,16 @@ public final class TestsUtils {
                                                                        .build());
     }
 
-    public static String prepareRefreshAccessTokenJSONBody() throws JsonProcessingException {
+    public static JwtAuthenticationRequest prepareAccessTokenRequest(final String email, final boolean doEncoding) {
+        return JwtAuthenticationRequest.Builder()
+                                       .email(doEncoding ? encodeNotNullValue(email) : email)
+                                       .build();
+    }
+
+    public static String prepareJwtTokenControllerJSONBody(final String email, final String password, final boolean doEncoding) throws JsonProcessingException {
         return objectMapper.writeValueAsString(JwtAuthenticationRequest.Builder()
+                                                                       .email(doEncoding ? encodeNotNullValue(email) : email)
+                                                                       .password(doEncoding ? encodeNotNullValue(password) : password)
                                                                        .refreshToken(RandomStringUtils.randomAlphanumeric(25))
                                                                        .build());
     }

@@ -4,13 +4,10 @@ import io.vavr.control.Try;
 import lombok.extern.log4j.Log4j2;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.mobile.device.Device;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -22,14 +19,12 @@ import java.util.Optional;
 
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationResponse;
-import me.grudzien.patryk.domain.dto.login.JwtUser;
 import me.grudzien.patryk.exception.registration.CustomUserValidationException;
 import me.grudzien.patryk.oauth2.authentication.CustomAuthenticationToken;
 import me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases;
 import me.grudzien.patryk.service.login.UserAuthenticationService;
-import me.grudzien.patryk.service.security.MyUserDetailsService;
+import me.grudzien.patryk.service.jwt.JwtTokenService;
 import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
-import me.grudzien.patryk.util.jwt.JwtTokenUtil;
 import me.grudzien.patryk.util.validator.CustomValidator;
 import me.grudzien.patryk.util.web.RequestsDecoder;
 
@@ -41,27 +36,27 @@ import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
 @Service
 public class UserAuthenticationServiceImpl implements UserAuthenticationService {
 
-	private final UserDetailsService userDetailsService;
 	private final AuthenticationManager authenticationManager;
 	private final LocaleMessagesCreator localeMessagesCreator;
 	private final RequestsDecoder requestsDecoder;
+	private final JwtTokenService jwtTokenService;
 
 	@Autowired
-	public UserAuthenticationServiceImpl(@Qualifier(MyUserDetailsService.BEAN_NAME) final UserDetailsService userDetailsService,
-	                                     final AuthenticationManager authenticationManager,
-	                                     final LocaleMessagesCreator localeMessagesCreator,
-	                                     final RequestsDecoder requestsDecoder) {
+	public UserAuthenticationServiceImpl(final AuthenticationManager authenticationManager,
+                                         final LocaleMessagesCreator localeMessagesCreator,
+                                         final RequestsDecoder requestsDecoder,
+                                         final JwtTokenService jwtTokenService) {
 
-		Preconditions.checkNotNull(userDetailsService, "userDetailsService cannot be null!");
-		Preconditions.checkNotNull(authenticationManager, "authenticationManager cannot be null!");
-		Preconditions.checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
-		Preconditions.checkNotNull(requestsDecoder, "requestsDecoder cannot be null!");
+        Preconditions.checkNotNull(authenticationManager, "authenticationManager cannot be null!");
+        Preconditions.checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
+        Preconditions.checkNotNull(requestsDecoder, "requestsDecoder cannot be null!");
+        Preconditions.checkNotNull(jwtTokenService, "jwtTokenService cannot be null!");
 
-		this.userDetailsService = userDetailsService;
-		this.authenticationManager = authenticationManager;
-		this.localeMessagesCreator = localeMessagesCreator;
-		this.requestsDecoder = requestsDecoder;
-	}
+        this.authenticationManager = authenticationManager;
+        this.localeMessagesCreator = localeMessagesCreator;
+        this.requestsDecoder = requestsDecoder;
+        this.jwtTokenService = jwtTokenService;
+    }
 
 	@Override
 	public JwtAuthenticationResponse login(final JwtAuthenticationRequest authenticationRequest, final Device device) {
@@ -79,18 +74,11 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 			log.info(FLOW_MARKER, "Login request is correct. Starting authenticating the user with ({}) email.", email);
 			final Optional<Authentication> authentication = authenticateUser(authenticationRequest);
 			if (authentication.isPresent()) {
-				// Reload password post-security so we can generate the token
-				final Optional<JwtUser> jwtUser = Optional.ofNullable((JwtUser) userDetailsService.loadUserByUsername(email));
-				return jwtUser.map(user -> {
-									log.info("Started generating tokens...");
-									return JwtAuthenticationResponse.Builder()
-					                                .accessToken(JwtTokenUtil.Creator.generateAccessToken(user, device))
-					                                .refreshToken(JwtTokenUtil.Creator.generateRefreshToken(user))
-					                                .isSuccessful(Boolean.TRUE)
-					                                .build();
-							   })
-				              .orElseThrow(() -> new UsernameNotFoundException(
-				              		localeMessagesCreator.buildLocaleMessageWithParam("user-not-found-by-email", email)));
+                return JwtAuthenticationResponse.Builder()
+                                                .accessToken(jwtTokenService.generateAccessToken(decodedAuthenticationRequest, device))
+                                                .refreshToken(jwtTokenService.generateRefreshToken(decodedAuthenticationRequest, device))
+                                                .isSuccessful(Boolean.TRUE)
+                                                .build();
 			}
 		}
 		return jwtAuthenticationResponseFailure;
