@@ -19,6 +19,7 @@ import me.grudzien.patryk.domain.dto.registration.UserRegistrationDto;
 import me.grudzien.patryk.domain.dto.vehicle.VehicleDto;
 import me.grudzien.patryk.domain.entity.registration.Role;
 import me.grudzien.patryk.domain.enums.registration.RoleName;
+import me.grudzien.patryk.service.jwt.JwtTokenService;
 import me.grudzien.patryk.util.jwt.JwtUserFactory;
 
 public final class TestsUtils {
@@ -45,6 +46,13 @@ public final class TestsUtils {
         return JwtAuthenticationRequest.Builder()
                                        .email(doEncoding ? encodeNotNullValue(email) : email)
                                        .build();
+    }
+
+    public static String prepareTestAccessToken(final JwtTokenService jwtTokenService) {
+        return jwtTokenService.generateAccessToken(JwtAuthenticationRequest.Builder()
+                                                                           .email(TEST_EMAIL)
+                                                                           .password(TEST_PASSWORD)
+                                                                           .build(), testDevice());
     }
 
     public static String prepareJwtTokenControllerJSONBody(final String email, final String password, final boolean doEncoding) throws JsonProcessingException {

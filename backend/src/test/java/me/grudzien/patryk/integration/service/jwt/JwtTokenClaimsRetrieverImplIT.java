@@ -20,7 +20,6 @@ import java.time.ZonedDateTime;
 
 import me.grudzien.patryk.PropertiesKeeper;
 import me.grudzien.patryk.TestsUtils;
-import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
 import me.grudzien.patryk.domain.enums.ApplicationZone;
 import me.grudzien.patryk.domain.enums.security.JwtTokenClaims;
 import me.grudzien.patryk.service.jwt.JwtTokenClaimsRetriever;
@@ -28,6 +27,8 @@ import me.grudzien.patryk.service.jwt.JwtTokenService;
 import me.grudzien.patryk.util.jwt.JwtTokenConstants;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
+import static me.grudzien.patryk.TestsUtils.TEST_EMAIL;
 
 @Disabled("Disabled because of: net.sf.ehcache.CacheException: Another unnamed CacheManager already exists in the same VM.")
 @SpringBootTest
@@ -45,17 +46,12 @@ class JwtTokenClaimsRetrieverImplIT {
     private String tokenHeader;
     private String accessToken;
 
-    private static final String TEST_EMAIL = "admin.root@gmail.com";
     private static final LocalTime NOW_IN_POLAND = LocalTime.now(ZoneId.of(ApplicationZone.POLAND.getZoneId()));
 
     @BeforeEach
     void setUp() {
         tokenHeader = propertiesKeeper.jwt().TOKEN_HEADER;
-        accessToken = jwtTokenService.generateAccessToken(JwtAuthenticationRequest.Builder()
-                                                                                  .email(TEST_EMAIL)
-                                                                                  .password("password")
-                                                                                  .build(),
-                                                          TestsUtils.testDevice());
+        accessToken = TestsUtils.prepareTestAccessToken(jwtTokenService);
     }
 
     @AfterEach
