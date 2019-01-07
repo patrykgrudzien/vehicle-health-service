@@ -39,7 +39,7 @@ public class RequestsDecoder {
 	}
 
 	public boolean isParamEncoded(final String param) {
-	    return isBase64(param) && matchesBase64EncodedPattern(param) && isNotAlpha(param);
+		return (param != null && !param.equals("")) && (isBase64(param) && matchesBase64EncodedPattern(param) && isNotAlpha(param));
 	}
 
 	private boolean isBase64(final String param) {
