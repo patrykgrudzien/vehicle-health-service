@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
 import java.util.function.Function;
 
@@ -67,8 +68,8 @@ public final class DateOperationsHelper {
 		final Double applicationTimeOffset = getTimeOffset(applicationZonedDateTime, Double.class);
 		final Double timeOffsetToAdjust = getTimeOffset(zoneDateTimeToAdjust, Double.class);
 
-		final int minutesDifference = getMinutesDifference(applicationTimeOffset, timeOffsetToAdjust);
-		final int hoursDifference = getHoursDifference(applicationTimeOffset, timeOffsetToAdjust);
+		final int minutesDifference = getMinutesDifferenceBetweenOffsets(applicationTimeOffset, timeOffsetToAdjust);
+		final int hoursDifference = getHoursDifferenceBetweenOffsets(applicationTimeOffset, timeOffsetToAdjust);
 		final int daysDifference = getDaysDifference(applicationZonedDateTime, zoneDateTimeToAdjust);
 
 		return getCalculatedLocalDateTime(zoneDateTimeToAdjust, applicationTimeOffset, timeOffsetToAdjust, minutesDifference, hoursDifference, daysDifference);
@@ -87,36 +88,44 @@ public final class DateOperationsHelper {
 		int daysDifference = 0;
 		final Double timeOffset1 = getTimeOffset(zoneDateTime1, Double.class);
 		final Double timeOffset2 = getTimeOffset(zoneDateTime2, Double.class);
-		if (getHoursDifference(timeOffset1, timeOffset2) >= 12 ||
+		if (getHoursDifferenceBetweenOffsets(timeOffset1, timeOffset2) >= 12 ||
 		    zoneDateTime1.toLocalDate().getDayOfMonth() != zoneDateTime2.toLocalDate().getDayOfMonth()) {
 		    daysDifference++;
 		}
 		return daysDifference;
 	}
 
-	public int getHoursDifference(final Double applicationTimeOffset, final Double timeOffsetToAdjust) {
-		final int appOffsetHours = getHoursFromOffset(applicationTimeOffset);
-		final int hours = getHoursFromOffset(timeOffsetToAdjust);
+	public int getHoursDifferenceBetweenOffsets(final Double applicationTimeOffset, final Double timeOffsetToAdjust) {
+		final int appOffsetHours = getHoursPartFromOffset(applicationTimeOffset);
+		final int hours = getHoursPartFromOffset(timeOffsetToAdjust);
 		return Math.abs(appOffsetHours - hours);
 	}
 
-	public int getMinutesDifference(final Double applicationTimeOffset, final Double timeOffsetToAdjust) {
-		final int appOffsetMinutes = getMinutesFromOffset(applicationTimeOffset);
-		final int minutes = getMinutesFromOffset(timeOffsetToAdjust);
+	public int getMinutesDifferenceBetweenOffsets(final Double applicationTimeOffset, final Double timeOffsetToAdjust) {
+		final int appOffsetMinutes = getMinutesPartFromOffset(applicationTimeOffset);
+		final int minutes = getMinutesPartFromOffset(timeOffsetToAdjust);
 		return Math.abs(appOffsetMinutes - minutes);
 	}
 
-	public int getHoursFromOffset(final Double decimalNumber) {
+	public int getHoursPartFromOffset(final Double decimalNumber) {
         final String numberAsString = NUMBER_AS_STRING.apply(decimalNumber);
         final Integer indexOfDotSeparator = (Integer) INDEX_OF_DOT_SEPARATOR.apply(numberAsString);
 
         return Integer.valueOf(numberAsString.substring(0, indexOfDotSeparator));
     }
 
-    public int getMinutesFromOffset(final Double decimalNumber) {
+    public int getMinutesPartFromOffset(final Double decimalNumber) {
         final String numberAsString = NUMBER_AS_STRING.apply(decimalNumber);
         final Integer indexOfDotSeparator = (Integer) INDEX_OF_DOT_SEPARATOR.apply(numberAsString);
 
         return Integer.valueOf(numberAsString.substring(indexOfDotSeparator + 1));
     }
+
+	public int getMinutesDifferenceBetween(final ZonedDateTime zonedDateTime1, final ZonedDateTime zonedDateTime2) {
+		final int zonedDateTime1Minute = zonedDateTime1.getMinute();
+		final int zonedDateTime2Minute = zonedDateTime2.getMinute();
+		return zonedDateTime1Minute > zonedDateTime2Minute ?
+				       (int) Math.abs(ChronoUnit.HOURS.getDuration().toMinutes() - (zonedDateTime1Minute - zonedDateTime2Minute)) :
+				       Math.abs(zonedDateTime2Minute - zonedDateTime1Minute);
+	}
 }

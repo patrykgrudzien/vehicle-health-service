@@ -96,7 +96,7 @@ class DateOperationsHelperIT {
 		final Double pacificTimeOffset = dateOperationsHelper.getTimeOffset(pacificZoneDateTime, Double.class);
 
 		// when
-		final int hoursDifference = dateOperationsHelper.getHoursDifference(applicationTimeOffset, pacificTimeOffset);
+		final int hoursDifference = dateOperationsHelper.getHoursDifferenceBetweenOffsets(applicationTimeOffset, pacificTimeOffset);
 
 		// then
 		assertThat(hoursDifference).isEqualTo(11);
@@ -109,16 +109,18 @@ class DateOperationsHelperIT {
 		final Double pacificTimeOffset = dateOperationsHelper.getTimeOffset(pacificZoneDateTime, Double.class);
 
 		// when
-		final int minutesDifference = dateOperationsHelper.getMinutesDifference(applicationTimeOffset, pacificTimeOffset);
+		final int minutesDifference1 = dateOperationsHelper.getMinutesDifferenceBetweenOffsets(applicationTimeOffset, pacificTimeOffset);
+		final int minutesDifference2 = dateOperationsHelper.getMinutesDifferenceBetween(applicationZoneDateTime, pacificZoneDateTime);
 
 		// then
-		assertThat(minutesDifference).isEqualTo(0);
+		assertThat(minutesDifference1).isEqualTo(0);
+		assertThat(minutesDifference2).isEqualTo(0);
 	}
 
 	@Test
 	void getHoursFromOffset() {
 		// when
-		final int hoursFromOffset = dateOperationsHelper.getHoursFromOffset(dateOperationsHelper.getTimeOffset(applicationZoneDateTime, Double.class));
+		final int hoursFromOffset = dateOperationsHelper.getHoursPartFromOffset(dateOperationsHelper.getTimeOffset(applicationZoneDateTime, Double.class));
 
 		// then
 		assertThat(hoursFromOffset).isEqualTo(1);
@@ -127,7 +129,7 @@ class DateOperationsHelperIT {
 	@Test
 	void getMinutesFromOffset() {
 		// when
-		final int minutesFromOffset = dateOperationsHelper.getMinutesFromOffset(dateOperationsHelper.getTimeOffset(applicationZoneDateTime, Double.class));
+		final int minutesFromOffset = dateOperationsHelper.getMinutesPartFromOffset(dateOperationsHelper.getTimeOffset(applicationZoneDateTime, Double.class));
 
 		// then
 		assertThat(minutesFromOffset).isEqualTo(0);
