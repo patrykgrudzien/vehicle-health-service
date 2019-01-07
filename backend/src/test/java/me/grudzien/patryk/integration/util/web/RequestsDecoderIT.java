@@ -18,7 +18,7 @@ class RequestsDecoderIT {
 
     private final RequestsDecoder requestsDecoder = new RequestsDecoder();
 
-    private static Stream<Arguments> inputParams() {
+    private static Stream<Arguments> correctInputParams() {
         return Stream.of(
                 Arguments.arguments("Patryk"),
                 Arguments.arguments("Grudzień"),
@@ -34,9 +34,9 @@ class RequestsDecoderIT {
         );
     }
 
-    @ParameterizedTest(name = "Testing request decoder against: ({0}) input param.")
-    @MethodSource("inputParams")
-    void testRequestDecoder(final String inputParam) {
+    @ParameterizedTest(name = "Testing request decoder against: ({0}) correct input param.")
+    @MethodSource("correctInputParams")
+    void testRequestDecoder_correctInputParam(final String inputParam) {
         // given
         final String encodedInput = Base64.getEncoder().encodeToString(inputParam.getBytes());
 
@@ -51,4 +51,21 @@ class RequestsDecoderIT {
                 () -> assertThat(decodedInput).isEqualTo(inputParam)
         );
     }
+
+	private static Stream<Arguments> incorrectInputParams() {
+		return Stream.of(
+				Arguments.arguments(""),
+				Arguments.arguments((Object) null)
+		);
+	}
+
+	@ParameterizedTest(name = "Testing request decoder against: ({0}) incorrect input param.")
+	@MethodSource("incorrectInputParams")
+	void testRequestDecoder_incorrectInputParam(final String inputParam) {
+		// then
+		Assertions.assertAll(
+				() -> assertFalse(requestsDecoder.isParamEncoded(inputParam)),
+				() -> assertThat(requestsDecoder.decodeStringParam(inputParam)).isEqualTo(inputParam)
+		);
+	}
 }
