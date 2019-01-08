@@ -50,23 +50,26 @@ public class EmailServiceImpl implements EmailService {
 	private final SpringTemplateEngine templateEngine;
 	private final EmailVerificationTokenRepository emailVerificationTokenRepository;
 	private final LocaleMessagesCreator localeMessagesCreator;
+	private final LocaleMessagesHelper localeMessagesHelper;
 
 	// JavaMailSender will be automatically autowired by spring boot if it finds configuration in application.yml file
 	@SuppressWarnings("SpringJavaAutowiringInspection")
 	@Autowired
 	public EmailServiceImpl(final JavaMailSender javaMailSender, final SpringTemplateEngine templateEngine,
-	                        final EmailVerificationTokenRepository emailVerificationTokenRepository,
-	                        final LocaleMessagesCreator localeMessagesCreator) {
+	                        final EmailVerificationTokenRepository emailVerificationTokenRepository, final LocaleMessagesCreator localeMessagesCreator,
+	                        final LocaleMessagesHelper localeMessagesHelper) {
 
 		Preconditions.checkNotNull(javaMailSender, "javaMailSender cannot be null!");
 		Preconditions.checkNotNull(templateEngine, "templateEngine cannot be null!");
 		Preconditions.checkNotNull(emailVerificationTokenRepository, "emailVerificationTokenRepository cannot be null!");
 		Preconditions.checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
+		Preconditions.checkNotNull(localeMessagesHelper, "localeMessagesHelper cannot be null!");
 
 		this.javaMailSender = javaMailSender;
 		this.templateEngine = templateEngine;
 		this.emailVerificationTokenRepository = emailVerificationTokenRepository;
 		this.localeMessagesCreator = localeMessagesCreator;
+		this.localeMessagesHelper = localeMessagesHelper;
 	}
 
 	@Override
@@ -87,7 +90,7 @@ public class EmailServiceImpl implements EmailService {
 		context.setVariables(emailDto.getTemplatePlaceholders());
 
 		// we process the HTML Thymeleaf Email Template by calling process() method
-		final String htmlTemplate = templateEngine.process("email-template_" + LocaleMessagesHelper.getLocale(), context);
+		final String htmlTemplate = templateEngine.process("email-template_" + localeMessagesHelper.getLocale(), context);
 
 		final MimeMessage message = javaMailSender.createMimeMessage();
 

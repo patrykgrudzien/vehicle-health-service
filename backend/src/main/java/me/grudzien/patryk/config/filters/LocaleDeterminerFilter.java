@@ -7,6 +7,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.google.common.base.Preconditions;
+
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -49,7 +51,12 @@ import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
 @Log4j2
 public class LocaleDeterminerFilter extends OncePerRequestFilter {
 
-	private final LocaleMessagesHelper localeMessagesHelper = LocaleMessagesHelper.getINSTANCE();
+	private final LocaleMessagesHelper localeMessagesHelper;
+
+	public LocaleDeterminerFilter(final LocaleMessagesHelper localeMessagesHelper) {
+		Preconditions.checkNotNull(localeMessagesHelper, "localeMessagesHelper cannot be null!");
+		this.localeMessagesHelper = localeMessagesHelper;
+	}
 
 	@SuppressWarnings("DanglingJavadoc")
     @Override
