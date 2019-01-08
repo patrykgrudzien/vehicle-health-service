@@ -4,9 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.WebRequest;
@@ -20,31 +18,16 @@ import java.util.Optional;
 
 @Log4j2
 @Component
-public final class LocaleMessagesHelper implements InitializingBean {
-
-	private Environment environment;
+public class LocaleMessagesHelper {
 
 	@Getter
 	@Setter
-	private static Locale locale = Locale.getDefault();
-	private static String messagesLanguageHeader;
+	private Locale locale = Locale.getDefault();
 
-	@Getter
-	private static final LocaleMessagesHelper INSTANCE = new LocaleMessagesHelper();
+	@Value("${custom.properties.messages-language.header}")
+	private String messagesLanguageHeader;
 
-	private LocaleMessagesHelper() {}
-
-	@Autowired
-	public void setEnvironment(final Environment environment) {
-		this.environment = environment;
-	}
-
-	@Override
-	public void afterPropertiesSet() {
-		messagesLanguageHeader = environment.getProperty("custom.properties.messages-language.header");
-	}
-
-	public String removeSquareBracketsFromMessage(@NotNull final String message) {
+	String removeSquareBracketsFromMessage(@NotNull final String message) {
 		return !StringUtils.isEmpty(message) && (message.contains("[") || message.contains("]")) ?
 				       message.replaceAll("\\[", "").replaceAll("]", "") : message;
 	}
@@ -81,7 +64,10 @@ public final class LocaleMessagesHelper implements InitializingBean {
 	 * the chain and locale is set based on the header coming from UI.
 	 *
 	 * Filters' order with appropriate comments is specified in:
-	 * {@link me.grudzien.patryk.config.security.SecurityConfig#configure(org.springframework.security.config.annotation.web.builders.HttpSecurity)}
+	 * {@link me.grudzien.patryk.config.security.SecurityConfigContext.Filters#addTokenAuthenticationFilters(
+	 * org.springframework.security.config.annotation.web.builders.HttpSecurity, org.springframework.security.core.userdetails.UserDetailsService,
+	 * me.grudzien.patryk.PropertiesKeeper, LocaleMessagesCreator, me.grudzien.patryk.service.jwt.JwtTokenClaimsRetriever,
+	 * me.grudzien.patryk.service.jwt.JwtTokenValidator, LocaleMessagesHelper)}
 	 *
 	 * Later subsequent calls to {@link me.grudzien.patryk.util.i18n.LocaleMessagesCreator#buildLocaleMessage(String)} related methods
 	 * are performed to create i18n messages.

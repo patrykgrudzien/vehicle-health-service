@@ -32,20 +32,20 @@ public class LocaleMessagesCreator {
 	}
 
 	public String buildLocaleMessage(final String messageCode) {
-		setCreatedMessage(messageSource.getMessage(messageCode, new Object[]{}, DEFAULT_MESSAGE, LocaleMessagesHelper.getLocale()));
+		setCreatedMessage(messageSource.getMessage(messageCode, new Object[]{}, DEFAULT_MESSAGE, localeMessagesHelper.getLocale()));
 		return createdMessage;
 	}
 
 	public String buildLocaleMessageWithParam(final String messageCode, @Nullable final Object param) {
 		setCreatedMessage(localeMessagesHelper.removeSquareBracketsFromMessage(messageSource.getMessage(messageCode, new Object[]{param}, DEFAULT_MESSAGE,
-		                                                                                                LocaleMessagesHelper.getLocale())));
+		                                                                                                localeMessagesHelper.getLocale())));
 		return createdMessage;
 	}
 
 	@SafeVarargs
 	public final String buildLocaleMessageWithParams(final String messageCode, @Nullable final List<Object>... params) {
 		setCreatedMessage(localeMessagesHelper.removeSquareBracketsFromMessage(messageSource.getMessage(messageCode, params, DEFAULT_MESSAGE,
-		                                                                                                LocaleMessagesHelper.getLocale())));
+		                                                                                                localeMessagesHelper.getLocale())));
 		return createdMessage;
 	}
 }
