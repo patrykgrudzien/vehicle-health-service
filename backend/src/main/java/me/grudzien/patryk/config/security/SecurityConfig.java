@@ -28,8 +28,10 @@ import me.grudzien.patryk.oauth2.service.CustomOAuth2UserService;
 import me.grudzien.patryk.oauth2.service.CustomOidcUserService;
 import me.grudzien.patryk.oauth2.util.CacheHelper;
 import me.grudzien.patryk.service.jwt.JwtTokenClaimsRetriever;
+import me.grudzien.patryk.service.jwt.JwtTokenValidator;
 import me.grudzien.patryk.service.login.impl.MyUserDetailsService;
 import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
+import me.grudzien.patryk.util.i18n.LocaleMessagesHelper;
 
 import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
 
@@ -66,8 +68,10 @@ public class SecurityConfig {
 	private final PropertiesKeeper propertiesKeeper;
 	private final CacheHelper cacheHelper;
 	private final LocaleMessagesCreator localeMessageCreator;
+	private final LocaleMessagesHelper localeMessagesHelper;
 	private final CustomAuthenticationProvider customAuthenticationProvider;
 	private final JwtTokenClaimsRetriever jwtTokenClaimsRetriever;
+	private final JwtTokenValidator jwtTokenValidator;
 
 	/**
 	 * {@linkplain @Qualifier} for {@link org.springframework.security.core.userdetails.UserDetailsService} is used here because there is also
@@ -81,8 +85,9 @@ public class SecurityConfig {
                           final CustomOAuth2AuthenticationFailureHandler customOAuth2AuthenticationFailureHandler,
                           final CustomOidcUserService customOidcUserService,
                           final CustomOAuth2UserService customOAuth2UserService, final PropertiesKeeper propertiesKeeper, final CacheHelper cacheHelper,
-                          final LocaleMessagesCreator localeMessageCreator, final CustomAuthenticationProvider customAuthenticationProvider,
-                          final JwtTokenClaimsRetriever jwtTokenClaimsRetriever) {
+                          final LocaleMessagesHelper localeMessagesHelper, final LocaleMessagesCreator localeMessageCreator,
+                          final CustomAuthenticationProvider customAuthenticationProvider,
+                          final JwtTokenClaimsRetriever jwtTokenClaimsRetriever, final JwtTokenValidator jwtTokenValidator) {
 
         Preconditions.checkNotNull(userDetailsService, "userDetailsService cannot be null!");
         Preconditions.checkNotNull(customAuthenticationEntryPoint, "customAuthenticationEntryPoint cannot be null!");
@@ -93,7 +98,9 @@ public class SecurityConfig {
         Preconditions.checkNotNull(propertiesKeeper, "propertiesKeeper cannot be null!");
         Preconditions.checkNotNull(cacheHelper, "cacheHelper cannot be null!");
         Preconditions.checkNotNull(localeMessageCreator, "localeMessageCreator cannot be null!");
+        Preconditions.checkNotNull(localeMessagesHelper, "localeMessagesHelper cannot be null!");
         Preconditions.checkNotNull(jwtTokenClaimsRetriever, "jwtTokenClaimsRetriever cannot be null!");
+        Preconditions.checkNotNull(jwtTokenValidator, "jwtTokenValidator cannot be null!");
 
         this.userDetailsService = userDetailsService;
         this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
@@ -104,8 +111,10 @@ public class SecurityConfig {
         this.propertiesKeeper = propertiesKeeper;
         this.cacheHelper = cacheHelper;
         this.localeMessageCreator = localeMessageCreator;
+        this.localeMessagesHelper = localeMessagesHelper;
         this.customAuthenticationProvider = customAuthenticationProvider;
         this.jwtTokenClaimsRetriever = jwtTokenClaimsRetriever;
+        this.jwtTokenValidator = jwtTokenValidator;
     }
 
 	/**
@@ -167,7 +176,6 @@ public class SecurityConfig {
     @Configuration
     @Order(1)
 	public class APISecurityFilterChainConfiguration extends WebSecurityConfigurerAdapter {
-
         /**
          * This method is overriden to expose the {@link org.springframework.security.authentication.AuthenticationManager} bean from
          * {@link WebSecurityConfigurerAdapter#configure(org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder)}
@@ -208,8 +216,7 @@ public class SecurityConfig {
              * {@link me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter}
              */
             SecurityConfigContext.Filters.addTokenAuthenticationFilters(httpSecurity, super.userDetailsService(), propertiesKeeper,
-                                                                        localeMessageCreator, jwtTokenClaimsRetriever);
-
+                                                                        localeMessageCreator, jwtTokenClaimsRetriever, jwtTokenValidator, localeMessagesHelper);
             // mvcMatchers
             SecurityConfigContext.Requests.authorizeRequests(httpSecurity, propertiesKeeper);
         }
