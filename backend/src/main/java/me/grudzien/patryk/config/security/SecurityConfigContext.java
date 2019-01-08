@@ -20,10 +20,12 @@ import me.grudzien.patryk.oauth2.service.CustomOAuth2UserService;
 import me.grudzien.patryk.oauth2.service.CustomOidcUserService;
 import me.grudzien.patryk.oauth2.util.CacheHelper;
 import me.grudzien.patryk.service.jwt.JwtTokenClaimsRetriever;
+import me.grudzien.patryk.service.jwt.JwtTokenValidator;
 import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
+import me.grudzien.patryk.util.i18n.LocaleMessagesHelper;
 
 @SuppressWarnings("JavadocReference")
-final class SecurityConfigContext {
+public final class SecurityConfigContext {
 
     private SecurityConfigContext() {
         throw new UnsupportedOperationException("Creating object of this class is not allowed!");
@@ -82,14 +84,15 @@ final class SecurityConfigContext {
     /**
      * Registering custom security filters.
      */
-    static class Filters {
+    public static class Filters {
         @SuppressWarnings("DanglingJavadoc")
-        static void addTokenAuthenticationFilters(final HttpSecurity httpSecurity, final UserDetailsService userDetailsService,
-                                                  final PropertiesKeeper propertiesKeeper, final LocaleMessagesCreator localeMessageCreator,
-                                                  final JwtTokenClaimsRetriever jwtTokenClaimsRetriever) {
+        public static void addTokenAuthenticationFilters(final HttpSecurity httpSecurity, final UserDetailsService userDetailsService,
+                                                         final PropertiesKeeper propertiesKeeper, final LocaleMessagesCreator localeMessageCreator,
+                                                         final JwtTokenClaimsRetriever jwtTokenClaimsRetriever, final JwtTokenValidator jwtTokenValidator,
+                                                         final LocaleMessagesHelper localeMessagesHelper) {
             // JWT filter
             final GenericJwtTokenFilter genericJwtTokenFilter = new GenericJwtTokenFilter(userDetailsService, propertiesKeeper,
-                                                                                          localeMessageCreator, jwtTokenClaimsRetriever);
+                                                                                          localeMessageCreator, jwtTokenClaimsRetriever, jwtTokenValidator);
             httpSecurity.addFilterBefore(genericJwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
             /**
@@ -104,7 +107,7 @@ final class SecurityConfigContext {
              * {@link me.grudzien.patryk.util.i18n.LocaleMessagesCreator#buildLocaleMessage(String)} or to take right email template inside:
              * {@link me.grudzien.patryk.service.registration.impl.EmailServiceImpl#sendMessageUsingTemplate(me.grudzien.patryk.domain.dto.registration.EmailDto)}.
              */
-            final LocaleDeterminerFilter localeDeterminerFilter = new LocaleDeterminerFilter();
+            final LocaleDeterminerFilter localeDeterminerFilter = new LocaleDeterminerFilter(localeMessagesHelper);
             httpSecurity.addFilterBefore(localeDeterminerFilter, ServletExceptionHandlerFilter.class);
         }
     }
