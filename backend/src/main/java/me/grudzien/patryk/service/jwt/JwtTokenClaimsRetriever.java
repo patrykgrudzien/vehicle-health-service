@@ -3,21 +3,22 @@ package me.grudzien.patryk.service.jwt;
 import io.jsonwebtoken.Claims;
 
 import java.time.ZonedDateTime;
+import java.util.Optional;
 import java.util.function.Function;
 
 public interface JwtTokenClaimsRetriever {
 
-    Claims getAllClaimsFromToken(String token);
+    Optional<Claims> getAllClaimsFromToken(String token);
 
-    <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver);
+    <T> Optional<T> getClaimFromToken(String token, Function<Claims, Optional<T>> claimsResolver);
 
-    String getAudienceFromToken(String token);
+    Optional<String> getAudienceFromToken(String token);
 
-    ZonedDateTime getExpirationDateFromToken(String token);
+    Optional<ZonedDateTime> getExpirationDateFromToken(String token);
 
-    ZonedDateTime getIssuedAtDateFromToken(String token);
+    Optional<ZonedDateTime> getIssuedAtDateFromToken(String token);
 
-    String getUserEmailFromToken(String token);
+    Optional<String> getUserEmailFromToken(String token);
 
-    <T> String getJwtTokenFromRequest(T request);
+    <T> Optional<String> getJwtTokenFromRequest(T request);
 }
