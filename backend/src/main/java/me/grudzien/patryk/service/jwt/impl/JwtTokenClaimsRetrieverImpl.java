@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 
 import me.grudzien.patryk.PropertiesKeeper;
@@ -44,51 +45,51 @@ public class JwtTokenClaimsRetrieverImpl implements JwtTokenClaimsRetriever {
     }
 
     @Override
-    public Claims getAllClaimsFromToken(final String token) {
-        return Jwts.parser()
-                   .setSigningKey(tokenSecret)
-                   .parseClaimsJws(token)
-                   .getBody();
+    public Optional<Claims> getAllClaimsFromToken(final String token) {
+        return Optional.ofNullable(Jwts.parser()
+                                       .setSigningKey(tokenSecret)
+                                       .parseClaimsJws(token)
+                                       .getBody());
     }
 
     @Override
-    public <T> T getClaimFromToken(final String token, final Function<Claims, T> claimsResolver) {
-        final Claims claims = getAllClaimsFromToken(token);
-        return claimsResolver.apply(claims);
+    public <T> Optional<T> getClaimFromToken(final String token, final Function<Claims, Optional<T>> claimsResolver) {
+	    final Optional<Claims> claims = getAllClaimsFromToken(token);
+	    return claims.isPresent() ? claimsResolver.apply(claims.get()) : Optional.empty();
     }
 
     @Override
-    public String getAudienceFromToken(final String token) {
-        return getClaimFromToken(token, Claims::getAudience);
+    public Optional<String> getAudienceFromToken(final String token) {
+    	return getClaimFromToken(token, claims -> Optional.of(claims.getAudience()));
     }
 
     @Override
-    public ZonedDateTime getExpirationDateFromToken(final String token) {
-        return getClaimFromToken(token, claim -> ZonedDateTime.ofInstant(claim.getExpiration().toInstant(),
-                                                                         ZoneId.of(ApplicationZone.POLAND.getZoneId())));
+    public Optional<ZonedDateTime> getExpirationDateFromToken(final String token) {
+    	return getClaimFromToken(token, claims -> Optional.of(ZonedDateTime.ofInstant(claims.getExpiration().toInstant(),
+	                                                                                  ZoneId.of(ApplicationZone.POLAND.getZoneId()))));
     }
 
     @Override
-    public ZonedDateTime getIssuedAtDateFromToken(final String token) {
-        return getClaimFromToken(token, claim -> ZonedDateTime.ofInstant(claim.getIssuedAt().toInstant(),
-                                                                         ZoneId.of(ApplicationZone.POLAND.getZoneId())));
+    public Optional<ZonedDateTime> getIssuedAtDateFromToken(final String token) {
+        return getClaimFromToken(token, claims -> Optional.of(ZonedDateTime.ofInstant(claims.getIssuedAt().toInstant(),
+                                                                                      ZoneId.of(ApplicationZone.POLAND.getZoneId()))));
     }
 
     @Override
-    public String getUserEmailFromToken(final String token) {
-        return getClaimFromToken(token, Claims::getSubject);
+    public Optional<String> getUserEmailFromToken(final String token) {
+        return getClaimFromToken(token, claims -> Optional.of(claims.getSubject()));
     }
 
     @Override
-    public <T> String getJwtTokenFromRequest(final T request) {
+    public <T> Optional<String> getJwtTokenFromRequest(final T request) {
         if (request instanceof WebRequest) {
-            return Objects.requireNonNull(((WebRequest) request).getHeader(tokenHeader), "NO \"Authorization\" header found!")
-                          .substring(JWT_TOKEN_BEGIN_INDEX);
+            return Optional.of(Objects.requireNonNull(((WebRequest) request).getHeader(tokenHeader), "NO \"Authorization\" header found!")
+                                      .substring(JWT_TOKEN_BEGIN_INDEX));
         } else if (request instanceof HttpServletRequest) {
-            return Objects.requireNonNull(((HttpServletRequest) request).getHeader(tokenHeader), "NO \"Authorization\" header found!")
-                          .substring(JWT_TOKEN_BEGIN_INDEX);
+            return Optional.of(Objects.requireNonNull(((HttpServletRequest) request).getHeader(tokenHeader), "NO \"Authorization\" header found!")
+                                      .substring(JWT_TOKEN_BEGIN_INDEX));
         } else {
-            return null;
+            return Optional.empty();
         }
     }
 }
