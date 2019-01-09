@@ -66,8 +66,8 @@ class DateOperationsHelperIT {
 	@Test
 	void adjustTimeToApplicationZone() {
 		// when
-		final LocalDateTime adjustedTimeForAmerica = dateOperationsHelper.adjustTimeToApplicationZone(americaCuiaba);
-		final LocalDateTime adjustedTimeForPacific = dateOperationsHelper.adjustTimeToApplicationZone(pacificZoneDateTime);
+		final LocalDateTime adjustedTimeForAmerica = dateOperationsHelper.adjustTimeToApplicationZoneOffset(americaCuiaba);
+		final LocalDateTime adjustedTimeForPacific = dateOperationsHelper.adjustTimeToApplicationZoneOffset(pacificZoneDateTime);
 
 		// then
 		Assertions.assertAll(
