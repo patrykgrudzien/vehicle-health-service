@@ -122,10 +122,6 @@ public final class DateOperationsHelper {
     }
 
 	public int getMinutesDifferenceBetween(final ZonedDateTime zonedDateTime1, final ZonedDateTime zonedDateTime2) {
-		final int zonedDateTime1Minute = zonedDateTime1.getMinute();
-		final int zonedDateTime2Minute = zonedDateTime2.getMinute();
-		return zonedDateTime1Minute > zonedDateTime2Minute ?
-				       (int) Math.abs(ChronoUnit.HOURS.getDuration().toMinutes() - (zonedDateTime1Minute - zonedDateTime2Minute)) :
-				       Math.abs(zonedDateTime2Minute - zonedDateTime1Minute);
+		return (int) Math.abs(ChronoUnit.MINUTES.between(zonedDateTime1, zonedDateTime2));
 	}
 }
