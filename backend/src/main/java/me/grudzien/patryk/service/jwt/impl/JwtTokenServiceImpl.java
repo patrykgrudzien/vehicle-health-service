@@ -36,6 +36,7 @@ import me.grudzien.patryk.service.jwt.JwtTokenClaimsRetriever;
 import me.grudzien.patryk.service.jwt.JwtTokenService;
 import me.grudzien.patryk.service.login.impl.MyUserDetailsService;
 import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
+import me.grudzien.patryk.util.jwt.JwtTokenConstants;
 import me.grudzien.patryk.util.jwt.JwtTokenHelper;
 import me.grudzien.patryk.util.web.RequestsDecoder;
 
@@ -79,37 +80,40 @@ public class JwtTokenServiceImpl implements JwtTokenService {
     	shortLivedTokenExpiration = propertiesKeeper.oAuth2().SHORT_LIVED_TOKEN_EXPIRATION;
 	}
 
+	@SuppressWarnings("Duplicates")
 	@Override
 	public String generateAccessToken(final JwtAuthenticationRequest authenticationRequest, final Device device) {
 		log.info(METHOD_INVOCATION_MARKER, "(JWT) -----> {}.{}", this.getClass().getCanonicalName(), "generateAccessToken()");
-		final String decodedEmail = requestsDecoder.isParamEncoded(authenticationRequest.getEmail()) ?
-                requestsDecoder.decodeStringParam(authenticationRequest.getEmail()) : authenticationRequest.getEmail();
+		final String decodedEmail = requestsDecoder.decodeStringParam(authenticationRequest.getEmail());
         return Optional.ofNullable(decodedEmail)
                        .map(email -> Optional.ofNullable(((JwtUser) userDetailsService.loadUserByUsername(email)))
                                              .map(jwtUser -> buildAccessToken(jwtUser, device, accessTokenExpiration))
                                              .orElseThrow(() -> new UsernameNotFoundException(localeMessagesCreator.buildLocaleMessageWithParam(
                                                      "user-not-found-by-email", email))))
-                       .orElseThrow(() -> new NoEmailProvidedException(localeMessagesCreator.buildLocaleMessage("no-email-provided-in-auth-request")));
+                       .orElseThrow(() -> new NoEmailProvidedException(localeMessagesCreator.buildLocaleMessageWithParam(
+                       		"no-email-provided-in-auth-request", JwtTokenConstants.TokenType.ACCESS_TOKEN
+                       )));
     }
 
+	@SuppressWarnings("Duplicates")
     @Override
 	public String generateAccessTokenCustomExpiration(final JwtAuthenticationRequest authenticationRequest, final Device device, final long minutesToExpire) {
         log.info(METHOD_INVOCATION_MARKER, "(JWT) -----> {}.{}", this.getClass().getCanonicalName(), "generateAccessTokenCustomExpiration()");
-        final String decodedEmail = requestsDecoder.isParamEncoded(authenticationRequest.getEmail()) ?
-                requestsDecoder.decodeStringParam(authenticationRequest.getEmail()) : authenticationRequest.getEmail();
+        final String decodedEmail = requestsDecoder.decodeStringParam(authenticationRequest.getEmail());
         return Optional.ofNullable(decodedEmail)
                        .map(email -> Optional.ofNullable(((JwtUser) userDetailsService.loadUserByUsername(email)))
                                              .map(jwtUser -> buildAccessToken(jwtUser, device, minutesToExpire))
                                              .orElseThrow(() -> new UsernameNotFoundException(localeMessagesCreator.buildLocaleMessageWithParam(
                                                      "user-not-found-by-email", email))))
-                       .orElseThrow(() -> new NoEmailProvidedException(localeMessagesCreator.buildLocaleMessage("no-email-provided-in-auth-request")));
+                       .orElseThrow(() -> new NoEmailProvidedException(localeMessagesCreator.buildLocaleMessageWithParam(
+		                       "no-email-provided-in-auth-request", JwtTokenConstants.TokenType.ACCESS_TOKEN
+                       )));
 	}
 
 	@Override
     public String generateRefreshToken(final JwtAuthenticationRequest authenticationRequest, final Device device) {
         log.info(METHOD_INVOCATION_MARKER, "(JWT) -----> {}.{}", this.getClass().getCanonicalName(), "generateRefreshToken()");
-        final String decodedEmail = requestsDecoder.isParamEncoded(authenticationRequest.getEmail()) ?
-                requestsDecoder.decodeStringParam(authenticationRequest.getEmail()) : authenticationRequest.getEmail();
+        final String decodedEmail = requestsDecoder.decodeStringParam(authenticationRequest.getEmail());
         return Optional.ofNullable(decodedEmail)
                        .map(email -> Optional.ofNullable(((JwtUser) userDetailsService.loadUserByUsername(email)))
                                              .map(jwtUser -> {
@@ -121,7 +125,9 @@ public class JwtTokenServiceImpl implements JwtTokenService {
                                              })
                                              .orElseThrow(() -> new UsernameNotFoundException(localeMessagesCreator.buildLocaleMessageWithParam(
                                                      "user-not-found-by-email", email))))
-                       .orElseThrow(() -> new NoEmailProvidedException(localeMessagesCreator.buildLocaleMessage("no-email-provided-in-auth-request")));
+                       .orElseThrow(() -> new NoEmailProvidedException(localeMessagesCreator.buildLocaleMessageWithParam(
+		                       "no-email-provided-in-auth-request", JwtTokenConstants.TokenType.REFRESH_TOKEN
+                       )));
     }
 
     @Override
@@ -129,7 +135,7 @@ public class JwtTokenServiceImpl implements JwtTokenService {
         log.info(METHOD_INVOCATION_MARKER, "(JWT) -----> {}.{}", this.getClass().getCanonicalName(), "refreshAccessToken()");
         return Optional.ofNullable(authenticationRequest.getRefreshToken())
                        .map(refreshToken -> {
-                           final String email = jwtTokenClaimsRetriever.getUserEmailFromToken(refreshToken);
+                           final String email = jwtTokenClaimsRetriever.getUserEmailFromToken(refreshToken).orElse(null);
                            return Optional.ofNullable(((JwtUser) userDetailsService.loadUserByUsername(email)))
                                           .map(jwtUser -> buildAccessToken(jwtUser, device, accessTokenExpiration))
                                           .orElseThrow(() -> new UsernameNotFoundException(localeMessagesCreator.buildLocaleMessageWithParam(
