@@ -12,11 +12,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.Optional;
 
 import me.grudzien.patryk.PropertiesKeeper;
@@ -25,6 +23,7 @@ import me.grudzien.patryk.domain.enums.ApplicationZone;
 import me.grudzien.patryk.domain.enums.security.JwtTokenClaims;
 import me.grudzien.patryk.service.jwt.JwtTokenClaimsRetriever;
 import me.grudzien.patryk.service.jwt.JwtTokenService;
+import me.grudzien.patryk.util.date.DateOperationsHelper;
 import me.grudzien.patryk.util.jwt.JwtTokenConstants;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,7 +46,9 @@ class JwtTokenClaimsRetrieverImplIT {
     private String tokenHeader;
     private String accessToken;
 
-    private static final LocalTime NOW_IN_POLAND = LocalTime.now(ZoneId.of(ApplicationZone.POLAND.getZoneId()));
+	private final DateOperationsHelper dateOperationsHelper = new DateOperationsHelper();
+
+    private static final ZonedDateTime NOW_IN_POLAND = ApplicationZone.POLAND.getApplicationZonedDateTimeNow();
 
     @BeforeEach
     void setUp() {
@@ -63,81 +64,88 @@ class JwtTokenClaimsRetrieverImplIT {
     @Test
     void getAllClaimsFromToken() {
         // when
-	    final Optional<Claims> allClaimsOptional = jwtTokenClaimsRetriever.getAllClaimsFromToken(accessToken);
-	    final Claims allClaims = allClaimsOptional.orElseThrow(() -> new RuntimeException("No claims found inside access token!"));
-
-	    final LocalDateTime issuedAt = LocalDateTime.ofInstant(allClaims.getIssuedAt().toInstant(), ZoneId.of(ApplicationZone.POLAND.getZoneId()));
-        final LocalDateTime expiration = LocalDateTime.ofInstant(allClaims.getExpiration().toInstant(), ZoneId.of(ApplicationZone.POLAND.getZoneId()));
+	    final Claims allClaims = jwtTokenClaimsRetriever.getAllClaimsFromToken(accessToken)
+	                                                    .orElseThrow(() -> new RuntimeException("No claims found inside access token!"));
+	    final ZonedDateTime issuedAt = ZonedDateTime.ofInstant(allClaims.getIssuedAt().toInstant(), ZoneId.of(ApplicationZone.POLAND.getZoneId()));
+        final ZonedDateTime expiration = ZonedDateTime.ofInstant(allClaims.getExpiration().toInstant(), ZoneId.of(ApplicationZone.POLAND.getZoneId()));
 
         // then
         Assertions.assertAll(
                 () -> assertThat(allClaims).hasSize(5),
                 () -> assertThat(allClaims.get(JwtTokenClaims.USER_ROLES.getKey())).isNotNull(),
                 () -> assertThat(allClaims.getSubject()).isEqualTo(TEST_EMAIL),
-                () -> assertThat(allClaims.getAudience()).isEqualTo("web"),
-                () -> assertThat(issuedAt.toLocalTime().getHour()).isEqualTo(NOW_IN_POLAND.getHour()),
-                () -> assertThat(issuedAt.toLocalTime().getMinute()).isEqualTo(NOW_IN_POLAND.getMinute()),
-                () -> assertThat(issuedAt.toLocalDate()).isEqualTo(LocalDate.now()),
-                () -> assertThat(expiration.toLocalTime().getHour()).isEqualTo(NOW_IN_POLAND.plusMinutes(15).getHour()),
-                () -> assertThat(expiration.toLocalTime().getMinute()).isEqualTo(NOW_IN_POLAND.plusMinutes(15).getMinute()),
-                () -> assertThat(expiration.toLocalDate()).isEqualTo(LocalDate.now())
+                () -> assertThat(allClaims.getAudience()).isEqualTo(JwtTokenConstants.AUDIENCE_WEB),
+                () -> assertThat(dateOperationsHelper.getMinutesDifferenceBetween(issuedAt, NOW_IN_POLAND)).isEqualTo(0L),
+                () -> assertThat(issuedAt.toLocalDate()).isEqualTo(NOW_IN_POLAND.toLocalDate()),
+                () -> assertThat(dateOperationsHelper.getMinutesDifferenceBetween(expiration, issuedAt)).isEqualTo(15L),
+                () -> assertThat(expiration.toLocalDate()).isEqualTo(NOW_IN_POLAND.toLocalDate())
         );
     }
 
     @Test
     void getClaimFromToken() {
         // when
-	    final Optional<String> subjectOptional = jwtTokenClaimsRetriever.getClaimFromToken(accessToken, claims -> Optional.of(claims.getSubject()));
-	    final String subject = subjectOptional.orElseThrow(() -> new RuntimeException("No subject claim found inside access token!"));
-
+	    final String subject = jwtTokenClaimsRetriever.getClaimFromToken(accessToken, claims -> Optional.ofNullable(claims.getSubject()))
+	                                                  .orElseThrow(() -> new RuntimeException("No subject claim found inside access token!"));
         // then
         assertThat(subject).isEqualTo(TEST_EMAIL);
     }
 
-    @Test
+	@Test
+	void getClaimFromToken_whenNotExist() {
+		// when
+		final Optional<Date> notBeforeClaim = jwtTokenClaimsRetriever.getClaimFromToken(accessToken, claims -> Optional.ofNullable(claims.getNotBefore()));
+		final Optional<String> issuer = jwtTokenClaimsRetriever.getClaimFromToken(accessToken, claims -> Optional.ofNullable(claims.getIssuer()));
+		final Optional<String> id = jwtTokenClaimsRetriever.getClaimFromToken(accessToken, claims -> Optional.ofNullable(claims.getId()));
+
+		// then
+		Assertions.assertAll(
+				() -> assertThat(notBeforeClaim).isEqualTo(Optional.empty()),
+				() -> assertThat(issuer).isEqualTo(Optional.empty()),
+				() -> assertThat(id).isEqualTo(Optional.empty())
+		);
+	}
+
+	@Test
     void getAudienceFromToken() {
         // when
-	    final Optional<String> audienceOptional = jwtTokenClaimsRetriever.getAudienceFromToken(accessToken);
-	    final String audience = audienceOptional.orElseThrow(() -> new RuntimeException("No audience claim found inside access token!"));
-
+	    final String audience = jwtTokenClaimsRetriever.getAudienceFromToken(accessToken)
+	                                                   .orElseThrow(() -> new RuntimeException("No audience claim found inside access token!"));
 	    // then
-        assertThat(audience).isEqualTo("web");
+        assertThat(audience).isEqualTo(JwtTokenConstants.AUDIENCE_WEB);
     }
 
-    @Test
+	@Test
     void getExpirationDateFromToken() {
         // when
-	    final Optional<ZonedDateTime> expirationOptional = jwtTokenClaimsRetriever.getExpirationDateFromToken(accessToken);
-	    final ZonedDateTime expiration = expirationOptional.orElseThrow(() -> new RuntimeException("No expiration claim found inside access token!"));
-
+	    final ZonedDateTime expiration = jwtTokenClaimsRetriever.getExpirationDateFromToken(accessToken)
+	                                                            .orElseThrow(() -> new RuntimeException("No expiration claim found inside access token!"));
+		final ZonedDateTime issuedAt = jwtTokenClaimsRetriever.getIssuedAtDateFromToken(accessToken)
+		                                                      .orElseThrow(() -> new RuntimeException("No expiration claim found inside access token!"));
 	    // then
         Assertions.assertAll(
-                () -> assertThat(expiration.toLocalTime().getHour()).isEqualTo(NOW_IN_POLAND.plusMinutes(15).getHour()),
-                () -> assertThat(expiration.toLocalTime().getMinute()).isEqualTo(NOW_IN_POLAND.plusMinutes(15).getMinute()),
-                () -> assertThat(expiration.toLocalDate()).isEqualTo(LocalDate.now())
+                () -> assertThat(dateOperationsHelper.getMinutesDifferenceBetween(expiration, issuedAt)).isEqualTo(15L),
+                () -> assertThat(expiration.toLocalDate()).isEqualTo(NOW_IN_POLAND.toLocalDate())
         );
     }
 
     @Test
     void getIssuedAtDateFromToken() {
         // when
-	    final Optional<ZonedDateTime> issuedAtOptional = jwtTokenClaimsRetriever.getIssuedAtDateFromToken(accessToken);
-	    final ZonedDateTime issuedAt = issuedAtOptional.orElseThrow(() -> new RuntimeException("No issuedAt claim found inside access token!"));
-
+	    final ZonedDateTime issuedAt = jwtTokenClaimsRetriever.getIssuedAtDateFromToken(accessToken)
+	                                                          .orElseThrow(() -> new RuntimeException("No issuedAt claim found inside access token!"));
 	    // then
         Assertions.assertAll(
-                () -> assertThat(issuedAt.toLocalTime().getHour()).isEqualTo(NOW_IN_POLAND.getHour()),
-                () -> assertThat(issuedAt.toLocalTime().getMinute()).isEqualTo(NOW_IN_POLAND.getMinute()),
-                () -> assertThat(issuedAt.toLocalDate()).isEqualTo(LocalDate.now())
+                () -> assertThat(dateOperationsHelper.getMinutesDifferenceBetween(issuedAt, NOW_IN_POLAND)).isEqualTo(0L),
+                () -> assertThat(issuedAt.toLocalDate()).isEqualTo(NOW_IN_POLAND.toLocalDate())
         );
     }
 
     @Test
     void getUserEmailFromToken() {
         // when
-	    final Optional<String> userEmailOptional = jwtTokenClaimsRetriever.getUserEmailFromToken(accessToken);
-	    final String userEmail = userEmailOptional.orElseThrow(() -> new RuntimeException("No user email claim found inside access token!"));
-
+	    final String userEmail = jwtTokenClaimsRetriever.getUserEmailFromToken(accessToken)
+	                                                    .orElseThrow(() -> new RuntimeException("No user email claim found inside access token!"));
 	    // then
         assertThat(userEmail).isEqualTo(TEST_EMAIL);
     }
@@ -149,9 +157,8 @@ class JwtTokenClaimsRetrieverImplIT {
         mockRequest.addHeader(tokenHeader, JwtTokenConstants.BEARER + accessToken);
 
         // when
-	    final Optional<String> jwtTokenOptional = jwtTokenClaimsRetriever.getJwtTokenFromRequest(mockRequest);
-	    final String jwtToken = jwtTokenOptional.orElseThrow(() -> new RuntimeException("No jwtToken found inside request!"));
-
+	    final String jwtToken = jwtTokenClaimsRetriever.getJwtTokenFromRequest(mockRequest)
+	                                                   .orElseThrow(() -> new RuntimeException("No jwtToken found inside request!"));
 	    // then
         assertThat(jwtToken).isEqualTo(accessToken);
     }
