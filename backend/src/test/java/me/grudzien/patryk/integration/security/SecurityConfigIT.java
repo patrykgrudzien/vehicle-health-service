@@ -11,6 +11,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -21,7 +22,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.util.stream.Stream;
 
-import me.grudzien.patryk.TestsUtils;
 import me.grudzien.patryk.service.jwt.JwtTokenService;
 import me.grudzien.patryk.util.jwt.JwtTokenConstants;
 
@@ -29,8 +29,16 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
 
+import static me.grudzien.patryk.TestsUtils.DISABLE_ENCODING;
+import static me.grudzien.patryk.TestsUtils.ENABLE_ENCODING;
 import static me.grudzien.patryk.TestsUtils.TEST_EMAIL;
 import static me.grudzien.patryk.TestsUtils.TEST_PASSWORD;
+import static me.grudzien.patryk.TestsUtils.prepareAccessTokenRequest;
+import static me.grudzien.patryk.TestsUtils.prepareAuthJSONBody;
+import static me.grudzien.patryk.TestsUtils.prepareJwtTokenControllerJSONBody;
+import static me.grudzien.patryk.TestsUtils.prepareRegistrationJSONBody;
+import static me.grudzien.patryk.TestsUtils.prepareVehicleJSONBody;
+import static me.grudzien.patryk.TestsUtils.testDevice;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class SecurityConfigIT {
@@ -47,8 +55,8 @@ class SecurityConfigIT {
 		RestAssured.baseURI = "http://localhost";
 	}
 
-    private static Stream<Arguments> protectedResourcesTestData() throws JsonProcessingException {
-        final String vehicleJSONBody = TestsUtils.prepareVehicleJSONBody("123456");
+    private static Stream<Arguments> securedResourcesTestData() throws JsonProcessingException {
+        final String vehicleJSONBody = prepareVehicleJSONBody("123456");
 
         return Stream.of(
                 Arguments.arguments(Method.GET, "", "/api/principal-user"),
@@ -60,7 +68,7 @@ class SecurityConfigIT {
 
 	@DisplayName("Testing secured endpoints with \"Language=pl\" header:")
 	@ParameterizedTest(name = "Method -> ({0}), URL -> ({2}). Authentication required! 401 Unauthorized.")
-	@MethodSource("protectedResourcesTestData")
+	@MethodSource("securedResourcesTestData")
 	void testProtectedEndpointsWithPLLocale(final Method httpMethod, final String jsonBody, final String protectedEndpoint) {
 		given().log().all()
 		       .with().body(jsonBody)
@@ -80,7 +88,7 @@ class SecurityConfigIT {
 
     @DisplayName("Testing secured endpoints with \"Language=en\" header:")
     @ParameterizedTest(name = "Method -> ({0}), URL -> ({2}). Authentication required! 401 Unauthorized.")
-    @MethodSource("protectedResourcesTestData")
+    @MethodSource("securedResourcesTestData")
     void testProtectedEndpointsWithENLocale(final Method httpMethod, final String jsonBody, final String protectedEndpoint) {
         given().log().all()
                .with().body(jsonBody)
@@ -98,14 +106,57 @@ class SecurityConfigIT {
                .body("securityStatus", hasEntry("securityStatusDescription", "Unauthenticated! (access_token) has NOT been provided with the request!"));
     }
 
+    @DisplayName("Testing secured endpoints with (correctly) constructed (but expired) JWT token:")
+    @ParameterizedTest(name = "Method -> ({0}), URL -> ({2}). 401 Unauthorized.")
+    @MethodSource("securedResourcesTestData")
+    void testSecuredEndpoints_withCorrectlyConstructedButExpiredToken(final Method httpMethod, final String jsonBody, final String permittedEndpoint) {
+        given().log().all()
+               .with().body(jsonBody)
+               .header("Language", "en")
+               .header("Authorization", JwtTokenConstants.BEARER +
+                       jwtTokenService.generateAccessTokenCustomExpiration(prepareAccessTokenRequest(TEST_EMAIL, ENABLE_ENCODING), testDevice(), 0L))
+               .contentType(ContentType.JSON)
+               .accept(ContentType.JSON)
+               .when()
+               .request(httpMethod, permittedEndpoint)
+               .then()
+               .log().body()
+               .assertThat()
+               .statusCode(HttpStatus.UNAUTHORIZED.value())
+               .and()
+               .body("securityStatus", hasEntry("securityStatusCode", "JWT_TOKEN_EXPIRED"))
+               .body("securityStatus", hasEntry("securityStatusDescription", "JWT Token Expired!"))
+               .body("lastRequestedPath", equalTo(permittedEndpoint.replaceAll("@", "%40")))  // replacing "@" as HttpServletRequest encode this char
+               .body("lastRequestMethod", equalTo(httpMethod.name()));
+    }
+
+    @DisplayName("Testing secured endpoints with (correctly) constructed JWT token:")
+    @ParameterizedTest(name = "Method -> ({0}), URL -> ({2}).")
+    @MethodSource("securedResourcesTestData")
+    void testSecuredEndpoints_withCorrectlyConstructedToken(final Method httpMethod, final String jsonBody, final String permittedEndpoint) {
+        given().log().all()
+               .with().body(jsonBody)
+               .header("Language", "en")
+               .header("Authorization", JwtTokenConstants.BEARER +
+                       jwtTokenService.generateAccessToken(prepareAccessTokenRequest(TEST_EMAIL, ENABLE_ENCODING), testDevice()))
+               .contentType(ContentType.JSON)
+               .accept(ContentType.JSON)
+               .when()
+               .request(httpMethod, permittedEndpoint)
+               .then()
+               .log().body()
+               .assertThat()
+               .statusCode(Matchers.not(HttpStatus.UNAUTHORIZED.value()));
+    }
+
     private static Stream<Arguments> permittedResourcesTestData() throws JsonProcessingException {
         // -> /api/auth
-        final String authJSONBody = TestsUtils.prepareAuthJSONBody(TEST_EMAIL, TEST_PASSWORD, true);
+        final String authJSONBody = prepareAuthJSONBody(TEST_EMAIL, TEST_PASSWORD, ENABLE_ENCODING);
         // -> /api/token/...
-        final String jwtTokenControllerJSONBody = TestsUtils.prepareJwtTokenControllerJSONBody(TEST_EMAIL, TEST_PASSWORD, false);
+        final String jwtTokenControllerJSONBody = prepareJwtTokenControllerJSONBody(TEST_EMAIL, TEST_PASSWORD, DISABLE_ENCODING);
         // -> /api/registration/register-user-account
-        final String registrationJSONBody = TestsUtils.prepareRegistrationJSONBody("John", "Snow", "test@email.com",
-                                                                                   "password", true);
+        final String registrationJSONBody = prepareRegistrationJSONBody("John", "Snow", "test@email.com",
+                                                                                   "password", ENABLE_ENCODING);
 
         return Stream.of(
                 Arguments.arguments(Method.POST, authJSONBody, "/api/auth"),
@@ -144,8 +195,8 @@ class SecurityConfigIT {
         given().log().all()
                .with().body(jsonBody)
                .header("Language", "en")
-               .header("Authorization", JwtTokenConstants.BEARER + jwtTokenService.generateAccessToken(
-                       TestsUtils.prepareAccessTokenRequest(TestsUtils.TEST_EMAIL, true), TestsUtils.testDevice()))
+               .header("Authorization", JwtTokenConstants.BEARER +
+                       jwtTokenService.generateAccessToken(prepareAccessTokenRequest(TEST_EMAIL, ENABLE_ENCODING), testDevice()))
                .contentType(ContentType.JSON)
                .accept(ContentType.JSON)
                .when()
@@ -163,8 +214,8 @@ class SecurityConfigIT {
         given().log().all()
                .with().body(jsonBody)
                .header("Language", "en")
-               .header("Authorization", JwtTokenConstants.BEARER + jwtTokenService.generateAccessTokenCustomExpiration(
-                       TestsUtils.prepareAccessTokenRequest(TestsUtils.TEST_EMAIL, true), TestsUtils.testDevice(), 0L))
+               .header("Authorization", JwtTokenConstants.BEARER +
+                       jwtTokenService.generateAccessTokenCustomExpiration(prepareAccessTokenRequest(TEST_EMAIL, ENABLE_ENCODING), testDevice(), 0L))
                .contentType(ContentType.JSON)
                .accept(ContentType.JSON)
                .when()
@@ -183,8 +234,8 @@ class SecurityConfigIT {
     @MethodSource("permittedResourcesTestData")
     void testPermittedEndpoints_withoutAuthorizationHeader(final Method httpMethod, final String jsonBody, final String permittedEndpoint) throws JsonProcessingException {
         // given
-        final String anotherRegistrationJSONBody = TestsUtils.prepareRegistrationJSONBody("John", "Snow", "test-2@email.com",
-                                                                                          "password-2", true);
+        final String anotherRegistrationJSONBody = prepareRegistrationJSONBody("John", "Snow", "test-2@email.com",
+                                                                                          "password-2", ENABLE_ENCODING);
         // when, then
         given().log().all()
                .with().body(permittedEndpoint.equals("/api/registration/register-user-account") ? anotherRegistrationJSONBody : jsonBody)
