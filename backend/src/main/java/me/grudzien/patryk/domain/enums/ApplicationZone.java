@@ -16,12 +16,12 @@ public enum ApplicationZone {
 		}
 
         @Override
-        public ZonedDateTime getApplicationZonedDateTimeNow() {
+        public ZonedDateTime now() {
             return ZonedDateTime.now(ZoneId.of(getZoneId()));
         }
     };
 
 	public abstract String getZoneId();
 
-	public abstract ZonedDateTime getApplicationZonedDateTimeNow();
+	public abstract ZonedDateTime now();
 }

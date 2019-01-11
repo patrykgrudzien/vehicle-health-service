@@ -1,6 +1,8 @@
 package me.grudzien.patryk.service.jwt;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.impl.DefaultClaims;
+import io.jsonwebtoken.impl.DefaultJwsHeader;
 
 import java.time.ZonedDateTime;
 import java.util.Optional;
@@ -21,4 +23,10 @@ public interface JwtTokenClaimsRetriever {
     Optional<String> getUserEmailFromToken(String token);
 
     <T> Optional<String> getJwtTokenFromRequest(T request);
+
+    Optional<DefaultClaims> getDefaultClaims();
+
+    Optional<DefaultJwsHeader> getDefaultJwsHeader();
+
+    Optional<String> getExpiredJwtExceptionMessage();
 }

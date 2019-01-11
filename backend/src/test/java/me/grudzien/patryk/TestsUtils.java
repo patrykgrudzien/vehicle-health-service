@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
+import java.time.ZonedDateTime;
 import java.util.Base64;
 import java.util.Base64.Encoder;
 import java.util.Map;
@@ -21,6 +22,7 @@ import me.grudzien.patryk.domain.dto.login.JwtUser;
 import me.grudzien.patryk.domain.dto.registration.UserRegistrationDto;
 import me.grudzien.patryk.domain.dto.vehicle.VehicleDto;
 import me.grudzien.patryk.domain.entity.registration.Role;
+import me.grudzien.patryk.domain.enums.ApplicationZone;
 import me.grudzien.patryk.domain.enums.registration.RoleName;
 import me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser;
 import me.grudzien.patryk.service.jwt.JwtTokenService;
@@ -106,6 +108,20 @@ public final class TestsUtils {
                       .password(TEST_PASSWORD)
                       .enabled(true)
                       .roles(JwtUserFactory.mapRolesToAuthorities(Sets.newHashSet(new Role(RoleName.ROLE_USER))))
+                      .lastPasswordResetDate(ApplicationZone.POLAND.now().minusDays(7L))
+                      .build();
+    }
+
+    public static JwtUser prepareTestJwtUser(final ZonedDateTime lastPasswordResetDate) {
+        return JwtUser.Builder()
+                      .id(1L)
+                      .firstname("John")
+                      .lastname("Snow")
+                      .email(TEST_EMAIL)
+                      .password(TEST_PASSWORD)
+                      .enabled(true)
+                      .roles(JwtUserFactory.mapRolesToAuthorities(Sets.newHashSet(new Role(RoleName.ROLE_USER))))
+                      .lastPasswordResetDate(lastPasswordResetDate)
                       .build();
     }
 

@@ -1,10 +1,15 @@
 package me.grudzien.patryk.service.jwt.impl;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.impl.DefaultClaims;
+import io.jsonwebtoken.impl.DefaultJwsHeader;
 import io.vavr.CheckedFunction1;
+import io.vavr.control.Try;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.WebRequest;
 
@@ -34,6 +39,10 @@ public class JwtTokenClaimsRetrieverImpl implements JwtTokenClaimsRetriever {
     private String tokenHeader;
     private String tokenSecret;
 
+    private DefaultClaims defaultClaims;
+    private DefaultJwsHeader defaultJwsHeader;
+    private String expiredJwtExceptionMessage;
+
     @Autowired
     public JwtTokenClaimsRetrieverImpl(final PropertiesKeeper propertiesKeeper) {
         Preconditions.checkNotNull(propertiesKeeper, "propertiesKeeper cannot be null!");
@@ -48,10 +57,25 @@ public class JwtTokenClaimsRetrieverImpl implements JwtTokenClaimsRetriever {
 
     @Override
     public Optional<Claims> getAllClaimsFromToken(final String token) {
-        return Optional.ofNullable(Jwts.parser()
-                                       .setSigningKey(tokenSecret)
-                                       .parseClaimsJws(token)
-                                       .getBody());
+        final Try<Claims> tryParseAndGetBody = Try.of(() -> parseAndGetBodyFromToken(token));
+        return tryParseAndGetBody.isSuccess() ?
+                Optional.ofNullable(tryParseAndGetBody.get()) :
+                Optional.ofNullable(
+                        tryParseAndGetBody.onFailure(throwable -> {
+                            if (ExpiredJwtException.class.isAssignableFrom(throwable.getClass())) {
+                                final ExpiredJwtException exception = (ExpiredJwtException) throwable;
+                                this.defaultClaims = (DefaultClaims) exception.getClaims();
+                                this.defaultJwsHeader = (DefaultJwsHeader) exception.getHeader();
+                                this.expiredJwtExceptionMessage = exception.getMessage();
+                            }
+                        }).get());  // get thrown exception (look into documentation for more details)
+    }
+
+    private Claims parseAndGetBodyFromToken(final String token) {
+        return Jwts.parser()
+                   .setSigningKey(tokenSecret)
+                   .parseClaimsJws(token)
+                   .getBody();
     }
 
     @Override
@@ -70,7 +94,18 @@ public class JwtTokenClaimsRetrieverImpl implements JwtTokenClaimsRetriever {
 
     @Override
     public Optional<ZonedDateTime> getExpirationDateFromToken(final String token) {
-	    final Optional<Date> expirationOptional = getClaimFromToken(token, claims -> Optional.ofNullable(claims.getExpiration()));
+        /**
+         * Recovering from {@link ExpiredJwtException} here is done by purpose because I want to allow
+         * {@link me.grudzien.patryk.service.jwt.JwtTokenValidator#isAccessTokenExpired(String)} returning boolean value and then
+         * pass that result to {@link me.grudzien.patryk.service.jwt.JwtTokenValidator#isAccessTokenValid(String, UserDetails)}.
+         * Logic that will be responsible for throwing that "masked" exception will be placed inside
+         * {@link me.grudzien.patryk.config.filters.GenericJwtTokenFilter} where {@link ExpiredJwtException} will be thrown and later caught by
+         * {@link me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter}.
+         */
+	    final Optional<Date> expirationOptional = CheckedFunction1.liftTry(t -> getClaimFromToken((String) t, claims -> Optional.ofNullable(claims.getExpiration())))
+	                                                .apply(token)
+	                                                .recover(ExpiredJwtException.class, Optional.empty())
+	                                                .get();
 	    return expirationOptional.map(expiration -> ZonedDateTime.ofInstant(expiration.toInstant(), ZoneId.of(ApplicationZone.POLAND.getZoneId())));
     }
 
@@ -96,5 +131,24 @@ public class JwtTokenClaimsRetrieverImpl implements JwtTokenClaimsRetriever {
         } else {
             return Optional.empty();
         }
+    }
+
+    /**
+     * Those methods below are needed in {@link me.grudzien.patryk.config.filters.GenericJwtTokenFilter} when (access_token) is expired
+     * and {@link ExpiredJwtException} is thrown.
+     */
+    @Override
+    public Optional<DefaultClaims> getDefaultClaims() {
+        return Optional.ofNullable(defaultClaims);
+    }
+
+    @Override
+    public Optional<DefaultJwsHeader> getDefaultJwsHeader() {
+        return Optional.ofNullable(defaultJwsHeader);
+    }
+
+    @Override
+    public Optional<String> getExpiredJwtExceptionMessage() {
+        return Optional.ofNullable(expiredJwtExceptionMessage);
     }
 }

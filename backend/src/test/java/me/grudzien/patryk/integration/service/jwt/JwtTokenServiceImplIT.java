@@ -31,6 +31,8 @@ import me.grudzien.patryk.util.i18n.LocaleMessagesHelper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import static me.grudzien.patryk.TestsUtils.DISABLE_ENCODING;
+import static me.grudzien.patryk.TestsUtils.ENABLE_ENCODING;
 import static me.grudzien.patryk.TestsUtils.NO_EXISTING_EMAIL;
 import static me.grudzien.patryk.TestsUtils.TEST_EMAIL;
 import static me.grudzien.patryk.TestsUtils.prepareAccessTokenRequest;
@@ -56,9 +58,6 @@ class JwtTokenServiceImplIT {
 	private JwtAuthenticationRequest tokenRequestNoExistingEmail;
 
 	private final DateOperationsHelper dateOperationsHelper = new DateOperationsHelper();
-
-	private static final boolean ENABLE_ENCODING = true;
-	private static final boolean DISABLE_ENCODING = false;
 
 	@BeforeEach
 	void setUp() {

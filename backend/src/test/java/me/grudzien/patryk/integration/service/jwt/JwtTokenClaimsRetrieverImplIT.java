@@ -19,6 +19,7 @@ import java.util.Optional;
 
 import me.grudzien.patryk.PropertiesKeeper;
 import me.grudzien.patryk.TestsUtils;
+import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
 import me.grudzien.patryk.domain.enums.ApplicationZone;
 import me.grudzien.patryk.domain.enums.security.JwtTokenClaims;
 import me.grudzien.patryk.service.jwt.JwtTokenClaimsRetriever;
@@ -27,8 +28,11 @@ import me.grudzien.patryk.util.date.DateOperationsHelper;
 import me.grudzien.patryk.util.jwt.JwtTokenConstants;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import static me.grudzien.patryk.TestsUtils.TEST_EMAIL;
+import static me.grudzien.patryk.TestsUtils.prepareAccessTokenRequest;
+import static me.grudzien.patryk.TestsUtils.testDevice;
 
 @Disabled("Disabled because of: net.sf.ehcache.CacheException: Another unnamed CacheManager already exists in the same VM.")
 @SpringBootTest
@@ -46,19 +50,28 @@ class JwtTokenClaimsRetrieverImplIT {
     private String tokenHeader;
     private String accessToken;
 
+    private JwtAuthenticationRequest tokenRequestOk;
+    private String accessTokenExpired;
+
 	private final DateOperationsHelper dateOperationsHelper = new DateOperationsHelper();
 
-    private static final ZonedDateTime NOW_IN_POLAND = ApplicationZone.POLAND.getApplicationZonedDateTimeNow();
+    private static final ZonedDateTime NOW_IN_POLAND = ApplicationZone.POLAND.now();
 
     @BeforeEach
     void setUp() {
         tokenHeader = propertiesKeeper.jwt().TOKEN_HEADER;
         accessToken = TestsUtils.prepareTestAccessToken(jwtTokenService);
+
+        tokenRequestOk = prepareAccessTokenRequest(TEST_EMAIL, true);
+        accessTokenExpired = jwtTokenService.generateAccessTokenCustomExpiration(tokenRequestOk, testDevice(), 0L);
     }
 
     @AfterEach
     void tearDown() {
         accessToken = null;
+
+        tokenRequestOk = null;
+        accessTokenExpired = null;
     }
 
     @Test
@@ -127,6 +140,15 @@ class JwtTokenClaimsRetrieverImplIT {
                 () -> assertThat(dateOperationsHelper.getMinutesDifferenceBetween(expiration, issuedAt)).isEqualTo(15L),
                 () -> assertThat(expiration.toLocalDate()).isEqualTo(NOW_IN_POLAND.toLocalDate())
         );
+    }
+
+    @Test
+    void getExpirationDateFromToken_tokenExpired() {
+        // when
+        final Optional<ZonedDateTime> expiration = jwtTokenClaimsRetriever.getExpirationDateFromToken(accessTokenExpired);
+
+        // then
+        assertEquals(Optional.empty(), expiration);
     }
 
     @Test
