@@ -24,6 +24,8 @@ import me.grudzien.patryk.service.jwt.impl.JwtTokenValidatorImpl;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import static me.grudzien.patryk.TestsUtils.TEST_EMAIL;
 import static me.grudzien.patryk.TestsUtils.prepareTestJwtUser;
@@ -57,12 +59,13 @@ class JwtTokenValidatorImplTest {
 		// given
 		final ZonedDateTime pacificZoneDateTime = ZonedDateTime.now(ZoneId.of("Pacific/Majuro"));
 		BDDMockito.given(jwtTokenClaimsRetriever.getExpirationDateFromToken(anyString()))
-		          .willReturn(Optional.of(pacificZoneDateTime));
+		          .willReturn(Optional.of(pacificZoneDateTime.minusSeconds(1L)));
 		// when
 		final boolean isAccessTokenExpired = jwtTokenValidator.isAccessTokenExpired(randomAccessToken);
 
 		// then
 		assertTrue(isAccessTokenExpired);
+        verify(jwtTokenClaimsRetriever, times(1)).getExpirationDateFromToken(anyString());
 	}
 
 	@Test
@@ -75,6 +78,7 @@ class JwtTokenValidatorImplTest {
 
 		// then
 		assertTrue(isAccessTokenExpired);
+        verify(jwtTokenClaimsRetriever, times(1)).getExpirationDateFromToken(anyString());
 	}
 
 	@Test
@@ -99,8 +103,12 @@ class JwtTokenValidatorImplTest {
 
         // when
         final boolean isAccessTokenValid = jwtTokenValidator.isAccessTokenValid(randomAccessToken, userWithLastPasswordResetDate7DaysBack);
+
         // then
         assertTrue(isAccessTokenValid);
+        verify(jwtTokenClaimsRetriever, times(1)).getUserEmailFromToken(anyString());
+        verify(jwtTokenClaimsRetriever, times(1)).getIssuedAtDateFromToken(anyString());
+        verify(jwtTokenClaimsRetriever, times(1)).getExpirationDateFromToken(anyString());
     }
 
     @Test
@@ -112,8 +120,12 @@ class JwtTokenValidatorImplTest {
 
         // when
         final boolean isAccessTokenValid = jwtTokenValidator.isAccessTokenValid(randomAccessToken, userWithLastPasswordResetDate7DaysBack);
+
         // then
         assertFalse(isAccessTokenValid);
+        verify(jwtTokenClaimsRetriever, times(1)).getUserEmailFromToken(anyString());
+        verify(jwtTokenClaimsRetriever, times(1)).getIssuedAtDateFromToken(anyString());
+        verify(jwtTokenClaimsRetriever, times(0)).getExpirationDateFromToken(anyString());
     }
 
     @Test
@@ -125,8 +137,12 @@ class JwtTokenValidatorImplTest {
 
         // when
         final boolean isAccessTokenValid = jwtTokenValidator.isAccessTokenValid(randomAccessToken, userWithLastPasswordResetDate7DaysBack);
+
         // then
         assertFalse(isAccessTokenValid);
+        verify(jwtTokenClaimsRetriever, times(1)).getUserEmailFromToken(anyString());
+        verify(jwtTokenClaimsRetriever, times(1)).getIssuedAtDateFromToken(anyString());
+        verify(jwtTokenClaimsRetriever, times(1)).getExpirationDateFromToken(anyString());
     }
 
     @Test
@@ -138,8 +154,12 @@ class JwtTokenValidatorImplTest {
 
         // when
         final boolean isAccessTokenValid = jwtTokenValidator.isAccessTokenValid(randomAccessToken, userWithLastPasswordResetDate7DaysBack);
+
         // then
         assertFalse(isAccessTokenValid);
+        verify(jwtTokenClaimsRetriever, times(1)).getUserEmailFromToken(anyString());
+        verify(jwtTokenClaimsRetriever, times(1)).getIssuedAtDateFromToken(anyString());
+        verify(jwtTokenClaimsRetriever, times(0)).getExpirationDateFromToken(anyString());
     }
 
     private void emailInTokenExists() {

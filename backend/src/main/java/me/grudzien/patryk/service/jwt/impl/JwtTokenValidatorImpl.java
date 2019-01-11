@@ -71,10 +71,10 @@ public class JwtTokenValidatorImpl implements JwtTokenValidator {
 	    final ZonedDateTime issuedAtDateFromToken = jwtTokenClaimsRetriever.getIssuedAtDateFromToken(accessToken).orElse(null);
 
 	    return (isNotEmpty(Stream.of(user, emailFromToken, issuedAtDateFromToken))) &&
-	           (user.getEmail().equals(emailFromToken) &&
-	            !isAccessTokenExpired(accessToken) &&
-	            !isCreatedBeforeLastPasswordReset(issuedAtDateFromToken, user.getLastPasswordResetDate()
-	    ));
+                (user.getEmail().equals(emailFromToken) &&
+                        !isAccessTokenExpired(accessToken) &&
+                        !isCreatedBeforeLastPasswordReset(issuedAtDateFromToken, user.getLastPasswordResetDate())
+                );
     }
 
 	private <T> boolean isNotEmpty(final Stream<T> streamOfObjects) {
