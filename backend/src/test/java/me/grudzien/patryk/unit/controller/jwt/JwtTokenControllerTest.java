@@ -28,6 +28,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static me.grudzien.patryk.TestsUtils.DISABLE_ENCODING;
+
 @WebMvcTest(controllers = JwtTokenController.class, secure = false)
 class JwtTokenControllerTest {
 
@@ -36,8 +38,6 @@ class JwtTokenControllerTest {
 
     @MockBean
     private JwtTokenService jwtTokenService;
-
-    private static final boolean DISABLE_ENCODING = false;
 
     @BeforeEach
     void setUp() {

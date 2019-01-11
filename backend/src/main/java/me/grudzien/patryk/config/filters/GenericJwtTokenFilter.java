@@ -1,5 +1,8 @@
 package me.grudzien.patryk.config.filters;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.impl.DefaultClaims;
+import io.jsonwebtoken.impl.DefaultJwsHeader;
 import lombok.extern.log4j.Log4j2;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -23,10 +26,10 @@ import java.util.Optional;
 
 import me.grudzien.patryk.PropertiesKeeper;
 import me.grudzien.patryk.service.jwt.JwtTokenClaimsRetriever;
-import me.grudzien.patryk.util.jwt.JwtTokenConstants;
+import me.grudzien.patryk.service.jwt.JwtTokenValidator;
 import me.grudzien.patryk.service.login.impl.MyUserDetailsService;
 import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
-import me.grudzien.patryk.util.jwt.JwtTokenHelper;
+import me.grudzien.patryk.util.jwt.JwtTokenConstants;
 
 import static me.grudzien.patryk.util.log.LogMarkers.EXCEPTION_MARKER;
 import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
@@ -64,19 +67,22 @@ public class GenericJwtTokenFilter extends OncePerRequestFilter {
     private final UserDetailsService userDetailsService;
     private final LocaleMessagesCreator localeMessagesCreator;
     private final JwtTokenClaimsRetriever jwtTokenClaimsRetriever;
+    private final JwtTokenValidator jwtTokenValidator;
 
     public GenericJwtTokenFilter(@Qualifier(MyUserDetailsService.BEAN_NAME) final UserDetailsService userDetailsService,
                                  final PropertiesKeeper propertiesKeeper, final LocaleMessagesCreator localeMessagesCreator,
-                                 final JwtTokenClaimsRetriever jwtTokenClaimsRetriever) {
+                                 final JwtTokenClaimsRetriever jwtTokenClaimsRetriever, final JwtTokenValidator jwtTokenValidator) {
         Preconditions.checkNotNull(userDetailsService, "userDetailsService cannot be null!");
         Preconditions.checkNotNull(propertiesKeeper, "propertiesKeeper cannot be null!");
         Preconditions.checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
         Preconditions.checkNotNull(jwtTokenClaimsRetriever, "jwtTokenClaimsRetriever cannot be null!");
+        Preconditions.checkNotNull(jwtTokenValidator, "jwtTokenValidator cannot be null!");
 
         this.userDetailsService = userDetailsService;
         this.tokenHeader = propertiesKeeper.jwt().TOKEN_HEADER;
         this.localeMessagesCreator = localeMessagesCreator;
         this.jwtTokenClaimsRetriever = jwtTokenClaimsRetriever;
+        this.jwtTokenValidator = jwtTokenValidator;
     }
 
     @SuppressWarnings("NullableProblems")
@@ -92,7 +98,7 @@ public class GenericJwtTokenFilter extends OncePerRequestFilter {
         String accessToken = null;
         if (requestHeader != null && requestHeader.startsWith(JwtTokenConstants.BEARER)) {
             accessToken = requestHeader.substring(JwtTokenConstants.JWT_TOKEN_BEGIN_INDEX);
-            email = jwtTokenClaimsRetriever.getUserEmailFromToken(accessToken);
+            email = jwtTokenClaimsRetriever.getUserEmailFromToken(accessToken).orElse(null);
             log.info(FLOW_MARKER, "Authentication will be performed against user email: {}.", email);
         } else {
             log.warn(EXCEPTION_MARKER, "Couldn't find {} string, it will be ignored!", JwtTokenConstants.BEARER.trim());
@@ -101,16 +107,13 @@ public class GenericJwtTokenFilter extends OncePerRequestFilter {
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             log.debug(FLOW_MARKER, "Security context was null, starting authenticating the user...");
             /*
-             * It is not compelling necessary to load the use details from the database. You could also store the information
+             * It is not compelling necessary to load the use details from the database. I can also store that information
              * in the token and read it from it.
              */
             final Optional<UserDetails> userDetails = Optional.ofNullable(this.userDetailsService.loadUserByUsername(email));
-            /*
-             * For simple validation it is completely sufficient to just check the token integrity. You don't have to call
-             * the database compellingly.
-             */
+            // this is NOT done using ".map()" method as I don't want to create additional variables that need to be "effectively" final
             if (userDetails.isPresent()) {
-                if (JwtTokenHelper.Validator.validateAccessToken(accessToken, userDetails.get())) {
+                if (jwtTokenValidator.isAccessTokenValid(accessToken, userDetails.get())) {
                     /*
                      * UsernamePasswordAuthenticationToken- an {@link org.springframework.security.core.Authentication} implementation that is
                      * designed for simple presentation of a username and password.
@@ -134,6 +137,11 @@ public class GenericJwtTokenFilter extends OncePerRequestFilter {
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     log.info(FLOW_MARKER, "User has been successfully authenticated. Setting security context.");
                     SecurityContextHolder.getContext().setAuthentication(authentication);
+                } else {
+                    final DefaultJwsHeader defaultJwsHeader = jwtTokenClaimsRetriever.getDefaultJwsHeader().orElse(new DefaultJwsHeader());
+                    final DefaultClaims defaultClaims = jwtTokenClaimsRetriever.getDefaultClaims().orElse(new DefaultClaims());
+                    final String expiredJwtExceptionMessage = jwtTokenClaimsRetriever.getExpiredJwtExceptionMessage().orElse("");
+                    throw new ExpiredJwtException(defaultJwsHeader, defaultClaims, expiredJwtExceptionMessage);
                 }
             } else {
                 throw new UsernameNotFoundException(localeMessagesCreator.buildLocaleMessageWithParam("user-not-found-by-email", email));

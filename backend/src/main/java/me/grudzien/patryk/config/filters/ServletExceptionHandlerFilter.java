@@ -53,9 +53,9 @@ import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
  * {@link LocaleDeterminerFilter}
  *
  * This filter is used in case of unsuccessful JWT operations which are performed in:
- * {@link me.grudzien.patryk.util.jwt.JwtTokenUtil.Retriever}
+ * {@link me.grudzien.patryk.service.jwt.impl.JwtTokenClaimsRetrieverImpl}
  * e.g. when token is expired there is no option to
- * {@link me.grudzien.patryk.util.jwt.JwtTokenUtil.Retriever#getAllClaimsFromToken(String)}.
+ * {@link me.grudzien.patryk.service.jwt.impl.JwtTokenClaimsRetrieverImpl#getAllClaimsFromToken(String)}.
  * In such case one of the exceptions listed below is thrown.
  */
 @SuppressWarnings("JavadocReference")

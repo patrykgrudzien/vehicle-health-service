@@ -1,7 +1,6 @@
 package me.grudzien.patryk.service.jwt.impl;
 
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.log4j.Log4j2;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,7 +119,7 @@ public class JwtTokenServiceImpl implements JwtTokenService {
                                                  log.info("Started generating refresh token...");
                                                  return Jwts.builder()
                                                             .setSubject(jwtUser.getEmail())
-                                                            .signWith(SignatureAlgorithm.HS512, tokenSecret)
+                                                            .signWith(JwtTokenConstants.SIGNATURE_ALGORITHM, tokenSecret)
                                                             .compact();
                                              })
                                              .orElseThrow(() -> new UsernameNotFoundException(localeMessagesCreator.buildLocaleMessageWithParam(
@@ -169,14 +168,14 @@ public class JwtTokenServiceImpl implements JwtTokenService {
                    .setClaims(additionalClaims)
                    .setSubject(jwtUser.getEmail())
                    .setAudience(JwtTokenHelper.generateAudience(device))
-                   .setIssuedAt(Date.from(ApplicationZone.POLAND.getApplicationZonedDateTimeNow().toInstant()))
-                   .setExpiration(Date.from(ApplicationZone.POLAND.getApplicationZonedDateTimeNow()
+                   .setIssuedAt(Date.from(ApplicationZone.POLAND.now().toInstant()))
+                   .setExpiration(Date.from(ApplicationZone.POLAND.now()
                                                                   .toLocalDateTime()
                                                                   .plusMinutes(minutesToExpire)
                                                                   .toInstant(ZoneId.of(ApplicationZone.POLAND.getZoneId())
                                                                                    .getRules()
-                                                                                   .getOffset(ApplicationZone.POLAND.getApplicationZonedDateTimeNow().toLocalDateTime()))))
-                   .signWith(SignatureAlgorithm.HS512, tokenSecret)
+                                                                                   .getOffset(ApplicationZone.POLAND.now().toLocalDateTime()))))
+                   .signWith(JwtTokenConstants.SIGNATURE_ALGORITHM, tokenSecret)
                    .compact();
     }
 
@@ -185,14 +184,14 @@ public class JwtTokenServiceImpl implements JwtTokenService {
         return Jwts.builder()
                    .setClaims(additionalClaims)
                    .setSubject(oAuth2Email)
-                   .setIssuedAt(Date.from(ApplicationZone.POLAND.getApplicationZonedDateTimeNow().toInstant()))
-                   .setExpiration(Date.from(ApplicationZone.POLAND.getApplicationZonedDateTimeNow()
+                   .setIssuedAt(Date.from(ApplicationZone.POLAND.now().toInstant()))
+                   .setExpiration(Date.from(ApplicationZone.POLAND.now()
                                                                   .toLocalDateTime()
                                                                   .plusMinutes(shortLivedTokenExpiration)
                                                                   .toInstant(ZoneId.of(ApplicationZone.POLAND.getZoneId())
                                                                                    .getRules()
-                                                                                   .getOffset(ApplicationZone.POLAND.getApplicationZonedDateTimeNow().toLocalDateTime()))))
-                   .signWith(SignatureAlgorithm.HS512, tokenSecret)
+                                                                                   .getOffset(ApplicationZone.POLAND.now().toLocalDateTime()))))
+                   .signWith(JwtTokenConstants.SIGNATURE_ALGORITHM, tokenSecret)
                    .compact();
     }
 }
