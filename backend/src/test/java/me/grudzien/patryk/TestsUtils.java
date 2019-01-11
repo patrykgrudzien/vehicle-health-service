@@ -2,15 +2,18 @@ package me.grudzien.patryk;
 
 import org.springframework.mobile.device.Device;
 import org.springframework.mobile.device.DevicePlatform;
+import org.springframework.security.oauth2.core.oidc.StandardClaimNames;
 
 import org.apache.commons.lang3.RandomStringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import java.util.Base64;
 import java.util.Base64.Encoder;
+import java.util.Map;
 import java.util.Optional;
 
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
@@ -19,6 +22,7 @@ import me.grudzien.patryk.domain.dto.registration.UserRegistrationDto;
 import me.grudzien.patryk.domain.dto.vehicle.VehicleDto;
 import me.grudzien.patryk.domain.entity.registration.Role;
 import me.grudzien.patryk.domain.enums.registration.RoleName;
+import me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser;
 import me.grudzien.patryk.service.jwt.JwtTokenService;
 import me.grudzien.patryk.util.jwt.JwtUserFactory;
 
@@ -28,7 +32,11 @@ public final class TestsUtils {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public static final String TEST_EMAIL = "admin.root@gmail.com";
+    public static final String NO_EXISTING_EMAIL = "bad-email@gmail.com";
     public static final String TEST_PASSWORD = "admin";
+
+    public static final boolean ENABLE_ENCODING = true;
+    public static final boolean DISABLE_ENCODING = false;
 
     private TestsUtils() {
         throw new UnsupportedOperationException("Creating object of this class is not allowed!");
@@ -47,6 +55,13 @@ public final class TestsUtils {
                                        .email(doEncoding ? encodeNotNullValue(email) : email)
                                        .build();
     }
+
+	public static JwtAuthenticationRequest prepareAccessTokenRequest(final String email, final String refreshToken, final boolean doEncoding) {
+		return JwtAuthenticationRequest.Builder()
+		                               .email(doEncoding ? encodeNotNullValue(email) : email)
+		                               .refreshToken(refreshToken)
+		                               .build();
+	}
 
     public static String prepareTestAccessToken(final JwtTokenService jwtTokenService) {
         return jwtTokenService.generateAccessToken(JwtAuthenticationRequest.Builder()
@@ -87,11 +102,21 @@ public final class TestsUtils {
                       .id(1L)
                       .firstname("John")
                       .lastname("Snow")
-                      .password("password")
-                      .email("test@email.com")
+                      .email(TEST_EMAIL)
+                      .password(TEST_PASSWORD)
                       .enabled(true)
                       .roles(JwtUserFactory.mapRolesToAuthorities(Sets.newHashSet(new Role(RoleName.ROLE_USER))))
                       .build();
+    }
+
+    public static CustomOAuth2OidcPrincipalUser prepareCustomOAuth2OidcPrincipalUser() {
+	    final Map<String, Object> attributes = Maps.newHashMap();
+	    attributes.put(StandardClaimNames.EMAIL, TEST_EMAIL);
+	    attributes.put(StandardClaimNames.PICTURE, "www.my-profile-photo.fakeUrl.com");
+
+	    return CustomOAuth2OidcPrincipalUser.Builder(prepareTestJwtUser())
+	                                        .attributes(attributes)
+	                                        .build();
     }
 
     public static Device testDevice() {

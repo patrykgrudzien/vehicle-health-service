@@ -47,6 +47,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import static me.grudzien.patryk.TestsUtils.DISABLE_ENCODING;
+
 @WebMvcTest(controllers = UserAuthenticationController.class, secure = false)
 class UserAuthenticationControllerTest {
 
@@ -65,8 +67,6 @@ class UserAuthenticationControllerTest {
     private static final String TEST_EMAIL = "test@email.com";
     private static final String TEST_PASSWORD = "password";
     private static final String LOGIN_ENDPOINT = "/api/auth";
-
-    private static final boolean DISABLE_ENCODING = false;
 
 	@Test
     @DisplayName("Login successful. Response status -> 200 OK.")

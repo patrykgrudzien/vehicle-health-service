@@ -38,8 +38,10 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import static me.grudzien.patryk.TestsUtils.TEST_EMAIL;
+
 @Disabled("Disabled because of: net.sf.ehcache.CacheException: Another unnamed CacheManager already exists in the same VM.")
-@SpringBootTest(webEnvironment = WebEnvironment.NONE)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class MyUserDetailsServiceIT {
 
 	@Autowired
@@ -53,8 +55,6 @@ class MyUserDetailsServiceIT {
 	private CustomUserRepository customUserRepository;
 
 	private Object cachedJwtUser;
-
-	private static final String TEST_EMAIL = "test@email.com";
 
 	@AfterEach
 	void tearDown() {

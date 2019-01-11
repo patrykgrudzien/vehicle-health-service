@@ -35,6 +35,8 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
 
+import static me.grudzien.patryk.TestsUtils.ENABLE_ENCODING;
+
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class UserAuthenticationControllerIT {
 
@@ -45,8 +47,6 @@ class UserAuthenticationControllerIT {
 	private int localServerPort;
 
 	private static final String LOGIN_ENDPOINT = "/api/auth";
-
-    private static final boolean ENABLE_ENCODING = true;
 
 	@BeforeEach
 	void setUp() {
