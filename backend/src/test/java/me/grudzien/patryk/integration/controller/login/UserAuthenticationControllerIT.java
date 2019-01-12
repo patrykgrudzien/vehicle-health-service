@@ -36,6 +36,8 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
 
 import static me.grudzien.patryk.TestsUtils.ENABLE_ENCODING;
+import static me.grudzien.patryk.TestsUtils.TEST_EMAIL;
+import static me.grudzien.patryk.TestsUtils.TEST_PASSWORD;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class UserAuthenticationControllerIT {
@@ -60,8 +62,8 @@ class UserAuthenticationControllerIT {
         final Encoder encoder = Base64.getEncoder();
         // arrange
 		final JwtAuthenticationRequest loginRequest = JwtAuthenticationRequest.Builder()
-		                                                                      .email(encoder.encodeToString("admin.root@gmail.com".getBytes()))
-		                                                                      .password(encoder.encodeToString("admin".getBytes()))
+		                                                                      .email(encoder.encodeToString(TEST_EMAIL.getBytes()))
+		                                                                      .password(encoder.encodeToString(TEST_PASSWORD.getBytes()))
 		                                                                      .build();
 		// act
 		final ResponseEntity<JwtAuthenticationResponse> response = testRestTemplate.postForEntity(LOGIN_ENDPOINT, loginRequest, JwtAuthenticationResponse.class);
@@ -77,9 +79,9 @@ class UserAuthenticationControllerIT {
 
     private static Stream<Arguments> loginTestDataWithENLocale() throws JsonProcessingException {
         // arrange
-	    final String emptyEmail = TestsUtils.prepareAuthJSONBody("", "admin", ENABLE_ENCODING);
-	    final String invalidEmailFormat = TestsUtils.prepareAuthJSONBody("invalid-email-format", "admin", ENABLE_ENCODING);
-	    final String emptyPassword = TestsUtils.prepareAuthJSONBody("admin.root@gmail.com", "", ENABLE_ENCODING);
+	    final String emptyEmail = TestsUtils.prepareAuthJSONBody("", TEST_PASSWORD, ENABLE_ENCODING);
+	    final String invalidEmailFormat = TestsUtils.prepareAuthJSONBody("invalid-email-format", TEST_PASSWORD, ENABLE_ENCODING);
+	    final String emptyPassword = TestsUtils.prepareAuthJSONBody(TEST_EMAIL, "", ENABLE_ENCODING);
 	    final String noCredentialsProvided = TestsUtils.prepareAuthJSONBody("", "", ENABLE_ENCODING);
 
         return Stream.of(
@@ -112,9 +114,9 @@ class UserAuthenticationControllerIT {
 
     private static Stream<Arguments> loginTestDataWithPLLocale() throws JsonProcessingException {
         // arrange
-        final String emptyEmail = TestsUtils.prepareAuthJSONBody("", "admin", ENABLE_ENCODING);
-        final String invalidEmailFormat = TestsUtils.prepareAuthJSONBody("invalid-email-format", "admin", ENABLE_ENCODING);
-        final String emptyPassword = TestsUtils.prepareAuthJSONBody("admin.root@gmail.com", "", ENABLE_ENCODING);
+        final String emptyEmail = TestsUtils.prepareAuthJSONBody("", TEST_PASSWORD, ENABLE_ENCODING);
+        final String invalidEmailFormat = TestsUtils.prepareAuthJSONBody("invalid-email-format", TEST_PASSWORD, ENABLE_ENCODING);
+        final String emptyPassword = TestsUtils.prepareAuthJSONBody(TEST_EMAIL, "", ENABLE_ENCODING);
         final String noCredentialsProvided = TestsUtils.prepareAuthJSONBody("", "", ENABLE_ENCODING);
 
         return Stream.of(
