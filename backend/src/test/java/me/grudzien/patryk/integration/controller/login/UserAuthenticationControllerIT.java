@@ -22,12 +22,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import java.util.Base64;
-import java.util.Base64.Encoder;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import me.grudzien.patryk.TestsUtils;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationResponse;
 
@@ -38,6 +35,8 @@ import static org.hamcrest.Matchers.hasItems;
 import static me.grudzien.patryk.TestsUtils.ENABLE_ENCODING;
 import static me.grudzien.patryk.TestsUtils.TEST_EMAIL;
 import static me.grudzien.patryk.TestsUtils.TEST_PASSWORD;
+import static me.grudzien.patryk.TestsUtils.prepareAuthJSONBody;
+import static me.grudzien.patryk.TestsUtils.prepareLoginRequest;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class UserAuthenticationControllerIT {
@@ -59,16 +58,13 @@ class UserAuthenticationControllerIT {
 	@Test
 	@DisplayName("Login successful. 200 OK.")
 	void testLoginSuccessful() {
-        final Encoder encoder = Base64.getEncoder();
-        // arrange
-		final JwtAuthenticationRequest loginRequest = JwtAuthenticationRequest.Builder()
-		                                                                      .email(encoder.encodeToString(TEST_EMAIL.getBytes()))
-		                                                                      .password(encoder.encodeToString(TEST_PASSWORD.getBytes()))
-		                                                                      .build();
-		// act
+        // given
+		final JwtAuthenticationRequest loginRequest = prepareLoginRequest(TEST_EMAIL, TEST_PASSWORD, ENABLE_ENCODING);
+
+		// when
 		final ResponseEntity<JwtAuthenticationResponse> response = testRestTemplate.postForEntity(LOGIN_ENDPOINT, loginRequest, JwtAuthenticationResponse.class);
 
-		// assertions
+		// then
 		Assertions.assertAll(
                 () -> Assertions.assertNotNull(response.getBody()),
                 () -> Assertions.assertNotNull(Objects.requireNonNull(response.getBody()).getAccessToken()),
@@ -78,11 +74,11 @@ class UserAuthenticationControllerIT {
 	}
 
     private static Stream<Arguments> loginTestDataWithENLocale() throws JsonProcessingException {
-        // arrange
-	    final String emptyEmail = TestsUtils.prepareAuthJSONBody("", TEST_PASSWORD, ENABLE_ENCODING);
-	    final String invalidEmailFormat = TestsUtils.prepareAuthJSONBody("invalid-email-format", TEST_PASSWORD, ENABLE_ENCODING);
-	    final String emptyPassword = TestsUtils.prepareAuthJSONBody(TEST_EMAIL, "", ENABLE_ENCODING);
-	    final String noCredentialsProvided = TestsUtils.prepareAuthJSONBody("", "", ENABLE_ENCODING);
+        // given
+	    final String emptyEmail = prepareAuthJSONBody("", TEST_PASSWORD, ENABLE_ENCODING);
+	    final String invalidEmailFormat = prepareAuthJSONBody("invalid-email-format", TEST_PASSWORD, ENABLE_ENCODING);
+	    final String emptyPassword = prepareAuthJSONBody(TEST_EMAIL, "", ENABLE_ENCODING);
+	    final String noCredentialsProvided = prepareAuthJSONBody("", "", ENABLE_ENCODING);
 
         return Stream.of(
                 Arguments.arguments(Method.POST, emptyEmail, new String[] {"Email address cannot be empty.", "Provided email has incorrect format."}),
@@ -113,11 +109,11 @@ class UserAuthenticationControllerIT {
 	}
 
     private static Stream<Arguments> loginTestDataWithPLLocale() throws JsonProcessingException {
-        // arrange
-        final String emptyEmail = TestsUtils.prepareAuthJSONBody("", TEST_PASSWORD, ENABLE_ENCODING);
-        final String invalidEmailFormat = TestsUtils.prepareAuthJSONBody("invalid-email-format", TEST_PASSWORD, ENABLE_ENCODING);
-        final String emptyPassword = TestsUtils.prepareAuthJSONBody(TEST_EMAIL, "", ENABLE_ENCODING);
-        final String noCredentialsProvided = TestsUtils.prepareAuthJSONBody("", "", ENABLE_ENCODING);
+        // given
+        final String emptyEmail = prepareAuthJSONBody("", TEST_PASSWORD, ENABLE_ENCODING);
+        final String invalidEmailFormat = prepareAuthJSONBody("invalid-email-format", TEST_PASSWORD, ENABLE_ENCODING);
+        final String emptyPassword = prepareAuthJSONBody(TEST_EMAIL, "", ENABLE_ENCODING);
+        final String noCredentialsProvided = prepareAuthJSONBody("", "", ENABLE_ENCODING);
 
         return Stream.of(
                 Arguments.arguments(Method.POST, emptyEmail, new String[] {"Adres email nie może być pusty.", "Wprowadzony email ma nieprawidłowy format."}),
