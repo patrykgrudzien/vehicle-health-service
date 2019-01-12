@@ -64,18 +64,27 @@ public class CustomOidcUserService extends OidcUserService {
         // preparing principal with appropriate account OAuth2 flow
         return Optional.ofNullable(oAuth2FlowDelegator.handlePrincipalCreation(oidcUser, userRequest.getClientRegistration(), oAuth2Flow))
                        .map(principal -> Match(principal.getAccountStatus()).of(
+                               /**
+                                * Successful case is later handled by {@link me.grudzien.patryk.oauth2.handler.CustomOAuth2AuthenticationSuccessHandler}
+                                */
                                Case($(isIn(AccountStatus.get2xxStatuses())), () -> {
                                    principal.setAttributes(oidcUser.getAttributes());
                                    principal.setOidcIdToken(oidcUser.getIdToken());
 				                   principal.setOidcUserInfo(oidcUser.getUserInfo());
 				                   return principal;
                                }),
+                               /**
+                                * Failed case is later handled by {@link me.grudzien.patryk.oauth2.handler.CustomOAuth2AuthenticationFailureHandler}
+                                */
                                Case($(isIn(AccountStatus.get4xxStatuses())), accountStatus -> {
                                    final OAuth2Error oauth2Error = new OAuth2Error(accountStatus.name());
                                    throw new OAuth2AuthenticationException(oauth2Error, accountStatus.getAccountStatusDescription());
                                })
                        ))
                        .orElseThrow(() -> {
+                           /**
+                            * Failed case is later handled by {@link me.grudzien.patryk.oauth2.handler.CustomOAuth2AuthenticationFailureHandler}
+                            */
                            final OAuth2Error oidcError = new OAuth2Error(UNKNOWN_OIDC_USER_ERROR_CODE);
                            return new OAuth2AuthenticationException(oidcError, UNKNOWN_OIDC_USER_ERROR_MESSAGE);
                        });

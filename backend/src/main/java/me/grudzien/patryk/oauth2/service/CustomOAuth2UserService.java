@@ -64,13 +64,22 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         // preparing principal with appropriate account OAuth2 flow
 		return Optional.ofNullable(oAuth2FlowDelegator.handlePrincipalCreation(oAuth2User, oAuth2UserRequest.getClientRegistration(), oAuth2Flow))
                        .map(principal -> Match(principal.getAccountStatus()).of(
+                               /**
+                                * Successful case is later handled by {@link me.grudzien.patryk.oauth2.handler.CustomOAuth2AuthenticationSuccessHandler}
+                                */
                                Case($(isIn(AccountStatus.get2xxStatuses())), principal),
+                               /**
+                                * Failed case is later handled by {@link me.grudzien.patryk.oauth2.handler.CustomOAuth2AuthenticationFailureHandler}
+                                */
                                Case($(isIn(AccountStatus.get4xxStatuses())), accountStatus -> {
                                    final OAuth2Error oauth2Error = new OAuth2Error(accountStatus.name());
                                    throw new OAuth2AuthenticationException(oauth2Error, accountStatus.getAccountStatusDescription());
                                })
                        ))
                        .orElseThrow(() -> {
+                           /**
+                            * Failed case is later handled by {@link me.grudzien.patryk.oauth2.handler.CustomOAuth2AuthenticationFailureHandler}
+                            */
                            final OAuth2Error oauth2Error = new OAuth2Error(UNKNOWN_OAUTH2_USER_ERROR_CODE);
                            return new OAuth2AuthenticationException(oauth2Error, UNKNOWN_OAUTH2_USER_ERROR_MESSAGE);
                        });
