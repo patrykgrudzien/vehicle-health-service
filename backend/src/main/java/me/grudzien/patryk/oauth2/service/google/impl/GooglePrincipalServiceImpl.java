@@ -199,8 +199,8 @@ public class GooglePrincipalServiceImpl implements GooglePrincipalService {
      * @param property name of the property which is used to get value from response body
      * @param defaultValueOnMissingProperty default value when response body doesn't contain provided property
      */
+    @SuppressWarnings("unchecked")
     private <T> T extractPropertyFromResponse(final ResponseEntity<Object> responseEntity, final String property, final T defaultValueOnMissingProperty) {
-        //noinspection unchecked
         return (T) Optional.ofNullable((Map) responseEntity.getBody())
                            .map(map -> map.get(property))
                            .orElseGet(() -> {
