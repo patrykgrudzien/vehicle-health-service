@@ -26,7 +26,6 @@ import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Set;
@@ -102,6 +101,6 @@ public class CustomUser {
 
 	public CustomUser() {
 		this.isEnabled = false;
-		this.createdDate = ZonedDateTime.now(ZoneId.of(ApplicationZone.POLAND.getZoneId()));
+		this.createdDate = ApplicationZone.POLAND.now();
 	}
 }
