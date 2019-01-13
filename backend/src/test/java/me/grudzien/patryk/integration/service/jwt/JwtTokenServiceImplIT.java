@@ -4,11 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.core.oidc.StandardClaimNames;
+import org.springframework.test.annotation.DirtiesContext;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -40,8 +40,8 @@ import static me.grudzien.patryk.TestsUtils.testDevice;
 import static me.grudzien.patryk.util.jwt.JwtTokenConstants.AUDIENCE_WEB;
 import static me.grudzien.patryk.util.jwt.JwtTokenConstants.TokenType;
 
-@Disabled("Disabled because of: net.sf.ehcache.CacheException: Another unnamed CacheManager already exists in the same VM.")
 @SpringBootTest
+@DirtiesContext
 class JwtTokenServiceImplIT {
 
     @Autowired
