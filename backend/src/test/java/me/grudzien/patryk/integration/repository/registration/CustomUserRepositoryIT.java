@@ -12,7 +12,6 @@ import com.google.common.collect.Sets;
 
 import java.time.Duration;
 import java.time.Period;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import me.grudzien.patryk.domain.entity.registration.CustomUser;
@@ -33,7 +32,7 @@ class CustomUserRepositoryIT {
     @Autowired
     private CustomUserRepository customUserRepository;
 
-    private final ZonedDateTime createdDate = ZonedDateTime.now(ZoneId.of(ApplicationZone.POLAND.getZoneId()));
+    private final ZonedDateTime createdDate = ApplicationZone.POLAND.now();
 
     @Test
     @DisplayName("findByEmail(String email). Plain database password.")

@@ -26,7 +26,7 @@ class DateOperationsHelperIT {
 	void setUp() {
 		pacificZoneDateTime = ZonedDateTime.now(ZoneId.of("Pacific/Majuro"));
 		americaCuiaba = ZonedDateTime.now(ZoneId.of("America/Cuiaba"));
-		applicationZoneDateTime = ZonedDateTime.now(ZoneId.of(ApplicationZone.POLAND.getZoneId()));
+		applicationZoneDateTime = ApplicationZone.POLAND.now();
 	}
 
 	@Test
