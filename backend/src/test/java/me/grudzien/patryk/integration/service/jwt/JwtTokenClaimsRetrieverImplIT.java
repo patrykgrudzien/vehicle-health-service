@@ -5,11 +5,11 @@ import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.test.annotation.DirtiesContext;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.time.ZoneId;
@@ -34,8 +34,8 @@ import static me.grudzien.patryk.TestsUtils.TEST_EMAIL;
 import static me.grudzien.patryk.TestsUtils.prepareAccessTokenRequest;
 import static me.grudzien.patryk.TestsUtils.testDevice;
 
-@Disabled("Disabled because of: net.sf.ehcache.CacheException: Another unnamed CacheManager already exists in the same VM.")
 @SpringBootTest
+@DirtiesContext
 class JwtTokenClaimsRetrieverImplIT {
 
     @Autowired

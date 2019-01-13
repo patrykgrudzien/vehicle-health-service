@@ -2,11 +2,11 @@ package me.grudzien.patryk.integration.service.jwt;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
@@ -23,8 +23,8 @@ import static me.grudzien.patryk.TestsUtils.prepareAccessTokenRequest;
 import static me.grudzien.patryk.TestsUtils.prepareTestJwtUser;
 import static me.grudzien.patryk.TestsUtils.testDevice;
 
-@Disabled("Disabled because of: net.sf.ehcache.CacheException: Another unnamed CacheManager already exists in the same VM.")
 @SpringBootTest
+@DirtiesContext
 class JwtTokenValidatorImplIT {
 
 	@Autowired
