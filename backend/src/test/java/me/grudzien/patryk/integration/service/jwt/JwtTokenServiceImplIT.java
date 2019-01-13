@@ -24,12 +24,14 @@ import me.grudzien.patryk.TestsUtils;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
 import me.grudzien.patryk.domain.enums.security.JwtTokenClaims;
 import me.grudzien.patryk.exception.security.NoEmailProvidedException;
+import me.grudzien.patryk.exception.security.NoRefreshTokenProvidedException;
 import me.grudzien.patryk.service.jwt.JwtTokenClaimsRetriever;
 import me.grudzien.patryk.service.jwt.JwtTokenService;
 import me.grudzien.patryk.util.date.DateOperationsHelper;
 import me.grudzien.patryk.util.i18n.LocaleMessagesHelper;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import static me.grudzien.patryk.TestsUtils.DISABLE_ENCODING;
 import static me.grudzien.patryk.TestsUtils.ENABLE_ENCODING;
@@ -154,6 +156,31 @@ class JwtTokenServiceImplIT {
 			    () -> assertThat(jwtTokenClaimsRetriever.getClaimFromToken(refreshedAccessToken, claims -> Optional.ofNullable(claims.getExpiration())))
 					          .isNotEqualTo(Optional.empty())
 	    );
+    }
+
+    private static Stream<Arguments> refreshAccessTokenNoRefreshTokenProvidedTestData() {
+	    return Stream.of(
+	            Arguments.arguments("pl", "W zapytaniu nie zawarto żadnego tokenu odświeżającego, dlatego też nie można wynegerować nowego tokenu dostępu!"),
+	            Arguments.arguments("en", "No refresh token provided in the request so cannot refresh the access token!")
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("refreshAccessTokenNoRefreshTokenProvidedTestData")
+    void refreshAccessToken_noRefreshTokenProvided(final String language, final String expectedExceptionMessage) {
+	    // given
+        localeMessagesHelper.setLocale(new Locale(language));
+        final JwtAuthenticationRequest tokenRequest = prepareAccessTokenRequest(TEST_EMAIL, ENABLE_ENCODING);
+
+        // when
+        final NoRefreshTokenProvidedException noRefreshTokenProvidedException = Assertions.assertThrows(
+                NoRefreshTokenProvidedException.class, () -> jwtTokenService.refreshAccessToken(tokenRequest, testDevice()));
+
+        // then
+        Assertions.assertAll(
+                () -> assertThat(noRefreshTokenProvidedException).isNotNull(),
+                () -> assertEquals(expectedExceptionMessage, noRefreshTokenProvidedException.getMessage())
+        );
     }
 
     @Test
