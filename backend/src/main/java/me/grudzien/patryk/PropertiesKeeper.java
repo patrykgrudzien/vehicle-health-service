@@ -48,7 +48,6 @@ public final class PropertiesKeeper {
 
 	public class JWT {
 		public String TOKEN_SECRET = customApplicationProperties.getJwt().getSecret();
-		public String TOKEN_HEADER = customApplicationProperties.getJwt().getHeader();
 		public Long ACCESS_TOKEN_EXPIRATION = customApplicationProperties.getJwt().getExpiration();
 	}
 

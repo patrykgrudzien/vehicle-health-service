@@ -24,7 +24,6 @@ public class CustomApplicationProperties {
 	@Getter
 	@Setter
 	public static class Jwt {
-		private String header;
 		private String secret;
 		private Long expiration;
 	}

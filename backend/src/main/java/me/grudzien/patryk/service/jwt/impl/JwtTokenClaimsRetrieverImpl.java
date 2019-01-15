@@ -28,6 +28,7 @@ import java.util.function.Function;
 import me.grudzien.patryk.PropertiesKeeper;
 import me.grudzien.patryk.domain.enums.ApplicationZone;
 import me.grudzien.patryk.service.jwt.JwtTokenClaimsRetriever;
+import me.grudzien.patryk.util.jwt.JwtTokenConstants;
 
 import static me.grudzien.patryk.util.jwt.JwtTokenConstants.JWT_TOKEN_BEGIN_INDEX;
 
@@ -36,7 +37,6 @@ public class JwtTokenClaimsRetrieverImpl implements JwtTokenClaimsRetriever {
 
     private final PropertiesKeeper propertiesKeeper;
 
-    private String tokenHeader;
     private String tokenSecret;
 
     private DefaultClaims defaultClaims;
@@ -51,7 +51,6 @@ public class JwtTokenClaimsRetrieverImpl implements JwtTokenClaimsRetriever {
 
     @PostConstruct
     public void init() {
-        tokenHeader = propertiesKeeper.jwt().TOKEN_HEADER;
         tokenSecret = propertiesKeeper.jwt().TOKEN_SECRET;
     }
 
@@ -123,10 +122,12 @@ public class JwtTokenClaimsRetrieverImpl implements JwtTokenClaimsRetriever {
     @Override
     public <T> Optional<String> getJwtTokenFromRequest(final T request) {
         if (request instanceof WebRequest) {
-            return Optional.of(Objects.requireNonNull(((WebRequest) request).getHeader(tokenHeader), "NO \"Authorization\" header found!")
+            return Optional.of(Objects.requireNonNull(((WebRequest) request).getHeader(JwtTokenConstants.JWT_TOKEN_HEADER),
+                                                      "NO \"Authorization\" header found!")
                                       .substring(JWT_TOKEN_BEGIN_INDEX));
         } else if (request instanceof HttpServletRequest) {
-            return Optional.of(Objects.requireNonNull(((HttpServletRequest) request).getHeader(tokenHeader), "NO \"Authorization\" header found!")
+            return Optional.of(Objects.requireNonNull(((HttpServletRequest) request).getHeader(JwtTokenConstants.JWT_TOKEN_HEADER),
+                                                      "NO \"Authorization\" header found!")
                                       .substring(JWT_TOKEN_BEGIN_INDEX));
         } else {
             return Optional.empty();

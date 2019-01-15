@@ -49,7 +49,6 @@ custom:
       front-end-module: http://localhost:8080/ui
       back-end-module: http://localhost:8088/api
     jwt:
-      header: Authorization
       secret: super-secret-authorization-token-password
       expiration: 15 # minutes (900000 nanoseconds)
     messages-language:

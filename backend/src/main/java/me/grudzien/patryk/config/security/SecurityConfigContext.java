@@ -86,13 +86,12 @@ public final class SecurityConfigContext {
      */
     public static class Filters {
         @SuppressWarnings("DanglingJavadoc")
-        public static void addTokenAuthenticationFilters(final HttpSecurity httpSecurity, final UserDetailsService userDetailsService,
-                                                         final PropertiesKeeper propertiesKeeper, final LocaleMessagesCreator localeMessageCreator,
-                                                         final JwtTokenClaimsRetriever jwtTokenClaimsRetriever, final JwtTokenValidator jwtTokenValidator,
-                                                         final LocaleMessagesHelper localeMessagesHelper) {
+        static void addTokenAuthenticationFilters(final HttpSecurity httpSecurity, final UserDetailsService userDetailsService,
+                                                  final LocaleMessagesCreator localeMessageCreator, final JwtTokenClaimsRetriever jwtTokenClaimsRetriever,
+                                                  final JwtTokenValidator jwtTokenValidator, final LocaleMessagesHelper localeMessagesHelper) {
             // JWT filter
-            final GenericJwtTokenFilter genericJwtTokenFilter = new GenericJwtTokenFilter(userDetailsService, propertiesKeeper,
-                                                                                          localeMessageCreator, jwtTokenClaimsRetriever, jwtTokenValidator);
+            final GenericJwtTokenFilter genericJwtTokenFilter = new GenericJwtTokenFilter(userDetailsService, localeMessageCreator,
+                                                                                          jwtTokenClaimsRetriever, jwtTokenValidator);
             httpSecurity.addFilterBefore(genericJwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
             /**

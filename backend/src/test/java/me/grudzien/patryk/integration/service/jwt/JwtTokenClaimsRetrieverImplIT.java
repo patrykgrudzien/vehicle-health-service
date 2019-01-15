@@ -17,7 +17,6 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Optional;
 
-import me.grudzien.patryk.PropertiesKeeper;
 import me.grudzien.patryk.TestsUtils;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
 import me.grudzien.patryk.domain.enums.ApplicationZone;
@@ -44,10 +43,6 @@ class JwtTokenClaimsRetrieverImplIT {
     @Autowired
     private JwtTokenService jwtTokenService;
 
-    @Autowired
-    private PropertiesKeeper propertiesKeeper;
-
-    private String tokenHeader;
     private String accessToken;
 
     private JwtAuthenticationRequest tokenRequestOk;
@@ -59,7 +54,6 @@ class JwtTokenClaimsRetrieverImplIT {
 
     @BeforeEach
     void setUp() {
-        tokenHeader = propertiesKeeper.jwt().TOKEN_HEADER;
         accessToken = TestsUtils.prepareTestAccessToken(jwtTokenService);
 
         tokenRequestOk = prepareAccessTokenRequest(TEST_EMAIL, true);
@@ -176,7 +170,7 @@ class JwtTokenClaimsRetrieverImplIT {
     void getJwtTokenFromRequest() {
         // given
         final MockHttpServletRequest mockRequest = new MockHttpServletRequest();
-        mockRequest.addHeader(tokenHeader, JwtTokenConstants.BEARER + accessToken);
+        mockRequest.addHeader(JwtTokenConstants.JWT_TOKEN_HEADER, JwtTokenConstants.BEARER + accessToken);
 
         // when
 	    final String jwtToken = jwtTokenClaimsRetriever.getJwtTokenFromRequest(mockRequest)
