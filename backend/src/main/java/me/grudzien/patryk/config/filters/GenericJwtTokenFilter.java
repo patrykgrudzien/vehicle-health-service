@@ -24,7 +24,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 
-import me.grudzien.patryk.PropertiesKeeper;
 import me.grudzien.patryk.service.jwt.JwtTokenClaimsRetriever;
 import me.grudzien.patryk.service.jwt.JwtTokenValidator;
 import me.grudzien.patryk.service.login.impl.MyUserDetailsService;
@@ -63,23 +62,20 @@ import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
 @Log4j2
 public class GenericJwtTokenFilter extends OncePerRequestFilter {
 
-    private final String tokenHeader;
     private final UserDetailsService userDetailsService;
     private final LocaleMessagesCreator localeMessagesCreator;
     private final JwtTokenClaimsRetriever jwtTokenClaimsRetriever;
     private final JwtTokenValidator jwtTokenValidator;
 
     public GenericJwtTokenFilter(@Qualifier(MyUserDetailsService.BEAN_NAME) final UserDetailsService userDetailsService,
-                                 final PropertiesKeeper propertiesKeeper, final LocaleMessagesCreator localeMessagesCreator,
-                                 final JwtTokenClaimsRetriever jwtTokenClaimsRetriever, final JwtTokenValidator jwtTokenValidator) {
+                                 final LocaleMessagesCreator localeMessagesCreator, final JwtTokenClaimsRetriever jwtTokenClaimsRetriever,
+                                 final JwtTokenValidator jwtTokenValidator) {
         Preconditions.checkNotNull(userDetailsService, "userDetailsService cannot be null!");
-        Preconditions.checkNotNull(propertiesKeeper, "propertiesKeeper cannot be null!");
         Preconditions.checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
         Preconditions.checkNotNull(jwtTokenClaimsRetriever, "jwtTokenClaimsRetriever cannot be null!");
         Preconditions.checkNotNull(jwtTokenValidator, "jwtTokenValidator cannot be null!");
 
         this.userDetailsService = userDetailsService;
-        this.tokenHeader = propertiesKeeper.jwt().TOKEN_HEADER;
         this.localeMessagesCreator = localeMessagesCreator;
         this.jwtTokenClaimsRetriever = jwtTokenClaimsRetriever;
         this.jwtTokenValidator = jwtTokenValidator;
@@ -92,7 +88,7 @@ public class GenericJwtTokenFilter extends OncePerRequestFilter {
 
         log.info(FLOW_MARKER, "(FILTER) -----> {} ({}) on path -> {}", this.getClass().getSimpleName(), request.getMethod(), request.getRequestURI());
 
-        final String requestHeader = request.getHeader(this.tokenHeader);
+        final String requestHeader = request.getHeader(JwtTokenConstants.JWT_TOKEN_HEADER);
 
         String email = null;
         String accessToken = null;

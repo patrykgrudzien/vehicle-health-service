@@ -10,6 +10,7 @@ public final class JwtTokenConstants {
     static final String AUDIENCE_TABLET = "tablet";
 
     public static final String BEARER = "Bearer ";
+    public static final String JWT_TOKEN_HEADER = "Authorization";
     public static final int JWT_TOKEN_BEGIN_INDEX = 7;
 
     public static final SignatureAlgorithm SIGNATURE_ALGORITHM = SignatureAlgorithm.HS512;

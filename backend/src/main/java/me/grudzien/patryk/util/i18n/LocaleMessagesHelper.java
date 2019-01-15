@@ -64,10 +64,7 @@ public class LocaleMessagesHelper {
 	 * the chain and locale is set based on the header coming from UI.
 	 *
 	 * Filters' order with appropriate comments is specified in:
-	 * {@link me.grudzien.patryk.config.security.SecurityConfigContext.Filters#addTokenAuthenticationFilters(
-	 * org.springframework.security.config.annotation.web.builders.HttpSecurity, org.springframework.security.core.userdetails.UserDetailsService,
-	 * me.grudzien.patryk.PropertiesKeeper, LocaleMessagesCreator, me.grudzien.patryk.service.jwt.JwtTokenClaimsRetriever,
-	 * me.grudzien.patryk.service.jwt.JwtTokenValidator, LocaleMessagesHelper)}
+	 * {@link #addTokenAuthenticationFilters(org.springframework.security.config.annotation.web.builders.HttpSecurity, org.springframework.security.core.userdetails.UserDetailsService, LocaleMessagesCreator, me.grudzien.patryk.service.jwt.JwtTokenClaimsRetriever, me.grudzien.patryk.service.jwt.JwtTokenValidator, LocaleMessagesHelper)}
 	 *
 	 * Later subsequent calls to {@link me.grudzien.patryk.util.i18n.LocaleMessagesCreator#buildLocaleMessage(String)} related methods
 	 * are performed to create i18n messages.

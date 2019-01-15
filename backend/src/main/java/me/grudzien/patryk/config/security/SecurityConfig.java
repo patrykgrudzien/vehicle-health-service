@@ -215,8 +215,8 @@ public class SecurityConfig {
              * &&
              * {@link me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter}
              */
-            SecurityConfigContext.Filters.addTokenAuthenticationFilters(httpSecurity, super.userDetailsService(), propertiesKeeper,
-                                                                        localeMessageCreator, jwtTokenClaimsRetriever, jwtTokenValidator, localeMessagesHelper);
+            SecurityConfigContext.Filters.addTokenAuthenticationFilters(httpSecurity, super.userDetailsService(), localeMessageCreator, jwtTokenClaimsRetriever,
+                                                                        jwtTokenValidator, localeMessagesHelper);
             // mvcMatchers
             SecurityConfigContext.Requests.authorizeRequests(httpSecurity, propertiesKeeper);
         }
