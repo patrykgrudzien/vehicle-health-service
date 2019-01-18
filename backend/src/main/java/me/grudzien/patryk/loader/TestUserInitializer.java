@@ -53,6 +53,7 @@ public class TestUserInitializer implements CommandLineRunner {
 		log.info(FLOW_MARKER, "{} configured to insert test user.", this.getClass().getSimpleName());
 	}
 
+	@SuppressWarnings("Duplicates")
 	@Override
 	public void run(final String... args) {
 		final Optional<String> activeSpringProfile = Arrays.stream(environment.getActiveProfiles()).findFirst();
