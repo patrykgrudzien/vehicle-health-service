@@ -16,7 +16,7 @@ import com.google.common.base.Preconditions;
 import java.util.Optional;
 
 import me.grudzien.patryk.repository.registration.CustomUserRepository;
-import me.grudzien.patryk.util.jwt.JwtUserFactory;
+import me.grudzien.patryk.domain.factory.JwtUserFactory;
 
 import static me.grudzien.patryk.util.log.LogMarkers.EXCEPTION_MARKER;
 import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
