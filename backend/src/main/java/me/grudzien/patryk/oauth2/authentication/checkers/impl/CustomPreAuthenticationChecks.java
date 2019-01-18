@@ -31,7 +31,7 @@ public class CustomPreAuthenticationChecks implements UserDetailsChecker {
     /**
      * In case of the Exceptions thrown below, code flow is caught by one of the "Case" inside:
      * {@link me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases} and translation to JSON format is done by:
-     * {@link me.grudzien.patryk.handler.exception.ExceptionHandlingController}
+     * {@link me.grudzien.patryk.exception.ExceptionHandlingController}
      */
 	@Override
 	public void check(final UserDetails user) {

@@ -22,7 +22,7 @@ import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
 
 /**
  * IMPORTANT NOTE:
- * {@link me.grudzien.patryk.handler.exception.ExceptionHandlingController} only handles exceptions come from @Controller classes that's
+ * {@link me.grudzien.patryk.exception.ExceptionHandlingController} only handles exceptions come from @Controller classes that's
  * why all exceptions which come from JWT will be omitted (they are specific to Servlet itself) !!!
  *
  * Exceptions come from JWT are handled by {@link me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter}
