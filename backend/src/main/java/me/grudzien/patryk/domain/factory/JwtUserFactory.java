@@ -1,4 +1,4 @@
-package me.grudzien.patryk.util.jwt;
+package me.grudzien.patryk.domain.factory;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
