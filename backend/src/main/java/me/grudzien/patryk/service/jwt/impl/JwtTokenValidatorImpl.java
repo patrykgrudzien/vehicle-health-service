@@ -52,7 +52,7 @@ public class JwtTokenValidatorImpl implements JwtTokenValidator {
 			    final LocalDateTime adjustedExpiration = dateOperationsHelper.adjustTimeToApplicationZoneOffset(expiration);
 			    return adjustedExpiration.toLocalTime().isBefore(applicationZonedDateTimeNow.toLocalTime());
 		    }
-		    return expiration.toLocalTime().isBefore(applicationZonedDateTimeNow.toLocalTime());
+		    return expiration.isBefore(applicationZonedDateTimeNow);
 	    }).orElseGet(() -> {
 		    log.info(LogMarkers.SECURITY_MARKER, "Expiration claim has NOT been found in the token!");
 		    return Boolean.TRUE;
