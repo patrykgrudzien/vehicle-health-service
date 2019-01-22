@@ -20,13 +20,9 @@ import javax.mail.internet.MimeMessage;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import java.util.UUID;
 
 import me.grudzien.patryk.domain.dto.registration.EmailDto;
-import me.grudzien.patryk.domain.entity.registration.CustomUser;
-import me.grudzien.patryk.domain.entity.registration.EmailVerificationToken;
-import me.grudzien.patryk.repository.registration.EmailVerificationTokenRepository;
-import me.grudzien.patryk.service.registration.EmailService;
+import me.grudzien.patryk.service.registration.EmailClientService;
 import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.util.i18n.LocaleMessagesHelper;
 
@@ -37,37 +33,33 @@ import static io.vavr.API.run;
 import static io.vavr.Predicates.instanceOf;
 
 import static me.grudzien.patryk.util.log.LogMarkers.EXCEPTION_MARKER;
-import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
 
 @Log4j2
 @Service
-public class EmailServiceImpl implements EmailService {
+public class EmailClientServiceImpl implements EmailClientService {
 
 	@Value("${spring.mail.username}")
 	private String senderEmailAddress;
 
 	private final JavaMailSender javaMailSender;
 	private final SpringTemplateEngine templateEngine;
-	private final EmailVerificationTokenRepository emailVerificationTokenRepository;
 	private final LocaleMessagesCreator localeMessagesCreator;
 	private final LocaleMessagesHelper localeMessagesHelper;
 
 	// JavaMailSender will be automatically autowired by spring boot if it finds configuration in application.yml file
 	@SuppressWarnings("SpringJavaAutowiringInspection")
 	@Autowired
-	public EmailServiceImpl(final JavaMailSender javaMailSender, final SpringTemplateEngine templateEngine,
-	                        final EmailVerificationTokenRepository emailVerificationTokenRepository, final LocaleMessagesCreator localeMessagesCreator,
-	                        final LocaleMessagesHelper localeMessagesHelper) {
+	public EmailClientServiceImpl(@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection") final JavaMailSender javaMailSender,
+                                  final SpringTemplateEngine templateEngine, final LocaleMessagesCreator localeMessagesCreator,
+                                  final LocaleMessagesHelper localeMessagesHelper) {
 
 		Preconditions.checkNotNull(javaMailSender, "javaMailSender cannot be null!");
 		Preconditions.checkNotNull(templateEngine, "templateEngine cannot be null!");
-		Preconditions.checkNotNull(emailVerificationTokenRepository, "emailVerificationTokenRepository cannot be null!");
 		Preconditions.checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
 		Preconditions.checkNotNull(localeMessagesHelper, "localeMessagesHelper cannot be null!");
 
 		this.javaMailSender = javaMailSender;
 		this.templateEngine = templateEngine;
-		this.emailVerificationTokenRepository = emailVerificationTokenRepository;
 		this.localeMessagesCreator = localeMessagesCreator;
 		this.localeMessagesHelper = localeMessagesHelper;
 	}
@@ -114,24 +106,5 @@ public class EmailServiceImpl implements EmailService {
 			         UnsupportedEncodingException -> run(() -> log.error(EXCEPTION_MARKER, "UnsupportedEncodingException thrown inside sendMessageUsingTemplate(), error message -> {}",
 			                                                             UnsupportedEncodingException.getMessage())))
 		   ));
-	}
-
-	@Override
-	public void persistEmailVerificationToken(final CustomUser customUser, final String token) {
-		emailVerificationTokenRepository.save(new EmailVerificationToken(token, customUser));
-	}
-
-	@Override
-	public EmailVerificationToken generateNewEmailVerificationToken(final String existingEmailVerificationToken) {
-		final EmailVerificationToken existingToken = emailVerificationTokenRepository.findByToken(existingEmailVerificationToken);
-		log.info(FLOW_MARKER, "Found expired token for user: {}", existingToken.getCustomUser().getEmail());
-		existingToken.updateToken(UUID.randomUUID().toString());
-		log.info(FLOW_MARKER, "New token: {} generated successfully.", existingToken.getToken());
-		return emailVerificationTokenRepository.save(existingToken);
-	}
-
-	@Override
-	public EmailVerificationToken getEmailVerificationToken(final String emailVerificationToken) {
-		return emailVerificationTokenRepository.findByToken(emailVerificationToken);
 	}
 }
