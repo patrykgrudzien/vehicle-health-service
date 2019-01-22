@@ -14,6 +14,7 @@ import com.google.common.collect.Sets;
 import java.time.ZonedDateTime;
 import java.util.Base64;
 import java.util.Base64.Encoder;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
@@ -21,12 +22,17 @@ import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
 import me.grudzien.patryk.domain.dto.login.JwtUser;
 import me.grudzien.patryk.domain.dto.registration.UserRegistrationDto;
 import me.grudzien.patryk.domain.dto.vehicle.VehicleDto;
+import me.grudzien.patryk.domain.entity.registration.CustomUser;
+import me.grudzien.patryk.domain.entity.registration.EmailVerificationToken;
+import me.grudzien.patryk.domain.entity.registration.Privilege;
 import me.grudzien.patryk.domain.entity.registration.Role;
 import me.grudzien.patryk.domain.enums.ApplicationZone;
+import me.grudzien.patryk.domain.enums.registration.PrivilegeName;
+import me.grudzien.patryk.domain.enums.registration.RegistrationProvider;
 import me.grudzien.patryk.domain.enums.registration.RoleName;
+import me.grudzien.patryk.domain.factory.JwtUserFactory;
 import me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser;
 import me.grudzien.patryk.service.jwt.JwtTokenService;
-import me.grudzien.patryk.domain.factory.JwtUserFactory;
 
 public final class TestsUtils {
 
@@ -168,6 +174,45 @@ public final class TestsUtils {
 	    return CustomOAuth2OidcPrincipalUser.Builder(prepareTestJwtUser())
 	                                        .attributes(attributes)
 	                                        .build();
+    }
+
+    public static CustomUser prepareCustomUser(final boolean isEnabled) {
+        return CustomUser.Builder()
+                         .id(99L)
+                         .firstName("John")
+                         .lastName("Snow")
+                         .email("john.snow@email.com")
+                         .hasFakeEmail(true)
+                         .password("game-of-throne")
+                         .profilePictureUrl("www.my-profile-photo.fakeUrl.com")
+                         .registrationProvider(RegistrationProvider.CUSTOM)
+                         .roles(Collections.singleton(Role.Builder()
+                                                          .roleName(RoleName.ROLE_USER)
+                                                          .privileges(Sets.newHashSet(Privilege.Builder()
+                                                                                               .privilegeName(PrivilegeName.CAN_DO_EVERYTHING)
+                                                                                               .build()))
+                                                          .build()))
+                         .isEnabled(isEnabled)
+                         .createdDate(ApplicationZone.POLAND.now())
+                         .build();
+    }
+
+    public static EmailVerificationToken prepareEmailVerificationToken(final boolean isUserEnabled) {
+        return EmailVerificationToken.Builder()
+                                     .id(1L)
+                                     .expiryDate(ApplicationZone.POLAND.now().plusHours(24L))
+                                     .customUser(prepareCustomUser(isUserEnabled))
+                                     .token(RandomStringUtils.randomAlphanumeric(25))
+                                     .build();
+    }
+
+    public static EmailVerificationToken prepareEmailVerificationToken(final boolean isUserEnabled, final ZonedDateTime expiryDate) {
+        return EmailVerificationToken.Builder()
+                                     .id(1L)
+                                     .expiryDate(expiryDate)
+                                     .customUser(prepareCustomUser(isUserEnabled))
+                                     .token(RandomStringUtils.randomAlphanumeric(25))
+                                     .build();
     }
 
     public static Device testDevice() {
