@@ -1,4 +1,4 @@
-package me.grudzien.patryk.handler.exception;
+package me.grudzien.patryk.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import me.grudzien.patryk.domain.dto.responses.ExceptionResponse;
-import me.grudzien.patryk.exception.RedirectionException;
 import me.grudzien.patryk.exception.login.BadCredentialsAuthenticationException;
 import me.grudzien.patryk.exception.login.UserDisabledAuthenticationException;
 import me.grudzien.patryk.exception.registration.CustomUserValidationException;
@@ -96,11 +95,6 @@ public class ExceptionHandlingController {
 
 	@ExceptionHandler(EmailVerificationTokenExpiredException.class)
 	public ResponseEntity<ExceptionResponse> emailVerificationTokenExpiredException(final EmailVerificationTokenExpiredException exception) {
-		return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), HttpStatus.BAD_REQUEST);
-	}
-
-	@ExceptionHandler(RedirectionException.class)
-	public ResponseEntity<ExceptionResponse> cannotRedirectUser(final RedirectionException exception) {
 		return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), HttpStatus.BAD_REQUEST);
 	}
 
