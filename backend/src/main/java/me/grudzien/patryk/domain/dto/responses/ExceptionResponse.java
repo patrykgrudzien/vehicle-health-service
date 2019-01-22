@@ -19,6 +19,10 @@ public class ExceptionResponse extends CustomResponse {
 
 	private List<String> errors;
 
+    public ExceptionResponse(final String message) {
+        super(message);
+    }
+
 	@Builder(builderMethodName = "FullBuilder")
 	public ExceptionResponse(final String message, final SecurityStatus securityStatus, final AccountStatus accountStatus, final String lastRequestedPath,
                              final String lastRequestMethod, final List<String> errors) {
