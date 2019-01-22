@@ -15,17 +15,16 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
-import java.util.Calendar;
-import java.util.Date;
+import java.time.ZonedDateTime;
+
+import me.grudzien.patryk.domain.enums.ApplicationZone;
 
 /**
  * The EmailVerificationToken must meet the following criteria:
- * 1) It must link back to the CustomUser (via a unidirectional relation)
+ * 1) It must link back to the {@link CustomUser} (via a unidirectional relation)
  * 2) It'll be created right after registration
- * 3) It'll expire within 24h following its creation
+ * 3) It'll expire within 24h following its creation {@link EmailVerificationToken#EXPIRATION_IN_MINUTES}
  * 4) Has a unique, randomly generated value
  */
 @Entity
@@ -51,8 +50,7 @@ public class EmailVerificationToken {
 	private CustomUser customUser;
 
 	@Column(name = "EXPIRY_DATE")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date expiryDate;
+	private ZonedDateTime expiryDate;
 
 	public EmailVerificationToken() {
 	    // hibernate purpose
@@ -60,24 +58,21 @@ public class EmailVerificationToken {
 
 	public EmailVerificationToken(final String token) {
 		this.token = token;
-		this.expiryDate = calculateExpiryDate(EXPIRATION_IN_MINUTES);
+		this.expiryDate = calculateExpiryDate();
 	}
 
 	public EmailVerificationToken(final String token, final CustomUser customUser) {
 		this.token = token;
 		this.customUser = customUser;
-		this.expiryDate = calculateExpiryDate(EXPIRATION_IN_MINUTES);
+		this.expiryDate = calculateExpiryDate();
 	}
 
 	public void updateToken(final String newToken) {
 		this.token = newToken;
-		this.expiryDate = calculateExpiryDate(EXPIRATION_IN_MINUTES);
+		this.expiryDate = calculateExpiryDate();
 	}
 
-	private Date calculateExpiryDate(final int expiryTimeInMinutes) {
-		final Calendar calendar = Calendar.getInstance();
-		calendar.setTimeInMillis(new Date().getTime());
-		calendar.add(Calendar.MINUTE, expiryTimeInMinutes);
-		return new Date(calendar.getTime().getTime());
+	private ZonedDateTime calculateExpiryDate() {
+	    return ApplicationZone.POLAND.now().plusMinutes(EXPIRATION_IN_MINUTES);
 	}
 }
