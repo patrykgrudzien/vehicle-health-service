@@ -28,6 +28,11 @@ public enum AppFLow {
 			AppFLow.SUCCESSFUL_REDIRECTION_DEFAULT_LOG_INFO_MESSAGE,
 			AppFLow.REDIRECTION_EXCEPTION_DEFAULT_LOG_INFO_MESSAGE
 	),
+    SYSTEM_COULD_NOT_ENABLE_USER_ACCOUNT(
+            "Created \"system could not enable user account\" URL for (LOCAL) env.",
+            AppFLow.SUCCESSFUL_REDIRECTION_DEFAULT_LOG_INFO_MESSAGE,
+            AppFLow.REDIRECTION_EXCEPTION_DEFAULT_LOG_INFO_MESSAGE
+    ),
 	CONFIRM_REGISTRATION(
 			"Created registration confirmation URL for (LOCAL) env.",
 			AppFLow.SUCCESSFUL_REDIRECTION_DEFAULT_LOG_INFO_MESSAGE,
@@ -49,7 +54,7 @@ public enum AppFLow {
 	private final String redirectionExceptionLogErrorMessage;
 
 	@Getter(AccessLevel.NONE)
-	private static final String SUCCESSFUL_REDIRECTION_DEFAULT_LOG_INFO_MESSAGE = "User successfully redirected to ({}) url.";
+	private static final String SUCCESSFUL_REDIRECTION_DEFAULT_LOG_INFO_MESSAGE = "({}) URL successfully created and will be placed in the \"Location\" header.";
 	@Getter(AccessLevel.NONE)
-	private static final String REDIRECTION_EXCEPTION_DEFAULT_LOG_INFO_MESSAGE = "Cannot redirect user to ({}) url.";
+	private static final String REDIRECTION_EXCEPTION_DEFAULT_LOG_INFO_MESSAGE = "({}) URL was NOT created! Response won't contain \"Location\" header!";
 }

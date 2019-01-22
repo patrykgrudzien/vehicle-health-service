@@ -25,6 +25,7 @@ import static io.vavr.Predicates.isIn;
 import static me.grudzien.patryk.domain.enums.AppFLow.ACCOUNT_ALREADY_ENABLED;
 import static me.grudzien.patryk.domain.enums.AppFLow.CONFIRM_REGISTRATION;
 import static me.grudzien.patryk.domain.enums.AppFLow.REGISTER_OAUTH2_PRINCIPAL;
+import static me.grudzien.patryk.domain.enums.AppFLow.SYSTEM_COULD_NOT_ENABLE_USER_ACCOUNT;
 import static me.grudzien.patryk.domain.enums.AppFLow.USER_LOGGED_IN_USING_GOOGLE;
 import static me.grudzien.patryk.domain.enums.AppFLow.VERIFICATION_TOKEN_CREATION;
 import static me.grudzien.patryk.util.log.LogMarkers.EXCEPTION_MARKER;
@@ -61,7 +62,7 @@ public class ContextPathsResolver implements InitializingBean {
 			return getHerokuBaseUrl();
 		} else {
 			return Match(appFLow).of(
-					Case($(isIn(ACCOUNT_ALREADY_ENABLED, CONFIRM_REGISTRATION, USER_LOGGED_IN_USING_GOOGLE)), flow -> {
+					Case($(isIn(ACCOUNT_ALREADY_ENABLED, CONFIRM_REGISTRATION, USER_LOGGED_IN_USING_GOOGLE, SYSTEM_COULD_NOT_ENABLE_USER_ACCOUNT)), flow -> {
 						log.info(METHOD_INVOCATION_MARKER, flow.getDetermineUrlLogInfoMessage());
 						return propertiesKeeper.corsOrigins().FRONT_END_MODULE;
 					}),
