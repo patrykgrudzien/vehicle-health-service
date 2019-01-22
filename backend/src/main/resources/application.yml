@@ -13,6 +13,7 @@ custom:
         confirmed: /registration-confirmed
         confirmed-token-not-found: /registration-confirmed?error=tokenNotFound
         confirmed-token-expired: /registration-confirmed?error=tokenExpired
+        system-could-not-enable-user-account: /registration-confirmed?error=systemEncounteredAnErrorOnEnablingAccount
         user-already-enabled: /registration-confirmed?info=userAlreadyEnabled
         resend-email-verification-token: /resend-verification-token?token=
       authentication:
