@@ -2,7 +2,6 @@ package me.grudzien.patryk.integration.repository.registration;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -11,9 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.Optional;
 
 import me.grudzien.patryk.domain.entity.registration.CustomUser;
@@ -24,11 +21,10 @@ import me.grudzien.patryk.repository.registration.EmailVerificationTokenReposito
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import static me.grudzien.patryk.TestsUtils.TEST_PASSWORD;
+
 @DataJpaTest
 class EmailVerificationTokenRepositoryIT {
-
-    @Autowired
-    private TestEntityManager testEntityManager;
 
     @Autowired
     private EmailVerificationTokenRepository emailVerificationTokenRepository;
@@ -39,11 +35,12 @@ class EmailVerificationTokenRepositoryIT {
     private EmailVerificationToken givenEmailVerificationToken;
     private EmailVerificationToken savedToken;
 
+    private static final ZonedDateTime NOW_PLUS_15_MINUTES = ApplicationZone.POLAND.now().plusMinutes(15L);
+
     @BeforeEach
     void setUp() {
         givenEmailVerificationToken = prepareTestEmailVerificationToken();
         savedToken = emailVerificationTokenRepository.save(givenEmailVerificationToken);
-        testEntityManager.flush();
     }
 
     @AfterEach
@@ -65,7 +62,10 @@ class EmailVerificationTokenRepositoryIT {
                 () -> Assertions.assertNotNull(foundToken.getCustomUser()),
                 () -> assertThat(foundToken.getCustomUser()).isEqualTo(savedToken.getCustomUser()),
                 () -> assertThat(foundToken.getExpiryDate()).isEqualTo(savedToken.getExpiryDate()),
-                () -> Assertions.assertEquals(new Date(12345L), foundToken.getExpiryDate()),
+                () -> Assertions.assertEquals(NOW_PLUS_15_MINUTES.getOffset(), foundToken.getExpiryDate().getOffset()),
+                () -> Assertions.assertEquals(NOW_PLUS_15_MINUTES.getHour(), foundToken.getExpiryDate().getHour()),
+                () -> Assertions.assertEquals(NOW_PLUS_15_MINUTES.getMinute(), foundToken.getExpiryDate().getMinute()),
+                () -> Assertions.assertEquals(NOW_PLUS_15_MINUTES.getSecond(), foundToken.getExpiryDate().getSecond()),
                 () -> assertThat(customUserRepository.findById(foundToken.getCustomUser().getId())).isNotNull()
         );
     }
@@ -83,7 +83,10 @@ class EmailVerificationTokenRepositoryIT {
                 () -> Assertions.assertNotNull(foundToken.getCustomUser()),
                 () -> assertThat(foundToken.getCustomUser()).isEqualTo(savedToken.getCustomUser()),
                 () -> assertThat(foundToken.getExpiryDate()).isEqualTo(savedToken.getExpiryDate()),
-                () -> Assertions.assertEquals(new Date(12345L), foundToken.getExpiryDate()),
+                () -> Assertions.assertEquals(NOW_PLUS_15_MINUTES.getOffset(), foundToken.getExpiryDate().getOffset()),
+                () -> Assertions.assertEquals(NOW_PLUS_15_MINUTES.getHour(), foundToken.getExpiryDate().getHour()),
+                () -> Assertions.assertEquals(NOW_PLUS_15_MINUTES.getMinute(), foundToken.getExpiryDate().getMinute()),
+                () -> Assertions.assertEquals(NOW_PLUS_15_MINUTES.getSecond(), foundToken.getExpiryDate().getSecond()),
                 () -> assertThat(customUserRepository.findById(foundToken.getCustomUser().getId())).isNotNull()
         );
     }
@@ -108,11 +111,11 @@ class EmailVerificationTokenRepositoryIT {
                                                            .firstName("admin")
                                                            .lastName("root")
                                                            .email("test@email.com")
-                                                           .password("password")
+                                                           .password(TEST_PASSWORD)
                                                            .isEnabled(false)
-                                                           .createdDate(ZonedDateTime.now(ZoneId.of(ApplicationZone.POLAND.getZoneId())))
+                                                           .createdDate(ApplicationZone.POLAND.now())
                                                            .build())
-                                     .expiryDate(new Date(12345L))
+                                     .expiryDate(NOW_PLUS_15_MINUTES)
                                      .build();
     }
 }
