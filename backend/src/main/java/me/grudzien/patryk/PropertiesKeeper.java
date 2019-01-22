@@ -38,6 +38,7 @@ public final class PropertiesKeeper {
 		public String REGISTRATION_CONFIRMED = customApplicationProperties.getEndpoints().getRegistration().getConfirmed();
 		public String CONFIRMATION_TOKEN_NOT_FOUND = customApplicationProperties.getEndpoints().getRegistration().getConfirmedTokenNotFound();
 		public String CONFIRMATION_TOKEN_EXPIRED = customApplicationProperties.getEndpoints().getRegistration().getConfirmedTokenExpired();
+		public String SYSTEM_COULD_NOT_ENABLE_USER_ACCOUNT = customApplicationProperties.getEndpoints().getRegistration().getSystemCouldNotEnableUserAccount();
 
 		public Authentication authentication() {return new Authentication();}
 
