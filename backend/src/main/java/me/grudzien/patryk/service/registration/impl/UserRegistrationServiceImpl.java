@@ -1,25 +1,20 @@
 package me.grudzien.patryk.service.registration.impl;
 
+import io.vavr.control.Try;
 import lombok.extern.log4j.Log4j2;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.request.WebRequest;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-import javax.servlet.http.HttpServletResponse;
-
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import me.grudzien.patryk.domain.dto.registration.RegistrationResponse;
 import me.grudzien.patryk.domain.dto.registration.UserRegistrationDto;
@@ -39,20 +34,19 @@ import me.grudzien.patryk.exception.registration.CustomUserValidationException;
 import me.grudzien.patryk.exception.registration.EmailVerificationTokenExpiredException;
 import me.grudzien.patryk.exception.registration.EmailVerificationTokenNotFoundException;
 import me.grudzien.patryk.exception.registration.UserAlreadyExistsException;
-import me.grudzien.patryk.handler.web.HttpResponseHandler;
 import me.grudzien.patryk.oauth2.util.CacheHelper;
 import me.grudzien.patryk.repository.registration.CustomUserRepository;
 import me.grudzien.patryk.repository.registration.EmailVerificationTokenRepository;
-import me.grudzien.patryk.service.registration.EmailService;
-import me.grudzien.patryk.service.registration.UserRegistrationService;
-import me.grudzien.patryk.service.registration.event.OnRegistrationCompleteEvent;
 import me.grudzien.patryk.service.login.impl.MyUserDetailsService;
+import me.grudzien.patryk.service.registration.UserRegistrationService;
 import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.util.validator.CustomValidator;
+import me.grudzien.patryk.util.web.HttpLocationHeaderCreator;
 import me.grudzien.patryk.util.web.RequestsDecoder;
 
 import static me.grudzien.patryk.domain.enums.AppFLow.ACCOUNT_ALREADY_ENABLED;
 import static me.grudzien.patryk.domain.enums.AppFLow.CONFIRM_REGISTRATION;
+import static me.grudzien.patryk.domain.enums.AppFLow.SYSTEM_COULD_NOT_ENABLE_USER_ACCOUNT;
 import static me.grudzien.patryk.domain.enums.AppFLow.VERIFICATION_TOKEN_EXPIRED;
 import static me.grudzien.patryk.domain.enums.AppFLow.VERIFICATION_TOKEN_NOT_FOUND;
 import static me.grudzien.patryk.util.log.LogMarkers.EXCEPTION_MARKER;
@@ -65,53 +59,49 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 
 	private final CustomUserRepository customUserRepository;
 	private final BCryptPasswordEncoder passwordEncoder;
-	private final ApplicationEventPublisher eventPublisher;
 	private final EmailVerificationTokenRepository emailVerificationTokenRepository;
-	private final HttpResponseHandler httpResponseHandler;
-	private final EmailService emailService;
+	private final HttpLocationHeaderCreator httpLocationHeaderCreator;
 	private final LocaleMessagesCreator localeMessagesCreator;
 	private final RequestsDecoder requestsDecoder;
 	private final CacheHelper cacheHelper;
 
 	@Autowired
 	public UserRegistrationServiceImpl(final CustomUserRepository customUserRepository, final BCryptPasswordEncoder passwordEncoder,
-	                                   final ApplicationEventPublisher eventPublisher, final EmailVerificationTokenRepository emailVerificationTokenRepository,
-	                                   final HttpResponseHandler httpResponseHandler, final EmailService emailService, final LocaleMessagesCreator localeMessagesCreator,
-	                                   final RequestsDecoder requestsDecoder, final CacheHelper cacheHelper) {
+                                       final EmailVerificationTokenRepository emailVerificationTokenRepository,
+                                       final HttpLocationHeaderCreator httpLocationHeaderCreator, final LocaleMessagesCreator localeMessagesCreator,
+                                       final RequestsDecoder requestsDecoder, final CacheHelper cacheHelper) {
 
-		Preconditions.checkNotNull(customUserRepository, "customUserRepository cannot be null!");
-		Preconditions.checkNotNull(passwordEncoder, "passwordEncoder cannot be null!");
-		Preconditions.checkNotNull(eventPublisher, "eventPublisher cannot be null!");
-		Preconditions.checkNotNull(emailVerificationTokenRepository, "emailVerificationTokenRepository cannot be null!");
-		Preconditions.checkNotNull(httpResponseHandler, "httpResponseHandler cannot be null!");
-		Preconditions.checkNotNull(emailService, "emailService cannot be null!");
-		Preconditions.checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
-		Preconditions.checkNotNull(requestsDecoder, "requestsDecoder cannot be null!");
-		Preconditions.checkNotNull(cacheHelper, "cacheHelper cannot be null!");
+        Preconditions.checkNotNull(customUserRepository, "customUserRepository cannot be null!");
+        Preconditions.checkNotNull(passwordEncoder, "passwordEncoder cannot be null!");
+        Preconditions.checkNotNull(emailVerificationTokenRepository, "emailVerificationTokenRepository cannot be null!");
+        Preconditions.checkNotNull(httpLocationHeaderCreator, "httpLocationHeaderCreator cannot be null!");
+        Preconditions.checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
+        Preconditions.checkNotNull(requestsDecoder, "requestsDecoder cannot be null!");
+        Preconditions.checkNotNull(cacheHelper, "cacheHelper cannot be null!");
 
-		this.customUserRepository = customUserRepository;
-		this.passwordEncoder = passwordEncoder;
-		this.eventPublisher = eventPublisher;
-		this.emailVerificationTokenRepository = emailVerificationTokenRepository;
-		this.httpResponseHandler = httpResponseHandler;
-		this.emailService = emailService;
-		this.localeMessagesCreator = localeMessagesCreator;
-		this.requestsDecoder = requestsDecoder;
-		this.cacheHelper = cacheHelper;
-	}
+        this.customUserRepository = customUserRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.emailVerificationTokenRepository = emailVerificationTokenRepository;
+        this.httpLocationHeaderCreator = httpLocationHeaderCreator;
+        this.localeMessagesCreator = localeMessagesCreator;
+        this.requestsDecoder = requestsDecoder;
+        this.cacheHelper = cacheHelper;
+    }
 
+	@SuppressWarnings("Duplicates")
 	@Override
-	public RegistrationResponse registerNewCustomUserAccount(final UserRegistrationDto userRegistrationDto, final WebRequest webRequest) {
+	public RegistrationResponse registerNewCustomUserAccount(final UserRegistrationDto userRegistrationDto) {
 		final UserRegistrationDto decodedUserRegistrationDto = decodeUserRegistrationDto(userRegistrationDto);
 		final String email = decodedUserRegistrationDto.getEmail();
 		final RegistrationProvider registrationProvider = userRegistrationDto.getRegistrationProvider();
-
-		final List<String> translatedValidationResult = CustomValidator.getTranslatedValidationResult(decodedUserRegistrationDto, localeMessagesCreator);
-
+		final RegistrationResponse registrationResponse = RegistrationResponse.Builder(false).build();
 		if (doesEmailExist(email)) {
 			log.error(EXCEPTION_MARKER, "User with specified email {} already exists.", email);
-			throw new UserAlreadyExistsException(localeMessagesCreator.buildLocaleMessageWithParam("user-already-exists", email));
+            final String userAlreadyExistsMessage = localeMessagesCreator.buildLocaleMessageWithParam("user-already-exists", email);
+            registrationResponse.setMessage(userAlreadyExistsMessage);
+            throw new UserAlreadyExistsException(userAlreadyExistsMessage);
 		}
+        final List<String> translatedValidationResult = CustomValidator.getTranslatedValidationResult(decodedUserRegistrationDto, localeMessagesCreator);
 		if (translatedValidationResult.isEmpty()) {
 			log.info("No validation errors during user registration.");
             final CustomUser customUser = CustomUser.Builder()
@@ -128,32 +118,26 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 			                                                                                                              .privilegeName(PrivilegeName.CAN_DO_EVERYTHING)
 			                                                                                                              .build()))
 			                                                                         .build()))
-                                                    .createdDate(ZonedDateTime.now(ZoneId.of(ApplicationZone.POLAND.getZoneId())))
+                                                    .createdDate(ApplicationZone.POLAND.now())
                                                     .build();
 
-			// TODO: temporary (test purposes)
-			final Engine engine = Engine.Builder().engineType(EngineType.DIESEL).build();
+            final Engine engine = Engine.Builder().engineType(EngineType.DIESEL).build();
 			final Vehicle vehicle = Vehicle.Builder().vehicleType(VehicleType.CAR).engine(engine).build();
 			vehicle.setMileage(0L);
 			vehicle.setCustomUser(customUser);
 			customUser.setVehicles(Lists.newArrayList(vehicle));
-			// TODO: temporary (test purposes)
 
 			customUserRepository.save(customUser);
-
-			// we use Spring Event to create the token and send verification email (it should not be performed by controller directly)
-			log.info("Publisher published event for verification token generation.");
-			eventPublisher.publishEvent(new OnRegistrationCompleteEvent(customUser, webRequest.getContextPath()));
-
-			return RegistrationResponse.Builder()
-                                       .message(localeMessagesCreator.buildLocaleMessageWithParam("register-user-account-success", email))
-                                       .isSuccessful(true)
-                                       .build();
+			registrationResponse.setSuccessful(true);
+			registrationResponse.setRegisteredUser(customUser);
+			registrationResponse.setMessage(localeMessagesCreator.buildLocaleMessageWithParam("register-user-account-success", email));
 		} else {
 			log.error("Validation errors present during user registration.");
-			throw new CustomUserValidationException(localeMessagesCreator.buildLocaleMessage("registration-form-validation-errors"),
-			                                        translatedValidationResult);
+            final String validationErrorsMessage = localeMessagesCreator.buildLocaleMessage("registration-form-validation-errors");
+            registrationResponse.setMessage(validationErrorsMessage);
+            throw new CustomUserValidationException(validationErrorsMessage, translatedValidationResult);
 		}
+		return registrationResponse;
 	}
 
     private UserRegistrationDto decodeUserRegistrationDto(final UserRegistrationDto userRegistrationDto) {
@@ -168,32 +152,38 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
     }
 
 	@Override
-	public void confirmRegistration(final String emailVerificationToken, final HttpServletResponse response) {
-		final EmailVerificationToken token = emailService.getEmailVerificationToken(emailVerificationToken);
+	public RegistrationResponse confirmRegistration(final String tokenRequestParam) {
+		final EmailVerificationToken token = getEmailVerificationToken(tokenRequestParam);
+		RegistrationResponse registrationResponse = RegistrationResponse.Builder(false).build();
 		if (token != null) {
+		    log.info(FLOW_MARKER, "Email verification token successfully found.");
 			final CustomUser customUser = token.getCustomUser();
 			if (customUser.isEnabled()) {
 				log.info(FLOW_MARKER, "User account with e-mail address ({}) has been already enabled.", customUser.getEmail());
-				httpResponseHandler.redirectUserTo(ACCOUNT_ALREADY_ENABLED, response);
+				registrationResponse.setRedirectionUrl(httpLocationHeaderCreator.createRedirectionUrl(ACCOUNT_ALREADY_ENABLED));
 			} else {
-				final Calendar calendar = Calendar.getInstance();
-				if (token.getExpiryDate().compareTo(calendar.getTime()) < 0) {
-					log.error("Verification token has expired.");
-					httpResponseHandler.redirectUserTo(VERIFICATION_TOKEN_EXPIRED, response);
+			    if (ApplicationZone.POLAND.now().isAfter(token.getExpiryDate())) {
+					log.error("Verification token has expired!");
+					registrationResponse.setRedirectionUrl(httpLocationHeaderCreator.createRedirectionUrl(VERIFICATION_TOKEN_EXPIRED));
 					throw new EmailVerificationTokenExpiredException(localeMessagesCreator.buildLocaleMessage("verification-token-expired"));
 				}
-				enableRegisteredCustomUser(customUser);
-
-				emailVerificationTokenRepository.delete(token);
-				log.info("Token confirmed and deleted from database.");
-
-				httpResponseHandler.redirectUserTo(CONFIRM_REGISTRATION, response);
+				log.info(FLOW_MARKER, "Email verification token is still valid.");
+                registrationResponse = enableRegisteredCustomUser(customUser);
+                if (registrationResponse.isSuccessful()) {
+                    emailVerificationTokenRepository.delete(token);
+                    log.info("Token confirmed and deleted from database.");
+                    return registrationResponse;
+                } else {
+                    registrationResponse.setMessage(localeMessagesCreator.buildLocaleMessage("system-encountered-error-on-account-confirmation"));
+                    registrationResponse.setRedirectionUrl(httpLocationHeaderCreator.createRedirectionUrl(SYSTEM_COULD_NOT_ENABLE_USER_ACCOUNT));
+                }
 			}
 		} else {
-			log.error("No verification token found in the database. Some error occurred during registration process.");
-			httpResponseHandler.redirectUserTo(VERIFICATION_TOKEN_NOT_FOUND, response);
+			log.error("No verification token found in the database. Some error occurred during registration process!");
+			registrationResponse.setRedirectionUrl(httpLocationHeaderCreator.createRedirectionUrl(VERIFICATION_TOKEN_NOT_FOUND));
 			throw new EmailVerificationTokenNotFoundException(localeMessagesCreator.buildLocaleMessage("verification-token-not-found"));
 		}
+		return registrationResponse;
 	}
 
 	@Override
@@ -202,25 +192,53 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 	}
 
 	@Override
-	public CustomUser getCustomUserFromEmailVerificationToken(final String emailVerificationToken) {
-		final EmailVerificationToken token = emailVerificationTokenRepository.findByToken(emailVerificationToken);
-		return token != null ? token.getCustomUser() : null;
+	public RegistrationResponse enableRegisteredCustomUser(final CustomUser customUser) {
+		final RegistrationResponse registrationResponse = RegistrationResponse.Builder(false).build();
+
+		Try.run(() -> {
+		    log.info(FLOW_MARKER, "Trying to enable newly created user...");
+			// cleaning user from cache because it's been saved (with "enabled" status = FALSE) before email confirmation
+			cacheHelper.clearCacheByName(MyUserDetailsService.PRINCIPAL_USER_CACHE_NAME);
+			customUser.setEnabled(Boolean.TRUE);
+			customUserRepository.save(customUser);
+		}).onSuccess(successVoid -> {
+			log.info("User account has been activated.");
+			registrationResponse.setSuccessful(true);
+			registrationResponse.setRedirectionUrl(httpLocationHeaderCreator.createRedirectionUrl(CONFIRM_REGISTRATION));
+			registrationResponse.setMessage(localeMessagesCreator.buildLocaleMessage("confirm-registration"));
+		}).onFailure(throwable -> log.error("User account has NOT been activated!"));
+
+        return registrationResponse;
 	}
 
-	@Override
-	public void enableRegisteredCustomUser(final CustomUser customUser) {
-		// cleaning user from cache because it's been saved (with "enabled" status = FALSE) before email confirmation
-		cacheHelper.clearCacheByName(MyUserDetailsService.PRINCIPAL_USER_CACHE_NAME);
+    @Override
+    public void createEmailVerificationTokenForUser(final CustomUser customUser, final String uuidToken) {
+        Try.run(() -> {
+            final EmailVerificationToken emailVerificationToken = new EmailVerificationToken(uuidToken, customUser);
+            log.info(FLOW_MARKER, "Trying to persist email verification token...");
+            emailVerificationTokenRepository.save(emailVerificationToken);
+        })
+           .onSuccess(successVoid -> log.info(FLOW_MARKER, "Email verification token successfully saved into database."))
+           .onFailure(throwable -> log.error(EXCEPTION_MARKER, "Email verification token has NOT been persisted!"));
+    }
 
-        customUser.setEnabled(Boolean.TRUE);
-		customUserRepository.save(customUser);
-        log.info("User account has been activated.");
-	}
+    @Override
+    public EmailVerificationToken getEmailVerificationToken(final String tokenRequestParam) {
+        return emailVerificationTokenRepository.findByToken(tokenRequestParam);
+    }
 
-	@Override
-	public void resendEmailVerificationToken(final String existingEmailVerificationToken) {
-		// TODO: finish implementation
-		final EmailVerificationToken newToken = emailService.generateNewEmailVerificationToken(existingEmailVerificationToken);
-		final CustomUser existingUser = getCustomUserFromEmailVerificationToken(newToken.getToken());
-	}
+    @Override
+    public CustomUser getCustomUserFromEmailVerificationToken(final String tokenRequestParam) {
+        final EmailVerificationToken token = emailVerificationTokenRepository.findByToken(tokenRequestParam);
+        return token != null ? token.getCustomUser() : null;
+    }
+
+    @Override
+    public EmailVerificationToken generateNewEmailVerificationToken(final String existingTokenRequestParam) {
+        final EmailVerificationToken existingToken = emailVerificationTokenRepository.findByToken(existingTokenRequestParam);
+        log.info(FLOW_MARKER, "Found expired token for user: {}", existingToken.getCustomUser().getEmail());
+        existingToken.updateToken(UUID.randomUUID().toString());
+        log.info(FLOW_MARKER, "New token: {} generated successfully.", existingToken.getToken());
+        return emailVerificationTokenRepository.save(existingToken);
+    }
 }
