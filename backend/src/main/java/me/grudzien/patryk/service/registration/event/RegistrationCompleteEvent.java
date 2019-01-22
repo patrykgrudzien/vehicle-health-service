@@ -9,15 +9,15 @@ import me.grudzien.patryk.domain.entity.registration.CustomUser;
 
 @Getter
 @Setter
-public class OnRegistrationCompleteEvent extends ApplicationEvent {
+class RegistrationCompleteEvent extends ApplicationEvent {
 
-	private static final long serialVersionUID = 4183581670384034845L;
+	private static final long serialVersionUID = 363547457177994767L;
 
 	private String applicationUrl;
 	private CustomUser customUser;
 	private String eventName;
 
-	public OnRegistrationCompleteEvent(final CustomUser customUser, final String applicationUrl) {
+	RegistrationCompleteEvent(final CustomUser customUser, final String applicationUrl) {
 		// customUser in super() is the object on which the event initially occurred.
 		super(customUser);
 		this.customUser = customUser;
