@@ -15,16 +15,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.google.common.base.Preconditions;
 
-import javax.servlet.http.HttpServletResponse;
-
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationResponse;
 import me.grudzien.patryk.domain.dto.login.JwtUser;
 import me.grudzien.patryk.domain.dto.responses.ExceptionResponse;
 import me.grudzien.patryk.domain.dto.responses.SuccessResponse;
-import me.grudzien.patryk.handler.web.HttpResponseHandler;
 import me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser.AccountStatus;
 import me.grudzien.patryk.service.jwt.JwtTokenService;
+import me.grudzien.patryk.util.web.HttpLocationHeaderCreator;
 
 import static me.grudzien.patryk.domain.enums.AppFLow.USER_LOGGED_IN_USING_GOOGLE;
 import static me.grudzien.patryk.oauth2.handler.CustomOAuth2AuthenticationSuccessHandler.SHORT_LIVED_AUTH_TOKEN_NAME;
@@ -34,14 +32,14 @@ import static me.grudzien.patryk.oauth2.handler.CustomOAuth2AuthenticationSucces
 @RequestMapping("${custom.properties.endpoints.api-context-path}")
 public class GoogleOAuth2Controller {
 
-	private final HttpResponseHandler httpResponseHandler;
+	private final HttpLocationHeaderCreator httpLocationHeaderCreator;
 	private final JwtTokenService jwtTokenService;
 
 	@Autowired
-	public GoogleOAuth2Controller(final HttpResponseHandler httpResponseHandler, final JwtTokenService jwtTokenService) {
-        Preconditions.checkNotNull(httpResponseHandler, "httpResponseHandler cannot be null!");
+	public GoogleOAuth2Controller(final HttpLocationHeaderCreator httpLocationHeaderCreator, final JwtTokenService jwtTokenService) {
+        Preconditions.checkNotNull(httpLocationHeaderCreator, "httpLocationHeaderCreator cannot be null!");
         Preconditions.checkNotNull(jwtTokenService, "jwtTokenService cannot be null!");
-        this.httpResponseHandler = httpResponseHandler;
+        this.httpLocationHeaderCreator = httpLocationHeaderCreator;
         this.jwtTokenService = jwtTokenService;
     }
 
@@ -91,10 +89,10 @@ public class GoogleOAuth2Controller {
     }
 
 	@GetMapping("${custom.properties.endpoints.oauth2.user-logged-in-using-google}")
-	public ResponseEntity<SuccessResponse> userLoggedInUsingGoogle(@RequestParam(SHORT_LIVED_AUTH_TOKEN_NAME) final String token,
-	                                                               final HttpServletResponse httpServletResponse) {
+	public ResponseEntity<SuccessResponse> userLoggedInUsingGoogle(@RequestParam(SHORT_LIVED_AUTH_TOKEN_NAME) final String token) {
 	    final Tuple2<String, String> additionalParameters = new Tuple2<>(SHORT_LIVED_AUTH_TOKEN_NAME, token);
-		httpResponseHandler.redirectUserTo(USER_LOGGED_IN_USING_GOOGLE, httpServletResponse, additionalParameters);
+	    // TODO
+	    final String redirectionUrl = httpLocationHeaderCreator.createRedirectionUrl(USER_LOGGED_IN_USING_GOOGLE, additionalParameters);
 		return new ResponseEntity<>(SuccessResponse.buildBodyMessage(AccountStatus.LOGGED) , HttpStatus.OK);
 	}
 
