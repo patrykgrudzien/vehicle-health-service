@@ -84,8 +84,7 @@ class JwtTokenClaimsRetrieverImplIT {
                 () -> assertThat(allClaims.getAudience()).isEqualTo(JwtTokenConstants.AUDIENCE_WEB),
                 () -> assertThat(dateOperationsHelper.getMinutesDifferenceBetween(issuedAt, NOW_IN_POLAND)).isEqualTo(0L),
                 () -> assertThat(issuedAt.toLocalDate()).isEqualTo(NOW_IN_POLAND.toLocalDate()),
-                () -> assertThat(dateOperationsHelper.getMinutesDifferenceBetween(expiration, issuedAt)).isEqualTo(15L),
-                () -> assertThat(expiration.toLocalDate()).isEqualTo(NOW_IN_POLAND.toLocalDate())
+                () -> assertThat(dateOperationsHelper.getMinutesDifferenceBetween(expiration, issuedAt)).isEqualTo(15L)
         );
     }
 
@@ -131,8 +130,7 @@ class JwtTokenClaimsRetrieverImplIT {
 		                                                      .orElseThrow(() -> new RuntimeException("No expiration claim found inside access token!"));
 	    // then
         Assertions.assertAll(
-                () -> assertThat(dateOperationsHelper.getMinutesDifferenceBetween(expiration, issuedAt)).isEqualTo(15L),
-                () -> assertThat(expiration.toLocalDate()).isEqualTo(NOW_IN_POLAND.toLocalDate())
+                () -> assertThat(dateOperationsHelper.getMinutesDifferenceBetween(expiration, issuedAt)).isEqualTo(15L)
         );
     }
 
