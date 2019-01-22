@@ -24,7 +24,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import me.grudzien.patryk.controller.registration.UserRegistrationController;
 import me.grudzien.patryk.domain.dto.registration.RegistrationResponse;
 import me.grudzien.patryk.service.registration.UserRegistrationService;
-import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
+import me.grudzien.patryk.service.registration.event.RegistrationEventPublisher;
 
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
@@ -45,12 +45,11 @@ class UserRegistrationControllerTest {
 	@Autowired
 	private WebApplicationContext webApplicationContext;
 
-	@SuppressWarnings("unused")
-    @MockBean
-    private LocaleMessagesCreator localeMessagesCreator;
-
     @MockBean
 	private UserRegistrationService userRegistrationService;
+
+    @MockBean
+    private RegistrationEventPublisher registrationEventPublisher;
 
     private String registrationJSONBody;
 
@@ -70,12 +69,12 @@ class UserRegistrationControllerTest {
     @DisplayName("Register user account - successful using MockMvc.")
 	void testRegisterUserAccountSuccessfully() throws Exception {
 		// given
-        final RegistrationResponse expectedResponse = RegistrationResponse.Builder()
+        final RegistrationResponse expectedResponse = RegistrationResponse.Builder(true)
                                                                           .message("Registration success!")
-                                                                          .isSuccessful(true)
                                                                           .build();
         // when
-        when(userRegistrationService.registerNewCustomUserAccount(any(), any())).thenReturn(expectedResponse);
+        when(userRegistrationService.registerNewCustomUserAccount(any())).thenReturn(expectedResponse);
+        when(registrationEventPublisher.publishRegistrationEven(any(), any())).thenReturn(expectedResponse);
 
         // then
         mockMvc.perform(
@@ -92,12 +91,12 @@ class UserRegistrationControllerTest {
     @DisplayName("Register user account - successful using RestAssuredMockMvc.")
     void testRegisterUserAccountSuccessfully_usingRestAssured() {
         // given
-        final RegistrationResponse expectedResponse = RegistrationResponse.Builder()
+        final RegistrationResponse expectedResponse = RegistrationResponse.Builder(true)
                                                                           .message("Registration success!")
-                                                                          .isSuccessful(true)
                                                                           .build();
         // when
-        when(userRegistrationService.registerNewCustomUserAccount(any(), any())).thenReturn(expectedResponse);
+        when(userRegistrationService.registerNewCustomUserAccount(any())).thenReturn(expectedResponse);
+        when(registrationEventPublisher.publishRegistrationEven(any(), any())).thenReturn(expectedResponse);
 
         // then
         RestAssuredMockMvc.given()
