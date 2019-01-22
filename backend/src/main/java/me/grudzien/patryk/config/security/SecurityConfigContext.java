@@ -104,7 +104,7 @@ public final class SecurityConfigContext {
             /**
              * This filter is required to determine "Locale" which is needed to create appropriate messages using:
              * {@link me.grudzien.patryk.util.i18n.LocaleMessagesCreator#buildLocaleMessage(String)} or to take right email template inside:
-             * {@link me.grudzien.patryk.service.registration.impl.EmailServiceImpl#sendMessageUsingTemplate(me.grudzien.patryk.domain.dto.registration.EmailDto)}.
+             * {@link me.grudzien.patryk.service.registration.impl.EmailClientServiceImpl#sendMessageUsingTemplate(me.grudzien.patryk.domain.dto.registration.EmailDto)}.
              */
             final LocaleDeterminerFilter localeDeterminerFilter = new LocaleDeterminerFilter(localeMessagesHelper);
             httpSecurity.addFilterBefore(localeDeterminerFilter, ServletExceptionHandlerFilter.class);
