@@ -18,7 +18,7 @@ import me.grudzien.patryk.oauth2.handler.CustomOAuth2AuthenticationSuccessHandle
 import me.grudzien.patryk.oauth2.repository.CacheBasedOAuth2AuthorizationRequestRepository;
 import me.grudzien.patryk.oauth2.service.CustomOAuth2UserService;
 import me.grudzien.patryk.oauth2.service.CustomOidcUserService;
-import me.grudzien.patryk.oauth2.util.CacheHelper;
+import me.grudzien.patryk.oauth2.util.CacheManagerHelper;
 import me.grudzien.patryk.service.jwt.JwtTokenClaimsRetriever;
 import me.grudzien.patryk.service.jwt.JwtTokenValidator;
 import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
@@ -115,7 +115,7 @@ public final class SecurityConfigContext {
      * Configuring OAuth2 Client.
      */
     static class OAuth2 {
-        static void configureOAuth2Client(final HttpSecurity httpSecurity, final PropertiesKeeper propertiesKeeper, final CacheHelper cacheHelper,
+        static void configureOAuth2Client(final HttpSecurity httpSecurity, final PropertiesKeeper propertiesKeeper, final CacheManagerHelper cacheManagerHelper,
                                           final CustomOAuth2AuthenticationSuccessHandler customOAuth2AuthenticationSuccessHandler,
                                           final CustomOAuth2AuthenticationFailureHandler customOAuth2AuthenticationFailureHandler,
                                           final CustomOidcUserService customOidcUserService,
@@ -123,7 +123,7 @@ public final class SecurityConfigContext {
             httpSecurity.oauth2Login()
                         .loginPage(propertiesKeeper.oAuth2().LOGIN_PAGE)
                         .authorizationEndpoint()
-                            .authorizationRequestRepository(new CacheBasedOAuth2AuthorizationRequestRepository(cacheHelper))
+                            .authorizationRequestRepository(new CacheBasedOAuth2AuthorizationRequestRepository(cacheManagerHelper))
                                 .and()
                         .successHandler(customOAuth2AuthenticationSuccessHandler)
                         .failureHandler(customOAuth2AuthenticationFailureHandler)

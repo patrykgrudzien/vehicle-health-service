@@ -34,7 +34,7 @@ import me.grudzien.patryk.exception.registration.CustomUserValidationException;
 import me.grudzien.patryk.exception.registration.EmailVerificationTokenExpiredException;
 import me.grudzien.patryk.exception.registration.EmailVerificationTokenNotFoundException;
 import me.grudzien.patryk.exception.registration.UserAlreadyExistsException;
-import me.grudzien.patryk.oauth2.util.CacheHelper;
+import me.grudzien.patryk.oauth2.util.CacheManagerHelper;
 import me.grudzien.patryk.repository.registration.CustomUserRepository;
 import me.grudzien.patryk.repository.registration.EmailVerificationTokenRepository;
 import me.grudzien.patryk.service.login.impl.MyUserDetailsService;
@@ -63,13 +63,13 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 	private final HttpLocationHeaderCreator httpLocationHeaderCreator;
 	private final LocaleMessagesCreator localeMessagesCreator;
 	private final RequestsDecoder requestsDecoder;
-	private final CacheHelper cacheHelper;
+	private final CacheManagerHelper cacheManagerHelper;
 
 	@Autowired
 	public UserRegistrationServiceImpl(final CustomUserRepository customUserRepository, final BCryptPasswordEncoder passwordEncoder,
                                        final EmailVerificationTokenRepository emailVerificationTokenRepository,
                                        final HttpLocationHeaderCreator httpLocationHeaderCreator, final LocaleMessagesCreator localeMessagesCreator,
-                                       final RequestsDecoder requestsDecoder, final CacheHelper cacheHelper) {
+                                       final RequestsDecoder requestsDecoder, final CacheManagerHelper cacheManagerHelper) {
 
         Preconditions.checkNotNull(customUserRepository, "customUserRepository cannot be null!");
         Preconditions.checkNotNull(passwordEncoder, "passwordEncoder cannot be null!");
@@ -77,7 +77,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
         Preconditions.checkNotNull(httpLocationHeaderCreator, "httpLocationHeaderCreator cannot be null!");
         Preconditions.checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
         Preconditions.checkNotNull(requestsDecoder, "requestsDecoder cannot be null!");
-        Preconditions.checkNotNull(cacheHelper, "cacheHelper cannot be null!");
+        Preconditions.checkNotNull(cacheManagerHelper, "cacheManagerHelper cannot be null!");
 
         this.customUserRepository = customUserRepository;
         this.passwordEncoder = passwordEncoder;
@@ -85,7 +85,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
         this.httpLocationHeaderCreator = httpLocationHeaderCreator;
         this.localeMessagesCreator = localeMessagesCreator;
         this.requestsDecoder = requestsDecoder;
-        this.cacheHelper = cacheHelper;
+        this.cacheManagerHelper = cacheManagerHelper;
     }
 
 	@SuppressWarnings("Duplicates")
@@ -198,7 +198,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 		Try.run(() -> {
 		    log.info(FLOW_MARKER, "Trying to enable newly created user...");
 			// cleaning user from cache because it's been saved (with "enabled" status = FALSE) before email confirmation
-			cacheHelper.clearCacheByName(MyUserDetailsService.PRINCIPAL_USER_CACHE_NAME);
+			cacheManagerHelper.clearAllCache(MyUserDetailsService.PRINCIPAL_USER_CACHE_NAME);
 			customUser.setEnabled(Boolean.TRUE);
 			customUserRepository.save(customUser);
 		}).onSuccess(successVoid -> {

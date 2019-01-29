@@ -37,7 +37,7 @@ public class OAuth2FlowDelegator {
 	private final Predicate<String> URL_EQUALS_REGISTRATION_CONFIRMED = input -> input.equalsIgnoreCase(PropertiesKeeper.FrontendRoutes.REGISTRATION_CONFIRMED);
 	private final Predicate<String> URL_EQUALS_REGISTRATION_FORM = input -> input.equalsIgnoreCase(PropertiesKeeper.FrontendRoutes.REGISTRATION_FORM);
 
-	private final CacheHelper cacheHelper;
+	private final CacheManagerHelper cacheManagerHelper;
 	private final GooglePrincipalService googlePrincipalService;
 	private final FacebookPrincipalService facebookPrincipalService;
 
@@ -51,14 +51,14 @@ public class OAuth2FlowDelegator {
 	}
 
 	@Autowired
-	public OAuth2FlowDelegator(final CacheHelper cacheHelper, final GooglePrincipalService googlePrincipalService,
-	                           final FacebookPrincipalService facebookPrincipalService) {
+	public OAuth2FlowDelegator(final CacheManagerHelper cacheManagerHelper, final GooglePrincipalService googlePrincipalService,
+                               final FacebookPrincipalService facebookPrincipalService) {
 
-		Preconditions.checkNotNull(cacheHelper, "cacheHelper cannot be null!");
+		Preconditions.checkNotNull(cacheManagerHelper, "cacheManagerHelper cannot be null!");
 		Preconditions.checkNotNull(googlePrincipalService, "googlePrincipalService cannot be null!");
 		Preconditions.checkNotNull(facebookPrincipalService, "facebookPrincipalService cannot be null!");
 
-		this.cacheHelper = cacheHelper;
+		this.cacheManagerHelper = cacheManagerHelper;
 		this.googlePrincipalService = googlePrincipalService;
 		this.facebookPrincipalService = facebookPrincipalService;
 	}
@@ -90,17 +90,17 @@ public class OAuth2FlowDelegator {
 		return Match(clientName).of(
 		        Case($(isGoogleProvider), () -> {
 		            log.info(OAUTH2_MARKER, "Processing OAuth2 using ({}) provider.", clientName);
-					cacheHelper.evictCacheByNameAndKey(OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME, SSO_BUTTON_CLICK_EVENT_ENDPOINT_URL_CACHE_KEY);
+					cacheManagerHelper.evictCache(OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME, SSO_BUTTON_CLICK_EVENT_ENDPOINT_URL_CACHE_KEY);
 					return googlePrincipalService.prepareGooglePrincipal(oAuth2Flow, oAuth2User, clientRegistration);
 				}),
 				Case($(isFacebookProvider), () -> {
 					log.info(OAUTH2_MARKER, "Processing OAuth2 using ({}) provider.", clientName);
-					cacheHelper.evictCacheByNameAndKey(OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME, SSO_BUTTON_CLICK_EVENT_ENDPOINT_URL_CACHE_KEY);
+					cacheManagerHelper.evictCache(OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME, SSO_BUTTON_CLICK_EVENT_ENDPOINT_URL_CACHE_KEY);
 					return facebookPrincipalService.prepareFacebookPrincipal(oAuth2Flow, oAuth2User);
 				}),
 				Case($(), () -> {
 					log.warn(OAUTH2_MARKER, "Unknown OAuth2 provider...");
-					cacheHelper.evictCacheByNameAndKey(OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME, SSO_BUTTON_CLICK_EVENT_ENDPOINT_URL_CACHE_KEY);
+					cacheManagerHelper.evictCache(OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME, SSO_BUTTON_CLICK_EVENT_ENDPOINT_URL_CACHE_KEY);
 					return null;
 				})
 		);

@@ -16,7 +16,7 @@ import com.google.common.base.Preconditions;
 
 import java.util.Optional;
 
-import me.grudzien.patryk.oauth2.util.CacheHelper;
+import me.grudzien.patryk.oauth2.util.CacheManagerHelper;
 import me.grudzien.patryk.oauth2.util.OAuth2FlowDelegator;
 import me.grudzien.patryk.oauth2.util.OAuth2FlowDelegator.OAuth2Flow;
 
@@ -43,22 +43,23 @@ public class CustomOidcUserService extends OidcUserService {
 	private static final String UNKNOWN_OIDC_USER_ERROR_MESSAGE = "Some unknown exception occurred while loading OidcUser...";
 
     private final OAuth2FlowDelegator oAuth2FlowDelegator;
-    private final CacheHelper cacheHelper;
+    private final CacheManagerHelper cacheManagerHelper;
 
 	@Autowired
-	public CustomOidcUserService(final OAuth2FlowDelegator oAuth2FlowDelegator, final CacheHelper cacheHelper) {
+	public CustomOidcUserService(final OAuth2FlowDelegator oAuth2FlowDelegator, final CacheManagerHelper cacheManagerHelper) {
         Preconditions.checkNotNull(oAuth2FlowDelegator, "oAuth2FlowDelegator cannot be null!");
-        Preconditions.checkNotNull(cacheHelper, "cacheHelper cannot be null!");
+        Preconditions.checkNotNull(cacheManagerHelper, "cacheManagerHelper cannot be null!");
         this.oAuth2FlowDelegator = oAuth2FlowDelegator;
-        this.cacheHelper = cacheHelper;
+        this.cacheManagerHelper = cacheManagerHelper;
     }
 
 	@Override
 	public OidcUser loadUser(final OidcUserRequest userRequest) throws OAuth2AuthenticationException {
 		final OidcUser oidcUser = super.loadUser(userRequest);
 		// loading URL from cache where SSO has been clicked
-		final String ssoButtonClickEventOriginUrl = cacheHelper.loadCache(OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME,
-                                                                          SSO_BUTTON_CLICK_EVENT_ENDPOINT_URL_CACHE_KEY, () -> StringUtils.EMPTY);
+		final String ssoButtonClickEventOriginUrl = cacheManagerHelper.getCacheValue(OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME,
+                                                                                     SSO_BUTTON_CLICK_EVENT_ENDPOINT_URL_CACHE_KEY, String.class)
+                                                                      .orElse(StringUtils.EMPTY);
 		// determining user account OAuth2 flow
         final OAuth2Flow oAuth2Flow = oAuth2FlowDelegator.determineFlowBasedOnUrl(ssoButtonClickEventOriginUrl);
         // preparing principal with appropriate account OAuth2 flow

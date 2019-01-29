@@ -26,7 +26,7 @@ import me.grudzien.patryk.oauth2.handler.CustomOAuth2AuthenticationFailureHandle
 import me.grudzien.patryk.oauth2.handler.CustomOAuth2AuthenticationSuccessHandler;
 import me.grudzien.patryk.oauth2.service.CustomOAuth2UserService;
 import me.grudzien.patryk.oauth2.service.CustomOidcUserService;
-import me.grudzien.patryk.oauth2.util.CacheHelper;
+import me.grudzien.patryk.oauth2.util.CacheManagerHelper;
 import me.grudzien.patryk.service.jwt.JwtTokenClaimsRetriever;
 import me.grudzien.patryk.service.jwt.JwtTokenValidator;
 import me.grudzien.patryk.service.login.impl.MyUserDetailsService;
@@ -66,7 +66,7 @@ public class SecurityConfig {
 	private final CustomOidcUserService customOidcUserService;
 	private final CustomOAuth2UserService customOAuth2UserService;
 	private final PropertiesKeeper propertiesKeeper;
-	private final CacheHelper cacheHelper;
+	private final CacheManagerHelper cacheManagerHelper;
 	private final LocaleMessagesCreator localeMessageCreator;
 	private final LocaleMessagesHelper localeMessagesHelper;
 	private final CustomAuthenticationProvider customAuthenticationProvider;
@@ -84,7 +84,7 @@ public class SecurityConfig {
                           final CustomOAuth2AuthenticationSuccessHandler customOAuth2AuthenticationSuccessHandler,
                           final CustomOAuth2AuthenticationFailureHandler customOAuth2AuthenticationFailureHandler,
                           final CustomOidcUserService customOidcUserService,
-                          final CustomOAuth2UserService customOAuth2UserService, final PropertiesKeeper propertiesKeeper, final CacheHelper cacheHelper,
+                          final CustomOAuth2UserService customOAuth2UserService, final PropertiesKeeper propertiesKeeper, final CacheManagerHelper cacheManagerHelper,
                           final LocaleMessagesHelper localeMessagesHelper, final LocaleMessagesCreator localeMessageCreator,
                           final CustomAuthenticationProvider customAuthenticationProvider,
                           final JwtTokenClaimsRetriever jwtTokenClaimsRetriever, final JwtTokenValidator jwtTokenValidator) {
@@ -96,7 +96,7 @@ public class SecurityConfig {
         Preconditions.checkNotNull(customOidcUserService, "customOidcUserService cannot be null!");
         Preconditions.checkNotNull(customOAuth2UserService, "customOAuth2UserService cannot be null!");
         Preconditions.checkNotNull(propertiesKeeper, "propertiesKeeper cannot be null!");
-        Preconditions.checkNotNull(cacheHelper, "cacheHelper cannot be null!");
+        Preconditions.checkNotNull(cacheManagerHelper, "cacheManagerHelper cannot be null!");
         Preconditions.checkNotNull(localeMessageCreator, "localeMessageCreator cannot be null!");
         Preconditions.checkNotNull(localeMessagesHelper, "localeMessagesHelper cannot be null!");
         Preconditions.checkNotNull(jwtTokenClaimsRetriever, "jwtTokenClaimsRetriever cannot be null!");
@@ -109,7 +109,7 @@ public class SecurityConfig {
         this.customOidcUserService = customOidcUserService;
         this.customOAuth2UserService = customOAuth2UserService;
         this.propertiesKeeper = propertiesKeeper;
-        this.cacheHelper = cacheHelper;
+        this.cacheManagerHelper = cacheManagerHelper;
         this.localeMessageCreator = localeMessageCreator;
         this.localeMessagesHelper = localeMessagesHelper;
         this.customAuthenticationProvider = customAuthenticationProvider;
@@ -264,7 +264,7 @@ public class SecurityConfig {
 	        SecurityConfigContext.frameOptionsSameOrigin(httpSecurity);
 
             // oauth2 clients
-            SecurityConfigContext.OAuth2.configureOAuth2Client(httpSecurity, propertiesKeeper, cacheHelper, customOAuth2AuthenticationSuccessHandler,
+            SecurityConfigContext.OAuth2.configureOAuth2Client(httpSecurity, propertiesKeeper, cacheManagerHelper, customOAuth2AuthenticationSuccessHandler,
                                                                customOAuth2AuthenticationFailureHandler, customOidcUserService, customOAuth2UserService);
             // mvcMatchers
             httpSecurity.authorizeRequests()

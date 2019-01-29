@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.annotation.DirtiesContext;
 
@@ -21,6 +22,7 @@ import com.google.common.collect.Sets;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import me.grudzien.patryk.domain.dto.login.JwtUser;
@@ -29,9 +31,8 @@ import me.grudzien.patryk.domain.entity.registration.Role;
 import me.grudzien.patryk.domain.enums.ApplicationZone;
 import me.grudzien.patryk.domain.enums.registration.RegistrationProvider;
 import me.grudzien.patryk.domain.enums.registration.RoleName;
-import me.grudzien.patryk.oauth2.util.CacheHelper;
+import me.grudzien.patryk.oauth2.util.CacheManagerHelper;
 import me.grudzien.patryk.repository.registration.CustomUserRepository;
-import me.grudzien.patryk.service.login.impl.MyUserDetailsService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -39,17 +40,19 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import static me.grudzien.patryk.TestsUtils.TEST_EMAIL;
+import static me.grudzien.patryk.service.login.impl.MyUserDetailsService.BEAN_NAME;
+import static me.grudzien.patryk.service.login.impl.MyUserDetailsService.PRINCIPAL_USER_CACHE_NAME;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext
 class MyUserDetailsServiceIT {
 
 	@Autowired
-	@Qualifier(MyUserDetailsService.BEAN_NAME)
+	@Qualifier(BEAN_NAME)
 	private UserDetailsService userDetailsService;
 
 	@Autowired
-	private CacheHelper cacheHelper;
+	private CacheManagerHelper cacheManagerHelper;
 
 	@MockBean
 	private CustomUserRepository customUserRepository;
@@ -58,12 +61,12 @@ class MyUserDetailsServiceIT {
 
 	@AfterEach
 	void tearDown() {
-		cacheHelper.clearCacheByName(MyUserDetailsService.PRINCIPAL_USER_CACHE_NAME);
-		assertThat(cacheHelper.loadCache(MyUserDetailsService.PRINCIPAL_USER_CACHE_NAME, TEST_EMAIL, () -> "")).isEqualTo("");
+		cacheManagerHelper.clearAllCache(PRINCIPAL_USER_CACHE_NAME);
+		assertThat(cacheManagerHelper.getCacheValue(PRINCIPAL_USER_CACHE_NAME, TEST_EMAIL, UserDetails.class)).isEqualTo(Optional.empty());
 	}
 
 	@Test
-	@DisplayName("User loaded successfully from cache. Cache: (" + MyUserDetailsService.PRINCIPAL_USER_CACHE_NAME + ") populated. Second fetch doesn't invoke database.")
+	@DisplayName("User loaded successfully from cache. Cache: (" + PRINCIPAL_USER_CACHE_NAME + ") populated. Second fetch doesn't invoke database.")
 	void testLoadUserByUsernameSuccessful() {
 		// given
 		BDDMockito.given(customUserRepository.findByEmail(anyString())).willReturn(getTestCustomUser());
@@ -73,7 +76,7 @@ class MyUserDetailsServiceIT {
 		userDetailsService.loadUserByUsername(TEST_EMAIL);
 
 		// then
-		cachedJwtUser = cacheHelper.loadCache(MyUserDetailsService.PRINCIPAL_USER_CACHE_NAME, TEST_EMAIL, () -> null);
+        cachedJwtUser = cacheManagerHelper.getCacheValue(PRINCIPAL_USER_CACHE_NAME, TEST_EMAIL, UserDetails.class).orElse(null);
 
 		verify(customUserRepository, times(1)).findByEmail(TEST_EMAIL);
 		Assertions.assertAll(
@@ -90,7 +93,7 @@ class MyUserDetailsServiceIT {
 		);
 	}
 
-	@DisplayName("Cannot load user from cache. Cache: (" + MyUserDetailsService.PRINCIPAL_USER_CACHE_NAME + ") NOT populated!")
+	@DisplayName("Cannot load user from cache. Cache: (" + PRINCIPAL_USER_CACHE_NAME + ") NOT populated!")
 	@ParameterizedTest(name = "Given ({0}) will return (null). @Cacheable \"condition\", \"unless\" attributes don't match!")
 	@MethodSource("cacheNotPopulatedTestData")
 	void cacheNotPopulated(final String username) {
@@ -104,7 +107,7 @@ class MyUserDetailsServiceIT {
 		userDetailsService.loadUserByUsername(username);
 
 		// then
-		cachedJwtUser = cacheHelper.loadCache(MyUserDetailsService.PRINCIPAL_USER_CACHE_NAME, TEST_EMAIL, () -> null);
+		cachedJwtUser = cacheManagerHelper.getCacheValue(PRINCIPAL_USER_CACHE_NAME, TEST_EMAIL, UserDetails.class).orElse(null);
 
 		verify(customUserRepository, times(2)).findByEmail(username);
 		Assertions.assertAll(
