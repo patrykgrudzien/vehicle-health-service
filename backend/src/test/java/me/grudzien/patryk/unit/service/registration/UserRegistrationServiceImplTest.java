@@ -11,7 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import me.grudzien.patryk.domain.dto.registration.RegistrationResponse;
-import me.grudzien.patryk.oauth2.util.CacheHelper;
+import me.grudzien.patryk.oauth2.util.CacheManagerHelper;
 import me.grudzien.patryk.repository.registration.CustomUserRepository;
 import me.grudzien.patryk.repository.registration.EmailVerificationTokenRepository;
 import me.grudzien.patryk.service.registration.impl.UserRegistrationServiceImpl;
@@ -47,7 +47,7 @@ class UserRegistrationServiceImplTest {
     @Mock
     private RequestsDecoder requestsDecoder;
     @Mock
-    private CacheHelper cacheHelper;
+    private CacheManagerHelper cacheManagerHelper;
 
     @InjectMocks
     private UserRegistrationServiceImpl userRegistrationService;

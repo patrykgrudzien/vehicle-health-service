@@ -22,7 +22,7 @@ import me.grudzien.patryk.domain.entity.registration.EmailVerificationToken;
 import me.grudzien.patryk.domain.enums.ApplicationZone;
 import me.grudzien.patryk.exception.registration.EmailVerificationTokenExpiredException;
 import me.grudzien.patryk.exception.registration.EmailVerificationTokenNotFoundException;
-import me.grudzien.patryk.oauth2.util.CacheHelper;
+import me.grudzien.patryk.oauth2.util.CacheManagerHelper;
 import me.grudzien.patryk.repository.registration.CustomUserRepository;
 import me.grudzien.patryk.repository.registration.EmailVerificationTokenRepository;
 import me.grudzien.patryk.service.registration.UserRegistrationService;
@@ -44,7 +44,7 @@ import static me.grudzien.patryk.TestsUtils.prepareEmailVerificationToken;
 class UserRegistrationServiceImplIT {
 
     @MockBean
-    private CacheHelper cacheHelper;
+    private CacheManagerHelper cacheManagerHelper;
     @MockBean
     private CustomUserRepository customUserRepository;
     @MockBean
@@ -135,7 +135,7 @@ class UserRegistrationServiceImplIT {
                 () -> assertThat(registrationResponse.getRedirectionUrl()).isEqualTo("http://localhost:8080/ui/registration-confirmed")
         );
         verify(emailVerificationTokenRepository, times(1)).findByToken(anyString());
-        verify(cacheHelper, times(1)).clearCacheByName(anyString());
+        verify(cacheManagerHelper, times(1)).clearAllCache(anyString());
         verify(customUserRepository, times(1)).save(any());
         verify(emailVerificationTokenRepository, times(1)).delete(any());
     }
@@ -171,7 +171,7 @@ class UserRegistrationServiceImplIT {
                         "http://localhost:8080/ui/registration-confirmed?error=systemEncounteredAnErrorOnEnablingAccount")
         );
         verify(emailVerificationTokenRepository, times(1)).findByToken(anyString());
-        verify(cacheHelper, times(1)).clearCacheByName(anyString());
+        verify(cacheManagerHelper, times(1)).clearAllCache(anyString());
         verify(customUserRepository, times(1)).save(any());
         verify(emailVerificationTokenRepository, times(0)).delete(any());
     }
