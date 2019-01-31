@@ -165,6 +165,42 @@
                             </rules>
                         </configuration>
                     </plugin>
+                    <!-- Maven Compiler Plugin (MapStruct purpose) -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>${maven-compiler-plugin.version}</version>
+                        <configuration>
+                            <source>1.8</source>
+                            <target>1.8</target>
+                            <!--
+                            The (mapstruct-processor) is used to generate the mapper implementation during the build.
+
+                            <annotationProcessorPaths> specifies dependency(ies) that are passed to maven-compiler-plugin.
+                            The <annotationProcessorPaths> tells mapstruct processor how it needs to be invoked.
+
+                            In any case in order to make it work correctly you have 2 options:
+
+                            1) Add the lombok dependency to the annotationProcessorPaths as well. Then it will be picked up by the compiler and it should work.
+                            2) Ad the mapstruct-processor jar to your pom as a provided dependency.
+                            You will have to remove the annotationProcessorPaths in that case and the compiler will pick up the processors from your dependency.
+                            The reason why we are suggesting to use the annotationProcessorPaths is because by doing that you won't be able to use something
+                            from the mapstruct-processor module by accident.
+                            -->
+                            <annotationProcessorPaths>
+                                <path>
+                                    <groupId>org.projectlombok</groupId>
+                                    <artifactId>lombok</artifactId>
+                                    <version>${lombok.version}</version>
+                                </path>
+                                <path>
+                                    <groupId>org.mapstruct</groupId>
+                                    <artifactId>mapstruct-processor</artifactId>
+                                    <version>${map-struct-core.version}</version>
+                                </path>
+                            </annotationProcessorPaths>
+                        </configuration>
+                    </plugin>
                 </plugins>
             </build>
             <activation>
@@ -173,11 +209,6 @@
                 </file>
             </activation>
         </profile>
-        <!--
-        ############################################
-        ########  BUILD BACKEND MODULE DEV #########
-        ############################################
-        -->
 
         <!--
         ##########################################################
@@ -280,11 +311,6 @@
                 </file>
             </activation>
         </profile>
-        <!--
-        ##########################################################
-        ########  BUILD BACKEND MODULE HEROKU DEPLOYMENT #########
-        ##########################################################
-        -->
     </profiles>
 
     <dependencyManagement>
@@ -342,7 +368,6 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
         </dependency>
         <!-- POSTGRES -->
         <dependency>
@@ -428,6 +453,12 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
+        </dependency>
+        <!-- MapStruct Core -->
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>${map-struct-core.version}</version>
         </dependency>
 
         <!-- TEST DEPENDENCIES -->
