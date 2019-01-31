@@ -20,12 +20,14 @@ import java.util.Optional;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationResponse;
 import me.grudzien.patryk.exception.registration.CustomUserValidationException;
+import me.grudzien.patryk.mapper.JwtAuthenticationRequestMapper;
 import me.grudzien.patryk.oauth2.authentication.CustomAuthenticationToken;
 import me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases;
-import me.grudzien.patryk.service.login.UserAuthenticationService;
 import me.grudzien.patryk.service.jwt.JwtTokenService;
+import me.grudzien.patryk.service.login.UserAuthenticationService;
 import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.util.validator.CustomValidator;
+import me.grudzien.patryk.util.ObjectDecoder;
 import me.grudzien.patryk.util.web.RequestsDecoder;
 
 import static io.vavr.API.Match;
@@ -40,56 +42,50 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 	private final LocaleMessagesCreator localeMessagesCreator;
 	private final RequestsDecoder requestsDecoder;
 	private final JwtTokenService jwtTokenService;
+	private final JwtAuthenticationRequestMapper jwtAuthenticationRequestMapper;
 
 	@Autowired
-	public UserAuthenticationServiceImpl(final AuthenticationManager authenticationManager,
-                                         final LocaleMessagesCreator localeMessagesCreator,
-                                         final RequestsDecoder requestsDecoder,
-                                         final JwtTokenService jwtTokenService) {
+	public UserAuthenticationServiceImpl(final AuthenticationManager authenticationManager, final LocaleMessagesCreator localeMessagesCreator,
+                                         final RequestsDecoder requestsDecoder, final JwtTokenService jwtTokenService,
+                                         final JwtAuthenticationRequestMapper jwtAuthenticationRequestMapper) {
 
         Preconditions.checkNotNull(authenticationManager, "authenticationManager cannot be null!");
         Preconditions.checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
         Preconditions.checkNotNull(requestsDecoder, "requestsDecoder cannot be null!");
         Preconditions.checkNotNull(jwtTokenService, "jwtTokenService cannot be null!");
+        Preconditions.checkNotNull(jwtAuthenticationRequestMapper, "jwtAuthenticationRequestMapper cannot be null!");
 
         this.authenticationManager = authenticationManager;
         this.localeMessagesCreator = localeMessagesCreator;
         this.requestsDecoder = requestsDecoder;
         this.jwtTokenService = jwtTokenService;
+        this.jwtAuthenticationRequestMapper = jwtAuthenticationRequestMapper;
     }
 
 	@Override
 	public JwtAuthenticationResponse login(final JwtAuthenticationRequest authenticationRequest, final Device device) {
 		final JwtAuthenticationResponse jwtAuthenticationResponseFailure = JwtAuthenticationResponse.Builder().isSuccessful(Boolean.FALSE).build();
 
-		final JwtAuthenticationRequest decodedAuthenticationRequest = decodeAuthenticationRequest(authenticationRequest);
-		final List<String> translatedValidationResult = CustomValidator.getTranslatedValidationResult(decodedAuthenticationRequest, localeMessagesCreator);
+		final JwtAuthenticationRequest decodedAuthRequest = ObjectDecoder.decodeAuthRequest().apply(authenticationRequest, jwtAuthenticationRequestMapper);
+		final List<String> translatedValidationResult = CustomValidator.getTranslatedValidationResult(decodedAuthRequest, localeMessagesCreator);
 
 		if (!translatedValidationResult.isEmpty()) {
 			log.error("Validation errors present during login.");
 			throw new CustomUserValidationException(localeMessagesCreator.buildLocaleMessage("login-form-validation-errors"),
 			                                        translatedValidationResult);
 		} else {
-			final String email = decodedAuthenticationRequest.getEmail();
+			final String email = decodedAuthRequest.getEmail();
 			log.info(FLOW_MARKER, "Login request is correct. Starting authenticating the user with ({}) email.", email);
 			final Optional<Authentication> authentication = authenticateUser(authenticationRequest);
 			if (authentication.isPresent()) {
                 return JwtAuthenticationResponse.Builder()
-                                                .accessToken(jwtTokenService.generateAccessToken(decodedAuthenticationRequest, device))
-                                                .refreshToken(jwtTokenService.generateRefreshToken(decodedAuthenticationRequest, device))
+                                                .accessToken(jwtTokenService.generateAccessToken(decodedAuthRequest, device))
+                                                .refreshToken(jwtTokenService.generateRefreshToken(decodedAuthRequest, device))
                                                 .isSuccessful(Boolean.TRUE)
                                                 .build();
 			}
 		}
 		return jwtAuthenticationResponseFailure;
-	}
-
-	private JwtAuthenticationRequest decodeAuthenticationRequest(final JwtAuthenticationRequest authenticationRequest) {
-		return JwtAuthenticationRequest
-				       .Builder()
-				       .email(requestsDecoder.decodeStringParam(authenticationRequest.getEmail()))
-				       .password(requestsDecoder.decodeStringParam(authenticationRequest.getPassword()))
-				       .build();
 	}
 
 	/**

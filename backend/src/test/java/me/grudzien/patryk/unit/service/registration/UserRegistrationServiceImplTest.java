@@ -11,13 +11,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import me.grudzien.patryk.domain.dto.registration.RegistrationResponse;
+import me.grudzien.patryk.mapper.UserRegistrationDtoMapper;
 import me.grudzien.patryk.oauth2.util.CacheManagerHelper;
 import me.grudzien.patryk.repository.registration.CustomUserRepository;
 import me.grudzien.patryk.repository.registration.EmailVerificationTokenRepository;
 import me.grudzien.patryk.service.registration.impl.UserRegistrationServiceImpl;
 import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.util.web.HttpLocationHeaderCreator;
-import me.grudzien.patryk.util.web.RequestsDecoder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -45,9 +45,9 @@ class UserRegistrationServiceImplTest {
     @Mock
     private LocaleMessagesCreator localeMessagesCreator;
     @Mock
-    private RequestsDecoder requestsDecoder;
-    @Mock
     private CacheManagerHelper cacheManagerHelper;
+    @Mock
+    private UserRegistrationDtoMapper userRegistrationDtoMapper;
 
     @InjectMocks
     private UserRegistrationServiceImpl userRegistrationService;

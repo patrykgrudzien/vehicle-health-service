@@ -34,15 +34,16 @@ import me.grudzien.patryk.exception.registration.CustomUserValidationException;
 import me.grudzien.patryk.exception.registration.EmailVerificationTokenExpiredException;
 import me.grudzien.patryk.exception.registration.EmailVerificationTokenNotFoundException;
 import me.grudzien.patryk.exception.registration.UserAlreadyExistsException;
+import me.grudzien.patryk.mapper.UserRegistrationDtoMapper;
 import me.grudzien.patryk.oauth2.util.CacheManagerHelper;
 import me.grudzien.patryk.repository.registration.CustomUserRepository;
 import me.grudzien.patryk.repository.registration.EmailVerificationTokenRepository;
 import me.grudzien.patryk.service.login.impl.MyUserDetailsService;
 import me.grudzien.patryk.service.registration.UserRegistrationService;
+import me.grudzien.patryk.util.ObjectDecoder;
 import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.util.validator.CustomValidator;
 import me.grudzien.patryk.util.web.HttpLocationHeaderCreator;
-import me.grudzien.patryk.util.web.RequestsDecoder;
 
 import static me.grudzien.patryk.domain.enums.AppFLow.ACCOUNT_ALREADY_ENABLED;
 import static me.grudzien.patryk.domain.enums.AppFLow.CONFIRM_REGISTRATION;
@@ -62,36 +63,36 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 	private final EmailVerificationTokenRepository emailVerificationTokenRepository;
 	private final HttpLocationHeaderCreator httpLocationHeaderCreator;
 	private final LocaleMessagesCreator localeMessagesCreator;
-	private final RequestsDecoder requestsDecoder;
 	private final CacheManagerHelper cacheManagerHelper;
+	private final UserRegistrationDtoMapper userRegistrationDtoMapper;
 
 	@Autowired
 	public UserRegistrationServiceImpl(final CustomUserRepository customUserRepository, final BCryptPasswordEncoder passwordEncoder,
                                        final EmailVerificationTokenRepository emailVerificationTokenRepository,
                                        final HttpLocationHeaderCreator httpLocationHeaderCreator, final LocaleMessagesCreator localeMessagesCreator,
-                                       final RequestsDecoder requestsDecoder, final CacheManagerHelper cacheManagerHelper) {
+                                       final CacheManagerHelper cacheManagerHelper, final UserRegistrationDtoMapper userRegistrationDtoMapper) {
 
         Preconditions.checkNotNull(customUserRepository, "customUserRepository cannot be null!");
         Preconditions.checkNotNull(passwordEncoder, "passwordEncoder cannot be null!");
         Preconditions.checkNotNull(emailVerificationTokenRepository, "emailVerificationTokenRepository cannot be null!");
         Preconditions.checkNotNull(httpLocationHeaderCreator, "httpLocationHeaderCreator cannot be null!");
         Preconditions.checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
-        Preconditions.checkNotNull(requestsDecoder, "requestsDecoder cannot be null!");
         Preconditions.checkNotNull(cacheManagerHelper, "cacheManagerHelper cannot be null!");
+        Preconditions.checkNotNull(userRegistrationDtoMapper, "userRegistrationDtoMapper cannot be null!");
 
         this.customUserRepository = customUserRepository;
         this.passwordEncoder = passwordEncoder;
         this.emailVerificationTokenRepository = emailVerificationTokenRepository;
         this.httpLocationHeaderCreator = httpLocationHeaderCreator;
         this.localeMessagesCreator = localeMessagesCreator;
-        this.requestsDecoder = requestsDecoder;
         this.cacheManagerHelper = cacheManagerHelper;
+        this.userRegistrationDtoMapper = userRegistrationDtoMapper;
     }
 
 	@SuppressWarnings("Duplicates")
 	@Override
 	public RegistrationResponse registerNewCustomUserAccount(final UserRegistrationDto userRegistrationDto) {
-		final UserRegistrationDto decodedUserRegistrationDto = decodeUserRegistrationDto(userRegistrationDto);
+		final UserRegistrationDto decodedUserRegistrationDto = ObjectDecoder.decodeUserRegistrationDto().apply(userRegistrationDto, userRegistrationDtoMapper);
 		final String email = decodedUserRegistrationDto.getEmail();
 		final RegistrationProvider registrationProvider = userRegistrationDto.getRegistrationProvider();
 		final RegistrationResponse registrationResponse = RegistrationResponse.Builder(false).build();
@@ -139,17 +140,6 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 		}
 		return registrationResponse;
 	}
-
-    private UserRegistrationDto decodeUserRegistrationDto(final UserRegistrationDto userRegistrationDto) {
-        return UserRegistrationDto.Builder()
-                                  .firstName(requestsDecoder.decodeStringParam(userRegistrationDto.getFirstName()))
-                                  .lastName(requestsDecoder.decodeStringParam(userRegistrationDto.getLastName()))
-                                  .email(requestsDecoder.decodeStringParam(userRegistrationDto.getEmail()))
-                                  .confirmedEmail(requestsDecoder.decodeStringParam(userRegistrationDto.getConfirmedEmail()))
-                                  .password(requestsDecoder.decodeStringParam(userRegistrationDto.getPassword()))
-                                  .confirmedPassword(requestsDecoder.decodeStringParam(userRegistrationDto.getConfirmedPassword()))
-                                  .build();
-    }
 
 	@Override
 	public RegistrationResponse confirmRegistration(final String tokenRequestParam) {
