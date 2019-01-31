@@ -1,5 +1,7 @@
 package me.grudzien.patryk.util.validator;
 
+import org.springframework.lang.NonNull;
+
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -16,7 +18,7 @@ public interface CustomValidator {
 		return Validation.buildDefaultValidatorFactory().getValidator();
 	}
 
-	static <T> List<String> getTranslatedValidationResult(final T input, final LocaleMessagesCreator localeMessagesCreator) {
+	static <T> List<String> getTranslatedValidationResult(@NonNull final T input, @NonNull final LocaleMessagesCreator localeMessagesCreator) {
 		final Set<ConstraintViolation<T>> validation = getDefaultValidator().validate(input);
 		return validation.stream()
 		                 .map(ConstraintViolation::getMessage)
