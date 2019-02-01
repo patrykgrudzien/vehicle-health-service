@@ -9,6 +9,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import com.google.common.base.Preconditions;
@@ -16,6 +17,7 @@ import com.google.common.base.Preconditions;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationResponse;
@@ -25,11 +27,13 @@ import me.grudzien.patryk.oauth2.authentication.CustomAuthenticationToken;
 import me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases;
 import me.grudzien.patryk.service.jwt.JwtTokenService;
 import me.grudzien.patryk.service.login.UserAuthenticationService;
+import me.grudzien.patryk.util.ObjectDecoder;
 import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.util.validator.CustomValidator;
-import me.grudzien.patryk.util.ObjectDecoder;
 import me.grudzien.patryk.util.web.RequestsDecoder;
 
+import static io.vavr.API.$;
+import static io.vavr.API.Case;
 import static io.vavr.API.Match;
 
 import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
@@ -64,28 +68,29 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 
 	@Override
 	public JwtAuthenticationResponse login(final JwtAuthenticationRequest authenticationRequest, final Device device) {
-		final JwtAuthenticationResponse jwtAuthenticationResponseFailure = JwtAuthenticationResponse.Builder().isSuccessful(Boolean.FALSE).build();
-
+		final JwtAuthenticationResponse failedAuthResponse = JwtAuthenticationResponse.Builder().isSuccessful(Boolean.FALSE).build();
 		final JwtAuthenticationRequest decodedAuthRequest = ObjectDecoder.decodeAuthRequest().apply(authenticationRequest, jwtAuthenticationRequestMapper);
 		final List<String> translatedValidationResult = CustomValidator.getTranslatedValidationResult(decodedAuthRequest, localeMessagesCreator);
-
-		if (!translatedValidationResult.isEmpty()) {
-			log.error("Validation errors present during login.");
-			throw new CustomUserValidationException(localeMessagesCreator.buildLocaleMessage("login-form-validation-errors"),
-			                                        translatedValidationResult);
-		} else {
-			final String email = decodedAuthRequest.getEmail();
-			log.info(FLOW_MARKER, "Login request is correct. Starting authenticating the user with ({}) email.", email);
-			final Optional<Authentication> authentication = authenticateUser(authenticationRequest);
-			if (authentication.isPresent()) {
-                return JwtAuthenticationResponse.Builder()
-                                                .accessToken(jwtTokenService.generateAccessToken(decodedAuthRequest, device))
-                                                .refreshToken(jwtTokenService.generateRefreshToken(decodedAuthRequest, device))
-                                                .isSuccessful(Boolean.TRUE)
-                                                .build();
-			}
-		}
-		return jwtAuthenticationResponseFailure;
+		final Predicate<List<String>> isNotEmpty = list -> !ObjectUtils.isEmpty(list);
+		final Predicate<List<String>> isEmpty = ObjectUtils::isEmpty;
+		return Match(translatedValidationResult).of(
+		        Case($(isNotEmpty), () -> {
+                    log.error("Validation errors present during login.");
+                    throw new CustomUserValidationException(localeMessagesCreator.buildLocaleMessage("login-form-validation-errors"),
+                                                            translatedValidationResult);
+                }),
+                Case($(isEmpty), () -> {
+                    final String email = decodedAuthRequest.getEmail();
+                    log.info(FLOW_MARKER, "Login request is correct. Starting authenticating the user with ({}) email.", email);
+                    return authenticateUser(authenticationRequest)
+                            .map(authentication -> JwtAuthenticationResponse.Builder()
+                                                                            .accessToken(jwtTokenService.generateAccessToken(decodedAuthRequest, device))
+                                                                            .refreshToken(jwtTokenService.generateRefreshToken(decodedAuthRequest, device))
+                                                                            .isSuccessful(Boolean.TRUE)
+                                                                            .build())
+                            .orElse(failedAuthResponse);
+                })
+        );
 	}
 
 	/**
