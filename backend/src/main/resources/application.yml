@@ -1,4 +1,33 @@
 # ===============================
+# = (SPRING)
+# ===============================
+spring:
+  profiles:
+    active: h2-in-memory
+  # -----> JavaMail Configuration
+  mail:
+    default-encoding: UTF-8
+    host: smtp.gmail.com
+    username: vehicle.health.service@gmail.com
+    password: Pg91tmsecretHdvhs
+    port: 587
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    test-connection: false
+  # -----> JPA configurations
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
+
+# ===============================
 # = (CUSTOM CONFIGURATION)
 # ===============================
 custom:
@@ -54,168 +83,3 @@ custom:
       expiration: 15 # minutes (900000 nanoseconds)
     messages-language:
       header: Language
-
-# ===============================
-# = (SPRING)
-# ===============================
-spring:
-  profiles:
-    active: h2-in-memory
-  # -----> JavaMail Configuration
-  mail:
-    default-encoding: UTF-8
-    host: smtp.gmail.com
-    username: vehicle.health.service@gmail.com
-    password: Pg91tmsecretHdvhs
-    port: 587
-    protocol: smtp
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-    test-connection: false
-  # -----> JPA configurations
-  jpa:
-    properties:
-      hibernate:
-        jdbc:
-          lob:
-            non_contextual_creation: true
-
----
-
-# ===============================================================
-# = (dev-home) PROFILE
-# ===============================================================
-server:
-  port: 8088
-spring:
-  profiles: dev-home
-  # -----> Hibernate datasource
-  datasource:
-    url: jdbc:postgresql://localhost:5432/vehicle-health-service-db
-    username: postgres
-    password: admin
-    driver-class-name: org.postgresql.Driver
-    hikari:
-      minimum-idle: 5
-      maximum-pool-size: 20
-      idle-timeout: 30000
-      pool-name: VehicleHealthServiceConnectionPool
-      max-lifetime: 2000000
-      connection-timeout: 60000
-  # -----> JPA configurations
-  jpa:
-    show-sql: true
-    hibernate:
-      ddl-auto: create-drop
-    database-platform: org.hibernate.dialect.PostgreSQL94Dialect
-  # -----> OAuth 2
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            client-id: 289764469472-jnvmuvelohvieo6bn1362p89qkt6cjrk.apps.googleusercontent.com
-            client-secret: LjrrABzPkzbvUHkqmRm7pNqp
-            client-name: GOOGLE
-          facebook:
-            client-id: 677962172580314
-            client-secret: a9eac62a4cd5d78d49aa6dd87582cf86
-            client-name: FACEBOOK
-
----
-
-# ===============================================================
-# = (h2-in-memory) PROFILE
-# ===============================================================
-server:
-  port: 8088
-spring:
-  profiles: h2-in-memory
-  # -----> Hibernate datasource
-  datasource:
-    url: jdbc:h2:mem:vehicle-health-service-h2-db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;
-    platform: h2
-    username: admin
-    password:
-    driver-class-name: org.h2.Driver
-    hikari:
-      minimum-idle: 5
-      maximum-pool-size: 20
-      idle-timeout: 30000
-      pool-name: VehicleHealthServiceConnectionPool
-      max-lifetime: 2000000
-      connection-timeout: 60000
-  # -----> JPA configurations
-  jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
-    hibernate:
-      ddl-auto: create-drop
-    properties:
-      hibernate:
-        show_sql: true
-        use_sql_comments: true
-        format_sql: true
-  # -----> H2 settings
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
-      settings:
-        trace: false
-        web-allow-others: false
-  # -----> OAuth 2
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            client-id: 289764469472-jnvmuvelohvieo6bn1362p89qkt6cjrk.apps.googleusercontent.com
-            client-secret: LjrrABzPkzbvUHkqmRm7pNqp
-            client-name: GOOGLE
-          facebook:
-            client-id: 677962172580314
-            client-secret: a9eac62a4cd5d78d49aa6dd87582cf86
-            client-name: FACEBOOK
-
----
-
-# ===============================================================
-# = (heroku-deployment) PROFILE
-# ===============================================================
-server:
-  port: ${PORT:8088}
-spring:
-  profiles: heroku-deployment
-  # -----> Hibernate datasource
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    hikari:
-      minimum-idle: 5
-      maximum-pool-size: 20
-      idle-timeout: 30000
-      pool-name: VehicleHealthServiceConnectionPool
-      max-lifetime: 2000000
-      connection-timeout: 60000
-  # -----> JPA configurations
-  jpa:
-    show-sql: false
-    hibernate:
-      ddl-auto: update
-    database-platform: org.hibernate.dialect.PostgreSQL94Dialect
-  # -----> OAuth 2
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            client-id: 289764469472-jnvmuvelohvieo6bn1362p89qkt6cjrk.apps.googleusercontent.com
-            client-secret: LjrrABzPkzbvUHkqmRm7pNqp
-            client-name: GOOGLE
-          facebook:
-            client-id: 677962172580314
-            client-secret: a9eac62a4cd5d78d49aa6dd87582cf86
-            client-name: FACEBOOK

@@ -1,0 +1,38 @@
+# ===============================================================
+# = (dev-home) PROFILE
+# ===============================================================
+server:
+  port: 8088
+spring:
+  # -----> Hibernate datasource
+  datasource:
+    url: jdbc:postgresql://localhost:5432/vehicle-health-service-db
+    username: postgres
+    password: admin
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 20
+      idle-timeout: 30000
+      pool-name: VehicleHealthServiceConnectionPool
+      max-lifetime: 2000000
+      connection-timeout: 60000
+  # -----> JPA configurations
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.PostgreSQL94Dialect
+  # -----> OAuth 2
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 289764469472-jnvmuvelohvieo6bn1362p89qkt6cjrk.apps.googleusercontent.com
+            client-secret: LjrrABzPkzbvUHkqmRm7pNqp
+            client-name: GOOGLE
+          facebook:
+            client-id: 677962172580314
+            client-secret: a9eac62a4cd5d78d49aa6dd87582cf86
+            client-name: FACEBOOK
