@@ -9,7 +9,7 @@ import java.util.Collection;
 
 public class CustomAuthenticationToken extends AbstractAuthenticationToken {
 
-	private static final long serialVersionUID = -5279024211847603449L;
+	private static final long serialVersionUID = 6192413451740113683L;
 
 	private UserDetails principal;
 	private final String jwtToken;
@@ -17,9 +17,11 @@ public class CustomAuthenticationToken extends AbstractAuthenticationToken {
 	public CustomAuthenticationToken(final String jwtToken) {
 		super(AuthorityUtils.NO_AUTHORITIES);
 		this.jwtToken = jwtToken;
+		setAuthenticated(Boolean.TRUE);
 	}
 
-	public CustomAuthenticationToken(final UserDetails principal, final String jwtToken,
+	@SuppressWarnings("WeakerAccess")
+    public CustomAuthenticationToken(final UserDetails principal, final String jwtToken,
                                      final Collection<? extends GrantedAuthority> authorities) {
 		super(authorities);
 		this.principal = principal;
