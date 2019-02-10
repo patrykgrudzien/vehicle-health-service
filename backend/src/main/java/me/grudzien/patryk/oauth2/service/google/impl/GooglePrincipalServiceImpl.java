@@ -1,28 +1,16 @@
 package me.grudzien.patryk.oauth2.service.google.impl;
 
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.jwt.crypto.sign.RsaVerifier;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.core.oidc.StandardClaimNames;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.auth0.jwk.Jwk;
-import com.auth0.jwk.JwkException;
-import com.auth0.jwk.JwkProvider;
-import com.auth0.jwk.UrlJwkProvider;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
-import java.security.interfaces.RSAPublicKey;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -41,6 +29,7 @@ import me.grudzien.patryk.oauth2.util.rest.CustomRestTemplateFactory;
 import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.util.web.ContextPathsResolver;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static io.vavr.API.$;
 import static io.vavr.API.Case;
 import static io.vavr.API.Match;
@@ -59,32 +48,24 @@ public class GooglePrincipalServiceImpl implements GooglePrincipalService {
 	private final LocaleMessagesCreator localeMessagesCreator;
 	private final PropertiesKeeper propertiesKeeper;
 	private final ContextPathsResolver contextPathsResolver;
-	private final GooglePrincipalServiceHelper googlePrincipalServiceHelper;
 
-	private final RestTemplate customRestTemplate = CustomRestTemplateFactory.createRestTemplate();
-
-	@Setter
-	@Getter
-	private String jwkURL;
+    private final GooglePrincipalServiceHelper googlePrincipalServiceHelper = new GooglePrincipalServiceHelper();
+    private final RestTemplate customRestTemplate = CustomRestTemplateFactory.createRestTemplate();
 
 	public GooglePrincipalServiceImpl(final LocaleMessagesCreator localeMessagesCreator, final PropertiesKeeper propertiesKeeper,
-	                                  final ContextPathsResolver contextPathsResolver, final GooglePrincipalServiceHelper googlePrincipalServiceHelper) {
+                                      final ContextPathsResolver contextPathsResolver) {
 
-		Preconditions.checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
-		Preconditions.checkNotNull(propertiesKeeper, "propertiesKeeper cannot be null!");
-		Preconditions.checkNotNull(contextPathsResolver, "contextPathsResolver cannot be null!");
-		Preconditions.checkNotNull(googlePrincipalServiceHelper, "googlePrincipalServiceHelper cannot be null!");
+		checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
+		checkNotNull(propertiesKeeper, "propertiesKeeper cannot be null!");
+		checkNotNull(contextPathsResolver, "contextPathsResolver cannot be null!");
 
 		this.localeMessagesCreator = localeMessagesCreator;
 		this.propertiesKeeper = propertiesKeeper;
 		this.contextPathsResolver = contextPathsResolver;
-		this.googlePrincipalServiceHelper = googlePrincipalServiceHelper;
 	}
 
 	@Override
-	public CustomOAuth2OidcPrincipalUser prepareGooglePrincipal(final OAuth2FlowDelegator.OAuth2Flow oAuth2Flow, final OAuth2User oAuth2User,
-                                                                final ClientRegistration clientRegistration) {
-		setJwkURL(clientRegistration.getProviderDetails().getJwkSetUri());
+	public CustomOAuth2OidcPrincipalUser prepareGooglePrincipal(final OAuth2FlowDelegator.OAuth2Flow oAuth2Flow, final OAuth2User oAuth2User) {
 		/**
 		 * Taking {@link org.springframework.security.oauth2.core.oidc.StandardClaimNames.SUB} for password
 		 * as google cannot directly return real user password.
@@ -97,14 +78,6 @@ public class GooglePrincipalServiceImpl implements GooglePrincipalService {
 				Case($(is(UNKNOWN)), flow -> {
 					throw new UnknownOAuth2FlowException(localeMessagesCreator.buildLocaleMessage("unknown-oauth2-flow-exception"));
 				}));
-	}
-
-	@Override
-	public RsaVerifier rsaVerifier(final String keyIdentifier) throws MalformedURLException, JwkException {
-		final JwkProvider jwkProvider = new UrlJwkProvider(new URL(this.getJwkURL()));
-		// Represents a JSON Web Key (JWK) used to verify the signature of JWTs
-		final Jwk jwk = jwkProvider.get(keyIdentifier);
-		return new RsaVerifier((RSAPublicKey) jwk.getPublicKey());
 	}
 
 	private CustomOAuth2OidcPrincipalUser loginOAuth2Principal(final OAuth2User oAuth2User, final String password) {
