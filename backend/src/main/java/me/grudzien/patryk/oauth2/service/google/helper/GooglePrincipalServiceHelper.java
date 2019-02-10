@@ -5,7 +5,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.security.oauth2.core.oidc.StandardClaimNames;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
@@ -19,7 +18,6 @@ import me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUserFactory;
 import static me.grudzien.patryk.oauth2.util.OAuth2OidcAttributesExtractor.getOAuth2AttributeValue;
 
 @Log4j2
-@Component
 public class GooglePrincipalServiceHelper {
 
 	public JwtAuthenticationRequest prepareLoginPayload(final OAuth2User oAuth2User, final String password) {
