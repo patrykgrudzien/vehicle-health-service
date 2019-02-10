@@ -1,20 +1,20 @@
 package me.grudzien.patryk.oauth2.service.google;
 
-import org.springframework.security.jwt.crypto.sign.RsaVerifier;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.core.user.OAuth2User;
-
-import com.auth0.jwk.JwkException;
-
-import java.net.MalformedURLException;
 
 import me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser;
 import me.grudzien.patryk.oauth2.util.OAuth2FlowDelegator;
 
 public interface GooglePrincipalService {
 
-	CustomOAuth2OidcPrincipalUser prepareGooglePrincipal(final OAuth2FlowDelegator.OAuth2Flow oAuth2Flow, final OAuth2User oAuth2User,
-                                                         final ClientRegistration clientRegistration);
-
-	RsaVerifier rsaVerifier(final String keyIdentifier) throws MalformedURLException, JwkException;
+    /**
+     * Method responsible for preparation Google principal either in:
+     * {@link me.grudzien.patryk.oauth2.util.OAuth2FlowDelegator.OAuth2Flow#LOGIN} or
+     * {@link me.grudzien.patryk.oauth2.util.OAuth2FlowDelegator.OAuth2Flow#REGISTRATION} flow.
+     *
+     * @param oAuth2Flow flow which defines following business logic: either <b>Login</b> or <b>Registration</b>.
+     * @param oAuth2User user provided by Spring OAuth2 implementation.
+     * @return custom OAuth2 / OpenID Connect principal user.
+     */
+	CustomOAuth2OidcPrincipalUser prepareGooglePrincipal(final OAuth2FlowDelegator.OAuth2Flow oAuth2Flow, final OAuth2User oAuth2User);
 }
