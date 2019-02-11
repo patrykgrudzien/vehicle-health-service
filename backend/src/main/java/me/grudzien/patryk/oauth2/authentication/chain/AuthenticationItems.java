@@ -10,18 +10,23 @@ import org.springframework.security.jwt.crypto.sign.RsaVerifier;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.NONE)
-final class AuthenticationStateContainer {
+final class AuthenticationItems {
 
     private String token;
     private String keyIdentifier;
     private RsaVerifier rsaVerifier;
-    private Throwable throwable;
 
     private static class InstanceHolder {
-        private static final AuthenticationStateContainer INSTANCE = new AuthenticationStateContainer();
+        private static final AuthenticationItems INSTANCE = new AuthenticationItems();
     }
 
-    static AuthenticationStateContainer getInstance() {
+    static AuthenticationItems getInstance() {
         return InstanceHolder.INSTANCE;
+    }
+
+    void clearState() {
+        setToken(null);
+        setKeyIdentifier(null);
+        setRsaVerifier(null);
     }
 }
