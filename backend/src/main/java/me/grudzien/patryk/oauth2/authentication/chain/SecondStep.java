@@ -23,4 +23,9 @@ public class SecondStep extends AbstractAuthenticationStepBuilder {
             stateContainer.setKeyIdentifier(JwtHelper.headers(stateContainer.getToken()).get(KEY_ID_ATTRIBUTE));
         });
     }
+
+	@Override
+	public void setAuthenticationResult() {
+
+	}
 }

@@ -17,4 +17,9 @@ public class FirstStep extends AbstractAuthenticationStepBuilder {
     public Try<?> updateAuthenticationStateContainer(final Authentication authentication) {
         return Try.run(() -> getAuthenticationStateContainer().setToken((String) authentication.getCredentials()));
     }
+
+	@Override
+	public void setAuthenticationResult() {
+
+	}
 }

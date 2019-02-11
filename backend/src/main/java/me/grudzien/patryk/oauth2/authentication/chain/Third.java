@@ -10,6 +10,11 @@ public class Third extends AbstractAuthenticationStepBuilder {
 
     private final GooglePrincipalServiceProxy googlePrincipalServiceProxy;
 
+    // disabling an option to override it
+	private Third(final AbstractAuthenticationStepTemplate nextAuthenticationStepTemplate) {
+		this(nextAuthenticationStepTemplate, null);
+	}
+
     /**
      * @param nextAuthenticationStepTemplate Next authentication step in a chain of responsibility.
      */
@@ -30,4 +35,9 @@ public class Third extends AbstractAuthenticationStepBuilder {
                       return Try.failure(exception);
                   });
     }
+
+	@Override
+	public void setAuthenticationResult() {
+
+	}
 }
