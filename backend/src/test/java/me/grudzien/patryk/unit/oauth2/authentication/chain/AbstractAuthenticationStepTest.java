@@ -37,7 +37,7 @@ class AbstractAuthenticationStepTest {
         given(authentication.getCredentials()).willReturn(RandomStringUtils.randomAlphanumeric(25));
 
         // when
-        final Object authenticationResult = authenticationStep.performAuthenticationStep(authentication);
+        final Object authenticationResult = authenticationStep.invokeNextAuthenticationStep(authentication);
 
         // then
         Assertions.assertAll(

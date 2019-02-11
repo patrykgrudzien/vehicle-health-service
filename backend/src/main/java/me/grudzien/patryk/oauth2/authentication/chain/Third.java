@@ -4,8 +4,6 @@ import io.vavr.control.Try;
 
 import org.springframework.security.core.Authentication;
 
-import java.util.Optional;
-
 import me.grudzien.patryk.oauth2.service.google.impl.GooglePrincipalServiceProxy;
 
 public class Third extends AbstractAuthenticationStepBuilder {
@@ -23,12 +21,13 @@ public class Third extends AbstractAuthenticationStepBuilder {
 
     @Override
     public Try<?> updateAuthenticationStateContainer(final Authentication authentication) {
-        // TODO:
-        return Try.of(() -> googlePrincipalServiceProxy.rsaVerifier(getAuthenticationStateContainer().getKeyIdentifier()));
-    }
-
-    @Override
-    public Optional<StepStatus> performAuthenticationStep(final Authentication authentication) {
-        return Optional.empty();
+        final AuthenticationStateContainer authenticationStateContainer = getAuthenticationStateContainer();
+        return Try.of(() -> googlePrincipalServiceProxy.rsaVerifier(authenticationStateContainer.getKeyIdentifier()))
+                  .onSuccess(authenticationStateContainer::setRsaVerifier)
+                  .orElse(() -> {
+                      final RuntimeException exception = new RuntimeException("Could NOT obtain RSA!");
+                      authenticationStateContainer.setThrowable(exception);
+                      return Try.failure(exception);
+                  });
     }
 }

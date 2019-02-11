@@ -5,8 +5,6 @@ import io.vavr.control.Try;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.jwt.JwtHelper;
 
-import java.util.Optional;
-
 public class SecondStep extends AbstractAuthenticationStepBuilder {
 
     private static final String KEY_ID_ATTRIBUTE = "kid";
@@ -24,10 +22,5 @@ public class SecondStep extends AbstractAuthenticationStepBuilder {
             final AuthenticationStateContainer stateContainer = getAuthenticationStateContainer();
             stateContainer.setKeyIdentifier(JwtHelper.headers(stateContainer.getToken()).get(KEY_ID_ATTRIBUTE));
         });
-    }
-
-    @Override
-    public Optional<StepStatus> performAuthenticationStep(final Authentication authentication) {
-        return nextStepExists() ? callNextStep(authentication) : Optional.of(StepStatus.OK);
     }
 }
