@@ -27,7 +27,7 @@ public abstract class AbstractAuthenticationStepBuilder extends AbstractAuthenti
 
     // template method
     @Override
-    public final Optional<StepStatus> performAllAuthenticationSteps(final Authentication authentication) {
+    public final Optional<AuthenticationResult> performAllAuthenticationSteps(final Authentication authentication) {
         return Match(updateAuthenticationStateContainer(authentication)).of(
                 Case($Success($()), () -> {
                     log.info("Authentication State Container has been successfully updated. Going to the next operation.");
@@ -35,13 +35,13 @@ public abstract class AbstractAuthenticationStepBuilder extends AbstractAuthenti
                 }),
                 Case($Failure(Pattern0.of(Throwable.class)), () -> {
                     log.error("Authentication State Container couldn't be updated! Next operation won't be executed!");
-                    return Optional.of(StepStatus.ERROR);
+                    return Optional.empty();
                 })
         );
     }
 
     @Override
-    public final Optional<StepStatus> invokeNextAuthenticationStep(final Authentication authentication) {
-        return nextStepExists() ? callNextStep(authentication) : Optional.of(StepStatus.OK);
+    public final Optional<AuthenticationResult> invokeNextAuthenticationStep(final Authentication authentication) {
+        return nextStepExists() ? callNextStep(authentication) : Optional.of(getAuthenticationResult());
     }
 }
