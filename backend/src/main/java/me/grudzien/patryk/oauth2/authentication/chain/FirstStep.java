@@ -4,22 +4,30 @@ import io.vavr.control.Try;
 
 import org.springframework.security.core.Authentication;
 
-public class FirstStep extends AbstractAuthenticationStepBuilder {
+import java.util.Optional;
+
+public class FirstStep extends AbstractAuthenticationStepBuilder<String> {
 
     /**
      * @param nextAuthenticationStepTemplate Next authentication step in a chain of responsibility.
      */
-    public FirstStep(final AbstractAuthenticationStepTemplate nextAuthenticationStepTemplate) {
+    FirstStep(final AbstractAuthenticationStepTemplate<?> nextAuthenticationStepTemplate) {
         super(nextAuthenticationStepTemplate);
     }
 
     @Override
-    public Try<?> updateAuthenticationStateContainer(final Authentication authentication) {
-        return Try.run(() -> getAuthenticationStateContainer().setToken((String) authentication.getCredentials()));
+    public Try<String> updateAuthenticationStateContainer(final Authentication authentication) {
+        return Try.of(() -> (String) authentication.getCredentials());
     }
 
-	@Override
-	public void setAuthenticationResult() {
+    @Override
+    public void handleSuccessTry(final Try<String> tryResult) {
+        getAuthenticationItems().setToken(tryResult.get());
+    }
 
-	}
+    @Override
+    public Optional<AuthenticationResult> handleFailureTry(final Try<String> tryResult) {
+        final Throwable cause = tryResult.getCause();
+        return Optional.of(getAuthenticationResult().FAILED(cause, cause.getMessage()));
+    }
 }

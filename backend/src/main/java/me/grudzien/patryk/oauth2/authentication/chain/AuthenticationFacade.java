@@ -8,9 +8,9 @@ public final class AuthenticationFacade {
         throw new UnsupportedOperationException("Creating object of this class is not allowed!");
     }
 
-    public static AbstractAuthenticationStepBuilder buildAuthenticationFlow(final GooglePrincipalServiceProxy googlePrincipalServiceProxy) {
+    public static AbstractAuthenticationStepBuilder<?> buildAuthenticationFlow(final GooglePrincipalServiceProxy googlePrincipalServiceProxy) {
         return new FirstStep(
                 new SecondStep(
-                        new Third(null, googlePrincipalServiceProxy)));
+                        new ThirdStep(null, googlePrincipalServiceProxy)));
     }
 }
