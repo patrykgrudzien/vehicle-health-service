@@ -25,17 +25,17 @@ public abstract class AbstractAuthenticationStepTemplate {
 
     public abstract Try<?> updateAuthenticationStateContainer(final Authentication authentication);
 
-    public abstract Optional<StepStatus> performAuthenticationStep(final Authentication authentication);
+    public abstract Optional<StepStatus> invokeNextAuthenticationStep(final Authentication authentication);
 
     public abstract Optional<StepStatus> performAllAuthenticationSteps(final Authentication authentication);
 
     // helpers
-    boolean nextStepExists() {
+    final boolean nextStepExists() {
         final Predicate<Object> nextStepExists = Objects::nonNull;
         return nextStepExists.test(getNextAuthenticationStepTemplate());
     }
 
-    Optional<StepStatus> callNextStep(final Authentication authentication) {
+    final Optional<StepStatus> callNextStep(final Authentication authentication) {
         return getNextAuthenticationStepTemplate().performAllAuthenticationSteps(authentication);
     }
 }

@@ -15,6 +15,7 @@ final class AuthenticationStateContainer {
     private String token;
     private String keyIdentifier;
     private RsaVerifier rsaVerifier;
+    private Throwable throwable;
 
     private static class InstanceHolder {
         private static final AuthenticationStateContainer INSTANCE = new AuthenticationStateContainer();
