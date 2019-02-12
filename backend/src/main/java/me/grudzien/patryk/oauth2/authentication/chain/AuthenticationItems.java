@@ -10,7 +10,7 @@ import org.springframework.security.jwt.crypto.sign.RsaVerifier;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.NONE)
-final class AuthenticationItems {
+public final class AuthenticationItems {
 
     private String token;
     private String keyIdentifier;

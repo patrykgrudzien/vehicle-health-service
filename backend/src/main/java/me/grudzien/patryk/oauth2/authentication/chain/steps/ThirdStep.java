@@ -1,4 +1,4 @@
-package me.grudzien.patryk.oauth2.authentication.chain;
+package me.grudzien.patryk.oauth2.authentication.chain.steps;
 
 import io.vavr.control.Try;
 
@@ -7,9 +7,12 @@ import org.springframework.security.jwt.crypto.sign.RsaVerifier;
 
 import java.util.Optional;
 
+import me.grudzien.patryk.oauth2.authentication.chain.AbstractAuthenticationStepBuilder;
+import me.grudzien.patryk.oauth2.authentication.chain.AbstractAuthenticationStepTemplate;
+import me.grudzien.patryk.oauth2.authentication.chain.AuthenticationResult;
 import me.grudzien.patryk.oauth2.service.google.impl.GooglePrincipalServiceProxy;
 
-public class ThirdStep extends AbstractAuthenticationStepBuilder<RsaVerifier> {
+public final class ThirdStep extends AbstractAuthenticationStepBuilder<RsaVerifier> {
 
     private final GooglePrincipalServiceProxy googlePrincipalServiceProxy;
 
@@ -22,25 +25,24 @@ public class ThirdStep extends AbstractAuthenticationStepBuilder<RsaVerifier> {
     /**
      * @param nextAuthenticationStepTemplate Next authentication step in a chain of responsibility.
      */
-    ThirdStep(final AbstractAuthenticationStepTemplate<?> nextAuthenticationStepTemplate,
+    public ThirdStep(final AbstractAuthenticationStepTemplate<?> nextAuthenticationStepTemplate,
                      final GooglePrincipalServiceProxy googlePrincipalServiceProxy) {
         super(nextAuthenticationStepTemplate);
         this.googlePrincipalServiceProxy = googlePrincipalServiceProxy;
     }
 
     @Override
-    public Try<RsaVerifier> updateAuthenticationStateContainer(final Authentication authentication) {
+    public Try<RsaVerifier> updateAuthenticationItemsContainer(final Authentication authentication) {
         return Try.of(() -> googlePrincipalServiceProxy.rsaVerifier(getAuthenticationItems().getKeyIdentifier()));
     }
 
     @Override
-    public void handleSuccessTry(final Try<RsaVerifier> tryResult) {
+    public void handleSuccessAuthenticationItemsUpdate(final Try<RsaVerifier> tryResult) {
         getAuthenticationItems().setRsaVerifier(tryResult.get());
     }
 
     @Override
-    public Optional<AuthenticationResult> handleFailureTry(final Try<RsaVerifier> tryResult) {
-        final Throwable cause = tryResult.getCause();
-        return Optional.of(getAuthenticationResult().FAILED(cause, cause.getMessage()));
+    public Optional<AuthenticationResult> handleFailedAuthenticationItemsUpdate(final Try<RsaVerifier> tryResult) {
+	    return createGenericFailedResult(tryResult);
     }
 }

@@ -27,7 +27,7 @@ import java.util.Optional;
 
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
 import me.grudzien.patryk.domain.dto.login.JwtUser;
-import me.grudzien.patryk.oauth2.authentication.chain.AuthenticationFacade;
+import me.grudzien.patryk.oauth2.authentication.chain.AuthenticationStepsFacade;
 import me.grudzien.patryk.oauth2.authentication.chain.AuthenticationResult;
 import me.grudzien.patryk.oauth2.authentication.checkers.AdditionalChecks;
 import me.grudzien.patryk.oauth2.service.google.GooglePrincipalService;
@@ -90,8 +90,8 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 		final String token = (String) authentication.getCredentials();
 		final String keyId = JwtHelper.headers(token).get(KEY_ID_ATTRIBUTE);
 
-        final Optional<AuthenticationResult> optional = AuthenticationFacade.buildAuthenticationFlow(googlePrincipalServiceProxy)
-                                                                            .performAuthenticationSteps(authentication);
+        final Optional<AuthenticationResult> optional = AuthenticationStepsFacade.buildAuthenticationFlow(googlePrincipalServiceProxy)
+                                                                                 .performAuthenticationSteps(authentication);
 
         // decoding JWT token
 		final RsaVerifier rsaVerifier = Try.of(() -> googlePrincipalServiceProxy.rsaVerifier(keyId))
