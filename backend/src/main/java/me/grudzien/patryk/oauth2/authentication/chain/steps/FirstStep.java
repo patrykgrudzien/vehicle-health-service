@@ -20,17 +20,17 @@ public final class FirstStep extends AbstractAuthenticationStepBuilder<String> {
     }
 
     @Override
-    public Try<String> updateAuthenticationItemsContainer(final Authentication authentication) {
+    public Try<String> performSingleAuthOperation(final Authentication authentication) {
         return Try.of(() -> (String) authentication.getCredentials());
     }
 
     @Override
-    public void handleSuccessAuthenticationItemsUpdate(final Try<String> tryResult) {
+    public void updateAuthenticationItemsOnSuccessOperation(final Try<String> tryResult) {
         getAuthenticationItems().setToken(tryResult.get());
     }
 
     @Override
-    public Optional<AuthenticationResult> handleFailedAuthenticationItemsUpdate(final Try<String> tryResult) {
+    public Optional<AuthenticationResult> handleFailureDuringAuthOperation(final Try<String> tryResult) {
     	return createGenericFailedResult(tryResult);
     }
 }

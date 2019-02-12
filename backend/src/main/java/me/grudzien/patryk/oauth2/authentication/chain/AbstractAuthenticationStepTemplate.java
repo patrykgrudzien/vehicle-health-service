@@ -35,23 +35,25 @@ public abstract class AbstractAuthenticationStepTemplate<T> {
 	public abstract Optional<AuthenticationResult> invokeNextAuthenticationStep(final Authentication authentication);
 
     /**
-     * Step's specific method in each authentication step which is responsible for performing specific business logic.
+     * Step's specific method in each authentication step which is responsible for performing appropriate business logic.
      * @param authentication {@link Authentication} object.
      * @return {@link Try} object that holds result of performed function.
      */
-    public abstract Try<T> updateAuthenticationItemsContainer(final Authentication authentication);
+    public abstract Try<T> performSingleAuthOperation(final Authentication authentication);
 
     /**
-     * Method that must inherit all authentication steps instances to perform specific logic when
-     * update made against {@link me.grudzien.patryk.oauth2.authentication.chain.AuthenticationItems} was successful.
-     * @param tryResult result of {@link AbstractAuthenticationStepTemplate#updateAuthenticationItemsContainer(Authentication)}
+     * Method that must inherit all authentication steps instances which purpose is to update
+     * {@link me.grudzien.patryk.oauth2.authentication.chain.AuthenticationItems} with specific action's result once
+     * {@link AbstractAuthenticationStepTemplate#performSingleAuthOperation(Authentication)} was successful.
+     * @param tryResult result of {@link AbstractAuthenticationStepTemplate#performSingleAuthOperation(Authentication)}
      */
-    public abstract void handleSuccessAuthenticationItemsUpdate(final Try<T> tryResult);
+    public abstract void updateAuthenticationItemsOnSuccessOperation(final Try<T> tryResult);
 
-    /**
-     * Method that must inherit all authentication steps instances to perform specific logic when
-     * update made against {@link me.grudzien.patryk.oauth2.authentication.chain.AuthenticationItems} was failed.
-     * @param tryResult result of {@link AbstractAuthenticationStepTemplate#updateAuthenticationItemsContainer(Authentication)}
-     */
-    public abstract Optional<AuthenticationResult> handleFailedAuthenticationItemsUpdate(final Try<T> tryResult);
+	/**
+	 * Method that must inherit all authentication steps instances which purpose is to execute specific logic that handles failure of:
+	 * {@link AbstractAuthenticationStepTemplate#performSingleAuthOperation(Authentication)} and returns
+	 * {@link me.grudzien.patryk.oauth2.authentication.chain.AuthenticationResult}.
+	 * @param tryResult result of {@link AbstractAuthenticationStepTemplate#performSingleAuthOperation(Authentication)}
+	 */
+    public abstract Optional<AuthenticationResult> handleFailureDuringAuthOperation(final Try<T> tryResult);
 }

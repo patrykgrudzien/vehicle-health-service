@@ -19,30 +19,30 @@ public final class ThirdStep extends AbstractAuthenticationStepBuilder<RsaVerifi
     // disabling an option to override it
 	@SuppressWarnings("unused")
     private ThirdStep(final AbstractAuthenticationStepTemplate<?> nextAuthenticationStepTemplate) {
-		this(nextAuthenticationStepTemplate, null);
+		this(null, nextAuthenticationStepTemplate);
 	}
 
     /**
      * @param nextAuthenticationStepTemplate Next authentication step in a chain of responsibility.
      */
-    public ThirdStep(final AbstractAuthenticationStepTemplate<?> nextAuthenticationStepTemplate,
-                     final GooglePrincipalServiceProxy googlePrincipalServiceProxy) {
+    public ThirdStep(final GooglePrincipalServiceProxy googlePrincipalServiceProxy,
+                     final AbstractAuthenticationStepTemplate<?> nextAuthenticationStepTemplate) {
         super(nextAuthenticationStepTemplate);
         this.googlePrincipalServiceProxy = googlePrincipalServiceProxy;
     }
 
     @Override
-    public Try<RsaVerifier> updateAuthenticationItemsContainer(final Authentication authentication) {
+    public Try<RsaVerifier> performSingleAuthOperation(final Authentication authentication) {
         return Try.of(() -> googlePrincipalServiceProxy.rsaVerifier(getAuthenticationItems().getKeyIdentifier()));
     }
 
     @Override
-    public void handleSuccessAuthenticationItemsUpdate(final Try<RsaVerifier> tryResult) {
+    public void updateAuthenticationItemsOnSuccessOperation(final Try<RsaVerifier> tryResult) {
         getAuthenticationItems().setRsaVerifier(tryResult.get());
     }
 
     @Override
-    public Optional<AuthenticationResult> handleFailedAuthenticationItemsUpdate(final Try<RsaVerifier> tryResult) {
+    public Optional<AuthenticationResult> handleFailureDuringAuthOperation(final Try<RsaVerifier> tryResult) {
 	    return createGenericFailedResult(tryResult);
     }
 }
