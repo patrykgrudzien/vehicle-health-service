@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.security.core.Authentication;
 
-import java.util.Objects;
 import java.util.Optional;
 
 @Getter
@@ -40,34 +39,19 @@ public abstract class AbstractAuthenticationStepTemplate<T> {
      * @param authentication {@link Authentication} object.
      * @return {@link Try} object that holds result of performed function.
      */
-    public abstract Try<T> updateAuthenticationStateContainer(final Authentication authentication);
+    public abstract Try<T> updateAuthenticationItemsContainer(final Authentication authentication);
 
     /**
-     * Method that must inherit all authentication steps to perform specific success logic.
-     * @param tryResult result of {@link AbstractAuthenticationStepTemplate#updateAuthenticationStateContainer(Authentication)}
+     * Method that must inherit all authentication steps instances to perform specific logic when
+     * update made against {@link me.grudzien.patryk.oauth2.authentication.chain.AuthenticationItems} was successful.
+     * @param tryResult result of {@link AbstractAuthenticationStepTemplate#updateAuthenticationItemsContainer(Authentication)}
      */
-    public abstract void handleSuccessTry(final Try<T> tryResult);
+    public abstract void handleSuccessAuthenticationItemsUpdate(final Try<T> tryResult);
 
     /**
-     * Method that must inherit all authentication steps to perform specific failure logic.
-     * @param tryResult result of {@link AbstractAuthenticationStepTemplate#updateAuthenticationStateContainer(Authentication)}
+     * Method that must inherit all authentication steps instances to perform specific logic when
+     * update made against {@link me.grudzien.patryk.oauth2.authentication.chain.AuthenticationItems} was failed.
+     * @param tryResult result of {@link AbstractAuthenticationStepTemplate#updateAuthenticationItemsContainer(Authentication)}
      */
-    public abstract Optional<AuthenticationResult> handleFailureTry(final Try<T> tryResult);
-
-    /**
-     * Helper method which checks if there is a next authentication step in a chain.
-     * @return {@code true} if a next authentication step in the chain is present, false otherwise.
-     */
-    final boolean nextStepExists() {
-    	return Objects.nonNull(getNextAuthenticationStepTemplate());
-    }
-
-    /**
-     * Helper method that takes the next authentication step in a chain and calls template method.
-     * @param authentication {@link Authentication} object.
-     * @return {@link AuthenticationResult} of the next authentication step in a chain.
-     */
-    final Optional<AuthenticationResult> callNextStep(final Authentication authentication) {
-        return getNextAuthenticationStepTemplate().performAuthenticationSteps(authentication);
-    }
+    public abstract Optional<AuthenticationResult> handleFailedAuthenticationItemsUpdate(final Try<T> tryResult);
 }

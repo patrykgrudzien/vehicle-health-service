@@ -1,20 +1,20 @@
 package me.grudzien.patryk.oauth2.authentication.chain;
 
-import io.vavr.Tuple;
-import io.vavr.Tuple2;
-import io.vavr.collection.HashMap;
-import io.vavr.collection.Map;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.NONE)
 public final class AuthenticationResult {
 
-    private Map<Status, Tuple2<?, ?>> resultMap;
+	private enum Status {
+		OK, FAILED
+	}
+
+	private Status status;
+	private Throwable throwable;
+	private String throwableMessage;
 
 	private static class InstanceHolder {
 		private static final AuthenticationResult INSTANCE = new AuthenticationResult();
@@ -24,19 +24,28 @@ public final class AuthenticationResult {
 		return InstanceHolder.INSTANCE;
 	}
 
-	AuthenticationResult OK() {
-        final AuthenticationResult instance = getInstance();
-        instance.setResultMap(HashMap.of(Status.OK, Tuple.of("No exception thrown.", "All authentication steps have been successfully passed.")));
-        return instance;
+	AuthenticationResult ok() {
+		return getInstance().setStatus(Status.OK);
     }
 
-    AuthenticationResult FAILED(final Throwable throwable, final String throwableMessage) {
-        final AuthenticationResult instance = getInstance();
-        instance.setResultMap(HashMap.of(Status.FAILED, Tuple.of(throwable, throwableMessage)));
-        return instance;
+    AuthenticationResult failed(final Throwable throwable, final String throwableMessage) {
+	    return getInstance().setStatus(Status.FAILED)
+	                        .setThrowable(throwable)
+	                        .setThrowableMessage(throwableMessage);
     }
 
-    private enum Status {
-        OK, FAILED
-    }
+	private AuthenticationResult setStatus(final Status status) {
+		this.status = status;
+		return this;
+	}
+
+	private AuthenticationResult setThrowable(final Throwable throwable) {
+		this.throwable = throwable;
+		return this;
+	}
+
+	private AuthenticationResult setThrowableMessage(final String throwableMessage) {
+		this.throwableMessage = throwableMessage;
+		return this;
+	}
 }
