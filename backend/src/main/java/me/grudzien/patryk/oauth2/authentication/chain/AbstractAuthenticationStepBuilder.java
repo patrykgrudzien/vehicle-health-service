@@ -28,16 +28,16 @@ public abstract class AbstractAuthenticationStepBuilder<T> extends AbstractAuthe
     // template method
     @Override
     public final Optional<AuthenticationResult> performAuthenticationSteps(final Authentication authentication) {
-        final Try<T> tryResult = updateAuthenticationItemsContainer(authentication);
+        final Try<T> tryResult = performSingleAuthOperation(authentication);
         return Match(tryResult).of(
                 Case($Success($()), () -> {
                     log.info("Authentication State Container has been successfully updated. Going to the next operation.");
-                    handleSuccessAuthenticationItemsUpdate(tryResult);
+                    updateAuthenticationItemsOnSuccessOperation(tryResult);
                     return invokeNextAuthenticationStep(authentication);
                 }),
                 Case($Failure(Pattern0.of(Throwable.class)), () -> {
                     log.error("Authentication State Container couldn't be updated! Next operation won't be executed!");
-                    return handleFailedAuthenticationItemsUpdate(tryResult);
+                    return handleFailureDuringAuthOperation(tryResult);
                 })
         );
     }
@@ -50,7 +50,7 @@ public abstract class AbstractAuthenticationStepBuilder<T> extends AbstractAuthe
 
 	/**
 	 * Generic method that handles failed update of {@link me.grudzien.patryk.oauth2.authentication.chain.AuthenticationItems}.
-	 * @param tryResult result of {@link AbstractAuthenticationStepTemplate#updateAuthenticationItemsContainer(Authentication)}
+	 * @param tryResult result of {@link AbstractAuthenticationStepTemplate#performSingleAuthOperation(Authentication)}
 	 * @return {@link AuthenticationResult} object with failed state.
 	 */
 	protected final Optional<AuthenticationResult> createGenericFailedResult(final Try<T> tryResult) {

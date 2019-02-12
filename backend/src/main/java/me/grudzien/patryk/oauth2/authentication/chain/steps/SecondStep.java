@@ -23,18 +23,18 @@ public final class SecondStep extends AbstractAuthenticationStepBuilder<String> 
     }
 
     @Override
-    public Try<String> updateAuthenticationItemsContainer(final Authentication authentication) {
+    public Try<String> performSingleAuthOperation(final Authentication authentication) {
         return Try.of(() -> JwtHelper.headers(getAuthenticationItems().getToken())
                                      .get(KEY_ID_ATTRIBUTE));
     }
 
     @Override
-    public void handleSuccessAuthenticationItemsUpdate(final Try<String> tryResult) {
+    public void updateAuthenticationItemsOnSuccessOperation(final Try<String> tryResult) {
         getAuthenticationItems().setKeyIdentifier(tryResult.get());
     }
 
     @Override
-    public Optional<AuthenticationResult> handleFailedAuthenticationItemsUpdate(final Try<String> tryResult) {
+    public Optional<AuthenticationResult> handleFailureDuringAuthOperation(final Try<String> tryResult) {
 	    return createGenericFailedResult(tryResult);
     }
 }

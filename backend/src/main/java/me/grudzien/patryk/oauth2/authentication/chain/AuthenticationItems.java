@@ -5,7 +5,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import org.springframework.security.jwt.Jwt;
 import org.springframework.security.jwt.crypto.sign.RsaVerifier;
+
+import java.util.Map;
 
 @Getter
 @Setter
@@ -15,6 +18,8 @@ public final class AuthenticationItems {
     private String token;
     private String keyIdentifier;
     private RsaVerifier rsaVerifier;
+    private Jwt decodedJwt;
+    private Map<String, String> jwtTokenAttributes;
 
     private static class InstanceHolder {
         private static final AuthenticationItems INSTANCE = new AuthenticationItems();
