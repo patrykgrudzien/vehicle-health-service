@@ -35,6 +35,6 @@ public final class SeventhStep extends AbstractAuthenticationStepBuilder<String>
     @Override
     public Optional<AuthenticationResult> handleFailureDuringAuthOperation(final Try<String> tryResult) {
         return Optional.of(getAuthenticationResult().failed(
-                new RuntimeException(), "ERROR while obtaining \"(Subject identifier)\"! It should be always present!"));
+                RuntimeException.class, "ERROR while obtaining \"(Subject identifier)\"! It should be always present!"));
     }
 }
