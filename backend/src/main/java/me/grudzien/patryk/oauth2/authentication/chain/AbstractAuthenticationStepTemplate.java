@@ -3,6 +3,7 @@ package me.grudzien.patryk.oauth2.authentication.chain;
 import io.vavr.control.Try;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import org.springframework.security.core.Authentication;
 
@@ -15,7 +16,8 @@ public abstract class AbstractAuthenticationStepTemplate<T> {
     private final AbstractAuthenticationStepTemplate<?> nextAuthenticationStepTemplate;
 
     // containers
-    private final AuthenticationItems authenticationItems = AuthenticationItems.getInstance();
+    @Setter
+    private AuthenticationItems authenticationItems = AuthenticationItems.getInstance();
     private final AuthenticationResult authenticationResult = AuthenticationResult.getInstance();
 
     /**
@@ -35,7 +37,7 @@ public abstract class AbstractAuthenticationStepTemplate<T> {
 	public abstract Optional<AuthenticationResult> invokeNextAuthenticationStep(final Authentication authentication);
 
     /**
-     * Step's specific method in each authentication step which is responsible for performing appropriate business logic.
+     * Step's specific method in each authentication step which is responsible for performing appropriate authentication logic.
      * @param authentication {@link Authentication} object.
      * @return {@link Try} object that holds result of performed function.
      */
@@ -51,8 +53,7 @@ public abstract class AbstractAuthenticationStepTemplate<T> {
 
 	/**
 	 * Method that must inherit all authentication steps instances which purpose is to execute specific logic that handles failure of:
-	 * {@link AbstractAuthenticationStepTemplate#performSingleAuthOperation(Authentication)} and returns
-	 * {@link me.grudzien.patryk.oauth2.authentication.chain.AuthenticationResult}.
+	 * {@link AbstractAuthenticationStepTemplate#performSingleAuthOperation(Authentication)} and returns {@link AuthenticationResult}.
 	 * @param tryResult result of {@link AbstractAuthenticationStepTemplate#performSingleAuthOperation(Authentication)}
 	 */
     public abstract Optional<AuthenticationResult> handleFailureDuringAuthOperation(final Try<T> tryResult);
