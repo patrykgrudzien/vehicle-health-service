@@ -54,6 +54,7 @@ public abstract class AbstractAuthenticationStepBuilder<T> extends AbstractAuthe
 	 * @return {@link AuthenticationResult} object with failed state.
 	 */
 	protected final Optional<AuthenticationResult> createGenericFailedResult(final Try<T> tryResult) {
+        getAuthenticationItems().clearState();
 		final Throwable cause = tryResult.getCause();
 		return Optional.of(getAuthenticationResult().failed(cause, cause.getMessage()));
 	}
@@ -68,7 +69,7 @@ public abstract class AbstractAuthenticationStepBuilder<T> extends AbstractAuthe
 	 */
 	private Optional<AuthenticationResult> finishAuthentication() {
         getAuthenticationItems().clearState();
-        return Optional.of(getAuthenticationResult().ok());
+        return Optional.of(getAuthenticationResult().ok(getAuthenticationItems().getCustomAuthenticationToken()));
     }
 
 	/**

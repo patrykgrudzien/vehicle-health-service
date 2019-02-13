@@ -1,8 +1,5 @@
 package me.grudzien.patryk.oauth2.authentication;
 
-import io.vavr.CheckedFunction1;
-import io.vavr.Function1;
-import io.vavr.control.Try;
 import lombok.extern.log4j.Log4j2;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -12,23 +9,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.jwt.Jwt;
-import org.springframework.security.jwt.JwtHelper;
-import org.springframework.security.jwt.crypto.sign.RsaVerifier;
-import org.springframework.security.oauth2.core.oidc.StandardClaimNames;
 import org.springframework.stereotype.Component;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.util.Map;
-import java.util.Optional;
 
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
 import me.grudzien.patryk.domain.dto.login.JwtUser;
+import me.grudzien.patryk.oauth2.authentication.chain.AuthenticationResult.Status;
 import me.grudzien.patryk.oauth2.authentication.chain.AuthenticationStepsFacade;
-import me.grudzien.patryk.oauth2.authentication.chain.AuthenticationResult;
 import me.grudzien.patryk.oauth2.authentication.checkers.AdditionalChecks;
 import me.grudzien.patryk.oauth2.service.google.GooglePrincipalService;
 import me.grudzien.patryk.oauth2.service.google.impl.GooglePrincipalServiceProxy;
@@ -37,14 +23,16 @@ import me.grudzien.patryk.service.login.impl.MyUserDetailsService;
 import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static io.vavr.API.$;
+import static io.vavr.API.Case;
+import static io.vavr.API.Match;
+import static io.vavr.Predicates.is;
 
 import static me.grudzien.patryk.util.log.LogMarkers.SECURITY_MARKER;
 
 @Log4j2
 @Component
 public class CustomAuthenticationProvider implements AuthenticationProvider {
-
-	private static final String KEY_ID_ATTRIBUTE = "kid";
 
 	private final UserDetailsService userDetailsService;
 	private final LocaleMessagesCreator localeMessagesCreator;
@@ -87,51 +75,19 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 	@Override
 	public Authentication authenticate(final Authentication authentication) throws AuthenticationException {
 	    log.info(SECURITY_MARKER, "Starting custom authentication...");
-		final String token = (String) authentication.getCredentials();
-		final String keyId = JwtHelper.headers(token).get(KEY_ID_ATTRIBUTE);
 
-        final Optional<AuthenticationResult> optional = AuthenticationStepsFacade.buildAuthenticationFlow(googlePrincipalServiceProxy)
-                                                                                 .performAuthenticationSteps(authentication);
-
-        // decoding JWT token
-		final RsaVerifier rsaVerifier = Try.of(() -> googlePrincipalServiceProxy.rsaVerifier(keyId))
-                                           .getOrElseThrow(() -> new RuntimeException("Could NOT obtain RSA!"));
-		final Jwt decodedJwt = JwtHelper.decodeAndVerify(token, rsaVerifier);
-
-		// reading map of attributes from JWT token
-        final Function1<String, Try<Map<String, String>>> liftTry = CheckedFunction1.liftTry(input -> new ObjectMapper()
-                .readValue(input, new TypeReference<Map<String, String>>() {}));
-		final Try<Map<String, String>> resultTry = liftTry.apply(decodedJwt.getClaims());
-        final Map<String, String> authInfo = resultTry.isSuccess() ? resultTry.get() : null;
-
-        // loading email attribute
-        final String email = Optional.ofNullable(authInfo)
-                                     .map(map -> map.getOrDefault(StandardClaimNames.EMAIL, null))
-                                     .orElse(null);
-
-        // loading subject attribute (in this case it's password which was used during registration by google)
-		final String jwtSubjectIdentifier = Optional.ofNullable(authInfo)
-		                                            .map(map -> map.get(StandardClaimNames.SUB))
-		                                            .orElseThrow(() -> new RuntimeException("ERROR while obtaining \"(Subject identifier)\"! It should be always present!"));
-
-		// cleaning user from cache because it's been saved (with "enabled" status = FALSE) before email confirmation
-        cacheManagerHelper.clearAllCache(MyUserDetailsService.PRINCIPAL_USER_CACHE_NAME);
-
-        // loading user from DB
-		final JwtUser jwtUser = Optional.ofNullable((JwtUser) userDetailsService.loadUserByUsername(email))
-		                                .orElseThrow(() -> new UsernameNotFoundException(
-		                                		localeMessagesCreator.buildLocaleMessageWithParam("user-not-found-by-email", email)));
-		// 1. PRE-authentication checks
-		customPreAuthenticationChecks.check(jwtUser);
-
-		// 2. POST-authentication checks
-		customPostAuthenticationChecks.check(jwtUser);
-
-		// 3. ADDITIONAL-authentication checks
-		final CustomAuthenticationToken customAuthenticationToken = new CustomAuthenticationToken(jwtUser, token, jwtUser.getAuthorities());
-		additionalChecks.additionalAuthenticationChecks(jwtUser, customAuthenticationToken, jwtSubjectIdentifier);
-
-		return customAuthenticationToken;
+        return AuthenticationStepsFacade.buildAuthenticationFlow(googlePrincipalServiceProxy, cacheManagerHelper,
+                                                                 userDetailsService, localeMessagesCreator,
+                                                                 customPreAuthenticationChecks,
+                                                                 customPostAuthenticationChecks, additionalChecks)
+                                        .performAuthenticationSteps(authentication)
+                                        .map(authenticationResult -> Match(authenticationResult.getStatus()).of(
+                                                Case($(is(Status.OK)), authenticationResult::getCustomAuthenticationToken),
+                                                Case($(is(Status.FAILED)), () -> {
+                                                    throw new RuntimeException(authenticationResult.getThrowableMessage(), authenticationResult.getThrowable());
+                                                }))
+                                        )
+                                        .orElseThrow(() -> new RuntimeException("THINK ABOUT PROPER LOGIC / EXCEPTION HERE !!!"));
 	}
 
     /**

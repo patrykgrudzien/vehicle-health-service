@@ -3,18 +3,23 @@ package me.grudzien.patryk.oauth2.authentication.chain;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
+import me.grudzien.patryk.oauth2.authentication.CustomAuthenticationToken;
+
+@Log4j2
 @Getter
 @NoArgsConstructor(access = AccessLevel.NONE)
 public final class AuthenticationResult {
 
-	private enum Status {
+	public enum Status {
 		OK, FAILED
-	}
+    }
 
-	private Status status;
-	private Throwable throwable;
-	private String throwableMessage;
+    private Status status;
+    private Throwable throwable;
+    private String throwableMessage;
+    private CustomAuthenticationToken customAuthenticationToken;
 
 	private static class InstanceHolder {
 		private static final AuthenticationResult INSTANCE = new AuthenticationResult();
@@ -24,11 +29,14 @@ public final class AuthenticationResult {
 		return InstanceHolder.INSTANCE;
 	}
 
-	AuthenticationResult ok() {
-		return getInstance().setStatus(Status.OK);
+	AuthenticationResult ok(final CustomAuthenticationToken customAuthenticationToken) {
+	    log.info("AuthenticationResult was OK.");
+		return getInstance().setStatus(Status.OK)
+                            .setCustomAuthenticationToken(customAuthenticationToken);
     }
 
-    AuthenticationResult failed(final Throwable throwable, final String throwableMessage) {
+    public AuthenticationResult failed(final Throwable throwable, final String throwableMessage) {
+	    log.error("AuthenticationResult was FAILED!");
 	    return getInstance().setStatus(Status.FAILED)
 	                        .setThrowable(throwable)
 	                        .setThrowableMessage(throwableMessage);
@@ -48,4 +56,9 @@ public final class AuthenticationResult {
 		this.throwableMessage = throwableMessage;
 		return this;
 	}
+
+    private AuthenticationResult setCustomAuthenticationToken(final CustomAuthenticationToken customAuthenticationToken) {
+	    this.customAuthenticationToken = customAuthenticationToken;
+	    return this;
+    }
 }
