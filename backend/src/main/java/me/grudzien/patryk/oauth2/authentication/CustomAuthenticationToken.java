@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
-public class CustomAuthenticationToken extends AbstractAuthenticationToken {
+public final class CustomAuthenticationToken extends AbstractAuthenticationToken {
 
 	private static final long serialVersionUID = 6192413451740113683L;
 
@@ -20,7 +20,6 @@ public class CustomAuthenticationToken extends AbstractAuthenticationToken {
 		setAuthenticated(Boolean.TRUE);
 	}
 
-	@SuppressWarnings("WeakerAccess")
     public CustomAuthenticationToken(final UserDetails principal, final String jwtToken,
                                      final Collection<? extends GrantedAuthority> authorities) {
 		super(authorities);

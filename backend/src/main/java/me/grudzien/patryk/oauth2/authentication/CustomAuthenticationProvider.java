@@ -11,6 +11,8 @@ import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
+import java.lang.reflect.InvocationTargetException;
+
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
 import me.grudzien.patryk.domain.dto.login.JwtUser;
 import me.grudzien.patryk.oauth2.authentication.chain.AuthenticationResult.Status;
@@ -70,7 +72,8 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
      * This method is called by:
      * {@link me.grudzien.patryk.service.login.impl.UserAuthenticationServiceImpl#authenticateUser(JwtAuthenticationRequest)}
      * only when:
-     * @param authentication is of type {@link CustomAuthenticationToken}.
+     * @param authentication is of type {@link CustomAuthenticationToken} and all kind of exceptions thrown here are handled by:
+     * {@link me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases}.
      */
 	@Override
 	public Authentication authenticate(final Authentication authentication) throws AuthenticationException {
@@ -84,7 +87,15 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                                         .map(authenticationResult -> Match(authenticationResult.getStatus()).of(
                                                 Case($(is(Status.OK)), authenticationResult::getCustomAuthenticationToken),
                                                 Case($(is(Status.FAILED)), () -> {
-                                                    throw new RuntimeException(authenticationResult.getThrowableMessage(), authenticationResult.getThrowable());
+	                                                RuntimeException exception = new RuntimeException();
+	                                                try {
+		                                                exception = (RuntimeException) Class.forName(authenticationResult.getExceptionClass().getName())
+		                                                                                    .getConstructor(String.class)
+		                                                                                    .newInstance(authenticationResult.getExceptionMessage());
+	                                                } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException e) {
+		                                                e.printStackTrace();
+	                                                }
+	                                                throw exception;
                                                 }))
                                         )
                                         .orElseThrow(() -> new RuntimeException("THINK ABOUT PROPER LOGIC / EXCEPTION HERE !!!"));

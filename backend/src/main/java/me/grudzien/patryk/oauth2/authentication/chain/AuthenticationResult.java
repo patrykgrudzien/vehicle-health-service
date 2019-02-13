@@ -17,8 +17,8 @@ public final class AuthenticationResult {
     }
 
     private Status status;
-    private Throwable throwable;
-    private String throwableMessage;
+    private Class<? extends Throwable> exceptionClass;
+    private String exceptionMessage;
     private CustomAuthenticationToken customAuthenticationToken;
 
 	private static class InstanceHolder {
@@ -35,11 +35,11 @@ public final class AuthenticationResult {
                             .setCustomAuthenticationToken(customAuthenticationToken);
     }
 
-    public AuthenticationResult failed(final Throwable throwable, final String throwableMessage) {
+    public AuthenticationResult failed(final Class<? extends Throwable> exceptionClass, final String exceptionMessage) {
 	    log.error("AuthenticationResult was FAILED!");
 	    return getInstance().setStatus(Status.FAILED)
-	                        .setThrowable(throwable)
-	                        .setThrowableMessage(throwableMessage);
+	                        .setExceptionClass(exceptionClass)
+	                        .setExceptionMessage(exceptionMessage);
     }
 
 	private AuthenticationResult setStatus(final Status status) {
@@ -47,13 +47,13 @@ public final class AuthenticationResult {
 		return this;
 	}
 
-	private AuthenticationResult setThrowable(final Throwable throwable) {
-		this.throwable = throwable;
+	private AuthenticationResult setExceptionClass(final Class<? extends Throwable> exceptionClass) {
+		this.exceptionClass = exceptionClass;
 		return this;
 	}
 
-	private AuthenticationResult setThrowableMessage(final String throwableMessage) {
-		this.throwableMessage = throwableMessage;
+	private AuthenticationResult setExceptionMessage(final String exceptionMessage) {
+		this.exceptionMessage = exceptionMessage;
 		return this;
 	}
 
