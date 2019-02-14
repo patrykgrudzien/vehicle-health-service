@@ -16,7 +16,7 @@ import static io.vavr.Patterns.$Failure;
 import static io.vavr.Patterns.$Success;
 
 @Log4j2
-public abstract class AbstractAuthenticationStepBuilder<T> extends AbstractAuthenticationStepTemplate<T> {
+public abstract class AbstractAuthenticationStepBuilder<OperationResultType> extends AbstractAuthenticationStepTemplate<OperationResultType> {
 
     /**
      * @param nextAuthenticationStepTemplate Next authentication step in a chain of responsibility.
@@ -28,7 +28,7 @@ public abstract class AbstractAuthenticationStepBuilder<T> extends AbstractAuthe
     // template method
     @Override
     public final Optional<AuthenticationResult> performAuthenticationSteps(final Authentication authentication) {
-        final Try<T> tryResult = performSingleAuthOperation(authentication);
+        final Try<OperationResultType> tryResult = performSingleAuthOperation(authentication);
         return Match(tryResult).of(
                 Case($Success($()), () -> {
                     log.info("Authentication State Container has been successfully updated. Going to the next operation.");
@@ -53,7 +53,7 @@ public abstract class AbstractAuthenticationStepBuilder<T> extends AbstractAuthe
 	 * @param tryResult result of {@link AbstractAuthenticationStepTemplate#performSingleAuthOperation(Authentication)}
 	 * @return {@link AuthenticationResult} object with failed state.
 	 */
-	protected final Optional<AuthenticationResult> createGenericFailedResult(final Try<T> tryResult) {
+	protected final Optional<AuthenticationResult> createGenericFailedResult(final Try<OperationResultType> tryResult) {
         getAuthenticationItems().clearState();
 		final Throwable cause = tryResult.getCause();
 		return Optional.of(getAuthenticationResult().failed(cause.getClass(), cause.getMessage()));
