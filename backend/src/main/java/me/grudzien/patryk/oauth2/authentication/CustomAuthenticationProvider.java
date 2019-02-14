@@ -11,10 +11,11 @@ import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
-import java.lang.reflect.InvocationTargetException;
-
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
 import me.grudzien.patryk.domain.dto.login.JwtUser;
+import me.grudzien.patryk.factory.FactoryProvider;
+import me.grudzien.patryk.factory.FactoryType;
+import me.grudzien.patryk.factory.exception.ExceptionType;
 import me.grudzien.patryk.oauth2.authentication.chain.AuthenticationResult.Status;
 import me.grudzien.patryk.oauth2.authentication.chain.AuthenticationStepsFacade;
 import me.grudzien.patryk.oauth2.authentication.checkers.AdditionalChecks;
@@ -87,15 +88,10 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                                         .map(authenticationResult -> Match(authenticationResult.getStatus()).of(
                                                 Case($(is(Status.OK)), authenticationResult::getCustomAuthenticationToken),
                                                 Case($(is(Status.FAILED)), () -> {
-	                                                RuntimeException exception = new RuntimeException();
-	                                                try {
-		                                                exception = (RuntimeException) Class.forName(authenticationResult.getExceptionClass().getName())
-		                                                                                    .getConstructor(String.class)
-		                                                                                    .newInstance(authenticationResult.getExceptionMessage());
-	                                                } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException e) {
-		                                                e.printStackTrace();
-	                                                }
-	                                                throw exception;
+                                                	throw (RuntimeException) FactoryProvider.getFactory(FactoryType.EXCEPTION)
+	                                                                                        .create(ExceptionType.DYNAMIC,
+	                                                                                                authenticationResult.getExceptionClass().getName(),
+	                                                                                                authenticationResult.getExceptionMessage());
                                                 }))
                                         )
                                         .orElseThrow(() -> new RuntimeException("THINK ABOUT PROPER LOGIC / EXCEPTION HERE !!!"));
