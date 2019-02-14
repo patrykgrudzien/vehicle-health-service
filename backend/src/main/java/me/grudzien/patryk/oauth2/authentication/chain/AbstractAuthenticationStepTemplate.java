@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Getter
 @RequiredArgsConstructor
-public abstract class AbstractAuthenticationStepTemplate<T> {
+public abstract class AbstractAuthenticationStepTemplate<OperationResultType> {
 
     private final AbstractAuthenticationStepTemplate<?> nextAuthenticationStepTemplate;
 
@@ -41,7 +41,7 @@ public abstract class AbstractAuthenticationStepTemplate<T> {
      * @param authentication {@link Authentication} object.
      * @return {@link Try} object that holds result of performed function.
      */
-    public abstract Try<T> performSingleAuthOperation(final Authentication authentication);
+    public abstract Try<OperationResultType> performSingleAuthOperation(final Authentication authentication);
 
     /**
      * Method that must inherit all authentication steps instances which purpose is to update
@@ -49,12 +49,12 @@ public abstract class AbstractAuthenticationStepTemplate<T> {
      * {@link AbstractAuthenticationStepTemplate#performSingleAuthOperation(Authentication)} was successful.
      * @param tryResult result of {@link AbstractAuthenticationStepTemplate#performSingleAuthOperation(Authentication)}
      */
-    public abstract void updateAuthenticationItemsOnSuccessOperation(final Try<T> tryResult);
+    public abstract void updateAuthenticationItemsOnSuccessOperation(final Try<OperationResultType> tryResult);
 
 	/**
 	 * Method that must inherit all authentication steps instances which purpose is to execute specific logic that handles failure of:
 	 * {@link AbstractAuthenticationStepTemplate#performSingleAuthOperation(Authentication)} and returns {@link AuthenticationResult}.
 	 * @param tryResult result of {@link AbstractAuthenticationStepTemplate#performSingleAuthOperation(Authentication)}
 	 */
-    public abstract Optional<AuthenticationResult> handleFailureDuringAuthOperation(final Try<T> tryResult);
+    public abstract Optional<AuthenticationResult> handleFailureDuringAuthOperation(final Try<OperationResultType> tryResult);
 }
