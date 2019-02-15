@@ -89,9 +89,9 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                                                 Case($(is(Status.OK)), authenticationResult::getCustomAuthenticationToken),
                                                 Case($(is(Status.FAILED)), () -> {
                                                 	throw (RuntimeException) FactoryProvider.getFactory(FactoryType.EXCEPTION)
-	                                                                                        .create(ExceptionType.DYNAMIC,
-	                                                                                                authenticationResult.getExceptionClass().getName(),
-	                                                                                                authenticationResult.getExceptionMessage());
+                                                                                            .create(ExceptionType.DYNAMIC_BASED_ON_INPUT,
+                                                                                                    authenticationResult.getExceptionClass().getName(),
+                                                                                                    authenticationResult.getExceptionMessage());
                                                 }))
                                         )
                                         .orElseThrow(() -> new RuntimeException("THINK ABOUT PROPER LOGIC / EXCEPTION HERE !!!"));
