@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
 import me.grudzien.patryk.domain.dto.login.JwtUser;
+import me.grudzien.patryk.exception.security.MissingAuthenticationResultException;
 import me.grudzien.patryk.factory.FactoryProvider;
 import me.grudzien.patryk.factory.FactoryType;
 import me.grudzien.patryk.factory.exception.ExceptionType;
@@ -79,7 +80,6 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 	@Override
 	public Authentication authenticate(final Authentication authentication) throws AuthenticationException {
 	    log.info(SECURITY_MARKER, "Starting custom authentication...");
-
         return AuthenticationStepsFacade.buildAuthenticationFlow(googlePrincipalServiceProxy, cacheManagerHelper,
                                                                  userDetailsService, localeMessagesCreator,
                                                                  customPreAuthenticationChecks,
@@ -94,7 +94,8 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                                                                                                     authenticationResult.getExceptionMessage());
                                                 }))
                                         )
-                                        .orElseThrow(() -> new RuntimeException("THINK ABOUT PROPER LOGIC / EXCEPTION HERE !!!"));
+                                        .orElseThrow(() -> new MissingAuthenticationResultException(localeMessagesCreator.buildLocaleMessage(
+                                                "missing-authentication-result-exception")));
 	}
 
     /**

@@ -35,7 +35,6 @@ import me.grudzien.patryk.util.web.RequestsDecoder;
 import static io.vavr.API.$;
 import static io.vavr.API.Case;
 import static io.vavr.API.Match;
-import static io.vavr.API.run;
 
 import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
 
@@ -130,7 +129,8 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
                           FailedAuthenticationCases.JwtTokenNotFoundExceptionCase(localeMessagesCreator),
                           FailedAuthenticationCases.RegistrationProviderMismatchExceptionCase(localeMessagesCreator),
                           FailedAuthenticationCases.BadCredentialsExceptionCase(localeMessagesCreator),
-                          Case($(), exception -> run(() -> new RuntimeException("UNKNOWN EXCEPTION!")))
+                          FailedAuthenticationCases.MissingAuthenticationResultException(localeMessagesCreator),
+                          FailedAuthenticationCases.CustomAuthenticationUnknownException(localeMessagesCreator)
 		          ))
 		          .getOrElse(Optional.empty());
 	}
