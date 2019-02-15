@@ -14,9 +14,9 @@ public final class FactoryProvider {
 	}
 
 	@SuppressWarnings("SameParameterValue")
-	public static <ReturnObject, InputType> AbstractFactory<ReturnObject, InputType> getFactory(final FactoryType factoryType) {
+	public static <InputType, ReturnObject> AbstractFactory<InputType, ReturnObject> getFactory(final FactoryType factoryType) {
 		//noinspection unchecked
-		return (AbstractFactory<ReturnObject, InputType>) Match(factoryType).of(
+		return (AbstractFactory<InputType, ReturnObject>) Match(factoryType).of(
 				Case($(is(FactoryType.EXCEPTION)), ExceptionFactory::new)
 		);
 	}
