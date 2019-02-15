@@ -7,12 +7,19 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
+import org.springframework.security.core.userdetails.UserDetailsChecker;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import me.grudzien.patryk.exception.login.BadCredentialsAuthenticationException;
 import me.grudzien.patryk.exception.login.UserDisabledAuthenticationException;
+import me.grudzien.patryk.exception.security.CustomAuthenticationUnknownException;
+import me.grudzien.patryk.exception.security.MissingAuthenticationResultException;
+import me.grudzien.patryk.oauth2.authentication.checkers.AdditionalChecks;
 import me.grudzien.patryk.oauth2.exception.JwtTokenNotFoundException;
 import me.grudzien.patryk.oauth2.exception.RegistrationProviderMismatchException;
+import me.grudzien.patryk.oauth2.service.google.impl.GooglePrincipalServiceProxy;
+import me.grudzien.patryk.oauth2.util.CacheManagerHelper;
 import me.grudzien.patryk.service.login.impl.MyUserDetailsService;
 import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
 
@@ -93,4 +100,24 @@ public abstract class FailedAuthenticationCases {
 			throw new BadCredentialsAuthenticationException(localeMessagesCreator.buildLocaleMessage("bad-credentials-exception"));
 		}));
 	}
+
+    public static Match.Case<MissingAuthenticationResultException, Void> MissingAuthenticationResultException(final LocaleMessagesCreator localeMessagesCreator) {
+        return Case($(instanceOf(MissingAuthenticationResultException.class)), exception -> run(() -> {
+            log.error(EXCEPTION_MARKER, "Authentication result has NOT been provided after authentication flow! Error message -> {}", exception.getMessage());
+            throw new MissingAuthenticationResultException(localeMessagesCreator.buildLocaleMessage("missing-authentication-result-exception"));
+        }));
+    }
+
+    /**
+     * This case is matched when during
+     * {@link me.grudzien.patryk.oauth2.authentication.chain.AuthenticationStepsFacade#buildAuthenticationFlow(
+     * GooglePrincipalServiceProxy, CacheManagerHelper, UserDetailsService, LocaleMessagesCreator, UserDetailsChecker, UserDetailsChecker, AdditionalChecks)}
+     * some specific exception of (single authentication operation) is thrown.
+     */
+    public static Match.Case<? extends RuntimeException, Void> CustomAuthenticationUnknownException(final LocaleMessagesCreator localeMessagesCreator) {
+        return Case($(), exception -> run(() -> {
+            log.error(EXCEPTION_MARKER, "Some unknown exception was thrown during authentication flow! Error message -> {}", exception.getMessage());
+            throw new CustomAuthenticationUnknownException(localeMessagesCreator.buildLocaleMessage("custom-authentication-unknown-exception"));
+        }));
+    }
 }

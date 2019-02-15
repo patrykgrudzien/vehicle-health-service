@@ -17,6 +17,8 @@ import me.grudzien.patryk.exception.registration.CustomUserValidationException;
 import me.grudzien.patryk.exception.registration.EmailVerificationTokenExpiredException;
 import me.grudzien.patryk.exception.registration.EmailVerificationTokenNotFoundException;
 import me.grudzien.patryk.exception.registration.UserAlreadyExistsException;
+import me.grudzien.patryk.exception.security.CustomAuthenticationUnknownException;
+import me.grudzien.patryk.exception.security.MissingAuthenticationResultException;
 import me.grudzien.patryk.exception.security.NoEmailProvidedException;
 import me.grudzien.patryk.exception.security.NoRefreshTokenProvidedException;
 import me.grudzien.patryk.exception.vehicle.VehicleNotFoundException;
@@ -27,7 +29,7 @@ import me.grudzien.patryk.oauth2.exception.UnknownOAuth2FlowException;
 import static me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser.AccountStatus;
 
 /**
- * The @ControllerAdvice annotation is a component annotation allowing implementation classes to be auto-detected
+ * The {@link ControllerAdvice} annotation is a component annotation allowing implementation classes to be auto-detected
  * through classpath scanning.
  *
  * The @ControllerAdvice listens across the whole application for exceptions. When throws an exception, it'll catch
@@ -127,5 +129,19 @@ public class ExceptionHandlingController {
     @ExceptionHandler(NoEmailProvidedException.class)
     public ResponseEntity<ExceptionResponse> noEmailProvidedException(final NoEmailProvidedException exception) {
         return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * Handler(s) for exception(s) thrown by {@link me.grudzien.patryk.oauth2.authentication.CustomAuthenticationProvider} which is/are
+     * later caught by {@link me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases} and translated here.
+     */
+    @ExceptionHandler(MissingAuthenticationResultException.class)
+    public ResponseEntity<ExceptionResponse> missingAuthenticationResultException(final MissingAuthenticationResultException exception) {
+        return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(CustomAuthenticationUnknownException.class)
+    public ResponseEntity<ExceptionResponse> customAuthenticationUnknownException(final CustomAuthenticationUnknownException exception) {
+        return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
