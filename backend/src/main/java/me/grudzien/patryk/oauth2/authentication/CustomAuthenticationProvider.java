@@ -14,9 +14,6 @@ import org.springframework.stereotype.Component;
 import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
 import me.grudzien.patryk.domain.dto.login.JwtUser;
 import me.grudzien.patryk.exception.security.MissingAuthenticationResultException;
-import me.grudzien.patryk.factory.FactoryProvider;
-import me.grudzien.patryk.factory.FactoryType;
-import me.grudzien.patryk.factory.exception.ExceptionType;
 import me.grudzien.patryk.oauth2.authentication.chain.AuthenticationResult.Status;
 import me.grudzien.patryk.oauth2.authentication.chain.AuthenticationStepsFacade;
 import me.grudzien.patryk.oauth2.authentication.checkers.AdditionalChecks;
@@ -32,6 +29,9 @@ import static io.vavr.API.Case;
 import static io.vavr.API.Match;
 import static io.vavr.Predicates.is;
 
+import static me.grudzien.patryk.factory.FactoryProvider.getFactory;
+import static me.grudzien.patryk.factory.FactoryType.EXCEPTION;
+import static me.grudzien.patryk.factory.exception.ExceptionType.DYNAMIC_BASED_ON_INPUT;
 import static me.grudzien.patryk.util.log.LogMarkers.SECURITY_MARKER;
 
 @Log4j2
@@ -88,10 +88,9 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                                         .map(authenticationResult -> Match(authenticationResult.getStatus()).of(
                                                 Case($(is(Status.OK)), authenticationResult::getCustomAuthenticationToken),
                                                 Case($(is(Status.FAILED)), () -> {
-                                                	throw (RuntimeException) FactoryProvider.getFactory(FactoryType.EXCEPTION)
-                                                                                            .create(ExceptionType.DYNAMIC_BASED_ON_INPUT,
-                                                                                                    authenticationResult.getExceptionClass().getName(),
-                                                                                                    authenticationResult.getExceptionMessage());
+                                                	throw (RuntimeException) getFactory(EXCEPTION).create(DYNAMIC_BASED_ON_INPUT,
+	                                                                                                      authenticationResult.getExceptionClass().getName(),
+	                                                                                                      authenticationResult.getExceptionMessage());
                                                 }))
                                         )
                                         .orElseThrow(() -> new MissingAuthenticationResultException(localeMessagesCreator.buildLocaleMessage(
