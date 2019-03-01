@@ -27,16 +27,20 @@ import me.grudzien.patryk.oauth2.authentication.CustomAuthenticationToken;
 import me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases;
 import me.grudzien.patryk.service.jwt.JwtTokenService;
 import me.grudzien.patryk.service.login.UserAuthenticationService;
-import me.grudzien.patryk.util.ObjectDecoder;
 import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
-import me.grudzien.patryk.util.validator.CustomValidator;
 import me.grudzien.patryk.util.web.RequestsDecoder;
 
 import static io.vavr.API.$;
 import static io.vavr.API.Case;
 import static io.vavr.API.Match;
 
+import static me.grudzien.patryk.factory.FactoryProvider.getFactory;
+import static me.grudzien.patryk.factory.FactoryType.JWT;
+import static me.grudzien.patryk.factory.jwt.JwtAuthResponseType.FAILED;
+import static me.grudzien.patryk.factory.jwt.JwtAuthResponseType.SUCCESS;
+import static me.grudzien.patryk.util.ObjectDecoder.decodeAuthRequest;
 import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
+import static me.grudzien.patryk.util.validator.CustomValidator.getTranslatedValidationResult;
 
 @Log4j2
 @Service
@@ -68,9 +72,8 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 
 	@Override
 	public JwtAuthenticationResponse login(final JwtAuthenticationRequest authenticationRequest, final Device device) {
-		final JwtAuthenticationResponse failedAuthResponse = JwtAuthenticationResponse.Builder().isSuccessful(Boolean.FALSE).build();
-		final JwtAuthenticationRequest decodedAuthRequest = ObjectDecoder.decodeAuthRequest().apply(authenticationRequest, jwtAuthenticationRequestMapper);
-		final List<String> translatedValidationResult = CustomValidator.getTranslatedValidationResult(decodedAuthRequest, localeMessagesCreator);
+		final JwtAuthenticationRequest decodedAuthRequest = decodeAuthRequest().apply(authenticationRequest, jwtAuthenticationRequestMapper);
+		final List<String> translatedValidationResult = getTranslatedValidationResult(decodedAuthRequest, localeMessagesCreator);
 		final Predicate<List<String>> isNotEmpty = list -> !ObjectUtils.isEmpty(list);
 		final Predicate<List<String>> isEmpty = ObjectUtils::isEmpty;
 		return Match(translatedValidationResult).of(
@@ -83,12 +86,10 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
                     final String email = decodedAuthRequest.getEmail();
                     log.info(FLOW_MARKER, "Login request is correct. Starting authenticating the user with ({}) email.", email);
                     return authenticateUser(authenticationRequest)
-                            .map(authentication -> JwtAuthenticationResponse.Builder()
-                                                                            .accessToken(jwtTokenService.generateAccessToken(decodedAuthRequest, device))
-                                                                            .refreshToken(jwtTokenService.generateRefreshToken(decodedAuthRequest, device))
-                                                                            .isSuccessful(Boolean.TRUE)
-                                                                            .build())
-                            .orElse(failedAuthResponse);
+                            .map(authentication -> (JwtAuthenticationResponse) getFactory(JWT).create(SUCCESS,
+									jwtTokenService.generateAccessToken(decodedAuthRequest, device),
+		                            jwtTokenService.generateRefreshToken(decodedAuthRequest, device)))
+                            .orElse((JwtAuthenticationResponse) getFactory(JWT).create(FAILED));
                 })
         );
 	}

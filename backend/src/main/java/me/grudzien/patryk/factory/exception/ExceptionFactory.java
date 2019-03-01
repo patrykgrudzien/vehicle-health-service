@@ -18,15 +18,16 @@ import static io.vavr.Predicates.is;
 public final class ExceptionFactory implements AbstractFactory<ExceptionType, Throwable> {
 
 	@Override
-	public Throwable create(final ExceptionType exceptionType, final String exceptionClassName, final String exceptionMessage) {
+	public Throwable create(final ExceptionType exceptionType, final Object... args) {
 		return Match(exceptionType).of(
 				Case($(is(ExceptionType.DYNAMIC_BASED_ON_INPUT)), () -> {
 					final Function2<String, String, Try<RuntimeException>> liftTry = CheckedFunction2.liftTry(
 							(className, stringParam) -> (RuntimeException) Class.forName(className)
                                                                                 .getConstructor(String.class)
                                                                                 .newInstance(stringParam));
-					return liftTry.apply(exceptionClassName, exceptionMessage)
-                                  .get();
+					final String exceptionClassName = (String) args[0];
+					final String exceptionMessage = (String) args[1];
+					return liftTry.apply(exceptionClassName, exceptionMessage).get();
 				}),
 				Case($(is(ExceptionType.UNKNOWN)), (Supplier<RuntimeException>) RuntimeException::new)
 		);
