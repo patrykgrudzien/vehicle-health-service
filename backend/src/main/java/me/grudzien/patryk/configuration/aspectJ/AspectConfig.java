@@ -1,4 +1,4 @@
-package me.grudzien.patryk.config.aspectJ;
+package me.grudzien.patryk.configuration.aspectJ;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;

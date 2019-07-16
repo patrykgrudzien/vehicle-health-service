@@ -1,4 +1,4 @@
-package me.grudzien.patryk.config.security;
+package me.grudzien.patryk.configuration.security;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -211,9 +211,9 @@ public class SecurityConfig {
 	        SecurityConfigContext.frameOptionsSameOrigin(httpSecurity);
 
             /**
-             * {@link me.grudzien.patryk.config.filters.GenericJwtTokenFilter}
+             * {@link me.grudzien.patryk.configuration.filters.GenericJwtTokenFilter}
              * &&
-             * {@link me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter}
+             * {@link me.grudzien.patryk.configuration.filters.ServletExceptionHandlerFilter}
              */
             SecurityConfigContext.Filters.addTokenAuthenticationFilters(httpSecurity, super.userDetailsService(), localeMessageCreator, jwtTokenClaimsRetriever,
                                                                         jwtTokenValidator, localeMessagesHelper);

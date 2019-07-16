@@ -1,4 +1,4 @@
-package me.grudzien.patryk.config.cors;
+package me.grudzien.patryk.configuration.cors;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

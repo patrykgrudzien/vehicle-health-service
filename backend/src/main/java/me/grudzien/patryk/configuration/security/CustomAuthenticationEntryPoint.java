@@ -1,4 +1,4 @@
-package me.grudzien.patryk.config.security;
+package me.grudzien.patryk.configuration.security;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -25,7 +25,7 @@ import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
  * {@link me.grudzien.patryk.exception.ExceptionHandlingController} only handles exceptions come from @Controller classes that's
  * why all exceptions which come from JWT will be omitted (they are specific to Servlet itself) !!!
  *
- * Exceptions come from JWT are handled by {@link me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter}
+ * Exceptions come from JWT are handled by {@link me.grudzien.patryk.configuration.filters.ServletExceptionHandlerFilter}
  */
 @Log4j2
 @Component

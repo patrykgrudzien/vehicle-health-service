@@ -1,4 +1,4 @@
-package me.grudzien.patryk.config.security;
+package me.grudzien.patryk.configuration.security;
 
 import me.grudzien.patryk.PropertiesKeeper;
 import me.grudzien.patryk.PropertiesKeeper.StaticResources;

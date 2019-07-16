@@ -1,4 +1,4 @@
-package me.grudzien.patryk.config.security;
+package me.grudzien.patryk.configuration.security;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -10,9 +10,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 
 import me.grudzien.patryk.PropertiesKeeper;
-import me.grudzien.patryk.config.filters.GenericJwtTokenFilter;
-import me.grudzien.patryk.config.filters.LocaleDeterminerFilter;
-import me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter;
+import me.grudzien.patryk.configuration.filters.GenericJwtTokenFilter;
+import me.grudzien.patryk.configuration.filters.LocaleDeterminerFilter;
+import me.grudzien.patryk.configuration.filters.ServletExceptionHandlerFilter;
 import me.grudzien.patryk.oauth2.handler.CustomOAuth2AuthenticationFailureHandler;
 import me.grudzien.patryk.oauth2.handler.CustomOAuth2AuthenticationSuccessHandler;
 import me.grudzien.patryk.oauth2.repository.CacheBasedOAuth2AuthorizationRequestRepository;

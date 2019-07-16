@@ -1,4 +1,4 @@
-package me.grudzien.patryk.config.thymeleaf;
+package me.grudzien.patryk.configuration.thymeleaf;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

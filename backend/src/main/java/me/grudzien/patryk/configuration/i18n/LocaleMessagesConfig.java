@@ -1,4 +1,4 @@
-package me.grudzien.patryk.config.i18n;
+package me.grudzien.patryk.configuration.i18n;
 
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
