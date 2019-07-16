@@ -1,4 +1,4 @@
-package me.grudzien.patryk.config.custom;
+package me.grudzien.patryk.configuration.custom;
 
 import lombok.Getter;
 import lombok.Setter;

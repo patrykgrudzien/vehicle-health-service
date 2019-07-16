@@ -1,4 +1,4 @@
-package me.grudzien.patryk.config.filters;
+package me.grudzien.patryk.configuration.filters;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.impl.DefaultClaims;

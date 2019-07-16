@@ -98,8 +98,8 @@ public class JwtTokenClaimsRetrieverImpl implements JwtTokenClaimsRetriever {
          * {@link me.grudzien.patryk.service.jwt.JwtTokenValidator#isAccessTokenExpired(String)} returning boolean value and then
          * pass that result to {@link me.grudzien.patryk.service.jwt.JwtTokenValidator#isAccessTokenValid(String, UserDetails)}.
          * Logic that will be responsible for throwing that "masked" exception will be placed inside
-         * {@link me.grudzien.patryk.config.filters.GenericJwtTokenFilter} where {@link ExpiredJwtException} will be thrown and later caught by
-         * {@link me.grudzien.patryk.config.filters.ServletExceptionHandlerFilter}.
+         * {@link me.grudzien.patryk.configuration.filters.GenericJwtTokenFilter} where {@link ExpiredJwtException} will be thrown and later caught by
+         * {@link me.grudzien.patryk.configuration.filters.ServletExceptionHandlerFilter}.
          */
 	    final Optional<Date> expirationOptional = CheckedFunction1.liftTry(t -> getClaimFromToken((String) t, claims -> Optional.ofNullable(claims.getExpiration())))
 	                                                .apply(token)
@@ -135,7 +135,7 @@ public class JwtTokenClaimsRetrieverImpl implements JwtTokenClaimsRetriever {
     }
 
     /**
-     * Those methods below are needed in {@link me.grudzien.patryk.config.filters.GenericJwtTokenFilter} when (access_token) is expired
+     * Those methods below are needed in {@link me.grudzien.patryk.configuration.filters.GenericJwtTokenFilter} when (access_token) is expired
      * and {@link ExpiredJwtException} is thrown.
      */
     @Override

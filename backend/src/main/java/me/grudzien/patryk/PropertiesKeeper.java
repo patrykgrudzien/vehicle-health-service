@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.base.Preconditions;
 
-import me.grudzien.patryk.config.custom.CustomApplicationProperties;
+import me.grudzien.patryk.configuration.custom.CustomApplicationProperties;
 
 @Component
 public final class PropertiesKeeper {

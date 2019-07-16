@@ -1,4 +1,4 @@
-package me.grudzien.patryk.config.filters;
+package me.grudzien.patryk.configuration.filters;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -70,7 +70,7 @@ public class LocaleDeterminerFilter extends OncePerRequestFilter {
 		 * step because it sets locale according to header coming from UI.
 		 *
 		 * Filters' order is specified in:
-		 * {@link me.grudzien.patryk.config.security.SecurityConfigContext.Filters#addTokenAuthenticationFilters(HttpSecurity, UserDetailsService,
+		 * {@link me.grudzien.patryk.configuration.security.SecurityConfigContext.Filters#addTokenAuthenticationFilters(HttpSecurity, UserDetailsService,
          * PropertiesKeeper, LocaleMessagesCreator)}
 		 *
 		 * Later {@link me.grudzien.patryk.util.i18n.LocaleMessagesHelper#getLocale()} is used in

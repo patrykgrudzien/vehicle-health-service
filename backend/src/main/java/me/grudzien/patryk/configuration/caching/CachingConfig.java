@@ -1,4 +1,4 @@
-package me.grudzien.patryk.config.caching;
+package me.grudzien.patryk.configuration.caching;
 
 import net.sf.ehcache.config.CacheConfiguration;
 
