@@ -14,18 +14,16 @@ import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import me.grudzien.patryk.domain.dto.responses.CustomResponse.SecurityStatus;
-import me.grudzien.patryk.domain.dto.responses.ExceptionResponse;
-import me.grudzien.patryk.util.web.HttpResponseCustomizer;
+import me.grudzien.patryk.utils.web.model.CustomResponse.SecurityStatus;
+import me.grudzien.patryk.utils.web.model.ExceptionResponse;
+import me.grudzien.patryk.jwt.service.impl.JwtTokenClaimsRetrieverImpl;
+import me.grudzien.patryk.utils.web.HttpResponseCustomizer;
 
 import static io.vavr.API.$;
 import static io.vavr.API.Case;
 import static io.vavr.API.Match;
 import static io.vavr.API.run;
 import static io.vavr.Predicates.instanceOf;
-
-import static me.grudzien.patryk.util.log.LogMarkers.EXCEPTION_MARKER;
-import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
 
 /**
  * <hr><br>
@@ -53,9 +51,9 @@ import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
  * {@link LocaleDeterminerFilter}
  *
  * This filter is used in case of unsuccessful JWT operations which are performed in:
- * {@link me.grudzien.patryk.service.jwt.impl.JwtTokenClaimsRetrieverImpl}
+ * {@link JwtTokenClaimsRetrieverImpl}
  * e.g. when token is expired there is no option to
- * {@link me.grudzien.patryk.service.jwt.impl.JwtTokenClaimsRetrieverImpl#getAllClaimsFromToken(String)}.
+ * {@link JwtTokenClaimsRetrieverImpl#getAllClaimsFromToken(String)}.
  * In such case one of the exceptions listed below is thrown.
  */
 @SuppressWarnings("JavadocReference")
@@ -66,36 +64,36 @@ public class ServletExceptionHandlerFilter extends OncePerRequestFilter {
     @Override
 	protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response, final FilterChain filterChain) {
 
-		log.info(FLOW_MARKER, "(FILTER) -----> {} ({}) on path -> {}", this.getClass().getSimpleName(), request.getMethod(), request.getRequestURI());
+		log.info("(FILTER) -----> {} ({}) on path -> {}", this.getClass().getSimpleName(), request.getMethod(), request.getRequestURI());
 
 		Try.run(() -> filterChain.doFilter(request, response))
 		   .onFailure(throwable -> Match(throwable).of(
 		   		Case($(instanceOf(ExpiredJwtException.class)), ExpiredJwtException -> run(() -> {
-				    log.error(EXCEPTION_MARKER, "The JWT token is expired and not valid anymore! Message -> {}", ExpiredJwtException.getMessage());
+				    log.error("The JWT token is expired and not valid anymore! Message -> {}", ExpiredJwtException.getMessage());
                     HttpResponseCustomizer.customizeHttpResponse(response, HttpStatus.UNAUTHORIZED,
                                                                  ExceptionResponse.buildBodyMessage(ExpiredJwtException, SecurityStatus.JWT_TOKEN_EXPIRED,
                                                                                                     request.getRequestURI(), request.getMethod()));
 			    })),
 			    Case($(instanceOf(IllegalArgumentException.class)), IllegalArgumentException -> run(() -> {
-                    log.error(EXCEPTION_MARKER, "An error occurred during getting email from token! Message -> {}", IllegalArgumentException.getMessage());
+                    log.error("An error occurred during getting email from token! Message -> {}", IllegalArgumentException.getMessage());
                     HttpResponseCustomizer.customizeHttpResponse(response, HttpStatus.INTERNAL_SERVER_ERROR,
                                                                  ExceptionResponse.buildBodyMessage(IllegalArgumentException, SecurityStatus.ILLEGAL_ARGUMENT,
                                                                                                     request.getRequestURI(), request.getMethod()));
                 })),
 			    Case($(instanceOf(UnsupportedJwtException.class)), UnsupportedJwtException -> run(() -> {
-                    log.error(EXCEPTION_MARKER, "Application requires JWT token with cryptographically signed Claims! Message -> {}", UnsupportedJwtException.getMessage());
+                    log.error("Application requires JWT token with cryptographically signed Claims! Message -> {}", UnsupportedJwtException.getMessage());
                     HttpResponseCustomizer.customizeHttpResponse(response, HttpStatus.NOT_ACCEPTABLE,
                                                                  ExceptionResponse.buildBodyMessage(UnsupportedJwtException, SecurityStatus.NO_CRYPTOGRAPHICALLY_SIGNED_TOKEN,
                                                                                                     request.getRequestURI(), request.getMethod()));
                 })),
 			    Case($(instanceOf(MalformedJwtException.class)), MalformedJwtException -> run(() -> {
-                    log.error(EXCEPTION_MARKER, "JWT token has NOT been correctly constructed! Message -> {}", MalformedJwtException.getMessage());
+                    log.error("JWT token has NOT been correctly constructed! Message -> {}", MalformedJwtException.getMessage());
                     HttpResponseCustomizer.customizeHttpResponse(response, HttpStatus.NOT_ACCEPTABLE,
                                                                  ExceptionResponse.buildBodyMessage(MalformedJwtException, SecurityStatus.JWT_TOKEN_NOT_CORRECTLY_CONSTRUCTED,
                                                                                                     request.getRequestURI(), request.getMethod()));
                 })),
 			    Case($(instanceOf(SignatureException.class)), SignatureException -> run(() -> {
-                    log.error(EXCEPTION_MARKER, "Either calculating a signature or verifying an existing signature of a JWT failed! Message -> {}", SignatureException.getMessage());
+                    log.error("Either calculating a signature or verifying an existing signature of a JWT failed! Message -> {}", SignatureException.getMessage());
                     HttpResponseCustomizer.customizeHttpResponse(response, HttpStatus.INTERNAL_SERVER_ERROR,
                                                                  ExceptionResponse.buildBodyMessage(SignatureException, SecurityStatus.JWT_TOKEN_INCORRECT_SIGNATURE,
                                                                                                     request.getRequestURI(), request.getMethod()));

@@ -8,10 +8,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import me.grudzien.patryk.domain.dto.registration.UserRegistrationDto;
+import me.grudzien.patryk.registration.model.dto.UserRegistrationDto;
 import me.grudzien.patryk.mapper.UserRegistrationDtoMapperImpl;
-import me.grudzien.patryk.util.ObjectDecoder;
-import me.grudzien.patryk.util.web.RequestsDecoder;
+import me.grudzien.patryk.utils.mapping.ObjectDecoder;
+import me.grudzien.patryk.utils.web.RequestsDecoder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;

@@ -10,15 +10,13 @@ import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
 
-import com.google.common.base.Preconditions;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import me.grudzien.patryk.oauth2.util.CacheManagerHelper;
-import me.grudzien.patryk.oauth2.util.URLParser;
+import me.grudzien.patryk.oauth2.utils.CacheManagerHelper;
+import me.grudzien.patryk.oauth2.utils.URLParser;
 
-import static me.grudzien.patryk.util.log.LogMarkers.OAUTH2_MARKER;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * For storing the {@link org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest},
@@ -42,17 +40,17 @@ public class CacheBasedOAuth2AuthorizationRequestRepository implements Authoriza
 
 	@Autowired
 	public CacheBasedOAuth2AuthorizationRequestRepository(final CacheManagerHelper cacheManagerHelper) {
-		Preconditions.checkNotNull(cacheManagerHelper, "cacheManagerHelper cannot be null!");
+		checkNotNull(cacheManagerHelper, "cacheManagerHelper cannot be null!");
 		this.cacheManagerHelper = cacheManagerHelper;
 	}
 
 	@Override
 	public OAuth2AuthorizationRequest loadAuthorizationRequest(final HttpServletRequest request) {
-		log.info(OAUTH2_MARKER, ">>>> OAUTH2 <<<< loadAuthorizationRequest()");
-		Preconditions.checkNotNull(request, "request cannot be null!");
+		log.info(">>>> OAUTH2 <<<< loadAuthorizationRequest()");
+		checkNotNull(request, "request cannot be null!");
 
 		final String stateParameter = this.getStateParameter(request);
-		log.info(OAUTH2_MARKER, ">>>> OAUTH2 <<<< stateParameter == null ? -> ({})", stateParameter == null);
+		log.info(">>>> OAUTH2 <<<< stateParameter == null ? -> ({})", stateParameter == null);
 		if (stateParameter == null) {
 			return null;
 		}
@@ -63,9 +61,9 @@ public class CacheBasedOAuth2AuthorizationRequestRepository implements Authoriza
 	@Override
 	public void saveAuthorizationRequest(final OAuth2AuthorizationRequest authorizationRequest, final HttpServletRequest request,
 	                                     final HttpServletResponse response) {
-		log.info(OAUTH2_MARKER, ">>>> OAUTH2 <<<< saveAuthorizationRequest()");
-		Preconditions.checkNotNull(request, "request cannot be null!");
-		Preconditions.checkNotNull(request, "response cannot be null!");
+		log.info(">>>> OAUTH2 <<<< saveAuthorizationRequest()");
+		checkNotNull(request, "request cannot be null!");
+		checkNotNull(request, "response cannot be null!");
 
 		if (authorizationRequest == null) {
 			this.evictOAuth2AuthorizationRequestCache();
@@ -75,7 +73,7 @@ public class CacheBasedOAuth2AuthorizationRequestRepository implements Authoriza
 		Assert.hasText(state, "authorizationRequest.state cannot be empty");
 		/**
 		 * Saving additional cache which will be required in:
-		 * {@link me.grudzien.patryk.oauth2.util.OAuth2FlowDelegator#determineFlowBasedOnUrl(String)}
+		 * {@link me.grudzien.patryk.oauth2.utils.OAuth2FlowDelegator#determineFlowBasedOnUrl(String)}
 		 * to decide if user should be (log in) or (register).
 		 */
 		URLParser.retrieveEndpointFromURL(request.getHeader(HttpHeaders.REFERER))
@@ -89,11 +87,11 @@ public class CacheBasedOAuth2AuthorizationRequestRepository implements Authoriza
 	@Deprecated
 	@Override
 	public OAuth2AuthorizationRequest removeAuthorizationRequest(final HttpServletRequest request) {
-		log.info(OAUTH2_MARKER, ">>>> OAUTH2 <<<< removeAuthorizationRequest() !DEPRECATED!");
-		Preconditions.checkNotNull(request, "request cannot be null!");
+		log.info(">>>> OAUTH2 <<<< removeAuthorizationRequest() !DEPRECATED!");
+		checkNotNull(request, "request cannot be null!");
 
 		final String stateParameter = this.getStateParameter(request);
-		log.info(OAUTH2_MARKER, ">>>> OAUTH2 <<<< stateParameter == null ? -> ({})", stateParameter == null);
+		log.info(">>>> OAUTH2 <<<< stateParameter == null ? -> ({})", stateParameter == null);
 		if (stateParameter == null) {
 			return null;
 		}
@@ -102,14 +100,14 @@ public class CacheBasedOAuth2AuthorizationRequestRepository implements Authoriza
 
 	@Override
 	public OAuth2AuthorizationRequest removeAuthorizationRequest(final HttpServletRequest request, final HttpServletResponse response) {
-		log.info(OAUTH2_MARKER, ">>>> OAUTH2 <<<< removeAuthorizationRequest() !CORRECT!");
-		Preconditions.checkNotNull(response, "response cannot be null!");
+		log.info(">>>> OAUTH2 <<<< removeAuthorizationRequest() !CORRECT!");
+		checkNotNull(response, "response cannot be null!");
 
 		return this.removeAuthorizationRequest(request);
 	}
 
 	public void evictOAuth2AuthorizationRequestCache() {
-		log.info(OAUTH2_MARKER, ">>>> OAUTH2 <<<< evictOAuth2AuthorizationRequestCache()");
+		log.info(">>>> OAUTH2 <<<< evictOAuth2AuthorizationRequestCache()");
 		cacheManagerHelper.evictCache(OAUTH2_AUTHORIZATION_REQUEST_CACHE_NAME, OAUTH2_AUTHORIZATION_REQUEST_CACHE_KEY);
 	}
 

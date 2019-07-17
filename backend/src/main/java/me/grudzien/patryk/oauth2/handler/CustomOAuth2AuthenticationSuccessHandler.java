@@ -16,18 +16,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import me.grudzien.patryk.PropertiesKeeper;
-import me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser;
+import me.grudzien.patryk.jwt.service.JwtTokenService;
+import me.grudzien.patryk.oauth2.model.entity.CustomOAuth2OidcPrincipalUser;
 import me.grudzien.patryk.oauth2.repository.CacheBasedOAuth2AuthorizationRequestRepository;
-import me.grudzien.patryk.service.jwt.JwtTokenService;
-import me.grudzien.patryk.util.web.CustomURLBuilder;
+import me.grudzien.patryk.utils.web.CustomURLBuilder;
 
 import static io.vavr.API.$;
 import static io.vavr.API.Case;
 import static io.vavr.API.Match;
 import static io.vavr.Predicates.is;
 
-import static me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser.AccountStatus;
-import static me.grudzien.patryk.util.log.LogMarkers.OAUTH2_MARKER;
+import static me.grudzien.patryk.oauth2.model.entity.CustomOAuth2OidcPrincipalUser.AccountStatus;
 
 @Log4j2
 @Component
@@ -52,7 +51,7 @@ public class CustomOAuth2AuthenticationSuccessHandler extends SimpleUrlAuthentic
 
 	@Override
 	protected String determineTargetUrl(final HttpServletRequest request, final HttpServletResponse response) {
-		log.info(OAUTH2_MARKER, ">>>> OAUTH2 <<<< determineTargetUrl()");
+		log.info(">>>> OAUTH2 <<<< determineTargetUrl()");
 		final CustomOAuth2OidcPrincipalUser customOidcPrincipalUser = (CustomOAuth2OidcPrincipalUser) SecurityContextHolder.getContext().getAuthentication()
                                                                                                                            .getPrincipal();
 		cacheBasedOAuth2AuthorizationRequestRepository.evictOAuth2AuthorizationRequestCache();

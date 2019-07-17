@@ -85,7 +85,7 @@ public final class PropertiesKeeper {
 		String REGISTRATION_CONFIRMED = "/registration-confirmed";
 		String LOGIN = "/login";
 		/**
-		 * Used for now only in: {@link me.grudzien.patryk.oauth2.util.OAuth2FlowDelegator#determineFlowBasedOnUrl(String)}
+		 * Used for now only in: {@link me.grudzien.patryk.oauth2.utils.OAuth2FlowDelegator#determineFlowBasedOnUrl(String)}
 		 */
 		String LOGOUT = "/logout";
 	}

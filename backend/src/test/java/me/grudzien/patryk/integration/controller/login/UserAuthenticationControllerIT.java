@@ -26,8 +26,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
-import me.grudzien.patryk.domain.dto.login.JwtAuthenticationResponse;
+import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationRequest;
+import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationResponse;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;

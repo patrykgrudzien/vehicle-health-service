@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import me.grudzien.patryk.domain.enums.SpringAppProfiles;
+import me.grudzien.patryk.utils.app.SpringAppProfiles;
 
 @Configuration
 @Profile({SpringAppProfiles.YmlName.DEV_HOME, SpringAppProfiles.YmlName.H2_IN_MEMORY})

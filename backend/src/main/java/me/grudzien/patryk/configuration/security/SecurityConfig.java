@@ -21,19 +21,17 @@ import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import com.google.common.base.Preconditions;
 
 import me.grudzien.patryk.PropertiesKeeper;
+import me.grudzien.patryk.authentication.service.MyUserDetailsService;
+import me.grudzien.patryk.jwt.service.JwtTokenClaimsRetriever;
+import me.grudzien.patryk.jwt.service.JwtTokenValidator;
 import me.grudzien.patryk.oauth2.authentication.CustomAuthenticationProvider;
 import me.grudzien.patryk.oauth2.handler.CustomOAuth2AuthenticationFailureHandler;
 import me.grudzien.patryk.oauth2.handler.CustomOAuth2AuthenticationSuccessHandler;
 import me.grudzien.patryk.oauth2.service.CustomOAuth2UserService;
 import me.grudzien.patryk.oauth2.service.CustomOidcUserService;
-import me.grudzien.patryk.oauth2.util.CacheManagerHelper;
-import me.grudzien.patryk.service.jwt.JwtTokenClaimsRetriever;
-import me.grudzien.patryk.service.jwt.JwtTokenValidator;
-import me.grudzien.patryk.service.login.impl.MyUserDetailsService;
-import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
-import me.grudzien.patryk.util.i18n.LocaleMessagesHelper;
-
-import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
+import me.grudzien.patryk.oauth2.utils.CacheManagerHelper;
+import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
+import me.grudzien.patryk.utils.i18n.LocaleMessagesHelper;
 
 /**
  * <h2>Creating and Customizing Filter Chains</h2>
@@ -155,7 +153,7 @@ public class SecurityConfig {
 		    .passwordEncoder(this.passwordEncoder())
 		    .and()
 		    .authenticationProvider(customAuthenticationProvider);
-		log.info(FLOW_MARKER, "Authentication Provider configured globally.");
+		log.info("Authentication Provider configured globally.");
 	}
 
     @Bean

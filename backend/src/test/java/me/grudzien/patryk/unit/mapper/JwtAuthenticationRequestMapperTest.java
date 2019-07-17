@@ -8,11 +8,11 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
-import me.grudzien.patryk.mapper.JwtAuthenticationRequestMapper;
+import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationRequest;
+import me.grudzien.patryk.authentication.mapping.JwtAuthenticationRequestMapper;
 import me.grudzien.patryk.mapper.JwtAuthenticationRequestMapperImpl;
-import me.grudzien.patryk.util.ObjectDecoder;
-import me.grudzien.patryk.util.web.RequestsDecoder;
+import me.grudzien.patryk.utils.mapping.ObjectDecoder;
+import me.grudzien.patryk.utils.web.RequestsDecoder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -22,9 +22,9 @@ import org.junit.jupiter.api.Test;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import me.grudzien.patryk.controller.registration.UserRegistrationController;
-import me.grudzien.patryk.domain.dto.registration.RegistrationResponse;
-import me.grudzien.patryk.service.registration.UserRegistrationService;
-import me.grudzien.patryk.service.registration.event.RegistrationEventPublisher;
+import me.grudzien.patryk.registration.model.dto.RegistrationResponse;
+import me.grudzien.patryk.registration.service.UserRegistrationService;
+import me.grudzien.patryk.registration.model.event.RegistrationEventPublisher;
 
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;

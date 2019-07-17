@@ -3,7 +3,7 @@ package me.grudzien.patryk.oauth2.authentication.chain;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
-import me.grudzien.patryk.domain.dto.login.JwtUser;
+import me.grudzien.patryk.authentication.model.dto.JwtUser;
 import me.grudzien.patryk.oauth2.authentication.chain.steps.EighthStep;
 import me.grudzien.patryk.oauth2.authentication.chain.steps.EleventhStep;
 import me.grudzien.patryk.oauth2.authentication.chain.steps.FifthStep;
@@ -18,8 +18,8 @@ import me.grudzien.patryk.oauth2.authentication.chain.steps.ThirdStep;
 import me.grudzien.patryk.oauth2.authentication.chain.steps.TwelfthStep;
 import me.grudzien.patryk.oauth2.authentication.checkers.AdditionalChecks;
 import me.grudzien.patryk.oauth2.service.google.impl.GooglePrincipalServiceProxy;
-import me.grudzien.patryk.oauth2.util.CacheManagerHelper;
-import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
+import me.grudzien.patryk.oauth2.utils.CacheManagerHelper;
+import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 
 public final class AuthenticationStepsFacade {
 

@@ -23,8 +23,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.util.stream.Stream;
 
-import me.grudzien.patryk.service.jwt.JwtTokenService;
-import me.grudzien.patryk.util.jwt.JwtTokenConstants;
+import me.grudzien.patryk.jwt.service.JwtTokenService;
+import me.grudzien.patryk.jwt.utils.JwtTokenConstants;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;

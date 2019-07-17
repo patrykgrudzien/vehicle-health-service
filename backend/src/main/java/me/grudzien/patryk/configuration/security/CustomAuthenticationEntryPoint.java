@@ -13,16 +13,15 @@ import com.google.common.base.Preconditions;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import me.grudzien.patryk.domain.dto.responses.AuthenticationEntryPointResponse;
-import me.grudzien.patryk.domain.dto.responses.CustomResponse.SecurityStatus;
-import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
-import me.grudzien.patryk.util.web.HttpResponseCustomizer;
-
-import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
+import me.grudzien.patryk.utils.web.model.AuthenticationEntryPointResponse;
+import me.grudzien.patryk.utils.web.model.CustomResponse.SecurityStatus;
+import me.grudzien.patryk.utils.handler.ExceptionHandlingController;
+import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
+import me.grudzien.patryk.utils.web.HttpResponseCustomizer;
 
 /**
  * IMPORTANT NOTE:
- * {@link me.grudzien.patryk.exception.ExceptionHandlingController} only handles exceptions come from @Controller classes that's
+ * {@link ExceptionHandlingController} only handles exceptions come from @Controller classes that's
  * why all exceptions which come from JWT will be omitted (they are specific to Servlet itself) !!!
  *
  * Exceptions come from JWT are handled by {@link me.grudzien.patryk.configuration.filters.ServletExceptionHandlerFilter}
@@ -46,7 +45,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 	@Override
 	public void commence(final HttpServletRequest request, final HttpServletResponse response,
 	                     final AuthenticationException authException) {
-		log.info(FLOW_MARKER, authException.getMessage());
+		log.info(authException.getMessage());
 		final String bodyMessage = localeMessagesCreator.buildLocaleMessage("secured-resource-message");
         HttpResponseCustomizer.customizeHttpResponse(response, HttpStatus.UNAUTHORIZED,
                                                      AuthenticationEntryPointResponse.buildBodyMessage(bodyMessage, SecurityStatus.UNAUTHENTICATED));

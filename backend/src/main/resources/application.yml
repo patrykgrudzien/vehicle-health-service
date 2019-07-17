@@ -35,30 +35,16 @@ custom:
     endpoints:
       api-context-path: /api
       registration:
-        root: /registration
-        register-user-account: /register-user-account
-        confirm-registration: /confirm
         confirmation-url: /confirm?token=
         confirmed: /registration-confirmed
         confirmed-token-not-found: /registration-confirmed?error=tokenNotFound
         confirmed-token-expired: /registration-confirmed?error=tokenExpired
         system-could-not-enable-user-account: /registration-confirmed?error=systemEncounteredAnErrorOnEnablingAccount
         user-already-enabled: /registration-confirmed?info=userAlreadyEnabled
-        resend-email-verification-token: /resend-verification-token?token=
       authentication:
-        root: /auth
         failure-url: /login?error=true
-        principal-user: /principal-user
-        generate-access-token: /token/generate-access-token
-        generate-refresh-token: /token/generate-refresh-token
-        refresh-access-token: /token/refresh-access-token
       heroku:
         context-path: https://vehicle-health-service.herokuapp.com/ui
-      vehicle-resource:
-        root: /vehicles
-        get-vehicle: "/vehicle/{ownerEmailAddress}"
-        get-current-mileage: "/vehicle/get-current-mileage/{ownerEmailAddress}"
-        update-current-mileage: "/vehicle/update-current-mileage/{ownerEmailAddress}"
       oauth2:
         login-page: http://localhost:8080/login # TODO: must be updated because on production context is different (for now testing purpose)
         short-lived-millis: 2 # minutes (120000 nanoseconds)

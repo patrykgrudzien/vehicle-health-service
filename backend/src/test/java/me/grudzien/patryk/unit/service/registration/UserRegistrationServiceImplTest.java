@@ -10,14 +10,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import me.grudzien.patryk.domain.dto.registration.RegistrationResponse;
-import me.grudzien.patryk.mapper.UserRegistrationDtoMapper;
-import me.grudzien.patryk.oauth2.util.CacheManagerHelper;
-import me.grudzien.patryk.repository.registration.CustomUserRepository;
-import me.grudzien.patryk.repository.registration.EmailVerificationTokenRepository;
-import me.grudzien.patryk.service.registration.impl.UserRegistrationServiceImpl;
-import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
-import me.grudzien.patryk.util.web.HttpLocationHeaderCreator;
+import me.grudzien.patryk.registration.model.dto.RegistrationResponse;
+import me.grudzien.patryk.registration.mapping.UserRegistrationDtoMapper;
+import me.grudzien.patryk.oauth2.utils.CacheManagerHelper;
+import me.grudzien.patryk.registration.repository.CustomUserRepository;
+import me.grudzien.patryk.registration.repository.EmailVerificationTokenRepository;
+import me.grudzien.patryk.registration.service.UserRegistrationServiceImpl;
+import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
+import me.grudzien.patryk.utils.web.HttpLocationHeaderCreator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -28,7 +28,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import static me.grudzien.patryk.TestsUtils.prepareEmailVerificationToken;
-import static me.grudzien.patryk.domain.enums.AppFLow.ACCOUNT_ALREADY_ENABLED;
+import static me.grudzien.patryk.utils.app.AppFLow.ACCOUNT_ALREADY_ENABLED;
 
 @SuppressWarnings("unused")
 @ExtendWith(MockitoExtension.class)

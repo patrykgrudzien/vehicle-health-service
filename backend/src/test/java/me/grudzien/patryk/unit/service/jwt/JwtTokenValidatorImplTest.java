@@ -15,11 +15,11 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 
-import me.grudzien.patryk.domain.dto.login.JwtUser;
-import me.grudzien.patryk.domain.enums.ApplicationZone;
-import me.grudzien.patryk.service.jwt.JwtTokenClaimsRetriever;
-import me.grudzien.patryk.service.jwt.JwtTokenValidator;
-import me.grudzien.patryk.service.jwt.impl.JwtTokenValidatorImpl;
+import me.grudzien.patryk.authentication.model.dto.JwtUser;
+import me.grudzien.patryk.utils.app.ApplicationZone;
+import me.grudzien.patryk.jwt.service.JwtTokenClaimsRetriever;
+import me.grudzien.patryk.jwt.service.JwtTokenValidator;
+import me.grudzien.patryk.jwt.service.impl.JwtTokenValidatorImpl;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;

@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
-import me.grudzien.patryk.oauth2.authentication.CustomAuthenticationToken;
+import me.grudzien.patryk.oauth2.authentication.model.CustomAuthenticationToken;
 
 @Log4j2
 @Getter

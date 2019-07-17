@@ -9,8 +9,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import me.grudzien.patryk.oauth2.repository.CacheBasedOAuth2AuthorizationRequestRepository;
-import me.grudzien.patryk.service.login.impl.MyUserDetailsService;
-import me.grudzien.patryk.service.vehicle.impl.VehicleServiceImpl;
+import me.grudzien.patryk.authentication.service.MyUserDetailsService;
+import me.grudzien.patryk.vehicle.service.impl.VehicleServiceImpl;
 
 @Configuration
 @EnableCaching

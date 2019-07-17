@@ -20,10 +20,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.interfaces.RSAPublicKey;
 
-import me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser;
+import me.grudzien.patryk.oauth2.model.entity.CustomOAuth2OidcPrincipalUser;
 import me.grudzien.patryk.oauth2.service.RsaAware;
 import me.grudzien.patryk.oauth2.service.google.GooglePrincipalService;
-import me.grudzien.patryk.oauth2.util.OAuth2FlowDelegator.OAuth2Flow;
+import me.grudzien.patryk.oauth2.utils.OAuth2FlowDelegator.OAuth2Flow;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

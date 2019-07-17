@@ -26,10 +26,9 @@ import static io.vavr.API.Match;
 import static io.vavr.Predicates.isIn;
 import static java.util.function.Predicate.isEqual;
 
-import static me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser.AccountStatus;
+import static me.grudzien.patryk.oauth2.model.entity.CustomOAuth2OidcPrincipalUser.AccountStatus;
 import static me.grudzien.patryk.oauth2.service.CustomOAuth2UserService.UNKNOWN_OAUTH2_USER_ERROR_CODE;
 import static me.grudzien.patryk.oauth2.service.CustomOidcUserService.UNKNOWN_OIDC_USER_ERROR_CODE;
-import static me.grudzien.patryk.util.log.LogMarkers.OAUTH2_MARKER;
 
 @Log4j2
 @Component
@@ -50,7 +49,7 @@ public class CustomOAuth2AuthenticationFailureHandler extends SimpleUrlAuthentic
 	@Override
 	public void onAuthenticationFailure(final HttpServletRequest request, final HttpServletResponse response, final AuthenticationException exception)
             throws IOException, ServletException {
-		log.info(OAUTH2_MARKER, ">>>> OAUTH2 <<<< onAuthenticationFailure()");
+		log.info(">>>> OAUTH2 <<<< onAuthenticationFailure()");
 		cacheBasedOAuth2AuthorizationRequestRepository.evictOAuth2AuthorizationRequestCache();
 		final OAuth2Error oAuth2Error = ((OAuth2AuthenticationException) exception).getError();
 		super.setDefaultFailureUrl(defineFailureTargetURL(oAuth2Error));

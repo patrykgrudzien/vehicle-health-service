@@ -8,14 +8,14 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.Map;
 
-import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
-import me.grudzien.patryk.domain.dto.login.JwtUser;
-import me.grudzien.patryk.domain.dto.registration.UserRegistrationDto;
-import me.grudzien.patryk.domain.enums.registration.RegistrationProvider;
-import me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser;
-import me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUserFactory;
+import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationRequest;
+import me.grudzien.patryk.authentication.model.dto.JwtUser;
+import me.grudzien.patryk.registration.model.dto.UserRegistrationDto;
+import me.grudzien.patryk.registration.model.enums.RegistrationProvider;
+import me.grudzien.patryk.oauth2.model.entity.CustomOAuth2OidcPrincipalUser;
+import me.grudzien.patryk.oauth2.model.factory.CustomOAuth2OidcPrincipalUserFactory;
 
-import static me.grudzien.patryk.oauth2.util.OAuth2OidcAttributesExtractor.getOAuth2AttributeValue;
+import static me.grudzien.patryk.oauth2.utils.OAuth2OidcAttributesExtractor.getOAuth2AttributeValue;
 
 @Log4j2
 public class GooglePrincipalServiceHelper {
