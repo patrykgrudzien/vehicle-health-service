@@ -11,25 +11,23 @@ import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import me.grudzien.patryk.exception.login.BadCredentialsAuthenticationException;
-import me.grudzien.patryk.exception.login.UserDisabledAuthenticationException;
-import me.grudzien.patryk.exception.security.CustomAuthenticationUnknownException;
-import me.grudzien.patryk.exception.security.MissingAuthenticationResultException;
+import me.grudzien.patryk.authentication.exception.BadCredentialsAuthenticationException;
+import me.grudzien.patryk.authentication.exception.UserDisabledAuthenticationException;
+import me.grudzien.patryk.authentication.service.MyUserDetailsService;
+import me.grudzien.patryk.jwt.exception.CustomAuthenticationUnknownException;
+import me.grudzien.patryk.jwt.exception.MissingAuthenticationResultException;
 import me.grudzien.patryk.oauth2.authentication.checkers.AdditionalChecks;
 import me.grudzien.patryk.oauth2.exception.JwtTokenNotFoundException;
 import me.grudzien.patryk.oauth2.exception.RegistrationProviderMismatchException;
 import me.grudzien.patryk.oauth2.service.google.impl.GooglePrincipalServiceProxy;
-import me.grudzien.patryk.oauth2.util.CacheManagerHelper;
-import me.grudzien.patryk.service.login.impl.MyUserDetailsService;
-import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
+import me.grudzien.patryk.oauth2.utils.CacheManagerHelper;
+import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 
 import static io.vavr.API.$;
 import static io.vavr.API.Case;
 import static io.vavr.API.Match;
 import static io.vavr.API.run;
 import static io.vavr.Predicates.instanceOf;
-
-import static me.grudzien.patryk.util.log.LogMarkers.EXCEPTION_MARKER;
 
 @Log4j2
 public abstract class FailedAuthenticationCases {
@@ -42,7 +40,7 @@ public abstract class FailedAuthenticationCases {
 
     public static Match.Case<LockedException, Void> UserAccountIsLockedExceptionCase(final LocaleMessagesCreator localeMessagesCreator) {
         return Case($(instanceOf(LockedException.class)), exception -> run(() -> {
-            log.error(EXCEPTION_MARKER, "User account is locked! Details -> {}", exception.getMessage());
+            log.error("User account is locked! Details -> {}", exception.getMessage());
             throw new LockedException(localeMessagesCreator.buildLocaleMessage("user-account-is-locked"));
         }));
     }
@@ -56,28 +54,28 @@ public abstract class FailedAuthenticationCases {
              * {@link org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider.DefaultPreAuthenticationChecks#check(
              * org.springframework.security.core.userdetails.UserDetails)}
              */
-            log.error(EXCEPTION_MARKER, "User with {} is disabled! Error message -> {}", email, exception.getMessage());
+            log.error("User with {} is disabled! Error message -> {}", email, exception.getMessage());
             throw new UserDisabledAuthenticationException(localeMessagesCreator.buildLocaleMessage("user-disabled-exception"));
         }));
     }
 
     public static Match.Case<AccountExpiredException, Void> UserAccountIsExpiredExceptionCase(final LocaleMessagesCreator localeMessagesCreator) {
         return Case($(instanceOf(AccountExpiredException.class)), exception -> run(() -> {
-            log.error(EXCEPTION_MARKER, "User account is expired! Details -> {}", exception.getMessage());
+            log.error("User account is expired! Details -> {}", exception.getMessage());
             throw new AccountExpiredException(localeMessagesCreator.buildLocaleMessage("user-account-is-expired"));
         }));
     }
 
     public static Match.Case<CredentialsExpiredException, Void> CredentialsHaveExpiredExceptionCase(final LocaleMessagesCreator localeMessagesCreator) {
         return Case($(instanceOf(CredentialsExpiredException.class)), exception -> run(() -> {
-            log.error(EXCEPTION_MARKER, "User account credentials have expired! Details -> {}", exception.getMessage());
+            log.error("User account credentials have expired! Details -> {}", exception.getMessage());
             throw new CredentialsExpiredException(localeMessagesCreator.buildLocaleMessage("user-account-credentials-have-expired"));
         }));
     }
 
     public static Match.Case<JwtTokenNotFoundException, Void> JwtTokenNotFoundExceptionCase(final LocaleMessagesCreator localeMessagesCreator) {
         return Case($(instanceOf(JwtTokenNotFoundException.class)), exception -> run(() -> {
-            log.error(EXCEPTION_MARKER, "Authentication failed! No credentials (JWT Token) provided during SSO login! Details -> {}", exception.getMessage());
+            log.error("Authentication failed! No credentials (JWT Token) provided during SSO login! Details -> {}", exception.getMessage());
             throw new JwtTokenNotFoundException(localeMessagesCreator.buildLocaleMessage("jwt-token-not-found-exception"));
         }));
     }
@@ -90,7 +88,7 @@ public abstract class FailedAuthenticationCases {
 
 	public static Match.Case<BadCredentialsException, Void> BadCredentialsExceptionCase(final LocaleMessagesCreator localeMessagesCreator) {
 		return Case($(instanceOf(BadCredentialsException.class)), exception -> run(() -> {
-			log.error(EXCEPTION_MARKER, "E-mail address or password is not correct! Error message -> {}", exception.getMessage());
+			log.error("E-mail address or password is not correct! Error message -> {}", exception.getMessage());
 			/**
 			 * Exception thrown below is determined in:
 			 * {@link org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider#authenticate(org.springframework.security.core.Authentication)}
@@ -103,7 +101,7 @@ public abstract class FailedAuthenticationCases {
 
     public static Match.Case<MissingAuthenticationResultException, Void> MissingAuthenticationResultException(final LocaleMessagesCreator localeMessagesCreator) {
         return Case($(instanceOf(MissingAuthenticationResultException.class)), exception -> run(() -> {
-            log.error(EXCEPTION_MARKER, "Authentication result has NOT been provided after authentication flow! Error message -> {}", exception.getMessage());
+            log.error("Authentication result has NOT been provided after authentication flow! Error message -> {}", exception.getMessage());
             throw new MissingAuthenticationResultException(localeMessagesCreator.buildLocaleMessage("missing-authentication-result-exception"));
         }));
     }
@@ -116,7 +114,7 @@ public abstract class FailedAuthenticationCases {
      */
     public static Match.Case<? extends RuntimeException, Void> CustomAuthenticationUnknownException(final LocaleMessagesCreator localeMessagesCreator) {
         return Case($(), exception -> run(() -> {
-            log.error(EXCEPTION_MARKER, "Some unknown exception was thrown during authentication flow! Error message -> {}", exception.getMessage());
+            log.error("Some unknown exception was thrown during authentication flow! Error message -> {}", exception.getMessage());
             throw new CustomAuthenticationUnknownException(localeMessagesCreator.buildLocaleMessage("custom-authentication-unknown-exception"));
         }));
     }

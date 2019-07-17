@@ -25,14 +25,14 @@ import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import me.grudzien.patryk.domain.dto.login.JwtUser;
-import me.grudzien.patryk.domain.entity.registration.CustomUser;
-import me.grudzien.patryk.domain.entity.registration.Role;
-import me.grudzien.patryk.domain.enums.ApplicationZone;
-import me.grudzien.patryk.domain.enums.registration.RegistrationProvider;
-import me.grudzien.patryk.domain.enums.registration.RoleName;
-import me.grudzien.patryk.oauth2.util.CacheManagerHelper;
-import me.grudzien.patryk.repository.registration.CustomUserRepository;
+import me.grudzien.patryk.authentication.model.dto.JwtUser;
+import me.grudzien.patryk.registration.model.entity.CustomUser;
+import me.grudzien.patryk.registration.model.entity.Role;
+import me.grudzien.patryk.utils.app.ApplicationZone;
+import me.grudzien.patryk.registration.model.enums.RegistrationProvider;
+import me.grudzien.patryk.registration.model.enums.RoleName;
+import me.grudzien.patryk.oauth2.utils.CacheManagerHelper;
+import me.grudzien.patryk.registration.repository.CustomUserRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -40,8 +40,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import static me.grudzien.patryk.TestsUtils.TEST_EMAIL;
-import static me.grudzien.patryk.service.login.impl.MyUserDetailsService.BEAN_NAME;
-import static me.grudzien.patryk.service.login.impl.MyUserDetailsService.PRINCIPAL_USER_CACHE_NAME;
+import static me.grudzien.patryk.authentication.service.MyUserDetailsService.BEAN_NAME;
+import static me.grudzien.patryk.authentication.service.MyUserDetailsService.PRINCIPAL_USER_CACHE_NAME;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext

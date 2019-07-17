@@ -9,14 +9,14 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import me.grudzien.patryk.domain.dto.vehicle.VehicleDto;
-import me.grudzien.patryk.domain.entity.engine.Engine;
-import me.grudzien.patryk.domain.entity.registration.CustomUser;
-import me.grudzien.patryk.domain.entity.vehicle.Vehicle;
-import me.grudzien.patryk.domain.enums.ApplicationZone;
-import me.grudzien.patryk.domain.enums.engine.EngineType;
-import me.grudzien.patryk.domain.enums.vehicle.VehicleType;
-import me.grudzien.patryk.repository.vehicle.VehicleRepository;
+import me.grudzien.patryk.vehicle.model.dto.VehicleDto;
+import me.grudzien.patryk.vehicle.model.entity.Engine;
+import me.grudzien.patryk.registration.model.entity.CustomUser;
+import me.grudzien.patryk.vehicle.model.entity.Vehicle;
+import me.grudzien.patryk.utils.app.ApplicationZone;
+import me.grudzien.patryk.vehicle.model.enums.EngineType;
+import me.grudzien.patryk.vehicle.model.enums.VehicleType;
+import me.grudzien.patryk.vehicle.repository.VehicleRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

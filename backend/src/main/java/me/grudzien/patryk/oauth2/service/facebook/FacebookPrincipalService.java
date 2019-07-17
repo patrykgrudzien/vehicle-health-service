@@ -2,8 +2,8 @@ package me.grudzien.patryk.oauth2.service.facebook;
 
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
-import me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser;
-import me.grudzien.patryk.oauth2.util.OAuth2FlowDelegator;
+import me.grudzien.patryk.oauth2.model.entity.CustomOAuth2OidcPrincipalUser;
+import me.grudzien.patryk.oauth2.utils.OAuth2FlowDelegator;
 
 public interface FacebookPrincipalService {
 

@@ -11,17 +11,19 @@ import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
-import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
-import me.grudzien.patryk.domain.dto.login.JwtUser;
-import me.grudzien.patryk.exception.security.MissingAuthenticationResultException;
+import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationRequest;
+import me.grudzien.patryk.authentication.model.dto.JwtUser;
+import me.grudzien.patryk.authentication.service.MyUserDetailsService;
+import me.grudzien.patryk.authentication.service.UserAuthenticationServiceImpl;
+import me.grudzien.patryk.jwt.exception.MissingAuthenticationResultException;
 import me.grudzien.patryk.oauth2.authentication.chain.AuthenticationResult.Status;
 import me.grudzien.patryk.oauth2.authentication.chain.AuthenticationStepsFacade;
 import me.grudzien.patryk.oauth2.authentication.checkers.AdditionalChecks;
+import me.grudzien.patryk.oauth2.authentication.model.CustomAuthenticationToken;
 import me.grudzien.patryk.oauth2.service.google.GooglePrincipalService;
 import me.grudzien.patryk.oauth2.service.google.impl.GooglePrincipalServiceProxy;
-import me.grudzien.patryk.oauth2.util.CacheManagerHelper;
-import me.grudzien.patryk.service.login.impl.MyUserDetailsService;
-import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
+import me.grudzien.patryk.oauth2.utils.CacheManagerHelper;
+import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static io.vavr.API.$;
@@ -29,10 +31,9 @@ import static io.vavr.API.Case;
 import static io.vavr.API.Match;
 import static io.vavr.Predicates.is;
 
-import static me.grudzien.patryk.factory.FactoryProvider.getFactory;
-import static me.grudzien.patryk.factory.FactoryType.EXCEPTION;
-import static me.grudzien.patryk.factory.exception.ExceptionType.DYNAMIC_BASED_ON_INPUT;
-import static me.grudzien.patryk.util.log.LogMarkers.SECURITY_MARKER;
+import static me.grudzien.patryk.authentication.model.factory.ExceptionType.DYNAMIC_BASED_ON_INPUT;
+import static me.grudzien.patryk.utils.factory.FactoryProvider.getFactory;
+import static me.grudzien.patryk.utils.factory.FactoryType.EXCEPTION;
 
 @Log4j2
 @Component
@@ -72,14 +73,14 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
     /**
      * This method is called by:
-     * {@link me.grudzien.patryk.service.login.impl.UserAuthenticationServiceImpl#authenticateUser(JwtAuthenticationRequest)}
+     * {@link UserAuthenticationServiceImpl#authenticateUser(JwtAuthenticationRequest)}
      * only when:
      * @param authentication is of type {@link CustomAuthenticationToken} and all kind of exceptions thrown here are handled by:
      * {@link me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases}.
      */
 	@Override
 	public Authentication authenticate(final Authentication authentication) throws AuthenticationException {
-	    log.info(SECURITY_MARKER, "Starting custom authentication...");
+	    log.info("Starting custom authentication...");
         return AuthenticationStepsFacade.buildAuthenticationFlow(googlePrincipalServiceProxy, cacheManagerHelper,
                                                                  userDetailsService, localeMessagesCreator,
                                                                  customPreAuthenticationChecks,
@@ -103,7 +104,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
      */
 	@Override
 	public boolean supports(final Class<?> authentication) {
-	    log.info(SECURITY_MARKER, "Can ({}) be authenticated using ({}) -> ({})", CustomAuthenticationToken.class.getSimpleName(),
+	    log.info("Can ({}) be authenticated using ({}) -> ({})", CustomAuthenticationToken.class.getSimpleName(),
 	             CustomAuthenticationProvider.class.getSimpleName(), CustomAuthenticationToken.class.isAssignableFrom(authentication));
 		return CustomAuthenticationToken.class.isAssignableFrom(authentication);
 	}

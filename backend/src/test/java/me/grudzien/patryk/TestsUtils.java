@@ -18,21 +18,21 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
-import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
-import me.grudzien.patryk.domain.dto.login.JwtUser;
-import me.grudzien.patryk.domain.dto.registration.UserRegistrationDto;
-import me.grudzien.patryk.domain.dto.vehicle.VehicleDto;
-import me.grudzien.patryk.domain.entity.registration.CustomUser;
-import me.grudzien.patryk.domain.entity.registration.EmailVerificationToken;
-import me.grudzien.patryk.domain.entity.registration.Privilege;
-import me.grudzien.patryk.domain.entity.registration.Role;
-import me.grudzien.patryk.domain.enums.ApplicationZone;
-import me.grudzien.patryk.domain.enums.registration.PrivilegeName;
-import me.grudzien.patryk.domain.enums.registration.RegistrationProvider;
-import me.grudzien.patryk.domain.enums.registration.RoleName;
-import me.grudzien.patryk.domain.factory.JwtUserFactory;
-import me.grudzien.patryk.oauth2.domain.CustomOAuth2OidcPrincipalUser;
-import me.grudzien.patryk.service.jwt.JwtTokenService;
+import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationRequest;
+import me.grudzien.patryk.authentication.model.dto.JwtUser;
+import me.grudzien.patryk.registration.model.dto.UserRegistrationDto;
+import me.grudzien.patryk.utils.app.ApplicationZone;
+import me.grudzien.patryk.vehicle.model.dto.VehicleDto;
+import me.grudzien.patryk.registration.model.entity.CustomUser;
+import me.grudzien.patryk.registration.model.entity.EmailVerificationToken;
+import me.grudzien.patryk.registration.model.entity.Privilege;
+import me.grudzien.patryk.registration.model.entity.Role;
+import me.grudzien.patryk.registration.model.enums.PrivilegeName;
+import me.grudzien.patryk.registration.model.enums.RegistrationProvider;
+import me.grudzien.patryk.registration.model.enums.RoleName;
+import me.grudzien.patryk.authentication.model.factory.JwtUserFactory;
+import me.grudzien.patryk.oauth2.model.entity.CustomOAuth2OidcPrincipalUser;
+import me.grudzien.patryk.jwt.service.JwtTokenService;
 
 public final class TestsUtils {
 

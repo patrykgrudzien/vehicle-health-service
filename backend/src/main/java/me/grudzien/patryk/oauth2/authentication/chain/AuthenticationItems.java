@@ -12,8 +12,8 @@ import org.springframework.security.jwt.crypto.sign.RsaVerifier;
 
 import java.util.Map;
 
-import me.grudzien.patryk.domain.dto.login.JwtUser;
-import me.grudzien.patryk.oauth2.authentication.CustomAuthenticationToken;
+import me.grudzien.patryk.authentication.model.dto.JwtUser;
+import me.grudzien.patryk.oauth2.authentication.model.CustomAuthenticationToken;
 
 @Log4j2
 @Getter

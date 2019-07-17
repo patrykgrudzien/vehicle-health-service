@@ -21,14 +21,14 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import me.grudzien.patryk.TestsUtils;
-import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
-import me.grudzien.patryk.domain.enums.security.JwtTokenClaims;
-import me.grudzien.patryk.exception.security.NoEmailProvidedException;
-import me.grudzien.patryk.exception.security.NoRefreshTokenProvidedException;
-import me.grudzien.patryk.service.jwt.JwtTokenClaimsRetriever;
-import me.grudzien.patryk.service.jwt.JwtTokenService;
-import me.grudzien.patryk.util.date.DateOperationsHelper;
-import me.grudzien.patryk.util.i18n.LocaleMessagesHelper;
+import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationRequest;
+import me.grudzien.patryk.jwt.model.enums.JwtTokenClaims;
+import me.grudzien.patryk.jwt.exception.NoEmailProvidedException;
+import me.grudzien.patryk.jwt.exception.NoRefreshTokenProvidedException;
+import me.grudzien.patryk.jwt.service.JwtTokenClaimsRetriever;
+import me.grudzien.patryk.jwt.service.JwtTokenService;
+import me.grudzien.patryk.utils.date.DateOperationsHelper;
+import me.grudzien.patryk.utils.i18n.LocaleMessagesHelper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,8 +39,8 @@ import static me.grudzien.patryk.TestsUtils.NO_EXISTING_EMAIL;
 import static me.grudzien.patryk.TestsUtils.TEST_EMAIL;
 import static me.grudzien.patryk.TestsUtils.prepareAccessTokenRequest;
 import static me.grudzien.patryk.TestsUtils.testDevice;
-import static me.grudzien.patryk.util.jwt.JwtTokenConstants.AUDIENCE_WEB;
-import static me.grudzien.patryk.util.jwt.JwtTokenConstants.TokenType;
+import static me.grudzien.patryk.jwt.utils.JwtTokenConstants.AUDIENCE_WEB;
+import static me.grudzien.patryk.jwt.utils.JwtTokenConstants.TokenType;
 
 @SpringBootTest
 @DirtiesContext

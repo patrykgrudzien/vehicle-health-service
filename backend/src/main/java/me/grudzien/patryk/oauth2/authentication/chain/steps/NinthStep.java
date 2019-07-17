@@ -8,11 +8,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.Optional;
 
-import me.grudzien.patryk.domain.dto.login.JwtUser;
+import me.grudzien.patryk.authentication.model.dto.JwtUser;
 import me.grudzien.patryk.oauth2.authentication.chain.AbstractAuthenticationStepBuilder;
 import me.grudzien.patryk.oauth2.authentication.chain.AbstractAuthenticationStepTemplate;
 import me.grudzien.patryk.oauth2.authentication.chain.AuthenticationResult;
-import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
+import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 
 public final class NinthStep extends AbstractAuthenticationStepBuilder<JwtUser> {
 

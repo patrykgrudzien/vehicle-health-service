@@ -14,12 +14,12 @@ import java.time.Duration;
 import java.time.Period;
 import java.time.ZonedDateTime;
 
-import me.grudzien.patryk.domain.entity.registration.CustomUser;
-import me.grudzien.patryk.domain.entity.registration.Role;
-import me.grudzien.patryk.domain.enums.ApplicationZone;
-import me.grudzien.patryk.domain.enums.registration.RegistrationProvider;
-import me.grudzien.patryk.domain.enums.registration.RoleName;
-import me.grudzien.patryk.repository.registration.CustomUserRepository;
+import me.grudzien.patryk.registration.model.entity.CustomUser;
+import me.grudzien.patryk.registration.model.entity.Role;
+import me.grudzien.patryk.utils.app.ApplicationZone;
+import me.grudzien.patryk.registration.model.enums.RegistrationProvider;
+import me.grudzien.patryk.registration.model.enums.RoleName;
+import me.grudzien.patryk.registration.repository.CustomUserRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

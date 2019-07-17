@@ -17,10 +17,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import me.grudzien.patryk.PropertiesKeeper;
-import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
-import me.grudzien.patryk.util.i18n.LocaleMessagesHelper;
-
-import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
+import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
+import me.grudzien.patryk.utils.i18n.LocaleMessagesHelper;
 
 /**
  * <hr><br>
@@ -63,18 +61,18 @@ public class LocaleDeterminerFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response, final FilterChain filterChain)
 			throws IOException, ServletException {
 
-		log.info(FLOW_MARKER, "(FILTER) -----> {} ({}) on path -> {}", this.getClass().getSimpleName(), request.getMethod(), request.getRequestURI());
+		log.info("(FILTER) -----> {} ({}) on path -> {}", this.getClass().getSimpleName(), request.getMethod(), request.getRequestURI());
 
 		/**
-		 * Method {@link me.grudzien.patryk.util.i18n.LocaleMessagesHelper#determineApplicationLocale(Object)} must be called in the first
+		 * Method {@link me.grudzien.patryk.utils.i18n.LocaleMessagesHelper#determineApplicationLocale(Object)} must be called in the first
 		 * step because it sets locale according to header coming from UI.
 		 *
 		 * Filters' order is specified in:
 		 * {@link me.grudzien.patryk.configuration.security.SecurityConfigContext.Filters#addTokenAuthenticationFilters(HttpSecurity, UserDetailsService,
          * PropertiesKeeper, LocaleMessagesCreator)}
 		 *
-		 * Later {@link me.grudzien.patryk.util.i18n.LocaleMessagesHelper#getLocale()} is used in
-		 * {@link me.grudzien.patryk.util.i18n.LocaleMessagesCreator#buildLocaleMessage(String)} related methods to create i18n messages
+		 * Later {@link me.grudzien.patryk.utils.i18n.LocaleMessagesHelper#getLocale()} is used in
+		 * {@link me.grudzien.patryk.utils.i18n.LocaleMessagesCreator#buildLocaleMessage(String)} related methods to create i18n messages
 		 * without passing WebRequest or HttpServletRequest object later in the code flow.
 		 */
 		if (!request.getMethod().equals(HttpMethod.OPTIONS.name())) {

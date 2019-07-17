@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 
 import me.grudzien.patryk.TestsUtils;
 import me.grudzien.patryk.controller.jwt.JwtTokenController;
-import me.grudzien.patryk.service.jwt.JwtTokenService;
+import me.grudzien.patryk.jwt.service.JwtTokenService;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;

@@ -14,8 +14,7 @@ import com.google.common.io.Files;
 import java.io.IOException;
 import java.util.List;
 
-import static me.grudzien.patryk.domain.enums.SpringAppProfiles.HEROKU_DEPLOYMENT;
-import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
+import static me.grudzien.patryk.utils.app.SpringAppProfiles.HEROKU_DEPLOYMENT;
 
 /**
  * This class is used by exec-maven-plugin which is gonna execute this main() method and create files which are triggers for
@@ -86,7 +85,7 @@ public final class CreateFileOnActiveHerokuProfile {
 
 	private static String createFile(final String activeProfileName) {
 		resolveHerokuDeploymentEnabledFilesOutputPaths(activeProfileName).forEach(path -> Try.run(() -> Files.touch(new FileSystemResource(path).getFile()))
-		                                                                                     .onSuccess(voidResult -> log.info(FLOW_MARKER, "File >>>> {} <<<< has been created! TASK COMPLETED.", path))
+		                                                                                     .onSuccess(voidResult -> log.info("File >>>> {} <<<< has been created! TASK COMPLETED.", path))
 		                                                                                     .onFailure(throwable -> log.error(throwable.getMessage())));
 		return "createFile() method executed.";
 	}

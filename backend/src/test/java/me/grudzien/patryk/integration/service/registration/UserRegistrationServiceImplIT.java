@@ -17,16 +17,16 @@ import org.mockito.BDDMockito;
 import java.util.Locale;
 import java.util.stream.Stream;
 
-import me.grudzien.patryk.domain.dto.registration.RegistrationResponse;
-import me.grudzien.patryk.domain.entity.registration.EmailVerificationToken;
-import me.grudzien.patryk.domain.enums.ApplicationZone;
-import me.grudzien.patryk.exception.registration.EmailVerificationTokenExpiredException;
-import me.grudzien.patryk.exception.registration.EmailVerificationTokenNotFoundException;
-import me.grudzien.patryk.oauth2.util.CacheManagerHelper;
-import me.grudzien.patryk.repository.registration.CustomUserRepository;
-import me.grudzien.patryk.repository.registration.EmailVerificationTokenRepository;
-import me.grudzien.patryk.service.registration.UserRegistrationService;
-import me.grudzien.patryk.util.i18n.LocaleMessagesHelper;
+import me.grudzien.patryk.registration.model.dto.RegistrationResponse;
+import me.grudzien.patryk.registration.model.entity.EmailVerificationToken;
+import me.grudzien.patryk.utils.app.ApplicationZone;
+import me.grudzien.patryk.registration.exception.EmailVerificationTokenExpiredException;
+import me.grudzien.patryk.registration.exception.EmailVerificationTokenNotFoundException;
+import me.grudzien.patryk.oauth2.utils.CacheManagerHelper;
+import me.grudzien.patryk.registration.repository.CustomUserRepository;
+import me.grudzien.patryk.registration.repository.EmailVerificationTokenRepository;
+import me.grudzien.patryk.registration.service.UserRegistrationService;
+import me.grudzien.patryk.utils.i18n.LocaleMessagesHelper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;

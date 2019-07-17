@@ -30,10 +30,10 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import me.grudzien.patryk.domain.entity.registration.CustomUser;
-import me.grudzien.patryk.domain.entity.registration.EmailVerificationToken;
-import me.grudzien.patryk.repository.registration.CustomUserRepository;
-import me.grudzien.patryk.repository.registration.EmailVerificationTokenRepository;
+import me.grudzien.patryk.registration.model.entity.CustomUser;
+import me.grudzien.patryk.registration.model.entity.EmailVerificationToken;
+import me.grudzien.patryk.registration.repository.CustomUserRepository;
+import me.grudzien.patryk.registration.repository.EmailVerificationTokenRepository;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;

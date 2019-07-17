@@ -18,13 +18,13 @@ import java.util.Date;
 import java.util.Optional;
 
 import me.grudzien.patryk.TestsUtils;
-import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
-import me.grudzien.patryk.domain.enums.ApplicationZone;
-import me.grudzien.patryk.domain.enums.security.JwtTokenClaims;
-import me.grudzien.patryk.service.jwt.JwtTokenClaimsRetriever;
-import me.grudzien.patryk.service.jwt.JwtTokenService;
-import me.grudzien.patryk.util.date.DateOperationsHelper;
-import me.grudzien.patryk.util.jwt.JwtTokenConstants;
+import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationRequest;
+import me.grudzien.patryk.utils.app.ApplicationZone;
+import me.grudzien.patryk.jwt.model.enums.JwtTokenClaims;
+import me.grudzien.patryk.jwt.service.JwtTokenClaimsRetriever;
+import me.grudzien.patryk.jwt.service.JwtTokenService;
+import me.grudzien.patryk.utils.date.DateOperationsHelper;
+import me.grudzien.patryk.jwt.utils.JwtTokenConstants;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;

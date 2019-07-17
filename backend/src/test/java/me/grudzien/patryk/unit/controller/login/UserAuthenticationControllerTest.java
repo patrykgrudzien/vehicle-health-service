@@ -31,10 +31,10 @@ import java.util.Set;
 
 import me.grudzien.patryk.TestsUtils;
 import me.grudzien.patryk.controller.login.UserAuthenticationController;
-import me.grudzien.patryk.domain.dto.login.JwtAuthenticationRequest;
-import me.grudzien.patryk.domain.dto.login.JwtAuthenticationResponse;
-import me.grudzien.patryk.service.login.UserAuthenticationService;
-import me.grudzien.patryk.util.validator.CustomValidator;
+import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationRequest;
+import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationResponse;
+import me.grudzien.patryk.authentication.service.UserAuthenticationService;
+import me.grudzien.patryk.utils.validation.CustomValidator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;

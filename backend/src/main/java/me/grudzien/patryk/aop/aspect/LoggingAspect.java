@@ -11,8 +11,6 @@ import org.aspectj.lang.annotation.Before;
 
 import java.util.stream.Stream;
 
-import static me.grudzien.patryk.util.log.LogMarkers.ASPECT_MARKER;
-
 @Aspect
 @Component
 @Log4j2
@@ -25,10 +23,10 @@ public class LoggingAspect {
 	 */
 	@Before("me.grudzien.patryk.aop.pointcut.LoggingAspectPointcuts.withinRestControllerClasses()")
 	public void beforeClassesAnnotatedWithRestControllerAnnotation(final JoinPoint joinPoint) {
-		log.info(ASPECT_MARKER, "----- Method -----> {}", joinPoint.getSignature().toShortString());
+		log.info("----- Method -----> {}", joinPoint.getSignature().toShortString());
 		Stream.of(joinPoint.getArgs()).forEach(arg -> {
 			if (arg instanceof ServletWebRequest) {
-				log.info(ASPECT_MARKER, "----- Path -----> {}", ((ServletWebRequest) arg).getRequest().getRequestURI());
+				log.info("----- Path -----> {}", ((ServletWebRequest) arg).getRequest().getRequestURI());
 			}
 		});
 	}
@@ -44,6 +42,6 @@ public class LoggingAspect {
 	        + "me.grudzien.patryk.aop.pointcut.LoggingAspectPointcuts.executionMethodsAnnotatedByCachePutAnnotation() || "
 	        + "me.grudzien.patryk.aop.pointcut.LoggingAspectPointcuts.executionMethodsAnnotatedByCacheEvictAnnotation()")
 	public void beforeMethodsAnnotatedWithCacheAnnotations(final JoinPoint joinPoint) {
-		log.info(ASPECT_MARKER, "=====> Checking cache... Method -----> {}", joinPoint.getSignature().toShortString());
+		log.info("=====> Checking cache... Method -----> {}", joinPoint.getSignature().toShortString());
 	}
 }

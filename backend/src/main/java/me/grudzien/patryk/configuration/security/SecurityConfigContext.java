@@ -18,11 +18,13 @@ import me.grudzien.patryk.oauth2.handler.CustomOAuth2AuthenticationSuccessHandle
 import me.grudzien.patryk.oauth2.repository.CacheBasedOAuth2AuthorizationRequestRepository;
 import me.grudzien.patryk.oauth2.service.CustomOAuth2UserService;
 import me.grudzien.patryk.oauth2.service.CustomOidcUserService;
-import me.grudzien.patryk.oauth2.util.CacheManagerHelper;
-import me.grudzien.patryk.service.jwt.JwtTokenClaimsRetriever;
-import me.grudzien.patryk.service.jwt.JwtTokenValidator;
-import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
-import me.grudzien.patryk.util.i18n.LocaleMessagesHelper;
+import me.grudzien.patryk.oauth2.utils.CacheManagerHelper;
+import me.grudzien.patryk.registration.model.dto.EmailDto;
+import me.grudzien.patryk.registration.service.EmailClientServiceImpl;
+import me.grudzien.patryk.jwt.service.JwtTokenClaimsRetriever;
+import me.grudzien.patryk.jwt.service.JwtTokenValidator;
+import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
+import me.grudzien.patryk.utils.i18n.LocaleMessagesHelper;
 
 @SuppressWarnings("JavadocReference")
 public final class SecurityConfigContext {
@@ -103,8 +105,8 @@ public final class SecurityConfigContext {
 
             /**
              * This filter is required to determine "Locale" which is needed to create appropriate messages using:
-             * {@link me.grudzien.patryk.util.i18n.LocaleMessagesCreator#buildLocaleMessage(String)} or to take right email template inside:
-             * {@link me.grudzien.patryk.service.registration.impl.EmailClientServiceImpl#sendMessageUsingTemplate(me.grudzien.patryk.domain.dto.registration.EmailDto)}.
+             * {@link me.grudzien.patryk.utils.i18n.LocaleMessagesCreator#buildLocaleMessage(String)} or to take right email template inside:
+             * {@link EmailClientServiceImpl#sendMessageUsingTemplate(EmailDto)}.
              */
             final LocaleDeterminerFilter localeDeterminerFilter = new LocaleDeterminerFilter(localeMessagesHelper);
             httpSecurity.addFilterBefore(localeDeterminerFilter, ServletExceptionHandlerFilter.class);

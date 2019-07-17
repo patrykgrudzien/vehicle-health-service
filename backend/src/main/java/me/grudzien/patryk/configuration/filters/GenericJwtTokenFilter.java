@@ -24,14 +24,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 
-import me.grudzien.patryk.service.jwt.JwtTokenClaimsRetriever;
-import me.grudzien.patryk.service.jwt.JwtTokenValidator;
-import me.grudzien.patryk.service.login.impl.MyUserDetailsService;
-import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
-import me.grudzien.patryk.util.jwt.JwtTokenConstants;
-
-import static me.grudzien.patryk.util.log.LogMarkers.EXCEPTION_MARKER;
-import static me.grudzien.patryk.util.log.LogMarkers.FLOW_MARKER;
+import me.grudzien.patryk.authentication.service.MyUserDetailsService;
+import me.grudzien.patryk.jwt.service.JwtTokenClaimsRetriever;
+import me.grudzien.patryk.jwt.service.JwtTokenValidator;
+import me.grudzien.patryk.jwt.utils.JwtTokenConstants;
+import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 
 /**
  * <hr><br>
@@ -86,7 +83,7 @@ public class GenericJwtTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response, final FilterChain filterChain)
             throws ServletException, IOException {
 
-        log.info(FLOW_MARKER, "(FILTER) -----> {} ({}) on path -> {}", this.getClass().getSimpleName(), request.getMethod(), request.getRequestURI());
+        log.info("(FILTER) -----> {} ({}) on path -> {}", this.getClass().getSimpleName(), request.getMethod(), request.getRequestURI());
 
         final String requestHeader = request.getHeader(JwtTokenConstants.JWT_TOKEN_HEADER);
 
@@ -95,13 +92,13 @@ public class GenericJwtTokenFilter extends OncePerRequestFilter {
         if (requestHeader != null && requestHeader.startsWith(JwtTokenConstants.BEARER)) {
             accessToken = requestHeader.substring(JwtTokenConstants.JWT_TOKEN_BEGIN_INDEX);
             email = jwtTokenClaimsRetriever.getUserEmailFromToken(accessToken).orElse(null);
-            log.info(FLOW_MARKER, "Authentication will be performed against user email: {}.", email);
+            log.info("Authentication will be performed against user email: {}.", email);
         } else {
-            log.warn(EXCEPTION_MARKER, "Couldn't find {} string, it will be ignored!", JwtTokenConstants.BEARER.trim());
+            log.warn("Couldn't find {} string, it will be ignored!", JwtTokenConstants.BEARER.trim());
         }
 
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            log.debug(FLOW_MARKER, "Security context was null, starting authenticating the user...");
+            log.debug("Security context was null, starting authenticating the user...");
             /*
              * It is not compelling necessary to load the use details from the database. I can also store that information
              * in the token and read it from it.
@@ -131,7 +128,7 @@ public class GenericJwtTokenFilter extends OncePerRequestFilter {
                      * an "HttpServletRequest" object.
                      */
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    log.info(FLOW_MARKER, "User has been successfully authenticated. Setting security context.");
+                    log.info("User has been successfully authenticated. Setting security context.");
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 } else {
                     final DefaultJwsHeader defaultJwsHeader = jwtTokenClaimsRetriever.getDefaultJwsHeader().orElse(new DefaultJwsHeader());

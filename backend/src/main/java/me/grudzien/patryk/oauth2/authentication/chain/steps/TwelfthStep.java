@@ -6,8 +6,8 @@ import org.springframework.security.core.Authentication;
 
 import java.util.Optional;
 
-import me.grudzien.patryk.domain.dto.login.JwtUser;
-import me.grudzien.patryk.oauth2.authentication.CustomAuthenticationToken;
+import me.grudzien.patryk.authentication.model.dto.JwtUser;
+import me.grudzien.patryk.oauth2.authentication.model.CustomAuthenticationToken;
 import me.grudzien.patryk.oauth2.authentication.chain.AbstractAuthenticationStepBuilder;
 import me.grudzien.patryk.oauth2.authentication.chain.AbstractAuthenticationStepTemplate;
 import me.grudzien.patryk.oauth2.authentication.chain.AuthenticationResult;

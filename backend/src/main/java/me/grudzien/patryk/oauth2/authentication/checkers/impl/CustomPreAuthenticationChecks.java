@@ -11,10 +11,9 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.base.Preconditions;
 
-import me.grudzien.patryk.exception.login.UserDisabledAuthenticationException;
-import me.grudzien.patryk.util.i18n.LocaleMessagesCreator;
-
-import static me.grudzien.patryk.util.log.LogMarkers.SECURITY_MARKER;
+import me.grudzien.patryk.utils.handler.ExceptionHandlingController;
+import me.grudzien.patryk.authentication.exception.UserDisabledAuthenticationException;
+import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 
 @Log4j2
 @Component
@@ -31,21 +30,21 @@ public class CustomPreAuthenticationChecks implements UserDetailsChecker {
     /**
      * In case of the Exceptions thrown below, code flow is caught by one of the "Case" inside:
      * {@link me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases} and translation to JSON format is done by:
-     * {@link me.grudzien.patryk.exception.ExceptionHandlingController}
+     * {@link ExceptionHandlingController}
      */
 	@Override
 	public void check(final UserDetails user) {
 		if (!user.isAccountNonLocked()) {
-			log.debug(SECURITY_MARKER, "User account is locked!");
+			log.debug("User account is locked!");
 			// using here Exception provided by Spring (no need to override it and create custom one)
 			throw new LockedException(localeMessagesCreator.buildLocaleMessage("user-account-is-locked"));
 		}
 		if (!user.isEnabled()) {
-			log.debug(SECURITY_MARKER, "User account is disabled!");
+			log.debug("User account is disabled!");
 			throw new UserDisabledAuthenticationException(localeMessagesCreator.buildLocaleMessage("user-disabled-exception"));
 		}
 		if (!user.isAccountNonExpired()) {
-			log.debug(SECURITY_MARKER, "User account is expired!");
+			log.debug("User account is expired!");
 			throw new AccountExpiredException(localeMessagesCreator.buildLocaleMessage("user-account-is-expired"));
 		}
 	}
