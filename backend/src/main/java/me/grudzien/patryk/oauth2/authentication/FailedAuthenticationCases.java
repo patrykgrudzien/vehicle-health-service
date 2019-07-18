@@ -13,7 +13,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import me.grudzien.patryk.authentication.exception.BadCredentialsAuthenticationException;
 import me.grudzien.patryk.authentication.exception.UserDisabledAuthenticationException;
-import me.grudzien.patryk.authentication.service.MyUserDetailsService;
+import me.grudzien.patryk.authentication.service.impl.MyUserDetailsService;
 import me.grudzien.patryk.jwt.exception.CustomAuthenticationUnknownException;
 import me.grudzien.patryk.jwt.exception.MissingAuthenticationResultException;
 import me.grudzien.patryk.oauth2.authentication.checkers.AdditionalChecks;

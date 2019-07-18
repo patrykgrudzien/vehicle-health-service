@@ -13,11 +13,11 @@ import org.springframework.util.StringUtils;
 
 import java.util.function.Predicate;
 
-import me.grudzien.patryk.PropertiesKeeper;
 import me.grudzien.patryk.oauth2.model.entity.CustomOAuth2OidcPrincipalUser;
 import me.grudzien.patryk.oauth2.service.facebook.FacebookPrincipalService;
 import me.grudzien.patryk.oauth2.service.google.GooglePrincipalService;
 import me.grudzien.patryk.oauth2.service.google.impl.GooglePrincipalServiceProxy;
+import me.grudzien.patryk.utils.web.FrontendRoutesDefinitions;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static io.vavr.API.$;
@@ -32,10 +32,10 @@ import static me.grudzien.patryk.oauth2.repository.CacheBasedOAuth2Authorization
 @Component
 public class OAuth2FlowDelegator {
 
-	private final Predicate<String> URL_CONTAINS_LOGIN_OR_LOGOUT = input -> input.contains(PropertiesKeeper.FrontendRoutes.LOGIN) ||
-	                                                                        input.contains(PropertiesKeeper.FrontendRoutes.LOGOUT);
-	private final Predicate<String> URL_EQUALS_REGISTRATION_CONFIRMED = input -> input.equalsIgnoreCase(PropertiesKeeper.FrontendRoutes.REGISTRATION_CONFIRMED);
-	private final Predicate<String> URL_EQUALS_REGISTRATION_FORM = input -> input.equalsIgnoreCase(PropertiesKeeper.FrontendRoutes.REGISTRATION_FORM);
+	private final Predicate<String> URL_CONTAINS_LOGIN_OR_LOGOUT = input -> input.contains(FrontendRoutesDefinitions.LOGIN) ||
+	                                                                        input.contains(FrontendRoutesDefinitions.LOGOUT);
+	private final Predicate<String> URL_EQUALS_REGISTRATION_CONFIRMED = input -> input.equalsIgnoreCase(FrontendRoutesDefinitions.REGISTRATION_CONFIRMED);
+	private final Predicate<String> URL_EQUALS_REGISTRATION_FORM = input -> input.equalsIgnoreCase(FrontendRoutesDefinitions.REGISTRATION_FORM);
 
 	private final CacheManagerHelper cacheManagerHelper;
 	private final GooglePrincipalServiceProxy googlePrincipalServiceProxy;

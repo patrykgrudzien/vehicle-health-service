@@ -9,14 +9,14 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import com.google.common.base.Preconditions;
-
 import java.util.Arrays;
 
-import me.grudzien.patryk.utils.app.AppFLow;
 import me.grudzien.patryk.PropertiesKeeper;
+import me.grudzien.patryk.heroku.resource.HerokuResourceDefinition;
+import me.grudzien.patryk.utils.app.AppFLow;
 import me.grudzien.patryk.utils.app.SpringAppProfiles;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static io.vavr.API.$;
 import static io.vavr.API.Case;
 import static io.vavr.API.Match;
@@ -41,8 +41,9 @@ public class ContextPathsResolver implements InitializingBean {
 
 	@Autowired
 	public ContextPathsResolver(final Environment environment, final PropertiesKeeper propertiesKeeper) {
-		Preconditions.checkNotNull(environment, "environment cannot be null!");
-		Preconditions.checkNotNull(propertiesKeeper, "propertiesKeeper cannot be null!");
+		checkNotNull(environment, "environment cannot be null!");
+		checkNotNull(propertiesKeeper, "propertiesKeeper cannot be null!");
+
 		this.environment = environment;
 		this.propertiesKeeper = propertiesKeeper;
 	}
@@ -83,6 +84,6 @@ public class ContextPathsResolver implements InitializingBean {
 	 */
 	private String getHerokuBaseUrl() {
 		log.info("Created base context path for (HEROKU) env.");
-		return propertiesKeeper.heroku().HEROKU_BASE_CONTEXT_PATH;
+		return HerokuResourceDefinition.HEROKU_APP_CONTEXT_PATH;
 	}
 }

@@ -1,8 +1,10 @@
 package me.grudzien.patryk.utils.web;
 
 import io.vavr.Tuple2;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import org.springframework.lang.NonNull;
 
@@ -22,7 +24,8 @@ import static me.grudzien.patryk.utils.web.CustomURLBuilder.AdditionalParamsDeli
 import static me.grudzien.patryk.utils.web.CustomURLBuilder.AdditionalParamsDelimiterType.PATH_VARIABLE;
 import static me.grudzien.patryk.utils.web.CustomURLBuilder.AdditionalParamsDelimiterType.REQUEST_PARAM;
 
-public class CustomURLBuilder {
+@NoArgsConstructor(access = AccessLevel.NONE)
+public final class CustomURLBuilder {
 
 	public static final String PATH_VARIABLE_DELIMITER = "/";
 	private static final Tuple2<String, String> REQUEST_PARAM_DELIMITERS = new Tuple2<>("?", "=");

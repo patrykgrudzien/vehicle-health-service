@@ -18,10 +18,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 
-import com.google.common.base.Preconditions;
-
-import me.grudzien.patryk.PropertiesKeeper;
-import me.grudzien.patryk.authentication.service.MyUserDetailsService;
+import me.grudzien.patryk.authentication.service.impl.MyUserDetailsService;
 import me.grudzien.patryk.jwt.service.JwtTokenClaimsRetriever;
 import me.grudzien.patryk.jwt.service.JwtTokenValidator;
 import me.grudzien.patryk.oauth2.authentication.CustomAuthenticationProvider;
@@ -32,6 +29,8 @@ import me.grudzien.patryk.oauth2.service.CustomOidcUserService;
 import me.grudzien.patryk.oauth2.utils.CacheManagerHelper;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesHelper;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * <h2>Creating and Customizing Filter Chains</h2>
@@ -63,8 +62,7 @@ public class SecurityConfig {
 	private final CustomOAuth2AuthenticationFailureHandler customOAuth2AuthenticationFailureHandler;
 	private final CustomOidcUserService customOidcUserService;
 	private final CustomOAuth2UserService customOAuth2UserService;
-	private final PropertiesKeeper propertiesKeeper;
-	private final CacheManagerHelper cacheManagerHelper;
+    private final CacheManagerHelper cacheManagerHelper;
 	private final LocaleMessagesCreator localeMessageCreator;
 	private final LocaleMessagesHelper localeMessagesHelper;
 	private final CustomAuthenticationProvider customAuthenticationProvider;
@@ -82,23 +80,22 @@ public class SecurityConfig {
                           final CustomOAuth2AuthenticationSuccessHandler customOAuth2AuthenticationSuccessHandler,
                           final CustomOAuth2AuthenticationFailureHandler customOAuth2AuthenticationFailureHandler,
                           final CustomOidcUserService customOidcUserService,
-                          final CustomOAuth2UserService customOAuth2UserService, final PropertiesKeeper propertiesKeeper, final CacheManagerHelper cacheManagerHelper,
+                          final CustomOAuth2UserService customOAuth2UserService, final CacheManagerHelper cacheManagerHelper,
                           final LocaleMessagesHelper localeMessagesHelper, final LocaleMessagesCreator localeMessageCreator,
                           final CustomAuthenticationProvider customAuthenticationProvider,
                           final JwtTokenClaimsRetriever jwtTokenClaimsRetriever, final JwtTokenValidator jwtTokenValidator) {
 
-        Preconditions.checkNotNull(userDetailsService, "userDetailsService cannot be null!");
-        Preconditions.checkNotNull(customAuthenticationEntryPoint, "customAuthenticationEntryPoint cannot be null!");
-        Preconditions.checkNotNull(customOAuth2AuthenticationSuccessHandler, "customOAuth2AuthenticationSuccessHandler cannot be null!");
-        Preconditions.checkNotNull(customOAuth2AuthenticationFailureHandler, "customOAuth2AuthenticationFailureHandler cannot be null!");
-        Preconditions.checkNotNull(customOidcUserService, "customOidcUserService cannot be null!");
-        Preconditions.checkNotNull(customOAuth2UserService, "customOAuth2UserService cannot be null!");
-        Preconditions.checkNotNull(propertiesKeeper, "propertiesKeeper cannot be null!");
-        Preconditions.checkNotNull(cacheManagerHelper, "cacheManagerHelper cannot be null!");
-        Preconditions.checkNotNull(localeMessageCreator, "localeMessageCreator cannot be null!");
-        Preconditions.checkNotNull(localeMessagesHelper, "localeMessagesHelper cannot be null!");
-        Preconditions.checkNotNull(jwtTokenClaimsRetriever, "jwtTokenClaimsRetriever cannot be null!");
-        Preconditions.checkNotNull(jwtTokenValidator, "jwtTokenValidator cannot be null!");
+        checkNotNull(userDetailsService, "userDetailsService cannot be null!");
+        checkNotNull(customAuthenticationEntryPoint, "customAuthenticationEntryPoint cannot be null!");
+        checkNotNull(customOAuth2AuthenticationSuccessHandler, "customOAuth2AuthenticationSuccessHandler cannot be null!");
+        checkNotNull(customOAuth2AuthenticationFailureHandler, "customOAuth2AuthenticationFailureHandler cannot be null!");
+        checkNotNull(customOidcUserService, "customOidcUserService cannot be null!");
+        checkNotNull(customOAuth2UserService, "customOAuth2UserService cannot be null!");
+        checkNotNull(cacheManagerHelper, "cacheManagerHelper cannot be null!");
+        checkNotNull(localeMessageCreator, "localeMessageCreator cannot be null!");
+        checkNotNull(localeMessagesHelper, "localeMessagesHelper cannot be null!");
+        checkNotNull(jwtTokenClaimsRetriever, "jwtTokenClaimsRetriever cannot be null!");
+        checkNotNull(jwtTokenValidator, "jwtTokenValidator cannot be null!");
 
         this.userDetailsService = userDetailsService;
         this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
@@ -106,7 +103,6 @@ public class SecurityConfig {
         this.customOAuth2AuthenticationFailureHandler = customOAuth2AuthenticationFailureHandler;
         this.customOidcUserService = customOidcUserService;
         this.customOAuth2UserService = customOAuth2UserService;
-        this.propertiesKeeper = propertiesKeeper;
         this.cacheManagerHelper = cacheManagerHelper;
         this.localeMessageCreator = localeMessageCreator;
         this.localeMessagesHelper = localeMessagesHelper;
@@ -188,25 +184,15 @@ public class SecurityConfig {
         @Override
         protected void configure(final HttpSecurity httpSecurity) throws Exception {
             // don't create session - set creation policy to STATELESS
-            SecurityConfigContext.sessionCreationPolicy(httpSecurity);
+            SecurityConfigContext.sessionManagementStateless(httpSecurity);
             SecurityConfigContext.httpSessionRequestCache(httpSecurity, httpSessionRequestCache());
-
-            // we are stateless so these things are not needed
-            SecurityConfigContext.disableFormLogin(httpSecurity);
-            SecurityConfigContext.disableHttpBasic(httpSecurity);
-            SecurityConfigContext.disableLogout(httpSecurity);
+            SecurityConfigContext.disableUnusedSecurityOptions(httpSecurity);
 
             // show message to the user that some resource requires authentication
             SecurityConfigContext.exceptionHandling(httpSecurity, customAuthenticationEntryPoint);
 
-            // don't need CSRF because JWT token is invulnerable
-            SecurityConfigContext.disableCSRF(httpSecurity);
-
             // CORS configuration
             SecurityConfigContext.addCORSFilter(httpSecurity);
-
-            // Disabling frame options
-	        SecurityConfigContext.frameOptionsSameOrigin(httpSecurity);
 
             /**
              * {@link me.grudzien.patryk.configuration.filters.GenericJwtTokenFilter}
@@ -216,7 +202,7 @@ public class SecurityConfig {
             SecurityConfigContext.Filters.addTokenAuthenticationFilters(httpSecurity, super.userDetailsService(), localeMessageCreator, jwtTokenClaimsRetriever,
                                                                         jwtTokenValidator, localeMessagesHelper);
             // mvcMatchers
-            SecurityConfigContext.Requests.authorizeRequests(httpSecurity, propertiesKeeper);
+            SecurityConfigContext.Requests.authorizeRequests(httpSecurity);
         }
 
         /**
@@ -241,28 +227,18 @@ public class SecurityConfig {
         @Override
         protected void configure(final HttpSecurity httpSecurity) throws Exception {
             // don't create session - set creation policy to STATELESS
-            SecurityConfigContext.sessionCreationPolicy(httpSecurity);
+            SecurityConfigContext.sessionManagementStateless(httpSecurity);
             SecurityConfigContext.httpSessionRequestCache(httpSecurity, httpSessionRequestCache());
-
-            // we are stateless so these things are not needed
-            SecurityConfigContext.disableFormLogin(httpSecurity);
-            SecurityConfigContext.disableHttpBasic(httpSecurity);
-            SecurityConfigContext.disableLogout(httpSecurity);
+            SecurityConfigContext.disableUnusedSecurityOptions(httpSecurity);
 
             // show message to the user that some resource requires authentication
             SecurityConfigContext.exceptionHandling(httpSecurity, customAuthenticationEntryPoint);
 
-            // don't need CSRF because JWT token is invulnerable
-            SecurityConfigContext.disableCSRF(httpSecurity);
-
             // CORS configuration
             SecurityConfigContext.addCORSFilter(httpSecurity);
 
-	        // Disabling frame options
-	        SecurityConfigContext.frameOptionsSameOrigin(httpSecurity);
-
             // oauth2 clients
-            SecurityConfigContext.OAuth2.configureOAuth2Client(httpSecurity, propertiesKeeper, cacheManagerHelper, customOAuth2AuthenticationSuccessHandler,
+            SecurityConfigContext.OAuth2.configureOAuth2Client(httpSecurity, cacheManagerHelper, customOAuth2AuthenticationSuccessHandler,
                                                                customOAuth2AuthenticationFailureHandler, customOidcUserService, customOAuth2UserService);
             // mvcMatchers
             httpSecurity.authorizeRequests()

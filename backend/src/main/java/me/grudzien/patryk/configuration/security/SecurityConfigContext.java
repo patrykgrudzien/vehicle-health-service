@@ -9,10 +9,11 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 
-import me.grudzien.patryk.PropertiesKeeper;
 import me.grudzien.patryk.configuration.filters.GenericJwtTokenFilter;
 import me.grudzien.patryk.configuration.filters.LocaleDeterminerFilter;
 import me.grudzien.patryk.configuration.filters.ServletExceptionHandlerFilter;
+import me.grudzien.patryk.jwt.service.JwtTokenClaimsRetriever;
+import me.grudzien.patryk.jwt.service.JwtTokenValidator;
 import me.grudzien.patryk.oauth2.handler.CustomOAuth2AuthenticationFailureHandler;
 import me.grudzien.patryk.oauth2.handler.CustomOAuth2AuthenticationSuccessHandler;
 import me.grudzien.patryk.oauth2.repository.CacheBasedOAuth2AuthorizationRequestRepository;
@@ -20,11 +21,36 @@ import me.grudzien.patryk.oauth2.service.CustomOAuth2UserService;
 import me.grudzien.patryk.oauth2.service.CustomOidcUserService;
 import me.grudzien.patryk.oauth2.utils.CacheManagerHelper;
 import me.grudzien.patryk.registration.model.dto.EmailDto;
-import me.grudzien.patryk.registration.service.EmailClientServiceImpl;
-import me.grudzien.patryk.jwt.service.JwtTokenClaimsRetriever;
-import me.grudzien.patryk.jwt.service.JwtTokenValidator;
+import me.grudzien.patryk.registration.service.impl.EmailClientServiceImpl;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesHelper;
+import me.grudzien.patryk.utils.web.MvcPattern;
+
+import static me.grudzien.patryk.authentication.resource.AuthenticationResourceDefinitions.AUTHENTICATION_RESOURCE_ROOT;
+import static me.grudzien.patryk.authentication.resource.AuthenticationResourceDefinitions.LOGIN;
+import static me.grudzien.patryk.configuration.security.SecurityResourceDefinitions.APP_ROOT_CONTEXT;
+import static me.grudzien.patryk.configuration.security.SecurityResourceDefinitions.STATIC_RESOURCES;
+import static me.grudzien.patryk.jwt.resource.JwtResourceDefinitions.GENERATE_ACCESS_TOKEN;
+import static me.grudzien.patryk.jwt.resource.JwtResourceDefinitions.GENERATE_REFRESH_TOKEN;
+import static me.grudzien.patryk.jwt.resource.JwtResourceDefinitions.JWT_RESOURCE_ROOT;
+import static me.grudzien.patryk.jwt.resource.JwtResourceDefinitions.REFRESH_ACCESS_TOKEN;
+import static me.grudzien.patryk.oauth2.resource.google.GoogleResourceDefinitions.BAD_CREDENTIALS;
+import static me.grudzien.patryk.oauth2.resource.google.GoogleResourceDefinitions.CREDENTIALS_HAVE_EXPIRED;
+import static me.grudzien.patryk.oauth2.resource.google.GoogleResourceDefinitions.EXCHANGE_SHORT_LIVED_TOKEN;
+import static me.grudzien.patryk.oauth2.resource.google.GoogleResourceDefinitions.FAILURE_TARGET_URL;
+import static me.grudzien.patryk.oauth2.resource.google.GoogleResourceDefinitions.GOOGLE_OAUTH2_RESOURCE_ROOT;
+import static me.grudzien.patryk.oauth2.resource.google.GoogleResourceDefinitions.JWT_TOKEN_NOT_FOUND;
+import static me.grudzien.patryk.oauth2.resource.google.GoogleResourceDefinitions.REGISTRATION_PROVIDER_MISMATCH;
+import static me.grudzien.patryk.oauth2.resource.google.GoogleResourceDefinitions.USER_ACCOUNT_ALREADY_EXISTS;
+import static me.grudzien.patryk.oauth2.resource.google.GoogleResourceDefinitions.USER_ACCOUNT_IS_EXPIRED;
+import static me.grudzien.patryk.oauth2.resource.google.GoogleResourceDefinitions.USER_ACCOUNT_IS_LOCKED;
+import static me.grudzien.patryk.oauth2.resource.google.GoogleResourceDefinitions.USER_IS_DISABLED;
+import static me.grudzien.patryk.oauth2.resource.google.GoogleResourceDefinitions.USER_LOGGED_IN_USING_GOOGLE;
+import static me.grudzien.patryk.oauth2.resource.google.GoogleResourceDefinitions.USER_NOT_FOUND;
+import static me.grudzien.patryk.oauth2.resource.google.GoogleResourceDefinitions.USER_REGISTERED_USING_GOOGLE;
+import static me.grudzien.patryk.registration.resource.RegistrationResourceDefinitions.REGISTRATION_RESOURCE_ROOT;
+import static me.grudzien.patryk.utils.app.ApiVersion.API_VERSION;
+import static me.grudzien.patryk.utils.web.FrontendRoutesDefinitions.UI_ROOT_CONTEXT;
 
 @SuppressWarnings("JavadocReference")
 public final class SecurityConfigContext {
@@ -33,7 +59,7 @@ public final class SecurityConfigContext {
         throw new UnsupportedOperationException("Creating object of this class is not allowed!");
     }
 
-    static void sessionCreationPolicy(final HttpSecurity httpSecurity) throws Exception {
+    static void sessionManagementStateless(final HttpSecurity httpSecurity) throws Exception {
         httpSecurity.sessionManagement()
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
@@ -43,24 +69,41 @@ public final class SecurityConfigContext {
                     .requestCache(httpSessionRequestCache);
     }
 
-    static void disableFormLogin(final HttpSecurity httpSecurity) throws Exception {
+    static void disableUnusedSecurityOptions(final HttpSecurity httpSecurity) throws Exception {
+        // we are stateless so these things are not needed
+        disableFormLogin(httpSecurity);
+        disableHttpBasic(httpSecurity);
+        disableLogout(httpSecurity);
+        // don't need CSRF because JWT token is invulnerable
+        disableCSRF(httpSecurity);
+        // Disabling frame options
+        frameOptionsSameOrigin(httpSecurity);
+    }
+
+    private static void disableFormLogin(final HttpSecurity httpSecurity) throws Exception {
         httpSecurity.formLogin()
                     .disable();
     }
 
-    static void disableHttpBasic(final HttpSecurity httpSecurity) throws Exception {
+    private static void disableHttpBasic(final HttpSecurity httpSecurity) throws Exception {
         httpSecurity.httpBasic()
                     .disable();
     }
 
-    static void disableLogout(final HttpSecurity httpSecurity) throws Exception {
+    private static void disableLogout(final HttpSecurity httpSecurity) throws Exception {
         httpSecurity.logout()
                     .disable();
     }
 
-    static void disableCSRF(final HttpSecurity httpSecurity) throws Exception {
+    private static void disableCSRF(final HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf()
                     .disable();
+    }
+
+    private static void frameOptionsSameOrigin(final HttpSecurity httpSecurity) throws Exception {
+        httpSecurity.headers()
+                    .frameOptions()
+                    .sameOrigin();
     }
 
 	/**
@@ -70,12 +113,6 @@ public final class SecurityConfigContext {
 	 */
 	static void addCORSFilter(final HttpSecurity httpSecurity) throws Exception {
         httpSecurity.cors();
-    }
-
-    static void frameOptionsSameOrigin(final HttpSecurity httpSecurity) throws Exception {
-		httpSecurity.headers()
-		            .frameOptions()
-		            .sameOrigin();
     }
 
     static void exceptionHandling(final HttpSecurity httpSecurity, final AuthenticationEntryPoint authenticationEntryPoint) throws Exception {
@@ -117,13 +154,12 @@ public final class SecurityConfigContext {
      * Configuring OAuth2 Client.
      */
     static class OAuth2 {
-        static void configureOAuth2Client(final HttpSecurity httpSecurity, final PropertiesKeeper propertiesKeeper, final CacheManagerHelper cacheManagerHelper,
+        static void configureOAuth2Client(final HttpSecurity httpSecurity, final CacheManagerHelper cacheManagerHelper,
                                           final CustomOAuth2AuthenticationSuccessHandler customOAuth2AuthenticationSuccessHandler,
                                           final CustomOAuth2AuthenticationFailureHandler customOAuth2AuthenticationFailureHandler,
                                           final CustomOidcUserService customOidcUserService,
                                           final CustomOAuth2UserService customOAuth2UserService) throws Exception {
             httpSecurity.oauth2Login()
-                        .loginPage(propertiesKeeper.oAuth2().LOGIN_PAGE)
                         .authorizationEndpoint()
                             .authorizationRequestRepository(new CacheBasedOAuth2AuthorizationRequestRepository(cacheManagerHelper))
                                 .and()
@@ -141,33 +177,32 @@ public final class SecurityConfigContext {
      * Configuring Spring Security restricting access against custom endpoints.
      */
     static class Requests {
-        static void authorizeRequests(final HttpSecurity httpSecurity, final PropertiesKeeper propertiesKeeper) throws Exception {
+        static void authorizeRequests(final HttpSecurity httpSecurity) throws Exception {
 	        httpSecurity
                     // creating custom SecurityFilterChain
-			        .mvcMatcher(MvcPatterns.API(propertiesKeeper))
+			        .mvcMatcher(MvcPattern.of(API_VERSION, "/**"))
 			            .authorizeRequests()
                     // creating custom SecurityFilterChain
 			        .mvcMatchers(HttpMethod.POST,
-			                     MvcPatterns.auth(propertiesKeeper),
-			                     MvcPatterns.generateAccessToken(propertiesKeeper),
-			                     MvcPatterns.generateRefreshToken(propertiesKeeper),
-			                     MvcPatterns.refreshAccessToken(propertiesKeeper))
+                                 MvcPattern.of(AUTHENTICATION_RESOURCE_ROOT, LOGIN, "**"),
+                                 MvcPattern.of(JWT_RESOURCE_ROOT, GENERATE_ACCESS_TOKEN),
+                                 MvcPattern.of(JWT_RESOURCE_ROOT, GENERATE_REFRESH_TOKEN),
+                                 MvcPattern.of(JWT_RESOURCE_ROOT, REFRESH_ACCESS_TOKEN))
 			            .permitAll()
-                    .mvcMatchers(MvcPatterns.registration(propertiesKeeper),
-                                 MvcPatterns.userLoggedInUsingGoogle(propertiesKeeper),
-                                 MvcPatterns.userLoggedInUsingGoogle(propertiesKeeper),
-                                 MvcPatterns.userNotFound(propertiesKeeper),
-                                 MvcPatterns.userAccountIsLocked(propertiesKeeper),
-                                 MvcPatterns.userIsDisabled(propertiesKeeper),
-                                 MvcPatterns.userAccountIsExpired(propertiesKeeper),
-                                 MvcPatterns.userRegisteredUsingGoogle(propertiesKeeper),
-                                 MvcPatterns.userAccountAlreadyExists(propertiesKeeper),
-                                 MvcPatterns.credentialsHaveExpired(propertiesKeeper),
-                                 MvcPatterns.jwtTokenNotFound(propertiesKeeper),
-                                 MvcPatterns.registrationProviderMismatch(propertiesKeeper),
-                                 MvcPatterns.badCredentials(propertiesKeeper),
-                                 MvcPatterns.exchangeShortLivedToken(propertiesKeeper),
-                                 MvcPatterns.failureTargetUrl(propertiesKeeper))
+                    .mvcMatchers(MvcPattern.of(REGISTRATION_RESOURCE_ROOT, "/**"),
+                                 MvcPattern.of(GOOGLE_OAUTH2_RESOURCE_ROOT, USER_LOGGED_IN_USING_GOOGLE),
+                                 MvcPattern.of(GOOGLE_OAUTH2_RESOURCE_ROOT, USER_NOT_FOUND),
+                                 MvcPattern.of(GOOGLE_OAUTH2_RESOURCE_ROOT, USER_ACCOUNT_IS_LOCKED),
+                                 MvcPattern.of(GOOGLE_OAUTH2_RESOURCE_ROOT, USER_IS_DISABLED),
+                                 MvcPattern.of(GOOGLE_OAUTH2_RESOURCE_ROOT, USER_ACCOUNT_IS_EXPIRED),
+                                 MvcPattern.of(GOOGLE_OAUTH2_RESOURCE_ROOT, USER_REGISTERED_USING_GOOGLE),
+                                 MvcPattern.of(GOOGLE_OAUTH2_RESOURCE_ROOT, USER_ACCOUNT_ALREADY_EXISTS),
+                                 MvcPattern.of(GOOGLE_OAUTH2_RESOURCE_ROOT, CREDENTIALS_HAVE_EXPIRED),
+                                 MvcPattern.of(GOOGLE_OAUTH2_RESOURCE_ROOT, JWT_TOKEN_NOT_FOUND),
+                                 MvcPattern.of(GOOGLE_OAUTH2_RESOURCE_ROOT, REGISTRATION_PROVIDER_MISMATCH),
+                                 MvcPattern.of(GOOGLE_OAUTH2_RESOURCE_ROOT, BAD_CREDENTIALS),
+                                 MvcPattern.of(GOOGLE_OAUTH2_RESOURCE_ROOT, EXCHANGE_SHORT_LIVED_TOKEN),
+                                 MvcPattern.of(GOOGLE_OAUTH2_RESOURCE_ROOT, FAILURE_TARGET_URL))
                         .permitAll()
                     // require authentication via JWT
 			        .anyRequest()
@@ -182,10 +217,10 @@ public final class SecurityConfigContext {
         static void configureIgnoredRequests(final WebSecurity webSecurity) {
         	webSecurity
                     .ignoring()
-                        .mvcMatchers(MvcPatterns.h2InMemoryWebConsole())
-                        .mvcMatchers(HttpMethod.OPTIONS, MvcPatterns.root())
-                        .mvcMatchers(HttpMethod.GET, MvcPatterns.staticResources())
-	                    .mvcMatchers(HttpMethod.GET, MvcPatterns.UIContextPath());
+                        .mvcMatchers("/h2-console/**")
+                        .mvcMatchers(HttpMethod.OPTIONS, APP_ROOT_CONTEXT)
+                        .mvcMatchers(HttpMethod.GET, STATIC_RESOURCES)
+	                    .mvcMatchers(HttpMethod.GET, UI_ROOT_CONTEXT);
         }
     }
 }

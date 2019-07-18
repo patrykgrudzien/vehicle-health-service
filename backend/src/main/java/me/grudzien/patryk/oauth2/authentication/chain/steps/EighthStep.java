@@ -10,7 +10,7 @@ import me.grudzien.patryk.oauth2.authentication.chain.AbstractAuthenticationStep
 import me.grudzien.patryk.oauth2.authentication.chain.AbstractAuthenticationStepTemplate;
 import me.grudzien.patryk.oauth2.authentication.chain.AuthenticationResult;
 import me.grudzien.patryk.oauth2.utils.CacheManagerHelper;
-import me.grudzien.patryk.authentication.service.MyUserDetailsService;
+import me.grudzien.patryk.authentication.service.impl.MyUserDetailsService;
 
 public final class EighthStep extends AbstractAuthenticationStepBuilder<Void> {
 

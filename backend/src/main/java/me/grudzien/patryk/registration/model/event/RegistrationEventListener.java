@@ -16,7 +16,7 @@ import me.grudzien.patryk.registration.model.dto.EmailDto;
 import me.grudzien.patryk.registration.model.entity.CustomUser;
 import me.grudzien.patryk.registration.service.EmailClientService;
 import me.grudzien.patryk.registration.service.UserRegistrationService;
-import me.grudzien.patryk.registration.service.UserRegistrationServiceImpl;
+import me.grudzien.patryk.registration.service.impl.UserRegistrationServiceImpl;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.web.ContextPathsResolver;
 

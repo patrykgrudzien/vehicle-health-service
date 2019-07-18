@@ -16,7 +16,7 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 	Vehicle findByCustomUser_Email(String customUserEmail);
 
 	@SuppressWarnings("SpringDataRepositoryMethodReturnTypeInspection")
-	@Query("SELECT new me.grudzien.patryk.domain.dto.vehicle.VehicleDto(v.vehicleType, v.engine.engineType, v.mileage, v.customUser.id, v.customUser.email) "
+	@Query("SELECT new me.grudzien.patryk.vehicle.model.dto.VehicleDto(v.vehicleType, v.engine.engineType, v.mileage, v.customUser.id, v.customUser.email) "
 	       + "FROM Vehicle v WHERE v.customUser.email = :ownerEmailAddress")
 	VehicleDto findDtoByOwnerEmailAddress(@Param("ownerEmailAddress") String ownerEmailAddress);
 
