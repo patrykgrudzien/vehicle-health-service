@@ -4,7 +4,7 @@ import lombok.NoArgsConstructor;
 
 import static lombok.AccessLevel.NONE;
 
-import static me.grudzien.patryk.utils.app.ApiVersion.API_VERSION;
+import static me.grudzien.patryk.utils.appplication.ApiVersion.API_VERSION;
 
 @NoArgsConstructor(access = NONE)
 final class FacebookResourceDefinitions {

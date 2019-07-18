@@ -19,7 +19,7 @@ import java.util.Optional;
 
 import me.grudzien.patryk.TestsUtils;
 import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationRequest;
-import me.grudzien.patryk.utils.app.ApplicationZone;
+import me.grudzien.patryk.utils.appplication.ApplicationZone;
 import me.grudzien.patryk.jwt.model.enums.JwtTokenClaims;
 import me.grudzien.patryk.jwt.service.JwtTokenClaimsRetriever;
 import me.grudzien.patryk.jwt.service.JwtTokenService;

@@ -19,7 +19,7 @@ import java.util.stream.Stream;
 
 import me.grudzien.patryk.registration.model.dto.RegistrationResponse;
 import me.grudzien.patryk.registration.model.entity.EmailVerificationToken;
-import me.grudzien.patryk.utils.app.ApplicationZone;
+import me.grudzien.patryk.utils.appplication.ApplicationZone;
 import me.grudzien.patryk.registration.exception.EmailVerificationTokenExpiredException;
 import me.grudzien.patryk.registration.exception.EmailVerificationTokenNotFoundException;
 import me.grudzien.patryk.oauth2.utils.CacheManagerHelper;

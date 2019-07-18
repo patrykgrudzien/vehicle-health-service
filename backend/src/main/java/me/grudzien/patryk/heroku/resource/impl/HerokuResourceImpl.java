@@ -7,7 +7,7 @@ import org.springframework.stereotype.Controller;
 
 import me.grudzien.patryk.heroku.resource.HerokuResource;
 
-import static me.grudzien.patryk.utils.app.SpringAppProfiles.YmlName.HEROKU_DEPLOYMENT;
+import static me.grudzien.patryk.utils.appplication.SpringAppProfiles.YmlName.HEROKU_DEPLOYMENT;
 
 @Log4j2
 @Controller

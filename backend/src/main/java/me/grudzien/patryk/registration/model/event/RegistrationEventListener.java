@@ -6,12 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 
 import java.util.UUID;
 
-import me.grudzien.patryk.PropertiesKeeper;
+import me.grudzien.patryk.configuration.properties.cors.CustomCorsProperties;
 import me.grudzien.patryk.registration.model.dto.EmailDto;
 import me.grudzien.patryk.registration.model.entity.CustomUser;
 import me.grudzien.patryk.registration.service.EmailClientService;
@@ -20,7 +19,11 @@ import me.grudzien.patryk.registration.service.impl.UserRegistrationServiceImpl;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.web.ContextPathsResolver;
 
-import static me.grudzien.patryk.utils.app.AppFLow.VERIFICATION_TOKEN_CREATION;
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import static me.grudzien.patryk.registration.resource.RegistrationResourceDefinitions.CONFIRM_REGISTRATION;
+import static me.grudzien.patryk.registration.resource.RegistrationResourceDefinitions.REGISTRATION_RESOURCE_ROOT;
+import static me.grudzien.patryk.utils.appplication.AppFLow.VERIFICATION_TOKEN_CREATION;
 
 /**
  * That listener is going to handle {@link RegistrationCompleteEvent} which is published by
@@ -33,24 +36,24 @@ public class RegistrationEventListener implements ApplicationListener<Registrati
 	private final EmailClientService emailClientService;
 	private final ContextPathsResolver contextPathsResolver;
 	private final LocaleMessagesCreator localeMessagesCreator;
-	private final PropertiesKeeper propertiesKeeper;
 	private final UserRegistrationService userRegistrationService;
+	private final CustomCorsProperties corsProperties;
 
 	@Autowired
 	public RegistrationEventListener(final EmailClientService emailClientService, final ContextPathsResolver contextPathsResolver,
-                                     final LocaleMessagesCreator localeMessagesCreator, final PropertiesKeeper propertiesKeeper,
-                                     final UserRegistrationService userRegistrationService) {
-        Preconditions.checkNotNull(emailClientService, "emailClientService cannot be null!");
-        Preconditions.checkNotNull(contextPathsResolver, "contextPathsResolver cannot be null!");
-        Preconditions.checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
-        Preconditions.checkNotNull(propertiesKeeper, "propertiesKeeper cannot be null!");
-        Preconditions.checkNotNull(userRegistrationService, "userRegistrationService cannot be null!");
+                                     final LocaleMessagesCreator localeMessagesCreator, final UserRegistrationService userRegistrationService,
+                                     final CustomCorsProperties corsProperties) {
+        checkNotNull(emailClientService, "emailClientService cannot be null!");
+        checkNotNull(contextPathsResolver, "contextPathsResolver cannot be null!");
+        checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
+        checkNotNull(userRegistrationService, "userRegistrationService cannot be null!");
+        checkNotNull(corsProperties, "corsProperties cannot be null!");
 
         this.emailClientService = emailClientService;
         this.contextPathsResolver = contextPathsResolver;
         this.localeMessagesCreator = localeMessagesCreator;
-        this.propertiesKeeper = propertiesKeeper;
         this.userRegistrationService = userRegistrationService;
+        this.corsProperties = corsProperties;
     }
 
 	@Override
@@ -68,7 +71,8 @@ public class RegistrationEventListener implements ApplicationListener<Registrati
 
 		final String recipientAddress = userBeingRegistered.getEmail();
 		final String subject = localeMessagesCreator.buildLocaleMessage("registration-email-subject");
-		final String confirmationUrl = event.getApplicationUrl() + propertiesKeeper.endpoints().REGISTRATION_CONFIRMATION + uuidToken;
+		// TODO: get back here and refactor
+		final String confirmationUrl = event.getApplicationUrl() + REGISTRATION_RESOURCE_ROOT + CONFIRM_REGISTRATION + "?token=" + uuidToken;
 
 		if (userBeingRegistered.isHasFakeEmail())
 			log.info("Fake email address. Confirmation has NOT been sent.");
@@ -76,7 +80,7 @@ public class RegistrationEventListener implements ApplicationListener<Registrati
 			emailClientService.sendMessageUsingTemplate(EmailDto.Builder()
                                                                 .to(recipientAddress)
                                                                 .subject(subject)
-                                                                .content(propertiesKeeper.corsOrigins().FRONT_END_MODULE + confirmationUrl)
+                                                                .content(corsProperties.getFrontEndAppLocalHostUrl() + confirmationUrl)
                                                                 .templatePlaceholders(
 			                                              		ImmutableMap.<String, Object>
 					                                                 builder()

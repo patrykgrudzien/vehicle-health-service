@@ -32,54 +32,13 @@ spring:
 # ===============================
 custom:
   properties:
-    endpoints:
-      api-context-path: /api
-      registration:
-        root: /registration
-        register-user-account: /register-user-account
-        confirm-registration: /confirm
-        confirmation-url: /confirm?token=
-        confirmed: /registration-confirmed
-        confirmed-token-not-found: /registration-confirmed?error=tokenNotFound
-        confirmed-token-expired: /registration-confirmed?error=tokenExpired
-        system-could-not-enable-user-account: /registration-confirmed?error=systemEncounteredAnErrorOnEnablingAccount
-        user-already-enabled: /registration-confirmed?info=userAlreadyEnabled
-        resend-email-verification-token: /resend-verification-token?token=
-      authentication:
-        root: /auth
-        failure-url: /login?error=true
-        principal-user: /principal-user
-        generate-access-token: /token/generate-access-token
-        generate-refresh-token: /token/generate-refresh-token
-        refresh-access-token: /token/refresh-access-token
-      heroku:
-        context-path: https://vehicle-health-service.herokuapp.com/ui
-      vehicle-resource:
-        root: /vehicles
-        get-vehicle: "/vehicle/{ownerEmailAddress}"
-        get-current-mileage: "/vehicle/get-current-mileage/{ownerEmailAddress}"
-        update-current-mileage: "/vehicle/update-current-mileage/{ownerEmailAddress}"
-      oauth2:
-        login-page: http://localhost:8080/login # TODO: must be updated because on production context is different (for now testing purpose)
-        short-lived-millis: 2 # minutes (120000 nanoseconds)
-        user-logged-in-using-google: /user-logged-in-using-google
-        user-not-found: /user-not-found
-        user-account-is-locked: /user-account-is-locked
-        user-is-disabled: /user-is-disabled
-        user-account-is-expired: /user-account-is-expired
-        user-account-already-exists: /user-account-already-exists
-        credentials-have-expired: /credentials-have-expired
-        jwt-token-not-found: /jwt-token-not-found
-        registration-provider-mismatch: /registration-provider-mismatch
-        bad-credentials: /bad-credentials
-        user-registered-using-google: /user-registered-using-google
-        exchange-short-lived-token: /exchange-short-lived-token
-        failure-target-url: /failure-target-url
-    cors-origins:
-      front-end-module: http://localhost:8080/ui
-      back-end-module: http://localhost:8088/api
+    cors:
+      front-end-app-local-host-url: http://localhost:8080/ui
+      back-end-app-local-host-url: http://localhost:8088/api
+    heroku:
+      heroku-app-host-url: https://vehicle-health-service.herokuapp.com/ui
     jwt:
-      secret: super-secret-authorization-token-password
-      expiration: 15 # minutes (900000 nanoseconds)
-    messages-language:
-      header: Language
+      token-secret-key: super-secret-authorization-token-password
+      token-expiration: 15 # minutes (900000 nanoseconds)
+    oauth2:
+      short-lived-token-expiration: 2 # minutes (120000 nanoseconds)

@@ -14,7 +14,7 @@ import com.google.common.io.Files;
 import java.io.IOException;
 import java.util.List;
 
-import static me.grudzien.patryk.utils.app.SpringAppProfiles.HEROKU_DEPLOYMENT;
+import static me.grudzien.patryk.utils.appplication.SpringAppProfiles.HEROKU_DEPLOYMENT;
 
 /**
  * This class is used by exec-maven-plugin which is gonna execute this main() method and create files which are triggers for

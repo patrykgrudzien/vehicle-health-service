@@ -2,7 +2,7 @@ package me.grudzien.patryk.heroku.resource;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import me.grudzien.patryk.utils.app.SpringAppProfiles;
+import me.grudzien.patryk.utils.appplication.SpringAppProfiles;
 
 import static me.grudzien.patryk.heroku.resource.HerokuResourceDefinition.UI_ROUTES;
 

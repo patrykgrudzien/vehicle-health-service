@@ -8,14 +8,10 @@ import io.jsonwebtoken.impl.DefaultJwsHeader;
 import io.vavr.CheckedFunction1;
 import io.vavr.control.Try;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.WebRequest;
 
-import com.google.common.base.Preconditions;
-
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
 import java.time.ZoneId;
@@ -25,34 +21,28 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
-import me.grudzien.patryk.PropertiesKeeper;
-import me.grudzien.patryk.utils.app.ApplicationZone;
+import me.grudzien.patryk.configuration.properties.jwt.CustomJwtProperties;
 import me.grudzien.patryk.jwt.service.JwtTokenClaimsRetriever;
 import me.grudzien.patryk.jwt.service.JwtTokenValidator;
 import me.grudzien.patryk.jwt.utils.JwtTokenConstants;
+import me.grudzien.patryk.utils.appplication.ApplicationZone;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import static me.grudzien.patryk.jwt.utils.JwtTokenConstants.JWT_TOKEN_BEGIN_INDEX;
 
 @Service
 public class JwtTokenClaimsRetrieverImpl implements JwtTokenClaimsRetriever {
 
-    private final PropertiesKeeper propertiesKeeper;
-
-    private String tokenSecret;
-
     private DefaultClaims defaultClaims;
     private DefaultJwsHeader defaultJwsHeader;
     private String expiredJwtExceptionMessage;
 
-    @Autowired
-    public JwtTokenClaimsRetrieverImpl(final PropertiesKeeper propertiesKeeper) {
-        Preconditions.checkNotNull(propertiesKeeper, "propertiesKeeper cannot be null!");
-        this.propertiesKeeper = propertiesKeeper;
-    }
+    private final CustomJwtProperties jwtProperties;
 
-    @PostConstruct
-    public void init() {
-        tokenSecret = propertiesKeeper.jwt().TOKEN_SECRET;
+    public JwtTokenClaimsRetrieverImpl(final CustomJwtProperties jwtProperties) {
+        checkNotNull(jwtProperties, "jwtProperties cannot be null!");
+        this.jwtProperties = jwtProperties;
     }
 
     @Override
@@ -73,7 +63,7 @@ public class JwtTokenClaimsRetrieverImpl implements JwtTokenClaimsRetriever {
 
     private Claims parseAndGetBodyFromToken(final String token) {
         return Jwts.parser()
-                   .setSigningKey(tokenSecret)
+                   .setSigningKey(jwtProperties.getTokenSecretKey())
                    .parseClaimsJws(token)
                    .getBody();
     }

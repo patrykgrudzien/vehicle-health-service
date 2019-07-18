@@ -15,7 +15,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import me.grudzien.patryk.PropertiesKeeper;
 import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationRequest;
 import me.grudzien.patryk.authentication.resource.AuthenticationResourceDefinitions;
 import me.grudzien.patryk.oauth2.exception.UnknownOAuth2FlowException;
@@ -25,7 +24,7 @@ import me.grudzien.patryk.oauth2.service.google.helper.GooglePrincipalServiceHel
 import me.grudzien.patryk.oauth2.utils.OAuth2FlowDelegator;
 import me.grudzien.patryk.oauth2.utils.rest.CustomRestTemplateFactory;
 import me.grudzien.patryk.registration.model.dto.UserRegistrationDto;
-import me.grudzien.patryk.utils.app.AppFLow;
+import me.grudzien.patryk.utils.appplication.AppFLow;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.web.ContextPathsResolver;
 import me.grudzien.patryk.utils.web.MvcPattern;
@@ -42,27 +41,26 @@ import static me.grudzien.patryk.oauth2.model.entity.CustomOAuth2OidcPrincipalUs
 import static me.grudzien.patryk.oauth2.utils.OAuth2FlowDelegator.OAuth2Flow.LOGIN;
 import static me.grudzien.patryk.oauth2.utils.OAuth2FlowDelegator.OAuth2Flow.REGISTRATION;
 import static me.grudzien.patryk.oauth2.utils.OAuth2FlowDelegator.OAuth2Flow.UNKNOWN;
+import static me.grudzien.patryk.registration.resource.RegistrationResourceDefinitions.CREATE_USER_ACCOUNT;
+import static me.grudzien.patryk.registration.resource.RegistrationResourceDefinitions.REGISTRATION_RESOURCE_ROOT;
 
 @Log4j2
 @Service
 public class GooglePrincipalServiceImpl implements GooglePrincipalService {
 
 	private final LocaleMessagesCreator localeMessagesCreator;
-	private final PropertiesKeeper propertiesKeeper;
 	private final ContextPathsResolver contextPathsResolver;
 
     private final GooglePrincipalServiceHelper googlePrincipalServiceHelper = new GooglePrincipalServiceHelper();
     private final RestTemplate customRestTemplate = CustomRestTemplateFactory.createRestTemplate();
 
-	public GooglePrincipalServiceImpl(final LocaleMessagesCreator localeMessagesCreator, final PropertiesKeeper propertiesKeeper,
+	public GooglePrincipalServiceImpl(final LocaleMessagesCreator localeMessagesCreator,
                                       final ContextPathsResolver contextPathsResolver) {
 
 		checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
-		checkNotNull(propertiesKeeper, "propertiesKeeper cannot be null!");
 		checkNotNull(contextPathsResolver, "contextPathsResolver cannot be null!");
 
 		this.localeMessagesCreator = localeMessagesCreator;
-		this.propertiesKeeper = propertiesKeeper;
 		this.contextPathsResolver = contextPathsResolver;
 	}
 
@@ -107,7 +105,7 @@ public class GooglePrincipalServiceImpl implements GooglePrincipalService {
 
     private CustomOAuth2OidcPrincipalUser registerOAuth2Principal(final OAuth2User oAuth2User, final String password) {
 		// 1. Request's URL
-		final String registrationEndpoint = propertiesKeeper.endpoints().REGISTRATION + propertiesKeeper.endpoints().REGISTER_USER_ACCOUNT;
+		final String registrationEndpoint = MvcPattern.of(REGISTRATION_RESOURCE_ROOT, CREATE_USER_ACCOUNT);
 		// 2. Request's payload
 		final UserRegistrationDto userRegistrationDto = googlePrincipalServiceHelper.prepareRegistrationPayload(oAuth2User, password);
 		// 3. Call endpoint as POST request

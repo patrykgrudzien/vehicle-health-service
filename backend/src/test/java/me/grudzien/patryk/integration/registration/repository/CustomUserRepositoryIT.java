@@ -16,7 +16,7 @@ import java.time.ZonedDateTime;
 
 import me.grudzien.patryk.registration.model.entity.CustomUser;
 import me.grudzien.patryk.registration.model.entity.Role;
-import me.grudzien.patryk.utils.app.ApplicationZone;
+import me.grudzien.patryk.utils.appplication.ApplicationZone;
 import me.grudzien.patryk.registration.model.enums.RegistrationProvider;
 import me.grudzien.patryk.registration.model.enums.RoleName;
 import me.grudzien.patryk.registration.repository.CustomUserRepository;

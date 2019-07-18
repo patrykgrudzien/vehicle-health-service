@@ -15,7 +15,7 @@ import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import me.grudzien.patryk.utils.app.ApplicationZone;
+import me.grudzien.patryk.utils.appplication.ApplicationZone;
 import me.grudzien.patryk.authentication.model.dto.JwtUser;
 import me.grudzien.patryk.jwt.service.JwtTokenClaimsRetriever;
 import me.grudzien.patryk.jwt.service.JwtTokenValidator;

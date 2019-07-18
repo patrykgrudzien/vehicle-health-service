@@ -9,7 +9,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 
-import me.grudzien.patryk.utils.app.ApplicationZone;
+import me.grudzien.patryk.utils.appplication.ApplicationZone;
 import me.grudzien.patryk.utils.date.DateOperationsHelper;
 
 import static org.assertj.core.api.Assertions.assertThat;

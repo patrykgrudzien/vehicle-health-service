@@ -1,4 +1,4 @@
-package me.grudzien.patryk.aop.aspect;
+package me.grudzien.patryk.utils.aop.aspect;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -21,7 +21,7 @@ public class LoggingAspect {
 	 * {@link org.springframework.web.bind.annotation.RestController}
 	 * annotation.
 	 */
-	@Before("me.grudzien.patryk.aop.pointcut.LoggingAspectPointcuts.withinRestControllerClasses()")
+	@Before("me.grudzien.patryk.utils.aop.pointcut.LoggingAspectPointcuts.withinRestControllerClasses()")
 	public void beforeClassesAnnotatedWithRestControllerAnnotation(final JoinPoint joinPoint) {
 		log.info("----- Method -----> {}", joinPoint.getSignature().toShortString());
 		Stream.of(joinPoint.getArgs()).forEach(arg -> {
@@ -38,9 +38,9 @@ public class LoggingAspect {
 	 * {@link org.springframework.cache.annotation.CacheEvict}
 	 * annotations.
 	 */
-	@Before("me.grudzien.patryk.aop.pointcut.LoggingAspectPointcuts.executionMethodsAnnotatedByCacheableAnnotation() || "
-	        + "me.grudzien.patryk.aop.pointcut.LoggingAspectPointcuts.executionMethodsAnnotatedByCachePutAnnotation() || "
-	        + "me.grudzien.patryk.aop.pointcut.LoggingAspectPointcuts.executionMethodsAnnotatedByCacheEvictAnnotation()")
+	@Before("me.grudzien.patryk.utils.aop.pointcut.LoggingAspectPointcuts.executionMethodsAnnotatedByCacheableAnnotation() || "
+	        + "me.grudzien.patryk.utils.aop.pointcut.LoggingAspectPointcuts.executionMethodsAnnotatedByCachePutAnnotation() || "
+	        + "me.grudzien.patryk.utils.aop.pointcut.LoggingAspectPointcuts.executionMethodsAnnotatedByCacheEvictAnnotation()")
 	public void beforeMethodsAnnotatedWithCacheAnnotations(final JoinPoint joinPoint) {
 		log.info("----- Checking cache. Method -----> {}", joinPoint.getSignature().toShortString());
 	}

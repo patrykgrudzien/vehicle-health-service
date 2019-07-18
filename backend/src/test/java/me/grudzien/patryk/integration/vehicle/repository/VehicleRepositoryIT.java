@@ -13,7 +13,7 @@ import me.grudzien.patryk.vehicle.model.dto.VehicleDto;
 import me.grudzien.patryk.vehicle.model.entity.Engine;
 import me.grudzien.patryk.registration.model.entity.CustomUser;
 import me.grudzien.patryk.vehicle.model.entity.Vehicle;
-import me.grudzien.patryk.utils.app.ApplicationZone;
+import me.grudzien.patryk.utils.appplication.ApplicationZone;
 import me.grudzien.patryk.vehicle.model.enums.EngineType;
 import me.grudzien.patryk.vehicle.model.enums.VehicleType;
 import me.grudzien.patryk.vehicle.repository.VehicleRepository;

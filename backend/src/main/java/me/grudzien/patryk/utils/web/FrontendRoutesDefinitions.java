@@ -17,4 +17,9 @@ public final class FrontendRoutesDefinitions {
      * Used for now only in: {@link OAuth2FlowDelegator#determineFlowBasedOnUrl(String)}
      */
     public static final String LOGOUT = "/logout";
+
+    static final String REGISTRATION_CONFIRMED_USER_ALREADY_ENABLED = "/registration-confirmed?info=userAlreadyEnabled";
+    static final String REGISTRATION_CONFIRMED_TOKEN_NOT_FOUND = "/registration-confirmed?error=tokenNotFound";
+    static final String REGISTRATION_CONFIRMED_TOKEN_EXPIRED = "/registration-confirmed?error=tokenExpired";
+    static final String REGISTRATION_CONFIRMED_SYSTEM_ERROR = "/registration-confirmed?error=systemEncounteredAnErrorOnEnablingAccount";
 }

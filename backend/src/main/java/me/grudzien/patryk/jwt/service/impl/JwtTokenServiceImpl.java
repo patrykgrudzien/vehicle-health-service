@@ -20,8 +20,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import me.grudzien.patryk.utils.app.ApplicationZone;
-import me.grudzien.patryk.PropertiesKeeper;
+import me.grudzien.patryk.configuration.properties.jwt.CustomJwtProperties;
+import me.grudzien.patryk.configuration.properties.oauth2.CustomOAuth2Properties;
+import me.grudzien.patryk.utils.appplication.ApplicationZone;
 import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationRequest;
 import me.grudzien.patryk.authentication.model.dto.JwtUser;
 import me.grudzien.patryk.authentication.service.impl.MyUserDetailsService;
@@ -45,36 +46,39 @@ public class JwtTokenServiceImpl implements JwtTokenService {
 
     private final UserDetailsService userDetailsService;
     private final LocaleMessagesCreator localeMessagesCreator;
-    private final PropertiesKeeper propertiesKeeper;
     private final JwtTokenClaimsRetriever jwtTokenClaimsRetriever;
     private final RequestsDecoder requestsDecoder;
+    private final CustomJwtProperties jwtProperties;
+    private final CustomOAuth2Properties oAuth2Properties;
 
-	private String tokenSecret;
-	private Long accessTokenExpiration;
+	private String tokenSecretKey;
+	private Long tokenExpiration;
 	private Long shortLivedTokenExpiration;
 
     @Autowired
     public JwtTokenServiceImpl(@Qualifier(MyUserDetailsService.BEAN_NAME) final UserDetailsService userDetailsService,
-                               final LocaleMessagesCreator localeMessagesCreator, final PropertiesKeeper propertiesKeeper,
-                               final JwtTokenClaimsRetriever jwtTokenClaimsRetriever, final RequestsDecoder requestsDecoder) {
+                               final LocaleMessagesCreator localeMessagesCreator, final JwtTokenClaimsRetriever jwtTokenClaimsRetriever,
+                               final RequestsDecoder requestsDecoder, final CustomJwtProperties jwtProperties,
+                               final CustomOAuth2Properties oAuth2Properties) {
         checkNotNull(userDetailsService, "userDetailsService cannot be null!");
         checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
-        checkNotNull(propertiesKeeper, "propertiesKeeper cannot be null!");
         checkNotNull(jwtTokenClaimsRetriever, "jwtTokenClaimsRetriever cannot be null!");
         checkNotNull(requestsDecoder, "requestsDecoder cannot be null!");
+        checkNotNull(oAuth2Properties, "oAuth2Properties cannot be null!");
 
         this.userDetailsService = userDetailsService;
         this.localeMessagesCreator = localeMessagesCreator;
-        this.propertiesKeeper = propertiesKeeper;
         this.jwtTokenClaimsRetriever = jwtTokenClaimsRetriever;
         this.requestsDecoder = requestsDecoder;
+        this.jwtProperties = jwtProperties;
+        this.oAuth2Properties = oAuth2Properties;
     }
 
 	@PostConstruct
 	public void init() {
-    	tokenSecret = propertiesKeeper.jwt().TOKEN_SECRET;
-    	accessTokenExpiration = propertiesKeeper.jwt().ACCESS_TOKEN_EXPIRATION;
-    	shortLivedTokenExpiration = propertiesKeeper.oAuth2().SHORT_LIVED_TOKEN_EXPIRATION;
+    	tokenSecretKey = jwtProperties.getTokenSecretKey();
+    	tokenExpiration = jwtProperties.getTokenExpiration();
+    	shortLivedTokenExpiration = oAuth2Properties.getShortLivedTokenExpiration();
 	}
 
 	@SuppressWarnings("Duplicates")
@@ -84,7 +88,7 @@ public class JwtTokenServiceImpl implements JwtTokenService {
 		final String decodedEmail = requestsDecoder.decodeStringParam(authenticationRequest.getEmail());
         return Optional.ofNullable(decodedEmail)
                        .map(email -> Optional.ofNullable(((JwtUser) userDetailsService.loadUserByUsername(email)))
-                                             .map(jwtUser -> buildAccessToken(jwtUser, device, accessTokenExpiration))
+                                             .map(jwtUser -> buildAccessToken(jwtUser, device, tokenExpiration))
                                              .orElseThrow(() -> new UsernameNotFoundException(localeMessagesCreator.buildLocaleMessageWithParam(
                                                      "user-not-found-by-email", email))))
                        .orElseThrow(() -> new NoEmailProvidedException(localeMessagesCreator.buildLocaleMessageWithParam(
@@ -117,7 +121,7 @@ public class JwtTokenServiceImpl implements JwtTokenService {
                                                  log.info("Started generating refresh token...");
                                                  return Jwts.builder()
                                                             .setSubject(jwtUser.getEmail())
-                                                            .signWith(JwtTokenConstants.SIGNATURE_ALGORITHM, tokenSecret)
+                                                            .signWith(JwtTokenConstants.SIGNATURE_ALGORITHM, tokenSecretKey)
                                                             .compact();
                                              })
                                              .orElseThrow(() -> new UsernameNotFoundException(localeMessagesCreator.buildLocaleMessageWithParam(
@@ -134,7 +138,7 @@ public class JwtTokenServiceImpl implements JwtTokenService {
                        .map(refreshToken -> {
                            final String email = jwtTokenClaimsRetriever.getUserEmailFromToken(refreshToken).orElse(null);
                            return Optional.ofNullable(((JwtUser) userDetailsService.loadUserByUsername(email)))
-                                          .map(jwtUser -> buildAccessToken(jwtUser, device, accessTokenExpiration))
+                                          .map(jwtUser -> buildAccessToken(jwtUser, device, tokenExpiration))
                                           .orElseThrow(() -> new UsernameNotFoundException(localeMessagesCreator.buildLocaleMessageWithParam(
                                                   "user-not-found-by-email", email)));
                        })
@@ -173,7 +177,7 @@ public class JwtTokenServiceImpl implements JwtTokenService {
                                                                   .toInstant(ZoneId.of(ApplicationZone.POLAND.getZoneId())
                                                                                    .getRules()
                                                                                    .getOffset(ApplicationZone.POLAND.now().toLocalDateTime()))))
-                   .signWith(JwtTokenConstants.SIGNATURE_ALGORITHM, tokenSecret)
+                   .signWith(JwtTokenConstants.SIGNATURE_ALGORITHM, tokenSecretKey)
                    .compact();
     }
 
@@ -189,7 +193,7 @@ public class JwtTokenServiceImpl implements JwtTokenService {
                                                                   .toInstant(ZoneId.of(ApplicationZone.POLAND.getZoneId())
                                                                                    .getRules()
                                                                                    .getOffset(ApplicationZone.POLAND.now().toLocalDateTime()))))
-                   .signWith(JwtTokenConstants.SIGNATURE_ALGORITHM, tokenSecret)
+                   .signWith(JwtTokenConstants.SIGNATURE_ALGORITHM, tokenSecretKey)
                    .compact();
     }
 }

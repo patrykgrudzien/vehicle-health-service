@@ -18,7 +18,7 @@ import javax.persistence.Table;
 
 import java.time.ZonedDateTime;
 
-import me.grudzien.patryk.utils.app.ApplicationZone;
+import me.grudzien.patryk.utils.appplication.ApplicationZone;
 
 /**
  * The EmailVerificationToken must meet the following criteria:

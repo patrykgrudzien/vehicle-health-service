@@ -1,4 +1,4 @@
-package me.grudzien.patryk.utils.app;
+package me.grudzien.patryk.utils.appplication;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
