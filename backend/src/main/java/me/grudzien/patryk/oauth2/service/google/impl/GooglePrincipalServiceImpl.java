@@ -15,19 +15,21 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import me.grudzien.patryk.utils.app.AppFLow;
-import me.grudzien.patryk.utils.web.model.CustomResponse.ResponseProperties;
 import me.grudzien.patryk.PropertiesKeeper;
 import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationRequest;
-import me.grudzien.patryk.oauth2.model.entity.CustomOAuth2OidcPrincipalUser;
+import me.grudzien.patryk.authentication.resource.AuthenticationResourceDefinitions;
 import me.grudzien.patryk.oauth2.exception.UnknownOAuth2FlowException;
+import me.grudzien.patryk.oauth2.model.entity.CustomOAuth2OidcPrincipalUser;
 import me.grudzien.patryk.oauth2.service.google.GooglePrincipalService;
 import me.grudzien.patryk.oauth2.service.google.helper.GooglePrincipalServiceHelper;
 import me.grudzien.patryk.oauth2.utils.OAuth2FlowDelegator;
 import me.grudzien.patryk.oauth2.utils.rest.CustomRestTemplateFactory;
 import me.grudzien.patryk.registration.model.dto.UserRegistrationDto;
+import me.grudzien.patryk.utils.app.AppFLow;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.web.ContextPathsResolver;
+import me.grudzien.patryk.utils.web.MvcPattern;
+import me.grudzien.patryk.utils.web.model.CustomResponse.ResponseProperties;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static io.vavr.API.$;
@@ -35,6 +37,7 @@ import static io.vavr.API.Case;
 import static io.vavr.API.Match;
 import static io.vavr.Predicates.is;
 
+import static me.grudzien.patryk.authentication.resource.AuthenticationResourceDefinitions.AUTHENTICATION_RESOURCE_ROOT;
 import static me.grudzien.patryk.oauth2.model.entity.CustomOAuth2OidcPrincipalUser.AccountStatus;
 import static me.grudzien.patryk.oauth2.utils.OAuth2FlowDelegator.OAuth2Flow.LOGIN;
 import static me.grudzien.patryk.oauth2.utils.OAuth2FlowDelegator.OAuth2Flow.REGISTRATION;
@@ -81,7 +84,8 @@ public class GooglePrincipalServiceImpl implements GooglePrincipalService {
 
 	private CustomOAuth2OidcPrincipalUser loginOAuth2Principal(final OAuth2User oAuth2User, final String password) {
 		// 1. Request's URL
-		final String authEndpoint = propertiesKeeper.endpoints().API_CONTEXT_PATH + propertiesKeeper.endpoints().AUTH;
+//		final String authEndpoint = propertiesKeeper.endpoints().API_CONTEXT_PATH + propertiesKeeper.endpoints().AUTH;
+		final String authEndpoint = MvcPattern.of(AUTHENTICATION_RESOURCE_ROOT, AuthenticationResourceDefinitions.LOGIN);
 		// 2. Request's payload
 		final JwtAuthenticationRequest jwtAuthenticationRequest = googlePrincipalServiceHelper.prepareLoginPayload(oAuth2User, password);
 
@@ -176,7 +180,7 @@ public class GooglePrincipalServiceImpl implements GooglePrincipalService {
         return (T) Optional.ofNullable((Map) responseEntity.getBody())
                            .map(map -> map.get(property))
                            .orElseGet(() -> {
-                               log.warn("No value found in the response entity for provided property -> \"\". Returning default value.", property);
+                               log.warn("No value found in the response entity for provided property -> \"{}\". Returning default value.", property);
                                return defaultValueOnMissingProperty;
                            });
     }

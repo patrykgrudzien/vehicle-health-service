@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component;
 
 import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationRequest;
 import me.grudzien.patryk.authentication.model.dto.JwtUser;
-import me.grudzien.patryk.authentication.service.MyUserDetailsService;
-import me.grudzien.patryk.authentication.service.UserAuthenticationServiceImpl;
+import me.grudzien.patryk.authentication.service.impl.MyUserDetailsService;
+import me.grudzien.patryk.authentication.service.impl.UserAuthenticationServiceImpl;
 import me.grudzien.patryk.jwt.exception.MissingAuthenticationResultException;
 import me.grudzien.patryk.oauth2.authentication.chain.AuthenticationResult.Status;
 import me.grudzien.patryk.oauth2.authentication.chain.AuthenticationStepsFacade;

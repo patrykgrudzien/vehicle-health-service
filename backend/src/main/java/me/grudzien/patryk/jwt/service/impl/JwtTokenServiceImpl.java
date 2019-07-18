@@ -24,7 +24,7 @@ import me.grudzien.patryk.utils.app.ApplicationZone;
 import me.grudzien.patryk.PropertiesKeeper;
 import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationRequest;
 import me.grudzien.patryk.authentication.model.dto.JwtUser;
-import me.grudzien.patryk.authentication.service.MyUserDetailsService;
+import me.grudzien.patryk.authentication.service.impl.MyUserDetailsService;
 import me.grudzien.patryk.jwt.exception.NoEmailProvidedException;
 import me.grudzien.patryk.jwt.exception.NoRefreshTokenProvidedException;
 import me.grudzien.patryk.jwt.model.enums.JwtTokenClaims;

@@ -11,9 +11,9 @@ import org.aspectj.lang.annotation.Before;
 
 import java.util.stream.Stream;
 
-@Aspect
-@Component
 @Log4j2
+@Component
+@Aspect
 public class LoggingAspect {
 
 	/**
@@ -42,6 +42,6 @@ public class LoggingAspect {
 	        + "me.grudzien.patryk.aop.pointcut.LoggingAspectPointcuts.executionMethodsAnnotatedByCachePutAnnotation() || "
 	        + "me.grudzien.patryk.aop.pointcut.LoggingAspectPointcuts.executionMethodsAnnotatedByCacheEvictAnnotation()")
 	public void beforeMethodsAnnotatedWithCacheAnnotations(final JoinPoint joinPoint) {
-		log.info("=====> Checking cache... Method -----> {}", joinPoint.getSignature().toShortString());
+		log.info("----- Checking cache. Method -----> {}", joinPoint.getSignature().toShortString());
 	}
 }
