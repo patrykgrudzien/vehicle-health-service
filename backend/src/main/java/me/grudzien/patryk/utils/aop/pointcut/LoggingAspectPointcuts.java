@@ -1,10 +1,10 @@
-package me.grudzien.patryk.aop.pointcut;
+package me.grudzien.patryk.utils.aop.pointcut;
 
 import lombok.NoArgsConstructor;
 
 import org.aspectj.lang.annotation.Pointcut;
 
-import me.grudzien.patryk.aop.aspect.LoggingAspect;
+import me.grudzien.patryk.utils.aop.aspect.LoggingAspect;
 
 import static lombok.AccessLevel.NONE;
 

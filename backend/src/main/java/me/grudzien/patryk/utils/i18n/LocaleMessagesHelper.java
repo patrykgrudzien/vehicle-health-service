@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.WebRequest;
@@ -27,8 +26,7 @@ public class LocaleMessagesHelper {
 	@Setter
 	private Locale locale = Locale.getDefault();
 
-	@Value("${custom.properties.messages-language.header}")
-	private String messagesLanguageHeader;
+	private static final String MESSAGES_LANGUAGE_HEADER = "Language";
 
 	String removeSquareBracketsFromMessage(@NotNull final String message) {
 		return !StringUtils.isEmpty(message) && (message.contains("[") || message.contains("]")) ?
@@ -37,9 +35,9 @@ public class LocaleMessagesHelper {
 
 	private <T> String getLanguageHeaderFromRequest(final T request) {
 		if (request instanceof WebRequest) {
-			return Optional.ofNullable(((WebRequest) request).getHeader(messagesLanguageHeader)).orElse(getLocale().getLanguage());
+			return Optional.ofNullable(((WebRequest) request).getHeader(MESSAGES_LANGUAGE_HEADER)).orElse(getLocale().getLanguage());
 		} else if (request instanceof HttpServletRequest) {
-			return Optional.ofNullable(((HttpServletRequest) request).getHeader(messagesLanguageHeader)).orElse(getLocale().getLanguage());
+			return Optional.ofNullable(((HttpServletRequest) request).getHeader(MESSAGES_LANGUAGE_HEADER)).orElse(getLocale().getLanguage());
 		} else {
 			return getLocale().getLanguage();
 		}

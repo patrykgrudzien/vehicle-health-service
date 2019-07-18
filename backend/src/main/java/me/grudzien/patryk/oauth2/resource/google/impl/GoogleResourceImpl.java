@@ -21,7 +21,7 @@ import me.grudzien.patryk.utils.web.HttpLocationHeaderCreator;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import static me.grudzien.patryk.utils.app.AppFLow.USER_LOGGED_IN_USING_GOOGLE;
+import static me.grudzien.patryk.utils.appplication.AppFLow.USER_LOGGED_IN_USING_GOOGLE;
 import static me.grudzien.patryk.oauth2.handler.CustomOAuth2AuthenticationSuccessHandler.SHORT_LIVED_AUTH_TOKEN_NAME;
 
 @Log4j2

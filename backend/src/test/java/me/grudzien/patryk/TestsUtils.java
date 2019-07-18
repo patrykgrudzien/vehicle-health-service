@@ -21,7 +21,7 @@ import java.util.Optional;
 import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationRequest;
 import me.grudzien.patryk.authentication.model.dto.JwtUser;
 import me.grudzien.patryk.registration.model.dto.UserRegistrationDto;
-import me.grudzien.patryk.utils.app.ApplicationZone;
+import me.grudzien.patryk.utils.appplication.ApplicationZone;
 import me.grudzien.patryk.vehicle.model.dto.VehicleDto;
 import me.grudzien.patryk.registration.model.entity.CustomUser;
 import me.grudzien.patryk.registration.model.entity.EmailVerificationToken;

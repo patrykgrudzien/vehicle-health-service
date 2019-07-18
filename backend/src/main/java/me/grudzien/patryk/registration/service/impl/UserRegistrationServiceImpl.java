@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.UUID;
 
 import me.grudzien.patryk.registration.service.UserRegistrationService;
-import me.grudzien.patryk.utils.app.ApplicationZone;
+import me.grudzien.patryk.utils.appplication.ApplicationZone;
 import me.grudzien.patryk.authentication.service.impl.MyUserDetailsService;
 import me.grudzien.patryk.oauth2.utils.CacheManagerHelper;
 import me.grudzien.patryk.registration.exception.CustomUserValidationException;
@@ -46,11 +46,11 @@ import me.grudzien.patryk.vehicle.model.enums.VehicleType;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import static me.grudzien.patryk.utils.app.AppFLow.ACCOUNT_ALREADY_ENABLED;
-import static me.grudzien.patryk.utils.app.AppFLow.CONFIRM_REGISTRATION;
-import static me.grudzien.patryk.utils.app.AppFLow.SYSTEM_COULD_NOT_ENABLE_USER_ACCOUNT;
-import static me.grudzien.patryk.utils.app.AppFLow.VERIFICATION_TOKEN_EXPIRED;
-import static me.grudzien.patryk.utils.app.AppFLow.VERIFICATION_TOKEN_NOT_FOUND;
+import static me.grudzien.patryk.utils.appplication.AppFLow.ACCOUNT_ALREADY_ENABLED;
+import static me.grudzien.patryk.utils.appplication.AppFLow.CONFIRM_REGISTRATION;
+import static me.grudzien.patryk.utils.appplication.AppFLow.SYSTEM_COULD_NOT_ENABLE_USER_ACCOUNT;
+import static me.grudzien.patryk.utils.appplication.AppFLow.VERIFICATION_TOKEN_EXPIRED;
+import static me.grudzien.patryk.utils.appplication.AppFLow.VERIFICATION_TOKEN_NOT_FOUND;
 
 @Log4j2
 @Service

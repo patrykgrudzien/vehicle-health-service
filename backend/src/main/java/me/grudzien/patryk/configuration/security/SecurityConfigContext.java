@@ -49,7 +49,7 @@ import static me.grudzien.patryk.oauth2.resource.google.GoogleResourceDefinition
 import static me.grudzien.patryk.oauth2.resource.google.GoogleResourceDefinitions.USER_NOT_FOUND;
 import static me.grudzien.patryk.oauth2.resource.google.GoogleResourceDefinitions.USER_REGISTERED_USING_GOOGLE;
 import static me.grudzien.patryk.registration.resource.RegistrationResourceDefinitions.REGISTRATION_RESOURCE_ROOT;
-import static me.grudzien.patryk.utils.app.ApiVersion.API_VERSION;
+import static me.grudzien.patryk.utils.appplication.ApiVersion.API_VERSION;
 import static me.grudzien.patryk.utils.web.FrontendRoutesDefinitions.UI_ROOT_CONTEXT;
 
 @SuppressWarnings("JavadocReference")

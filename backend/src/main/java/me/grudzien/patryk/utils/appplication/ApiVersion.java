@@ -1,4 +1,4 @@
-package me.grudzien.patryk.utils.app;
+package me.grudzien.patryk.utils.appplication;
 
 import lombok.NoArgsConstructor;
 

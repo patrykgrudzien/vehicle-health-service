@@ -17,8 +17,8 @@ import java.util.stream.Stream;
 
 import me.grudzien.patryk.utils.web.model.CustomResponse;
 
-import static me.grudzien.patryk.utils.app.SpringAppProfiles.DEV_HOME;
-import static me.grudzien.patryk.utils.app.SpringAppProfiles.H2_IN_MEMORY;
+import static me.grudzien.patryk.utils.appplication.SpringAppProfiles.DEV_HOME;
+import static me.grudzien.patryk.utils.appplication.SpringAppProfiles.H2_IN_MEMORY;
 
 @Log4j2
 @Component

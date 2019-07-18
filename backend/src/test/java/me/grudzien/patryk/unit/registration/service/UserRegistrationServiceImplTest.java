@@ -28,7 +28,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import static me.grudzien.patryk.TestsUtils.prepareEmailVerificationToken;
-import static me.grudzien.patryk.utils.app.AppFLow.ACCOUNT_ALREADY_ENABLED;
+import static me.grudzien.patryk.utils.appplication.AppFLow.ACCOUNT_ALREADY_ENABLED;
 
 @SuppressWarnings("unused")
 @ExtendWith(MockitoExtension.class)

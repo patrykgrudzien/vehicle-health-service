@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-import me.grudzien.patryk.PropertiesKeeper;
+import me.grudzien.patryk.configuration.security.SecurityConfigContext.Filters;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesHelper;
 
@@ -64,15 +64,14 @@ public class LocaleDeterminerFilter extends OncePerRequestFilter {
 		log.info("(FILTER) -----> {} ({}) on path -> {}", this.getClass().getSimpleName(), request.getMethod(), request.getRequestURI());
 
 		/**
-		 * Method {@link me.grudzien.patryk.utils.i18n.LocaleMessagesHelper#determineApplicationLocale(Object)} must be called in the first
+		 * Method {@link LocaleMessagesHelper#determineApplicationLocale(Object)} must be called in the first
 		 * step because it sets locale according to header coming from UI.
 		 *
 		 * Filters' order is specified in:
-		 * {@link me.grudzien.patryk.configuration.security.SecurityConfigContext.Filters#addTokenAuthenticationFilters(HttpSecurity, UserDetailsService,
-         * PropertiesKeeper, LocaleMessagesCreator)}
+		 * {@link Filters#addTokenAuthenticationFilters(HttpSecurity, UserDetailsService, PropertiesKeeper, LocaleMessagesCreator)}
 		 *
-		 * Later {@link me.grudzien.patryk.utils.i18n.LocaleMessagesHelper#getLocale()} is used in
-		 * {@link me.grudzien.patryk.utils.i18n.LocaleMessagesCreator#buildLocaleMessage(String)} related methods to create i18n messages
+		 * Later {@link LocaleMessagesHelper#getLocale()} is used in
+		 * {@link LocaleMessagesCreator#buildLocaleMessage(String)} related methods to create i18n messages
 		 * without passing WebRequest or HttpServletRequest object later in the code flow.
 		 */
 		if (!request.getMethod().equals(HttpMethod.OPTIONS.name())) {

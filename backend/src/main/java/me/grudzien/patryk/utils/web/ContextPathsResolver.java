@@ -11,10 +11,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 
-import me.grudzien.patryk.PropertiesKeeper;
+import me.grudzien.patryk.configuration.properties.cors.CustomCorsProperties;
 import me.grudzien.patryk.heroku.resource.HerokuResourceDefinition;
-import me.grudzien.patryk.utils.app.AppFLow;
-import me.grudzien.patryk.utils.app.SpringAppProfiles;
+import me.grudzien.patryk.utils.appplication.AppFLow;
+import me.grudzien.patryk.utils.appplication.SpringAppProfiles;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static io.vavr.API.$;
@@ -22,12 +22,12 @@ import static io.vavr.API.Case;
 import static io.vavr.API.Match;
 import static io.vavr.Predicates.isIn;
 
-import static me.grudzien.patryk.utils.app.AppFLow.ACCOUNT_ALREADY_ENABLED;
-import static me.grudzien.patryk.utils.app.AppFLow.CONFIRM_REGISTRATION;
-import static me.grudzien.patryk.utils.app.AppFLow.REGISTER_OAUTH2_PRINCIPAL;
-import static me.grudzien.patryk.utils.app.AppFLow.SYSTEM_COULD_NOT_ENABLE_USER_ACCOUNT;
-import static me.grudzien.patryk.utils.app.AppFLow.USER_LOGGED_IN_USING_GOOGLE;
-import static me.grudzien.patryk.utils.app.AppFLow.VERIFICATION_TOKEN_CREATION;
+import static me.grudzien.patryk.utils.appplication.AppFLow.ACCOUNT_ALREADY_ENABLED;
+import static me.grudzien.patryk.utils.appplication.AppFLow.CONFIRM_REGISTRATION;
+import static me.grudzien.patryk.utils.appplication.AppFLow.REGISTER_OAUTH2_PRINCIPAL;
+import static me.grudzien.patryk.utils.appplication.AppFLow.SYSTEM_COULD_NOT_ENABLE_USER_ACCOUNT;
+import static me.grudzien.patryk.utils.appplication.AppFLow.USER_LOGGED_IN_USING_GOOGLE;
+import static me.grudzien.patryk.utils.appplication.AppFLow.VERIFICATION_TOKEN_CREATION;
 
 @Log4j2
 @Component
@@ -37,15 +37,15 @@ public class ContextPathsResolver implements InitializingBean {
 	private static String ACTIVE_SPRING_PROFILE;
 
 	private final Environment environment;
-	private final PropertiesKeeper propertiesKeeper;
+	private final CustomCorsProperties corsProperties;
 
 	@Autowired
-	public ContextPathsResolver(final Environment environment, final PropertiesKeeper propertiesKeeper) {
-		checkNotNull(environment, "environment cannot be null!");
-		checkNotNull(propertiesKeeper, "propertiesKeeper cannot be null!");
+	public ContextPathsResolver(final Environment environment, final CustomCorsProperties corsProperties) {
+        checkNotNull(environment, "environment cannot be null!");
+        checkNotNull(corsProperties, "corsProperties cannot be null!");
 
 		this.environment = environment;
-		this.propertiesKeeper = propertiesKeeper;
+        this.corsProperties = corsProperties;
 	}
 
 	@Override
@@ -63,11 +63,11 @@ public class ContextPathsResolver implements InitializingBean {
 			return Match(appFLow).of(
 					Case($(isIn(ACCOUNT_ALREADY_ENABLED, CONFIRM_REGISTRATION, USER_LOGGED_IN_USING_GOOGLE, SYSTEM_COULD_NOT_ENABLE_USER_ACCOUNT)), flow -> {
 						log.info(flow.getDetermineUrlLogInfoMessage());
-						return propertiesKeeper.corsOrigins().FRONT_END_MODULE;
+						return corsProperties.getFrontEndAppLocalHostUrl();
 					}),
 					Case($(isIn(VERIFICATION_TOKEN_CREATION, REGISTER_OAUTH2_PRINCIPAL)), flow -> {
 						log.info(flow.getDetermineUrlLogInfoMessage());
-						return propertiesKeeper.corsOrigins().BACK_END_MODULE;
+						return corsProperties.getBackEndAppLocalHostUrl();
 					}),
 					Case($(), () -> {
 						log.error("Unknown flow... Cannot determine app url where user will be redirected...");

@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Set;
 
 import me.grudzien.patryk.vehicle.model.entity.Vehicle;
-import me.grudzien.patryk.utils.app.ApplicationZone;
+import me.grudzien.patryk.utils.appplication.ApplicationZone;
 import me.grudzien.patryk.registration.model.enums.RegistrationProvider;
 
 @Entity
