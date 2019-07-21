@@ -1,5 +1,5 @@
 # ===============================================================
-# = (heroku-deployment) PROFILE
+# (heroku-deployment) PROFILE
 # ===============================================================
 server:
   port: ${PORT:8088}
@@ -26,10 +26,10 @@ spring:
       client:
         registration:
           google:
-            client-id: 289764469472-jnvmuvelohvieo6bn1362p89qkt6cjrk.apps.googleusercontent.com
-            client-secret: LjrrABzPkzbvUHkqmRm7pNqp
-            client-name: GOOGLE
+            client-id: ENC@[/AdpXEa6+zDXyDn6A/ZAgxVpHQVB6yI3LMu7nCjRV8ERoIJyrLNXJ6k5xxuS1+HPFXyLBVyOb3SSgtPnpotzMhiaUO316g/pt7OsKvVZY5n+61A54gDBoQ==]
+            client-secret: ENC@[DdUwaTSAbQkE749ZBLgEk8ecu1SQkOg0SLW6Wr190w9g+mSUjqRMoA==]
+            client-name: ENC@[n3l6wLxuDQWeb4mzYACQUQ==]
           facebook:
-            client-id: 677962172580314
-            client-secret: a9eac62a4cd5d78d49aa6dd87582cf86
-            client-name: FACEBOOK
+            client-id: ENC@[hxCfIeK1BJarFtm5CBN6177dXfngSVoM]
+            client-secret: ENC@[vthGeBs/u6vwrI2Aq65A8PFvlI3y98z0IFRbURrnNNkLC0yjy7JMtuvQ7J0bTnva]
+            client-name: ENC@[oU/2UXWecmdKS1xbscmheL3RzUBzXk5I]

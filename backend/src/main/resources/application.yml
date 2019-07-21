@@ -1,5 +1,5 @@
 # ===============================
-# = (SPRING)
+# (SPRING)
 # ===============================
 spring:
   profiles:
@@ -8,8 +8,8 @@ spring:
   mail:
     default-encoding: UTF-8
     host: smtp.gmail.com
-    username: vehicle.health.service@gmail.com
-    password: Pg91tmsecretHdvhs
+    username: ENC@[L5nRVnWDdcGBTyhiTomSAiGZnM/kGccCZLGkSTEfKXpPp15ptBr8yaF8Ju1Rgv+z]
+    password: ENC@[asnBL/oOmDOtz/nz2i+JAPI9JeKH8bw1ZiK4VeSG6io=]
     port: 587
     protocol: smtp
     properties:
@@ -28,7 +28,18 @@ spring:
             non_contextual_creation: true
 
 # ===============================
-# = (CUSTOM CONFIGURATION)
+# (JASYPT - Java Simplified Encryption)
+# ===============================
+jasypt:
+  encryptor:
+    iv-generator-classname: org.jasypt.salt.RandomIVGenerator
+    password: ${JASYPT_ENCRYPTOR_PASSWORD:}
+    property:
+      prefix: "ENC@["
+      suffix: "]"
+
+# ===============================
+# (CUSTOM CONFIGURATION)
 # ===============================
 custom:
   properties:
@@ -38,7 +49,7 @@ custom:
     heroku:
       heroku-app-host-url: https://vehicle-health-service.herokuapp.com/ui
     jwt:
-      token-secret-key: super-secret-authorization-token-password
-      token-expiration: 15 # minutes (900000 nanoseconds)
+      token-secret-key: ENC@[OK+w1OkQsRzhu0brXwYEMU0QTXKBI2k104d1T/O/TrVPtNdx9ip5J6sZ+chsx/5uBKopRWqHIN0=]
+      token-expiration: ENC@[CO+LPJFX3FQihtdXpUzvPg==]
     oauth2:
-      short-lived-token-expiration: 2 # minutes (120000 nanoseconds)
+      short-lived-token-expiration: ENC@[kQ8ebSYapZr63l18OKqkeQ==]
