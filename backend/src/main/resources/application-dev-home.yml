@@ -1,0 +1,38 @@
+# ===============================================================
+# (dev-home) PROFILE
+# ===============================================================
+server:
+  port: 8088
+spring:
+  # -----> Hibernate datasource
+  datasource:
+    url: ENC@[lR4mYW/2GQYHkVO3dbMOjsmokVgiTEFIqhf/QjK8i2QThybnRzGQkHTie/3ofOifKfna12DqCZtPGnDJ27rjc5QmqODc8IA/]
+    username: ENC@[Ra47EDgHcP1XB63oMljBNLXVhVBVqZX7]
+    password: ENC@[8YE0FVu4Z1CDmj/DvVrUdA==]
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 20
+      idle-timeout: 30000
+      pool-name: VehicleHealthServiceConnectionPool
+      max-lifetime: 2000000
+      connection-timeout: 60000
+  # -----> JPA configurations
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.PostgreSQL94Dialect
+  # -----> OAuth 2
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ENC@[/AdpXEa6+zDXyDn6A/ZAgxVpHQVB6yI3LMu7nCjRV8ERoIJyrLNXJ6k5xxuS1+HPFXyLBVyOb3SSgtPnpotzMhiaUO316g/pt7OsKvVZY5n+61A54gDBoQ==]
+            client-secret: ENC@[DdUwaTSAbQkE749ZBLgEk8ecu1SQkOg0SLW6Wr190w9g+mSUjqRMoA==]
+            client-name: ENC@[n3l6wLxuDQWeb4mzYACQUQ==]
+          facebook:
+            client-id: ENC@[hxCfIeK1BJarFtm5CBN6177dXfngSVoM]
+            client-secret: ENC@[vthGeBs/u6vwrI2Aq65A8PFvlI3y98z0IFRbURrnNNkLC0yjy7JMtuvQ7J0bTnva]
+            client-name: ENC@[oU/2UXWecmdKS1xbscmheL3RzUBzXk5I]

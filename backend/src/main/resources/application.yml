@@ -1,0 +1,55 @@
+# ===============================
+# (SPRING)
+# ===============================
+spring:
+  profiles:
+    active: h2-in-memory
+  # -----> JavaMail Configuration
+  mail:
+    default-encoding: UTF-8
+    host: smtp.gmail.com
+    username: ENC@[L5nRVnWDdcGBTyhiTomSAiGZnM/kGccCZLGkSTEfKXpPp15ptBr8yaF8Ju1Rgv+z]
+    password: ENC@[asnBL/oOmDOtz/nz2i+JAPI9JeKH8bw1ZiK4VeSG6io=]
+    port: 587
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    test-connection: false
+  # -----> JPA configurations
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
+
+# ===============================
+# (JASYPT - Java Simplified Encryption)
+# ===============================
+jasypt:
+  encryptor:
+    iv-generator-classname: org.jasypt.salt.RandomIVGenerator
+    password: ${JASYPT_ENCRYPTOR_PASSWORD:}
+    property:
+      prefix: "ENC@["
+      suffix: "]"
+
+# ===============================
+# (CUSTOM CONFIGURATION)
+# ===============================
+custom:
+  properties:
+    cors:
+      front-end-app-local-host-url: http://localhost:8080/ui
+      back-end-app-local-host-url: http://localhost:8088/api
+    heroku:
+      heroku-app-host-url: https://vehicle-health-service.herokuapp.com/ui
+    jwt:
+      token-secret-key: ENC@[OK+w1OkQsRzhu0brXwYEMU0QTXKBI2k104d1T/O/TrVPtNdx9ip5J6sZ+chsx/5uBKopRWqHIN0=]
+      token-expiration: ENC@[CO+LPJFX3FQihtdXpUzvPg==]
+    oauth2:
+      short-lived-token-expiration: ENC@[kQ8ebSYapZr63l18OKqkeQ==]

@@ -89,6 +89,7 @@ class DateOperationsHelperTest {
 		assertThat(daysDifference).isEqualTo(0);
 	}
 
+	// TODO: Improve implementation because some tests are failed randomly
 	@Test
 	void getHoursDifference() {
 		// given
