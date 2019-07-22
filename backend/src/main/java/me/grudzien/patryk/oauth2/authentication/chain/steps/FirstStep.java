@@ -1,6 +1,7 @@
 package me.grudzien.patryk.oauth2.authentication.chain.steps;
 
 import io.vavr.control.Try;
+import lombok.extern.log4j.Log4j2;
 
 import org.springframework.security.core.Authentication;
 
@@ -10,6 +11,7 @@ import me.grudzien.patryk.oauth2.authentication.model.enums.AuthenticationStepOr
 
 import static me.grudzien.patryk.oauth2.authentication.model.enums.AuthenticationStepOrder.FIRST;
 
+@Log4j2
 public final class FirstStep extends AbstractAuthenticationStepBuilder<String> {
 
     /**
@@ -21,6 +23,7 @@ public final class FirstStep extends AbstractAuthenticationStepBuilder<String> {
 
     @Override
     public Try<String> performSingleAuthOperation(final Authentication authentication) {
+        log.debug("Performing authentication step number={} - {}", stepOrder().getId(), stepOrder().getDescription());
         return Try.of(() -> (String) authentication.getCredentials());
     }
 
@@ -30,7 +33,7 @@ public final class FirstStep extends AbstractAuthenticationStepBuilder<String> {
     }
 
     @Override
-    protected AuthenticationStepOrder specifyStepOrder() {
+    protected AuthenticationStepOrder stepOrder() {
         return FIRST;
     }
 }

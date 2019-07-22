@@ -1,6 +1,7 @@
 package me.grudzien.patryk.oauth2.authentication.chain.steps;
 
 import io.vavr.control.Try;
+import lombok.extern.log4j.Log4j2;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.jwt.Jwt;
@@ -12,6 +13,7 @@ import me.grudzien.patryk.oauth2.authentication.model.enums.AuthenticationStepOr
 
 import static me.grudzien.patryk.oauth2.authentication.model.enums.AuthenticationStepOrder.FOURTH;
 
+@Log4j2
 public final class FourthStep extends AbstractAuthenticationStepBuilder<Jwt> {
 
 	/**
@@ -23,6 +25,7 @@ public final class FourthStep extends AbstractAuthenticationStepBuilder<Jwt> {
 
 	@Override
 	public Try<Jwt> performSingleAuthOperation(final Authentication authentication) {
+        log.debug("Performing authentication step number={} - {}", stepOrder().getId(), stepOrder().getDescription());
 		return Try.of(() -> JwtHelper.decodeAndVerify(getAuthenticationItems().getToken(),
 		                                              getAuthenticationItems().getRsaVerifier()));
 	}
@@ -33,7 +36,7 @@ public final class FourthStep extends AbstractAuthenticationStepBuilder<Jwt> {
 	}
 
     @Override
-    protected AuthenticationStepOrder specifyStepOrder() {
+    protected AuthenticationStepOrder stepOrder() {
         return FOURTH;
     }
 }

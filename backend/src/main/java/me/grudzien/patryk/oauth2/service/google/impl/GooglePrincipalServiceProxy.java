@@ -1,6 +1,5 @@
 package me.grudzien.patryk.oauth2.service.google.impl;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,13 +25,14 @@ import me.grudzien.patryk.oauth2.service.google.GooglePrincipalService;
 import me.grudzien.patryk.oauth2.utils.OAuth2FlowDelegator.OAuth2Flow;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static lombok.AccessLevel.PRIVATE;
 
 public final class GooglePrincipalServiceProxy implements GooglePrincipalService, RsaAware {
 
     private final GooglePrincipalService googlePrincipalService;
 
-    @Getter(AccessLevel.PRIVATE)
-    @Setter(AccessLevel.PRIVATE)
+    @Getter(PRIVATE)
+    @Setter(PRIVATE)
     private String jwkURL;
 
     private GooglePrincipalServiceProxy() {

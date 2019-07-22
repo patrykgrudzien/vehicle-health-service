@@ -64,50 +64,34 @@ public final class AuthenticationStepsFacade {
 
     @FunctionalInterface
     public interface Builder {
-        AbstractAuthenticationStepBuilder<?> buildAuthenticationFlow();
+        AbstractAuthenticationStepBuilder<?> build();
     }
 
     public static WithGooglePrincipalServiceProxy buildAuthenticationFlow() {
-        return googlePrincipalServiceProxy ->
-                cacheManagerHelper ->
-                        userDetailsService ->
-                                localeMessagesCreator ->
-                                        customPreAuthenticationChecks ->
-                                                customPostAuthenticationChecks ->
-                                                        additionalChecks -> (Builder) buildAuthenticationFlow(googlePrincipalServiceProxy, cacheManagerHelper, userDetailsService, localeMessagesCreator, customPreAuthenticationChecks, customPostAuthenticationChecks, additionalChecks);
+        return googlePrincipalServiceProxy -> cacheManagerHelper -> userDetailsService -> localeMessagesCreator ->
+               customPreAuthenticationChecks -> customPostAuthenticationChecks -> additionalChecks ->
+                       (Builder) createAuthenticationSteps(googlePrincipalServiceProxy, cacheManagerHelper, userDetailsService,
+                                                           localeMessagesCreator, customPreAuthenticationChecks, customPostAuthenticationChecks,
+                                                           additionalChecks);
     }
 
-    public static AbstractAuthenticationStepBuilder<?> buildAuthenticationFlow(final GooglePrincipalServiceProxy googlePrincipalServiceProxy,
-                                                                               final CacheManagerHelper cacheManagerHelper,
-                                                                               final UserDetailsService userDetailsService,
-                                                                               final LocaleMessagesCreator localeMessagesCreator,
-                                                                               final UserDetailsChecker customPreAuthenticationChecks,
-                                                                               final UserDetailsChecker customPostAuthenticationChecks,
-                                                                               final AdditionalChecks<JwtUser> additionalChecks) {
-    	return
-			getJWTokenFromAuthentication(
-				getKeyIdAttributeFromJWToken(
-	                verifySignatureUsingRSA(googlePrincipalServiceProxy,
-	                    decodeJWToken(
-	                        readMapOfAttributesFromJWToken(
-	                            loadEmailAttribute(
-	                                loadSubjectIdentifier(
-	                                    clearPrincipalUserCache(cacheManagerHelper,
-                                            loadUserFromDB(userDetailsService, localeMessagesCreator,
-                                                preAuthenticationChecks(customPreAuthenticationChecks,
-                                                    postAuthenticationChecks(customPostAuthenticationChecks,
-                                                        additionalAuthenticationChecks(additionalChecks)
-                                                    )
-                                                )
-                                            )
-                                        )
-                                    )
-                                )
-                            )
-	                    )
-	                )
-				)
-			);
+    private static AbstractAuthenticationStepBuilder<?> createAuthenticationSteps(
+            final GooglePrincipalServiceProxy googlePrincipalServiceProxy, final CacheManagerHelper cacheManagerHelper,
+            final UserDetailsService userDetailsService, final LocaleMessagesCreator localeMessagesCreator,
+            final UserDetailsChecker customPreAuthenticationChecks, final UserDetailsChecker customPostAuthenticationChecks,
+            final AdditionalChecks<JwtUser> additionalChecks) {
+    	return getJWTokenFromAuthentication(
+    	        getKeyIdAttributeFromJWToken(
+    	          verifySignatureUsingRSA(googlePrincipalServiceProxy,
+                    decodeJWToken(
+	                  readMapOfAttributesFromJWToken(
+	                    loadEmailAttribute(
+	                      loadSubjectIdentifier(
+	                        clearPrincipalUserCache(cacheManagerHelper,
+                              loadUserFromDB(userDetailsService, localeMessagesCreator,
+                                preAuthenticationChecks(customPreAuthenticationChecks,
+                                  postAuthenticationChecks(customPostAuthenticationChecks,
+                                    additionalAuthenticationChecks(additionalChecks))))))))))));
     }
 
 	private static AbstractAuthenticationStepBuilder<?> getJWTokenFromAuthentication(final AbstractAuthenticationStepTemplate<?> nextStep) {

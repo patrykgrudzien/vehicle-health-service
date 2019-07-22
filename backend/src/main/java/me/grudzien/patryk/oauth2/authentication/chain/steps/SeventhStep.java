@@ -1,6 +1,7 @@
 package me.grudzien.patryk.oauth2.authentication.chain.steps;
 
 import io.vavr.control.Try;
+import lombok.extern.log4j.Log4j2;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.oidc.StandardClaimNames;
@@ -11,6 +12,7 @@ import me.grudzien.patryk.oauth2.authentication.model.enums.AuthenticationStepOr
 
 import static me.grudzien.patryk.oauth2.authentication.model.enums.AuthenticationStepOrder.SEVENTH;
 
+@Log4j2
 public final class SeventhStep extends AbstractAuthenticationStepBuilder<String> {
 
     /**
@@ -22,6 +24,7 @@ public final class SeventhStep extends AbstractAuthenticationStepBuilder<String>
 
     @Override
     public Try<String> performSingleAuthOperation(final Authentication authentication) {
+        log.debug("Performing authentication step number={} - {}", stepOrder().getId(), stepOrder().getDescription());
         // loading subject attribute (in this case it's password which was used during registration by google)
         return Try.of(() -> (String) getAuthenticationItems().getJwtTokenAttributes()
                                                              .get(StandardClaimNames.SUB));
@@ -33,7 +36,7 @@ public final class SeventhStep extends AbstractAuthenticationStepBuilder<String>
     }
 
     @Override
-    protected AuthenticationStepOrder specifyStepOrder() {
+    protected AuthenticationStepOrder stepOrder() {
         return SEVENTH;
     }
 }

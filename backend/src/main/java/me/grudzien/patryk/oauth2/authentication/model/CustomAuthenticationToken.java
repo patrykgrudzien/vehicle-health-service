@@ -7,6 +7,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
+import static java.lang.Boolean.*;
+
 public final class CustomAuthenticationToken extends AbstractAuthenticationToken {
 
 	private static final long serialVersionUID = 6192413451740113683L;
@@ -17,7 +19,7 @@ public final class CustomAuthenticationToken extends AbstractAuthenticationToken
 	public CustomAuthenticationToken(final String jwtToken) {
 		super(AuthorityUtils.NO_AUTHORITIES);
 		this.jwtToken = jwtToken;
-		setAuthenticated(Boolean.TRUE);
+		setAuthenticated(TRUE);
 	}
 
     public CustomAuthenticationToken(final UserDetails principal, final String jwtToken,
@@ -25,7 +27,7 @@ public final class CustomAuthenticationToken extends AbstractAuthenticationToken
 		super(authorities);
 		this.principal = principal;
 		this.jwtToken = jwtToken;
-		setAuthenticated(Boolean.TRUE);
+		setAuthenticated(TRUE);
 	}
 
 	@Override

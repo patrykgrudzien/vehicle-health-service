@@ -1,6 +1,7 @@
 package me.grudzien.patryk.oauth2.authentication.chain.steps;
 
 import io.vavr.control.Try;
+import lombok.extern.log4j.Log4j2;
 
 import org.springframework.security.core.Authentication;
 
@@ -12,6 +13,7 @@ import me.grudzien.patryk.oauth2.utils.CacheManagerHelper;
 
 import static me.grudzien.patryk.oauth2.authentication.model.enums.AuthenticationStepOrder.EIGHT;
 
+@Log4j2
 public final class EighthStep extends AbstractAuthenticationStepBuilder<Void> {
 
     private final CacheManagerHelper cacheManagerHelper;
@@ -33,6 +35,7 @@ public final class EighthStep extends AbstractAuthenticationStepBuilder<Void> {
 
     @Override
     public Try<Void> performSingleAuthOperation(final Authentication authentication) {
+        log.debug("Performing authentication step number={} - {}", stepOrder().getId(), stepOrder().getDescription());
         // cleaning user from cache because it's been saved (with "enabled" status = FALSE) before email confirmation
         return Try.run(() -> cacheManagerHelper.clearAllCache(MyUserDetailsService.PRINCIPAL_USER_CACHE_NAME));
     }
@@ -43,7 +46,7 @@ public final class EighthStep extends AbstractAuthenticationStepBuilder<Void> {
     }
 
     @Override
-    protected AuthenticationStepOrder specifyStepOrder() {
+    protected AuthenticationStepOrder stepOrder() {
         return EIGHT;
     }
 }

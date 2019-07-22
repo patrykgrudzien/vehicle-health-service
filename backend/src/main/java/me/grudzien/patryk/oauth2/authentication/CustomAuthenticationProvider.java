@@ -16,7 +16,6 @@ import me.grudzien.patryk.authentication.model.dto.JwtUser;
 import me.grudzien.patryk.authentication.service.impl.MyUserDetailsService;
 import me.grudzien.patryk.authentication.service.impl.UserAuthenticationServiceImpl;
 import me.grudzien.patryk.jwt.exception.MissingAuthenticationResultException;
-import me.grudzien.patryk.oauth2.authentication.chain.AbstractAuthenticationStepBuilder;
 import me.grudzien.patryk.oauth2.authentication.chain.AuthenticationResult;
 import me.grudzien.patryk.oauth2.authentication.chain.AuthenticationStepsFacade;
 import me.grudzien.patryk.oauth2.authentication.checkers.AdditionalChecks;
@@ -78,43 +77,38 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
      * This method is called by:
      * {@link UserAuthenticationServiceImpl#authenticateUser(JwtAuthenticationRequest)}
      * only when:
-     * @param authentication is of type {@link CustomAuthenticationToken} and all kind of exceptions thrown here are handled by:
-     * {@link me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases}.
+     * @param authentication is of type {@link CustomAuthenticationToken} and all kind of exceptions thrown here
+     * are handled by: {@link FailedAuthenticationCases}.
      */
 	@Override
 	public Authentication authenticate(final Authentication authentication) throws AuthenticationException {
 	    log.info("Starting custom authentication...");
-
-        final AbstractAuthenticationStepBuilder<?> abstractAuthenticationStepBuilder =
-                AuthenticationStepsFacade.buildAuthenticationFlow()
-                                         .withGooglePrincipalServiceProxy(googlePrincipalServiceProxy)
-                                         .withCacheManagerHelper(cacheManagerHelper)
-                                         .withUserDetailsService(userDetailsService)
-                                         .withLocaleMessageCreator(localeMessagesCreator)
-                                         .withPreUserDetailsChecker(customPreAuthenticationChecks)
-                                         .withPostUserDetailsChecker(customPostAuthenticationChecks)
-                                         .withAdditionalChecks(additionalChecks)
-                                         .buildAuthenticationFlow();
-
-        return AuthenticationStepsFacade.buildAuthenticationFlow(googlePrincipalServiceProxy, cacheManagerHelper,
-                                                                 userDetailsService, localeMessagesCreator,
-                                                                 customPreAuthenticationChecks,
-                                                                 customPostAuthenticationChecks, additionalChecks)
+        return AuthenticationStepsFacade.buildAuthenticationFlow()
+                                        .withGooglePrincipalServiceProxy(googlePrincipalServiceProxy)
+                                        .withCacheManagerHelper(cacheManagerHelper)
+                                        .withUserDetailsService(userDetailsService)
+                                        .withLocaleMessageCreator(localeMessagesCreator)
+                                        .withPreUserDetailsChecker(customPreAuthenticationChecks)
+                                        .withPostUserDetailsChecker(customPostAuthenticationChecks)
+                                        .withAdditionalChecks(additionalChecks)
+                                        .build()
                                         .performAuthenticationSteps(authentication)
                                         .map(authenticationResult -> Match(authenticationResult.getStatus()).of(
                                                 Case($(is(OK)), authenticationResult::getCustomAuthenticationToken),
-                                                Case($(is(FAILED)), () -> { throw dynamicRuntimeException(authenticationResult); }))
+                                                Case($(is(FAILED)), () -> {
+                                                    throw dynamicRuntimeException(authenticationResult);
+                                                }))
                                         )
                                         .orElseThrow(() -> new MissingAuthenticationResultException(localeMessagesCreator.buildLocaleMessage(
                                                 "missing-authentication-result-exception")));
 	}
 
 	private RuntimeException dynamicRuntimeException(final AuthenticationResult authenticationResult) {
-	    return (RuntimeException) FactoryProvider.getFactory(EXCEPTION)
-                .create(DYNAMIC_BASED_ON_INPUT,
-                        authenticationResult.getExceptionClass().getName(),
-                        authenticationResult.getExceptionMessage()
-                );
+	    return (RuntimeException) FactoryProvider.getFactory(EXCEPTION).create(
+	            DYNAMIC_BASED_ON_INPUT,
+                authenticationResult.getExceptionClass().getName(),
+                authenticationResult.getExceptionMessage()
+        );
     }
 
     /**

@@ -1,8 +1,8 @@
 package me.grudzien.patryk.oauth2.authentication.chain.steps;
 
-import io.vavr.CheckedFunction1;
 import io.vavr.Function1;
 import io.vavr.control.Try;
+import lombok.extern.log4j.Log4j2;
 
 import org.springframework.security.core.Authentication;
 
@@ -15,8 +15,11 @@ import me.grudzien.patryk.oauth2.authentication.chain.AbstractAuthenticationStep
 import me.grudzien.patryk.oauth2.authentication.chain.AbstractAuthenticationStepTemplate;
 import me.grudzien.patryk.oauth2.authentication.model.enums.AuthenticationStepOrder;
 
+import static io.vavr.CheckedFunction1.liftTry;
+
 import static me.grudzien.patryk.oauth2.authentication.model.enums.AuthenticationStepOrder.FIFTH;
 
+@Log4j2
 public final class FifthStep extends AbstractAuthenticationStepBuilder<Map<Object, Object>> {
 
 	/**
@@ -28,9 +31,10 @@ public final class FifthStep extends AbstractAuthenticationStepBuilder<Map<Objec
 
 	@Override
 	public Try<Map<Object, Object>> performSingleAuthOperation(final Authentication authentication) {
+        log.debug("Performing authentication step number={} - {}", stepOrder().getId(), stepOrder().getDescription());
 		// reading map of attributes from JWT token
-		final Function1<String, Try<Map<Object, Object>>> liftTry = CheckedFunction1.liftTry(
-				input -> new ObjectMapper().readValue(input, new TypeReference<Map<Object, Object>>() {})
+		final Function1<String, Try<Map<Object, Object>>> liftTry = liftTry(
+		        input -> new ObjectMapper().readValue(input, new TypeReference<Map<Object, Object>>() {})
 		);
 		return liftTry.apply(getAuthenticationItems().getDecodedJwt().getClaims());
 	}
@@ -41,7 +45,7 @@ public final class FifthStep extends AbstractAuthenticationStepBuilder<Map<Objec
 	}
 
     @Override
-    protected AuthenticationStepOrder specifyStepOrder() {
+    protected AuthenticationStepOrder stepOrder() {
         return FIFTH;
     }
 }

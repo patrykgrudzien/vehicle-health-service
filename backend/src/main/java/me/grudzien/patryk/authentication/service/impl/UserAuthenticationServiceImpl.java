@@ -25,7 +25,6 @@ import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationResponse;
 import me.grudzien.patryk.authentication.service.UserAuthenticationService;
 import me.grudzien.patryk.jwt.service.JwtTokenService;
 import me.grudzien.patryk.oauth2.authentication.model.CustomAuthenticationToken;
-import me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases;
 import me.grudzien.patryk.registration.exception.CustomUserValidationException;
 import me.grudzien.patryk.utils.factory.FactoryProvider;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
@@ -38,8 +37,18 @@ import static io.vavr.API.Match;
 
 import static me.grudzien.patryk.jwt.model.factory.JwtAuthResponseType.FAILED_RESPONSE;
 import static me.grudzien.patryk.jwt.model.factory.JwtAuthResponseType.SUCCESS_RESPONSE;
-import static me.grudzien.patryk.utils.mapping.ObjectDecoder.decodeAuthRequest;
+import static me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases.BadCredentialsExceptionCase;
+import static me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases.CredentialsHaveExpiredExceptionCase;
+import static me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases.CustomAuthenticationUnknownExceptionCase;
+import static me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases.JwtTokenNotFoundExceptionCase;
+import static me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases.MissingAuthenticationResultExceptionCase;
+import static me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases.RegistrationProviderMismatchExceptionCase;
+import static me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases.UserAccountIsExpiredExceptionCase;
+import static me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases.UserAccountIsLockedExceptionCase;
+import static me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases.UserIsDisabledExceptionCase;
+import static me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases.UsernameNotFoundExceptionCase;
 import static me.grudzien.patryk.utils.factory.FactoryType.JWT;
+import static me.grudzien.patryk.utils.mapping.ObjectDecoder.decodeAuthRequest;
 import static me.grudzien.patryk.utils.validation.CustomValidator.getTranslatedValidationResult;
 
 @Log4j2
@@ -118,8 +127,8 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 		 * (DaoAuthenticationProvider) is an (AuthenticationProvider interface) implementation that receives user details
 		 * from a (MyUserDetailsService).
 		 *
-		 * authenticationManager.authenticate() returns fully authenticated (Authentication) object (it includes credentials and
-		 * granted authorities if successful).
+		 * authenticationManager.authenticate() returns fully authenticated (Authentication) object
+		 * (it includes credentials and granted authorities if successful).
 		 * It attempts to authenticate the passed (Authentication) object, returning a fully populated "Authentication" object.
 		 */
 		return Try.of(() -> Optional.ofNullable(authenticationManager.authenticate(StringUtils.isEmpty(idToken) ?
@@ -127,16 +136,16 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 				                                                                           new CustomAuthenticationToken(idToken))))
 		          .onSuccess(Optional::get)
 		          .onFailure(throwable -> Match(throwable).of(
-                          FailedAuthenticationCases.UsernameNotFoundExceptionCase(email, localeMessagesCreator),
-                          FailedAuthenticationCases.UserAccountIsLockedExceptionCase(localeMessagesCreator),
-                          FailedAuthenticationCases.UserIsDisabledExceptionCase(email, localeMessagesCreator),
-                          FailedAuthenticationCases.UserAccountIsExpiredExceptionCase(localeMessagesCreator),
-                          FailedAuthenticationCases.CredentialsHaveExpiredExceptionCase(localeMessagesCreator),
-                          FailedAuthenticationCases.JwtTokenNotFoundExceptionCase(localeMessagesCreator),
-                          FailedAuthenticationCases.RegistrationProviderMismatchExceptionCase(localeMessagesCreator),
-                          FailedAuthenticationCases.BadCredentialsExceptionCase(localeMessagesCreator),
-                          FailedAuthenticationCases.MissingAuthenticationResultException(localeMessagesCreator),
-                          FailedAuthenticationCases.CustomAuthenticationUnknownException(localeMessagesCreator)
+                          UsernameNotFoundExceptionCase(email, localeMessagesCreator),
+                          UserAccountIsLockedExceptionCase(localeMessagesCreator),
+                          UserIsDisabledExceptionCase(email, localeMessagesCreator),
+                          UserAccountIsExpiredExceptionCase(localeMessagesCreator),
+                          CredentialsHaveExpiredExceptionCase(localeMessagesCreator),
+                          JwtTokenNotFoundExceptionCase(localeMessagesCreator),
+                          RegistrationProviderMismatchExceptionCase(localeMessagesCreator),
+                          BadCredentialsExceptionCase(localeMessagesCreator),
+                          MissingAuthenticationResultExceptionCase(localeMessagesCreator),
+                          CustomAuthenticationUnknownExceptionCase(localeMessagesCreator)
 		          ))
 		          .getOrElse(Optional.empty());
 	}

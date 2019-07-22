@@ -1,19 +1,19 @@
 package me.grudzien.patryk.oauth2.authentication.chain;
 
-import io.vavr.API.Match.Pattern0;
 import io.vavr.control.Try;
 import lombok.extern.log4j.Log4j2;
 
 import org.springframework.security.core.Authentication;
 
-import java.util.Objects;
 import java.util.Optional;
 
 import static io.vavr.API.$;
 import static io.vavr.API.Case;
 import static io.vavr.API.Match;
+import static io.vavr.API.Match.Pattern0.of;
 import static io.vavr.Patterns.$Failure;
 import static io.vavr.Patterns.$Success;
+import static java.util.Objects.nonNull;
 
 @Log4j2
 public abstract class AbstractAuthenticationStepBuilder<OperationResultType> extends AbstractAuthenticationStepTemplate<OperationResultType> {
@@ -31,11 +31,11 @@ public abstract class AbstractAuthenticationStepBuilder<OperationResultType> ext
         final Try<OperationResultType> tryResult = performSingleAuthOperation(authentication);
         return Match(tryResult).of(
                 Case($Success($()), () -> {
-                    log.info("Authentication State Container has been successfully updated. Going to the next operation.");
+                    log.debug("Authentication State Container has been successfully updated. Going to the next operation.");
                     updateAuthenticationItemsOnSuccessOperation(tryResult);
                     return invokeNextAuthenticationStep(authentication);
                 }),
-                Case($Failure(Pattern0.of(Throwable.class)), () -> {
+                Case($Failure(of(Throwable.class)), () -> {
                     log.error("Authentication State Container couldn't be updated! Next operation won't be executed!");
                     return handleFailureDuringAuthOperation(tryResult);
                 })
@@ -83,7 +83,7 @@ public abstract class AbstractAuthenticationStepBuilder<OperationResultType> ext
 	 * @return {@code true} if a next authentication step in the chain is present, false otherwise.
 	 */
 	private boolean nextStepExists() {
-		return Objects.nonNull(getNextAuthenticationStepTemplate());
+		return nonNull(getNextAuthenticationStepTemplate());
 	}
 
 	/**

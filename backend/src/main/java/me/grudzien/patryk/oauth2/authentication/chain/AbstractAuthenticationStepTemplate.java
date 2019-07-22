@@ -26,7 +26,7 @@ public abstract class AbstractAuthenticationStepTemplate<OperationResultType> {
      */
     protected AbstractAuthenticationStepTemplate(final AbstractAuthenticationStepTemplate<?> nextAuthenticationStepTemplate) {
         this.nextAuthenticationStepTemplate = nextAuthenticationStepTemplate;
-        this.authenticationStepOrder = specifyStepOrder();
+        this.authenticationStepOrder = stepOrder();
     }
 
     /**
@@ -73,5 +73,5 @@ public abstract class AbstractAuthenticationStepTemplate<OperationResultType> {
      * for each particular {@link me.grudzien.patryk.oauth2.authentication.chain.AbstractAuthenticationStepBuilder}
      * implementation in which the authentication flow is going to be performed.
      */
-    protected abstract AuthenticationStepOrder specifyStepOrder();
+    protected abstract AuthenticationStepOrder stepOrder();
 }

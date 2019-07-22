@@ -1,6 +1,7 @@
 package me.grudzien.patryk.oauth2.authentication.chain.steps;
 
 import io.vavr.control.Try;
+import lombok.extern.log4j.Log4j2;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,6 +17,7 @@ import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 
 import static me.grudzien.patryk.oauth2.authentication.model.enums.AuthenticationStepOrder.NINTH;
 
+@Log4j2
 public final class NinthStep extends AbstractAuthenticationStepBuilder<JwtUser> {
 
     private final UserDetailsService userDetailsService;
@@ -39,6 +41,7 @@ public final class NinthStep extends AbstractAuthenticationStepBuilder<JwtUser> 
 
     @Override
     public Try<JwtUser> performSingleAuthOperation(final Authentication authentication) {
+        log.debug("Performing authentication step number={} - {}", stepOrder().getId(), stepOrder().getDescription());
         final String email = getAuthenticationItems().getEmail();
         // loading user from DB
         return Try.of(() -> Optional.ofNullable((JwtUser) userDetailsService.loadUserByUsername(email))
@@ -52,7 +55,7 @@ public final class NinthStep extends AbstractAuthenticationStepBuilder<JwtUser> 
     }
 
     @Override
-    protected AuthenticationStepOrder specifyStepOrder() {
+    protected AuthenticationStepOrder stepOrder() {
         return NINTH;
     }
 }

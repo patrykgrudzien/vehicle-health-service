@@ -1,5 +1,6 @@
 package me.grudzien.patryk.oauth2.authentication;
 
+import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 import org.springframework.security.authentication.AccountExpiredException;
@@ -7,8 +8,9 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
-import org.springframework.security.core.userdetails.UserDetailsChecker;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import me.grudzien.patryk.authentication.exception.BadCredentialsAuthenticationException;
@@ -16,11 +18,9 @@ import me.grudzien.patryk.authentication.exception.UserDisabledAuthenticationExc
 import me.grudzien.patryk.authentication.service.impl.MyUserDetailsService;
 import me.grudzien.patryk.jwt.exception.CustomAuthenticationUnknownException;
 import me.grudzien.patryk.jwt.exception.MissingAuthenticationResultException;
-import me.grudzien.patryk.oauth2.authentication.checkers.AdditionalChecks;
+import me.grudzien.patryk.oauth2.authentication.chain.AbstractAuthenticationStepTemplate;
 import me.grudzien.patryk.oauth2.exception.JwtTokenNotFoundException;
 import me.grudzien.patryk.oauth2.exception.RegistrationProviderMismatchException;
-import me.grudzien.patryk.oauth2.service.google.impl.GooglePrincipalServiceProxy;
-import me.grudzien.patryk.oauth2.utils.CacheManagerHelper;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 
 import static io.vavr.API.$;
@@ -28,9 +28,11 @@ import static io.vavr.API.Case;
 import static io.vavr.API.Match;
 import static io.vavr.API.run;
 import static io.vavr.Predicates.instanceOf;
+import static lombok.AccessLevel.NONE;
 
 @Log4j2
-public abstract class FailedAuthenticationCases {
+@NoArgsConstructor(access = NONE)
+public final class FailedAuthenticationCases {
 
     public static Match.Case<UsernameNotFoundException, Void> UsernameNotFoundExceptionCase(final String email, final LocaleMessagesCreator localeMessagesCreator) {
         return Case($(instanceOf(UsernameNotFoundException.class)), exception -> run(() -> {
@@ -49,10 +51,9 @@ public abstract class FailedAuthenticationCases {
         return Case($(instanceOf(DisabledException.class)), exception -> run(() -> {
             /**
              * Exception thrown below is determined in:
-             * {@link org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider#preAuthenticationChecks}
+             * {@link AbstractUserDetailsAuthenticationProvider#preAuthenticationChecks}
              * which points to:
-             * {@link org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider.DefaultPreAuthenticationChecks#check(
-             * org.springframework.security.core.userdetails.UserDetails)}
+             * {@link AbstractUserDetailsAuthenticationProvider.DefaultPreAuthenticationChecks#check(UserDetails)}
              */
             log.error("User with {} is disabled! Error message -> {}", email, exception.getMessage());
             throw new UserDisabledAuthenticationException(localeMessagesCreator.buildLocaleMessage("user-disabled-exception"));
@@ -91,7 +92,7 @@ public abstract class FailedAuthenticationCases {
 			log.error("E-mail address or password is not correct! Error message -> {}", exception.getMessage());
 			/**
 			 * Exception thrown below is determined in:
-			 * {@link org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider#authenticate(org.springframework.security.core.Authentication)}
+			 * {@link AbstractUserDetailsAuthenticationProvider#authenticate(Authentication)}
 			 * which tries to retrieve user using:
 			 * {@link MyUserDetailsService}
 			 */
@@ -99,7 +100,7 @@ public abstract class FailedAuthenticationCases {
 		}));
 	}
 
-    public static Match.Case<MissingAuthenticationResultException, Void> MissingAuthenticationResultException(final LocaleMessagesCreator localeMessagesCreator) {
+    public static Match.Case<MissingAuthenticationResultException, Void> MissingAuthenticationResultExceptionCase(final LocaleMessagesCreator localeMessagesCreator) {
         return Case($(instanceOf(MissingAuthenticationResultException.class)), exception -> run(() -> {
             log.error("Authentication result has NOT been provided after authentication flow! Error message -> {}", exception.getMessage());
             throw new MissingAuthenticationResultException(localeMessagesCreator.buildLocaleMessage("missing-authentication-result-exception"));
@@ -107,12 +108,10 @@ public abstract class FailedAuthenticationCases {
     }
 
     /**
-     * This case is matched when during
-     * {@link me.grudzien.patryk.oauth2.authentication.chain.AuthenticationStepsFacade#buildAuthenticationFlow(
-     * GooglePrincipalServiceProxy, CacheManagerHelper, UserDetailsService, LocaleMessagesCreator, UserDetailsChecker, UserDetailsChecker, AdditionalChecks)}
-     * some specific exception of (single authentication operation) is thrown.
+     * This case is matched when some specific exception of (single authentication operation) is thrown.
+     * {@link AbstractAuthenticationStepTemplate#performSingleAuthOperation(Authentication)}
      */
-    public static Match.Case<? extends RuntimeException, Void> CustomAuthenticationUnknownException(final LocaleMessagesCreator localeMessagesCreator) {
+    public static Match.Case<? extends RuntimeException, Void> CustomAuthenticationUnknownExceptionCase(final LocaleMessagesCreator localeMessagesCreator) {
         return Case($(), exception -> run(() -> {
             log.error("Some unknown exception was thrown during authentication flow! Error message -> {}", exception.getMessage());
             throw new CustomAuthenticationUnknownException(localeMessagesCreator.buildLocaleMessage("custom-authentication-unknown-exception"));

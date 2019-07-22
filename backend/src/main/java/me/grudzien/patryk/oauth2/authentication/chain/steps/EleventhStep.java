@@ -1,6 +1,7 @@
 package me.grudzien.patryk.oauth2.authentication.chain.steps;
 
 import io.vavr.control.Try;
+import lombok.extern.log4j.Log4j2;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
@@ -11,6 +12,7 @@ import me.grudzien.patryk.oauth2.authentication.model.enums.AuthenticationStepOr
 
 import static me.grudzien.patryk.oauth2.authentication.model.enums.AuthenticationStepOrder.ELEVENTH;
 
+@Log4j2
 public final class EleventhStep extends AbstractAuthenticationStepBuilder<Void> {
 
     private final UserDetailsChecker customPostAuthenticationChecks;
@@ -32,7 +34,7 @@ public final class EleventhStep extends AbstractAuthenticationStepBuilder<Void> 
 
     @Override
     public Try<Void> performSingleAuthOperation(final Authentication authentication) {
-        // POST-authentication checks
+        log.debug("Performing authentication step number={} - {}", stepOrder().getId(), stepOrder().getDescription());
         return Try.run(() -> customPostAuthenticationChecks.check(getAuthenticationItems().getJwtUser()));
     }
 
@@ -42,7 +44,7 @@ public final class EleventhStep extends AbstractAuthenticationStepBuilder<Void> 
     }
 
     @Override
-    protected AuthenticationStepOrder specifyStepOrder() {
+    protected AuthenticationStepOrder stepOrder() {
         return ELEVENTH;
     }
 }
