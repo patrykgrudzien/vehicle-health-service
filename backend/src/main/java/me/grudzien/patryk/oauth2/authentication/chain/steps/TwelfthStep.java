@@ -4,14 +4,14 @@ import io.vavr.control.Try;
 
 import org.springframework.security.core.Authentication;
 
-import java.util.Optional;
-
 import me.grudzien.patryk.authentication.model.dto.JwtUser;
-import me.grudzien.patryk.oauth2.authentication.model.CustomAuthenticationToken;
 import me.grudzien.patryk.oauth2.authentication.chain.AbstractAuthenticationStepBuilder;
 import me.grudzien.patryk.oauth2.authentication.chain.AbstractAuthenticationStepTemplate;
-import me.grudzien.patryk.oauth2.authentication.chain.AuthenticationResult;
 import me.grudzien.patryk.oauth2.authentication.checkers.AdditionalChecks;
+import me.grudzien.patryk.oauth2.authentication.model.CustomAuthenticationToken;
+import me.grudzien.patryk.oauth2.authentication.model.enums.AuthenticationStepOrder;
+
+import static me.grudzien.patryk.oauth2.authentication.model.enums.AuthenticationStepOrder.TWELFTH;
 
 public final class TwelfthStep extends AbstractAuthenticationStepBuilder<CustomAuthenticationToken> {
 
@@ -50,7 +50,7 @@ public final class TwelfthStep extends AbstractAuthenticationStepBuilder<CustomA
     }
 
     @Override
-    public Optional<AuthenticationResult> handleFailureDuringAuthOperation(final Try<CustomAuthenticationToken> tryResult) {
-        return createGenericFailedResult(tryResult);
+    protected AuthenticationStepOrder specifyStepOrder() {
+        return TWELFTH;
     }
 }

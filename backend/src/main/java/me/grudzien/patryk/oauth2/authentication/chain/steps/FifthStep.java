@@ -10,11 +10,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.Map;
-import java.util.Optional;
 
 import me.grudzien.patryk.oauth2.authentication.chain.AbstractAuthenticationStepBuilder;
 import me.grudzien.patryk.oauth2.authentication.chain.AbstractAuthenticationStepTemplate;
-import me.grudzien.patryk.oauth2.authentication.chain.AuthenticationResult;
+import me.grudzien.patryk.oauth2.authentication.model.enums.AuthenticationStepOrder;
+
+import static me.grudzien.patryk.oauth2.authentication.model.enums.AuthenticationStepOrder.FIFTH;
 
 public final class FifthStep extends AbstractAuthenticationStepBuilder<Map<Object, Object>> {
 
@@ -39,8 +40,8 @@ public final class FifthStep extends AbstractAuthenticationStepBuilder<Map<Objec
 		getAuthenticationItems().setJwtTokenAttributes(tryResult.get());
 	}
 
-	@Override
-	public Optional<AuthenticationResult> handleFailureDuringAuthOperation(final Try<Map<Object, Object>> tryResult) {
-		return createGenericFailedResult(tryResult);
-	}
+    @Override
+    protected AuthenticationStepOrder specifyStepOrder() {
+        return FIFTH;
+    }
 }

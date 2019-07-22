@@ -10,11 +10,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.*;
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(builderMethodName = "Builder")
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(NON_NULL)
 public class JwtAuthenticationResponse implements Serializable {
 
 	private static final long serialVersionUID = 6971598280333003305L;

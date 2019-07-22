@@ -2,23 +2,32 @@ package me.grudzien.patryk.oauth2.authentication.chain;
 
 import io.vavr.control.Try;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import org.springframework.security.core.Authentication;
 
 import java.util.Optional;
 
+import me.grudzien.patryk.oauth2.authentication.model.enums.AuthenticationStepOrder;
+
 @Getter
-@RequiredArgsConstructor
 public abstract class AbstractAuthenticationStepTemplate<OperationResultType> {
 
     private final AbstractAuthenticationStepTemplate<?> nextAuthenticationStepTemplate;
+    private final AuthenticationStepOrder authenticationStepOrder;
 
     // containers
     @Setter
     private AuthenticationItems authenticationItems = AuthenticationItems.getInstance();
     private final AuthenticationResult authenticationResult = AuthenticationResult.getInstance();
+
+    /**
+     * @param nextAuthenticationStepTemplate Next authentication step in a chain of responsibility.
+     */
+    protected AbstractAuthenticationStepTemplate(final AbstractAuthenticationStepTemplate<?> nextAuthenticationStepTemplate) {
+        this.nextAuthenticationStepTemplate = nextAuthenticationStepTemplate;
+        this.authenticationStepOrder = specifyStepOrder();
+    }
 
     /**
      * Template method that specifies required flow execution for each {@link AbstractAuthenticationStepTemplate}.
@@ -56,5 +65,13 @@ public abstract class AbstractAuthenticationStepTemplate<OperationResultType> {
 	 * {@link AbstractAuthenticationStepTemplate#performSingleAuthOperation(Authentication)} and returns {@link AuthenticationResult}.
 	 * @param tryResult result of {@link AbstractAuthenticationStepTemplate#performSingleAuthOperation(Authentication)}
 	 */
+	// TODO: update comment here
     public abstract Optional<AuthenticationResult> handleFailureDuringAuthOperation(final Try<OperationResultType> tryResult);
+
+    /**
+     * Specifies the {@link me.grudzien.patryk.oauth2.authentication.model.enums.AuthenticationStepOrder}
+     * for each particular {@link me.grudzien.patryk.oauth2.authentication.chain.AbstractAuthenticationStepBuilder}
+     * implementation in which the authentication flow is going to be performed.
+     */
+    protected abstract AuthenticationStepOrder specifyStepOrder();
 }

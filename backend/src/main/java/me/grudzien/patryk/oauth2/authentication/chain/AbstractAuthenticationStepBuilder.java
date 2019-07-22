@@ -48,12 +48,18 @@ public abstract class AbstractAuthenticationStepBuilder<OperationResultType> ext
                 callNextStep(authentication) : finishAuthentication();
     }
 
-	/**
+    // TODO: add JavaDoc here
+    @Override
+    public Optional<AuthenticationResult> handleFailureDuringAuthOperation(final Try<OperationResultType> tryResult) {
+        return createGenericFailedResult(tryResult);
+    }
+
+    /**
 	 * Generic method that handles failed update of {@link me.grudzien.patryk.oauth2.authentication.chain.AuthenticationItems}.
 	 * @param tryResult result of {@link AbstractAuthenticationStepTemplate#performSingleAuthOperation(Authentication)}
 	 * @return {@link AuthenticationResult} object with failed state.
 	 */
-	protected final Optional<AuthenticationResult> createGenericFailedResult(final Try<OperationResultType> tryResult) {
+	private Optional<AuthenticationResult> createGenericFailedResult(final Try<OperationResultType> tryResult) {
         getAuthenticationItems().clearState();
 		final Throwable cause = tryResult.getCause();
 		return Optional.of(getAuthenticationResult().failed(cause.getClass(), cause.getMessage()));

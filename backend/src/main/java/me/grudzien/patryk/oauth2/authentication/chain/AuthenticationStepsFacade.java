@@ -27,6 +27,56 @@ public final class AuthenticationStepsFacade {
         throw new UnsupportedOperationException("Creating object of this class is not allowed!");
     }
 
+    @FunctionalInterface
+    public interface WithGooglePrincipalServiceProxy {
+        AuthenticationStepsFacade.WithCacheManagerHelper withGooglePrincipalServiceProxy(GooglePrincipalServiceProxy googlePrincipalServiceProxy);
+    }
+
+    @FunctionalInterface
+    public interface WithCacheManagerHelper {
+        AuthenticationStepsFacade.WithUserDetailsService withCacheManagerHelper(CacheManagerHelper cacheManagerHelper);
+    }
+
+    @FunctionalInterface
+    public interface WithUserDetailsService {
+        AuthenticationStepsFacade.WithLocaleMessageCreator withUserDetailsService(UserDetailsService userDetailsService);
+    }
+
+    @FunctionalInterface
+    public interface WithLocaleMessageCreator {
+        AuthenticationStepsFacade.WithPreUserDetailsChecker withLocaleMessageCreator(LocaleMessagesCreator localeMessagesCreator);
+    }
+
+    @FunctionalInterface
+    public interface WithPreUserDetailsChecker {
+        AuthenticationStepsFacade.WithPostUserDetailsChecker withPreUserDetailsChecker(UserDetailsChecker customPreAuthenticationChecks);
+    }
+
+    @FunctionalInterface
+    public interface WithPostUserDetailsChecker {
+        AuthenticationStepsFacade.WithAdditionalChecks withPostUserDetailsChecker(UserDetailsChecker customPostAuthenticationChecks);
+    }
+
+    @FunctionalInterface
+    public interface WithAdditionalChecks {
+        AuthenticationStepsFacade.Builder withAdditionalChecks(AdditionalChecks<JwtUser> additionalChecks);
+    }
+
+    @FunctionalInterface
+    public interface Builder {
+        AbstractAuthenticationStepBuilder<?> buildAuthenticationFlow();
+    }
+
+    public static WithGooglePrincipalServiceProxy buildAuthenticationFlow() {
+        return googlePrincipalServiceProxy ->
+                cacheManagerHelper ->
+                        userDetailsService ->
+                                localeMessagesCreator ->
+                                        customPreAuthenticationChecks ->
+                                                customPostAuthenticationChecks ->
+                                                        additionalChecks -> (Builder) buildAuthenticationFlow(googlePrincipalServiceProxy, cacheManagerHelper, userDetailsService, localeMessagesCreator, customPreAuthenticationChecks, customPostAuthenticationChecks, additionalChecks);
+    }
+
     public static AbstractAuthenticationStepBuilder<?> buildAuthenticationFlow(final GooglePrincipalServiceProxy googlePrincipalServiceProxy,
                                                                                final CacheManagerHelper cacheManagerHelper,
                                                                                final UserDetailsService userDetailsService,

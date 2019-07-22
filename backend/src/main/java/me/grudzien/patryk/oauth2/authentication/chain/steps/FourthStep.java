@@ -6,11 +6,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.jwt.Jwt;
 import org.springframework.security.jwt.JwtHelper;
 
-import java.util.Optional;
-
 import me.grudzien.patryk.oauth2.authentication.chain.AbstractAuthenticationStepBuilder;
 import me.grudzien.patryk.oauth2.authentication.chain.AbstractAuthenticationStepTemplate;
-import me.grudzien.patryk.oauth2.authentication.chain.AuthenticationResult;
+import me.grudzien.patryk.oauth2.authentication.model.enums.AuthenticationStepOrder;
+
+import static me.grudzien.patryk.oauth2.authentication.model.enums.AuthenticationStepOrder.FOURTH;
 
 public final class FourthStep extends AbstractAuthenticationStepBuilder<Jwt> {
 
@@ -32,8 +32,8 @@ public final class FourthStep extends AbstractAuthenticationStepBuilder<Jwt> {
 		getAuthenticationItems().setDecodedJwt(tryResult.get());
 	}
 
-	@Override
-	public Optional<AuthenticationResult> handleFailureDuringAuthOperation(final Try<Jwt> tryResult) {
-		return createGenericFailedResult(tryResult);
-	}
+    @Override
+    protected AuthenticationStepOrder specifyStepOrder() {
+        return FOURTH;
+    }
 }

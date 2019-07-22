@@ -5,11 +5,11 @@ import io.vavr.control.Try;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.jwt.JwtHelper;
 
-import java.util.Optional;
-
 import me.grudzien.patryk.oauth2.authentication.chain.AbstractAuthenticationStepBuilder;
 import me.grudzien.patryk.oauth2.authentication.chain.AbstractAuthenticationStepTemplate;
-import me.grudzien.patryk.oauth2.authentication.chain.AuthenticationResult;
+import me.grudzien.patryk.oauth2.authentication.model.enums.AuthenticationStepOrder;
+
+import static me.grudzien.patryk.oauth2.authentication.model.enums.AuthenticationStepOrder.SECOND;
 
 public final class SecondStep extends AbstractAuthenticationStepBuilder<String> {
 
@@ -34,7 +34,7 @@ public final class SecondStep extends AbstractAuthenticationStepBuilder<String> 
     }
 
     @Override
-    public Optional<AuthenticationResult> handleFailureDuringAuthOperation(final Try<String> tryResult) {
-	    return createGenericFailedResult(tryResult);
+    protected AuthenticationStepOrder specifyStepOrder() {
+        return SECOND;
     }
 }

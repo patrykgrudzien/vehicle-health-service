@@ -2,5 +2,5 @@ package me.grudzien.patryk.jwt.model.factory;
 
 public enum JwtAuthResponseType {
 
-	FAILED, SUCCESS
+    FAILED_RESPONSE, SUCCESS_RESPONSE
 }

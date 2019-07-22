@@ -27,6 +27,7 @@ import me.grudzien.patryk.jwt.service.JwtTokenService;
 import me.grudzien.patryk.oauth2.authentication.model.CustomAuthenticationToken;
 import me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases;
 import me.grudzien.patryk.registration.exception.CustomUserValidationException;
+import me.grudzien.patryk.utils.factory.FactoryProvider;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.web.RequestsDecoder;
 
@@ -35,10 +36,9 @@ import static io.vavr.API.$;
 import static io.vavr.API.Case;
 import static io.vavr.API.Match;
 
-import static me.grudzien.patryk.jwt.model.factory.JwtAuthResponseType.FAILED;
-import static me.grudzien.patryk.jwt.model.factory.JwtAuthResponseType.SUCCESS;
+import static me.grudzien.patryk.jwt.model.factory.JwtAuthResponseType.FAILED_RESPONSE;
+import static me.grudzien.patryk.jwt.model.factory.JwtAuthResponseType.SUCCESS_RESPONSE;
 import static me.grudzien.patryk.utils.mapping.ObjectDecoder.decodeAuthRequest;
-import static me.grudzien.patryk.utils.factory.FactoryProvider.getFactory;
 import static me.grudzien.patryk.utils.factory.FactoryType.JWT;
 import static me.grudzien.patryk.utils.validation.CustomValidator.getTranslatedValidationResult;
 
@@ -85,15 +85,21 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
                     final String email = decodedAuthRequest.getEmail();
                     log.info("Login request is correct. Starting authenticating the user with ({}) email.", email);
                     return authenticateUser(authenticationRequest)
-                            .map(authentication -> (JwtAuthenticationResponse) getFactory(JWT).create(SUCCESS,
-									jwtTokenService.generateAccessToken(decodedAuthRequest, device),
-		                            jwtTokenService.generateRefreshToken(decodedAuthRequest, device)))
-                            .orElse((JwtAuthenticationResponse) getFactory(JWT).create(FAILED));
+                            .map(authentication -> createSuccessResponse(decodedAuthRequest, device))
+                            .orElse((JwtAuthenticationResponse) FactoryProvider.getFactory(JWT).create(FAILED_RESPONSE));
                 })
         );
 	}
 
-	/**
+    private JwtAuthenticationResponse createSuccessResponse(final JwtAuthenticationRequest decodedAuthRequest, final Device device) {
+        return (JwtAuthenticationResponse) FactoryProvider.getFactory(JWT).create(
+                SUCCESS_RESPONSE,
+                jwtTokenService.generateAccessToken(decodedAuthRequest, device),
+                jwtTokenService.generateRefreshToken(decodedAuthRequest, device)
+        );
+    }
+
+    /**
 	 * Authenticates the user. If something is wrong, an
 	 * {@link BadCredentialsAuthenticationException} or
 	 * {@link UserDisabledAuthenticationException} will be thrown

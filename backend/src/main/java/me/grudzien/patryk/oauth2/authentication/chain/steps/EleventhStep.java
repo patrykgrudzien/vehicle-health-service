@@ -5,11 +5,11 @@ import io.vavr.control.Try;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
 
-import java.util.Optional;
-
 import me.grudzien.patryk.oauth2.authentication.chain.AbstractAuthenticationStepBuilder;
 import me.grudzien.patryk.oauth2.authentication.chain.AbstractAuthenticationStepTemplate;
-import me.grudzien.patryk.oauth2.authentication.chain.AuthenticationResult;
+import me.grudzien.patryk.oauth2.authentication.model.enums.AuthenticationStepOrder;
+
+import static me.grudzien.patryk.oauth2.authentication.model.enums.AuthenticationStepOrder.ELEVENTH;
 
 public final class EleventhStep extends AbstractAuthenticationStepBuilder<Void> {
 
@@ -42,7 +42,7 @@ public final class EleventhStep extends AbstractAuthenticationStepBuilder<Void> 
     }
 
     @Override
-    public Optional<AuthenticationResult> handleFailureDuringAuthOperation(final Try<Void> tryResult) {
-        return createGenericFailedResult(tryResult);
+    protected AuthenticationStepOrder specifyStepOrder() {
+        return ELEVENTH;
     }
 }

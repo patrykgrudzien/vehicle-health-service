@@ -5,12 +5,12 @@ import io.vavr.control.Try;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.jwt.crypto.sign.RsaVerifier;
 
-import java.util.Optional;
-
 import me.grudzien.patryk.oauth2.authentication.chain.AbstractAuthenticationStepBuilder;
 import me.grudzien.patryk.oauth2.authentication.chain.AbstractAuthenticationStepTemplate;
-import me.grudzien.patryk.oauth2.authentication.chain.AuthenticationResult;
+import me.grudzien.patryk.oauth2.authentication.model.enums.AuthenticationStepOrder;
 import me.grudzien.patryk.oauth2.service.google.impl.GooglePrincipalServiceProxy;
+
+import static me.grudzien.patryk.oauth2.authentication.model.enums.AuthenticationStepOrder.THIRD;
 
 public final class ThirdStep extends AbstractAuthenticationStepBuilder<RsaVerifier> {
 
@@ -42,7 +42,7 @@ public final class ThirdStep extends AbstractAuthenticationStepBuilder<RsaVerifi
     }
 
     @Override
-    public Optional<AuthenticationResult> handleFailureDuringAuthOperation(final Try<RsaVerifier> tryResult) {
-	    return createGenericFailedResult(tryResult);
+    protected AuthenticationStepOrder specifyStepOrder() {
+        return THIRD;
     }
 }

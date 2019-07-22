@@ -16,13 +16,15 @@ import me.grudzien.patryk.authentication.model.dto.JwtUser;
 import me.grudzien.patryk.authentication.service.impl.MyUserDetailsService;
 import me.grudzien.patryk.authentication.service.impl.UserAuthenticationServiceImpl;
 import me.grudzien.patryk.jwt.exception.MissingAuthenticationResultException;
-import me.grudzien.patryk.oauth2.authentication.chain.AuthenticationResult.Status;
+import me.grudzien.patryk.oauth2.authentication.chain.AbstractAuthenticationStepBuilder;
+import me.grudzien.patryk.oauth2.authentication.chain.AuthenticationResult;
 import me.grudzien.patryk.oauth2.authentication.chain.AuthenticationStepsFacade;
 import me.grudzien.patryk.oauth2.authentication.checkers.AdditionalChecks;
 import me.grudzien.patryk.oauth2.authentication.model.CustomAuthenticationToken;
 import me.grudzien.patryk.oauth2.service.google.GooglePrincipalService;
 import me.grudzien.patryk.oauth2.service.google.impl.GooglePrincipalServiceProxy;
 import me.grudzien.patryk.oauth2.utils.CacheManagerHelper;
+import me.grudzien.patryk.utils.factory.FactoryProvider;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -32,7 +34,8 @@ import static io.vavr.API.Match;
 import static io.vavr.Predicates.is;
 
 import static me.grudzien.patryk.authentication.model.factory.ExceptionType.DYNAMIC_BASED_ON_INPUT;
-import static me.grudzien.patryk.utils.factory.FactoryProvider.getFactory;
+import static me.grudzien.patryk.oauth2.authentication.chain.AuthenticationResult.Status.FAILED;
+import static me.grudzien.patryk.oauth2.authentication.chain.AuthenticationResult.Status.OK;
 import static me.grudzien.patryk.utils.factory.FactoryType.EXCEPTION;
 
 @Log4j2
@@ -81,22 +84,38 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 	@Override
 	public Authentication authenticate(final Authentication authentication) throws AuthenticationException {
 	    log.info("Starting custom authentication...");
+
+        final AbstractAuthenticationStepBuilder<?> abstractAuthenticationStepBuilder =
+                AuthenticationStepsFacade.buildAuthenticationFlow()
+                                         .withGooglePrincipalServiceProxy(googlePrincipalServiceProxy)
+                                         .withCacheManagerHelper(cacheManagerHelper)
+                                         .withUserDetailsService(userDetailsService)
+                                         .withLocaleMessageCreator(localeMessagesCreator)
+                                         .withPreUserDetailsChecker(customPreAuthenticationChecks)
+                                         .withPostUserDetailsChecker(customPostAuthenticationChecks)
+                                         .withAdditionalChecks(additionalChecks)
+                                         .buildAuthenticationFlow();
+
         return AuthenticationStepsFacade.buildAuthenticationFlow(googlePrincipalServiceProxy, cacheManagerHelper,
                                                                  userDetailsService, localeMessagesCreator,
                                                                  customPreAuthenticationChecks,
                                                                  customPostAuthenticationChecks, additionalChecks)
                                         .performAuthenticationSteps(authentication)
                                         .map(authenticationResult -> Match(authenticationResult.getStatus()).of(
-                                                Case($(is(Status.OK)), authenticationResult::getCustomAuthenticationToken),
-                                                Case($(is(Status.FAILED)), () -> {
-                                                	throw (RuntimeException) getFactory(EXCEPTION).create(DYNAMIC_BASED_ON_INPUT,
-	                                                                                                      authenticationResult.getExceptionClass().getName(),
-	                                                                                                      authenticationResult.getExceptionMessage());
-                                                }))
+                                                Case($(is(OK)), authenticationResult::getCustomAuthenticationToken),
+                                                Case($(is(FAILED)), () -> { throw dynamicRuntimeException(authenticationResult); }))
                                         )
                                         .orElseThrow(() -> new MissingAuthenticationResultException(localeMessagesCreator.buildLocaleMessage(
                                                 "missing-authentication-result-exception")));
 	}
+
+	private RuntimeException dynamicRuntimeException(final AuthenticationResult authenticationResult) {
+	    return (RuntimeException) FactoryProvider.getFactory(EXCEPTION)
+                .create(DYNAMIC_BASED_ON_INPUT,
+                        authenticationResult.getExceptionClass().getName(),
+                        authenticationResult.getExceptionMessage()
+                );
+    }
 
     /**
      * This implementation of {@link AuthenticationProvider} is being fired (executed) only when {@link Authentication} object is of type:
