@@ -154,7 +154,7 @@
                             </execution>
                         </executions>
                         <configuration>
-                            <mainClass>me.grudzien.patryk.CreateFileOnActiveHerokuProfile</mainClass>
+                            <mainClass>me.grudzien.patryk.HerokuDeploymentActivationHandler</mainClass>
                         </configuration>
                     </plugin>
                     <!-- Maven Dependency Plugin -->
