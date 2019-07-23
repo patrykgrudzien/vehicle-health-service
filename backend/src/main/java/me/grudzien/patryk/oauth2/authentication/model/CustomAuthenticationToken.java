@@ -1,5 +1,7 @@
 package me.grudzien.patryk.oauth2.authentication.model;
 
+import lombok.Builder;
+
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -7,7 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
-import static java.lang.Boolean.*;
+import static java.lang.Boolean.TRUE;
 
 public final class CustomAuthenticationToken extends AbstractAuthenticationToken {
 
@@ -22,6 +24,7 @@ public final class CustomAuthenticationToken extends AbstractAuthenticationToken
 		setAuthenticated(TRUE);
 	}
 
+    @Builder(builderMethodName = "Builder")
     public CustomAuthenticationToken(final UserDetails principal, final String jwtToken,
                                      final Collection<? extends GrantedAuthority> authorities) {
 		super(authorities);

@@ -40,8 +40,11 @@ public final class TwelfthStep extends AbstractAuthenticationStepBuilder<CustomA
         // ADDITIONAL-authentication checks
         final JwtUser jwtUser = getAuthenticationItems().getJwtUser();
         return Try.of(() -> {
-            final CustomAuthenticationToken customAuthenticationToken = new CustomAuthenticationToken(jwtUser, getAuthenticationItems().getToken(),
-                                                                                                      jwtUser.getAuthorities());
+            final CustomAuthenticationToken customAuthenticationToken = CustomAuthenticationToken.Builder()
+                                                                                                 .principal(jwtUser)
+                                                                                                 .jwtToken(getAuthenticationItems().getToken())
+                                                                                                 .authorities(jwtUser.getAuthorities())
+                                                                                                 .build();
             additionalChecks.additionalAuthenticationChecks(jwtUser, customAuthenticationToken, getAuthenticationItems().getSubjectIdentifier());
             return customAuthenticationToken;
         });

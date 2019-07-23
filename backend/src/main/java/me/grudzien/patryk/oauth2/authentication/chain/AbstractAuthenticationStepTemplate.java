@@ -61,11 +61,10 @@ public abstract class AbstractAuthenticationStepTemplate<OperationResultType> {
     public abstract void updateAuthenticationItemsOnSuccessOperation(final Try<OperationResultType> tryResult);
 
 	/**
-	 * Method that must inherit all authentication steps instances which purpose is to execute specific logic that handles failure of:
+	 * Method that can be inherited by any authentication step instance which purpose is to execute specific logic that handles failure of:
 	 * {@link AbstractAuthenticationStepTemplate#performSingleAuthOperation(Authentication)} and returns {@link AuthenticationResult}.
 	 * @param tryResult result of {@link AbstractAuthenticationStepTemplate#performSingleAuthOperation(Authentication)}
 	 */
-	// TODO: update comment here
     public abstract Optional<AuthenticationResult> handleFailureDuringAuthOperation(final Try<OperationResultType> tryResult);
 
     /**

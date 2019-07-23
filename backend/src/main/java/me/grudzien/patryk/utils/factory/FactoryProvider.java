@@ -12,7 +12,7 @@ import static io.vavr.Predicates.is;
 import static lombok.AccessLevel.NONE;
 
 import static me.grudzien.patryk.utils.factory.FactoryType.EXCEPTION;
-import static me.grudzien.patryk.utils.factory.FactoryType.JWT;
+import static me.grudzien.patryk.utils.factory.FactoryType.JWT_AUTH_RESPONSE;
 
 @NoArgsConstructor(access = NONE)
 public final class FactoryProvider {
@@ -21,7 +21,7 @@ public final class FactoryProvider {
     public static <InputType extends Enum<?>, ReturnObject> AbstractFactory<InputType, ReturnObject> getFactory(final FactoryType factoryType) {
 		return (AbstractFactory<InputType, ReturnObject>) Match(factoryType).of(
 				Case($(is(EXCEPTION)), ExceptionFactory::new),
-				Case($(is(JWT)), JwtAuthResponseFactory::new)
+				Case($(is(JWT_AUTH_RESPONSE)), JwtAuthResponseFactory::new)
 		);
 	}
 }

@@ -48,7 +48,11 @@ public abstract class AbstractAuthenticationStepBuilder<OperationResultType> ext
                 callNextStep(authentication) : finishAuthentication();
     }
 
-    // TODO: add JavaDoc here
+    /**
+     * Overriden to provide default behavior when specific authentication step fails.
+     * @param tryResult result of {@link AbstractAuthenticationStepTemplate#performSingleAuthOperation(Authentication)}
+     * @return {@link AuthenticationResult} object with failed state
+     */
     @Override
     public Optional<AuthenticationResult> handleFailureDuringAuthOperation(final Try<OperationResultType> tryResult) {
         return createGenericFailedResult(tryResult);
