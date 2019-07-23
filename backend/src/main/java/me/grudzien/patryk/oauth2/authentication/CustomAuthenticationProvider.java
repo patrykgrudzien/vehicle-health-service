@@ -117,8 +117,9 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
      */
 	@Override
 	public boolean supports(final Class<?> authentication) {
-	    log.info("Can ({}) be authenticated using ({}) -> ({})", CustomAuthenticationToken.class.getSimpleName(),
-	             CustomAuthenticationProvider.class.getSimpleName(), CustomAuthenticationToken.class.isAssignableFrom(authentication));
-		return CustomAuthenticationToken.class.isAssignableFrom(authentication);
+        final Class<CustomAuthenticationToken> tokenClass = CustomAuthenticationToken.class;
+        log.info("Can ({}) be authenticated using ({}) -> ({})",
+                 tokenClass.getSimpleName(), CustomAuthenticationProvider.class.getSimpleName(), tokenClass.isAssignableFrom(authentication));
+		return tokenClass.isAssignableFrom(authentication);
 	}
 }

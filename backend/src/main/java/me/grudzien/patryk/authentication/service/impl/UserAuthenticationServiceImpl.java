@@ -47,7 +47,7 @@ import static me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases
 import static me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases.UserAccountIsLockedExceptionCase;
 import static me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases.UserIsDisabledExceptionCase;
 import static me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases.UsernameNotFoundExceptionCase;
-import static me.grudzien.patryk.utils.factory.FactoryType.JWT;
+import static me.grudzien.patryk.utils.factory.FactoryType.JWT_AUTH_RESPONSE;
 import static me.grudzien.patryk.utils.mapping.ObjectDecoder.decodeAuthRequest;
 import static me.grudzien.patryk.utils.validation.CustomValidator.getTranslatedValidationResult;
 
@@ -95,13 +95,13 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
                     log.info("Login request is correct. Starting authenticating the user with ({}) email.", email);
                     return authenticateUser(authenticationRequest)
                             .map(authentication -> createSuccessResponse(decodedAuthRequest, device))
-                            .orElse((JwtAuthenticationResponse) FactoryProvider.getFactory(JWT).create(FAILED_RESPONSE));
+                            .orElse((JwtAuthenticationResponse) FactoryProvider.getFactory(JWT_AUTH_RESPONSE).create(FAILED_RESPONSE));
                 })
         );
 	}
 
     private JwtAuthenticationResponse createSuccessResponse(final JwtAuthenticationRequest decodedAuthRequest, final Device device) {
-        return (JwtAuthenticationResponse) FactoryProvider.getFactory(JWT).create(
+        return (JwtAuthenticationResponse) FactoryProvider.getFactory(JWT_AUTH_RESPONSE).create(
                 SUCCESS_RESPONSE,
                 jwtTokenService.generateAccessToken(decodedAuthRequest, device),
                 jwtTokenService.generateRefreshToken(decodedAuthRequest, device)
