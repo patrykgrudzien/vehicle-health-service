@@ -10,6 +10,8 @@ import javax.validation.Validator;
 
 import java.util.Set;
 
+import me.grudzien.patryk.utils.mapping.ObjectDecoder;
+
 @Service
 public class ValidationService {
 
@@ -21,16 +23,24 @@ public class ValidationService {
         this.beanValidator = beanValidator;
     }
 
-    public <T> void validate(final T bean) {
-        this.validateObject(bean, ValidationSequence.class);
+    public <T, Mapper> void validate(final T bean,
+                             final ObjectDecoder<T, Mapper> objectDecoder,
+                             final Mapper mapper) {
+        this.validateObject(objectDecoder, bean, mapper, ValidationSequence.class);
     }
 
-    public <T> void validate(final T bean, final Class... groups) {
-        this.validateObject(bean, ArrayUtils.add(groups, ValidationSequence.class));
+    public <T, Mapper> void validate(final T bean,
+                                     final ObjectDecoder<T, Mapper> objectDecoder,
+                                     final Mapper mapper,
+                                     final Class... groups) {
+        this.validateObject(objectDecoder, bean, mapper, ArrayUtils.add(groups, ValidationSequence.class));
     }
 
-    private <T> void validateObject(final T bean, final Class... groups) {
-        final Set<ConstraintViolation<T>> violations = beanValidator.validate(bean, groups);
+    private <T, Mapper> void validateObject(final ObjectDecoder<T, Mapper> objectDecoder,
+                                            final T bean,
+                                            final Mapper mapper,
+                                            final Class... groups) {
+        final Set<ConstraintViolation<T>> violations = beanValidator.validate(objectDecoder.apply(bean, mapper), groups);
         if (!violations.isEmpty()) {
             throw new ConstraintViolationException(
                     String.format(VALIDATION_FAILED_MSG_TEMPLATE, bean.getClass().getSimpleName(), violations.size()),

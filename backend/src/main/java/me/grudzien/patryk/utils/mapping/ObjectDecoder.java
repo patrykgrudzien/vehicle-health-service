@@ -7,15 +7,15 @@ import me.grudzien.patryk.registration.model.dto.UserRegistrationDto;
 import me.grudzien.patryk.authentication.mapping.JwtAuthenticationRequestMapper;
 import me.grudzien.patryk.registration.mapping.UserRegistrationDtoMapper;
 
-public interface ObjectDecoder<EncodedObject, Mapper, DecodedObject> {
+public interface ObjectDecoder<Object, Mapper> {
 
-    DecodedObject apply(@NonNull final EncodedObject encodedObject, @NonNull final Mapper mapper);
+    Object apply(@NonNull final Object encodedObject, @NonNull final Mapper mapper);
 
-    static ObjectDecoder<JwtAuthenticationRequest, JwtAuthenticationRequestMapper, JwtAuthenticationRequest> decodeAuthRequest() {
+    static ObjectDecoder<JwtAuthenticationRequest, JwtAuthenticationRequestMapper> decodeAuthRequest() {
         return (encodedAuthRequest, jwtAuthenticationRequestMapper) -> jwtAuthenticationRequestMapper.toDecodedAuthRequest(encodedAuthRequest);
     }
 
-    static ObjectDecoder<UserRegistrationDto, UserRegistrationDtoMapper, UserRegistrationDto> decodeUserRegistrationDto() {
+    static ObjectDecoder<UserRegistrationDto, UserRegistrationDtoMapper> decodeUserRegistrationDto() {
         return (encodedDto, userRegistrationDtoMapper) -> userRegistrationDtoMapper.toDecodedUserRegistrationDto(encodedDto);
     }
 }
