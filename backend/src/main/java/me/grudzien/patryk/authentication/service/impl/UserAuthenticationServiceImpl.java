@@ -9,13 +9,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 import me.grudzien.patryk.authentication.exception.BadCredentialsAuthenticationException;
 import me.grudzien.patryk.authentication.exception.UserDisabledAuthenticationException;
@@ -47,8 +45,10 @@ import static me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases
 import static me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases.UserAccountIsLockedExceptionCase;
 import static me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases.UserIsDisabledExceptionCase;
 import static me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases.UsernameNotFoundExceptionCase;
+import static me.grudzien.patryk.utils.common.Predicates.isListEmpty;
+import static me.grudzien.patryk.utils.common.Predicates.isListNotEmpty;
 import static me.grudzien.patryk.utils.factory.FactoryType.JWT_AUTH_RESPONSE;
-import static me.grudzien.patryk.utils.mapping.ObjectDecoder.decodeAuthRequest;
+import static me.grudzien.patryk.utils.mapping.ObjectDecoder.authRequestDecoder;
 import static me.grudzien.patryk.utils.validation.CustomValidator.getTranslatedValidationResult;
 
 @Log4j2
@@ -80,17 +80,16 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 
 	@Override
 	public JwtAuthenticationResponse login(final JwtAuthenticationRequest authenticationRequest, final Device device) {
-		final JwtAuthenticationRequest decodedAuthRequest = decodeAuthRequest().apply(authenticationRequest, jwtAuthenticationRequestMapper);
+		final JwtAuthenticationRequest decodedAuthRequest = authRequestDecoder().apply(authenticationRequest, jwtAuthenticationRequestMapper);
 		final List<String> translatedValidationResult = getTranslatedValidationResult(decodedAuthRequest, localeMessagesCreator);
-		final Predicate<List<String>> isNotEmpty = list -> !ObjectUtils.isEmpty(list);
-		final Predicate<List<String>> isEmpty = ObjectUtils::isEmpty;
 		return Match(translatedValidationResult).of(
-		        Case($(isNotEmpty), () -> {
+		        Case($(isListNotEmpty()), () -> {
                     log.error("Validation errors present during login.");
+                    // TODO:
                     throw new CustomUserValidationException(localeMessagesCreator.buildLocaleMessage("login-form-validation-errors"),
                                                             translatedValidationResult);
                 }),
-                Case($(isEmpty), () -> {
+                Case($(isListEmpty()), () -> {
                     final String email = decodedAuthRequest.getEmail();
                     log.info("Login request is correct. Starting authenticating the user with ({}) email.", email);
                     return authenticateUser(authenticationRequest)

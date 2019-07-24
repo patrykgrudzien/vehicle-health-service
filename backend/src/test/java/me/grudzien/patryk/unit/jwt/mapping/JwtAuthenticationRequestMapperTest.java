@@ -34,7 +34,7 @@ class JwtAuthenticationRequestMapperTest {
         final JwtAuthenticationRequest encodedAuthRequest = prepareLoginRequest(TEST_EMAIL, TEST_PASSWORD, ENABLE_ENCODING);
 
         // when
-        final JwtAuthenticationRequest decodedAuthRequest = ObjectDecoder.decodeAuthRequest().apply(encodedAuthRequest, jwtAuthenticationRequestMapper);
+        final JwtAuthenticationRequest decodedAuthRequest = ObjectDecoder.authRequestDecoder().apply(encodedAuthRequest, jwtAuthenticationRequestMapper);
 
         // then
         Assertions.assertAll(

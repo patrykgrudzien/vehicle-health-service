@@ -91,7 +91,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 	@SuppressWarnings("Duplicates")
 	@Override
 	public RegistrationResponse registerNewCustomUserAccount(final UserRegistrationDto userRegistrationDto) {
-		final UserRegistrationDto decodedUserRegistrationDto = ObjectDecoder.decodeUserRegistrationDto().apply(userRegistrationDto, userRegistrationDtoMapper);
+		final UserRegistrationDto decodedUserRegistrationDto = ObjectDecoder.userRegistrationDtoDecoder().apply(userRegistrationDto, userRegistrationDtoMapper);
 		final String email = decodedUserRegistrationDto.getEmail();
 		final RegistrationProvider registrationProvider = userRegistrationDto.getRegistrationProvider();
 		final RegistrationResponse registrationResponse = RegistrationResponse.Builder(false).build();

@@ -11,11 +11,11 @@ public interface ObjectDecoder<Object, Mapper> {
 
     Object apply(@NonNull final Object encodedObject, @NonNull final Mapper mapper);
 
-    static ObjectDecoder<JwtAuthenticationRequest, JwtAuthenticationRequestMapper> decodeAuthRequest() {
+    static ObjectDecoder<JwtAuthenticationRequest, JwtAuthenticationRequestMapper> authRequestDecoder() {
         return (encodedAuthRequest, jwtAuthenticationRequestMapper) -> jwtAuthenticationRequestMapper.toDecodedAuthRequest(encodedAuthRequest);
     }
 
-    static ObjectDecoder<UserRegistrationDto, UserRegistrationDtoMapper> decodeUserRegistrationDto() {
+    static ObjectDecoder<UserRegistrationDto, UserRegistrationDtoMapper> userRegistrationDtoDecoder() {
         return (encodedDto, userRegistrationDtoMapper) -> userRegistrationDtoMapper.toDecodedUserRegistrationDto(encodedDto);
     }
 }

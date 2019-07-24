@@ -2,8 +2,11 @@ package me.grudzien.patryk.utils.common;
 
 import lombok.NoArgsConstructor;
 
+import org.springframework.util.ObjectUtils;
+
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static lombok.AccessLevel.NONE;
@@ -21,5 +24,13 @@ public final class Predicates {
 
     public static <E> boolean containsInstance(final List<E> list, final Class<? extends E> clazz) {
         return list.stream().anyMatch(clazz::isInstance);
+    }
+
+    public static <E> Predicate<List<E>> isListEmpty() {
+        return ObjectUtils::isEmpty;
+    }
+
+    public static <E> Predicate<List<E>> isListNotEmpty() {
+        return list -> !ObjectUtils.isEmpty(list);
     }
 }

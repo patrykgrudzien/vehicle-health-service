@@ -13,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,6 +32,10 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.params.provider.Arguments.*;
 
 import static me.grudzien.patryk.TestsUtils.ENABLE_ENCODING;
 import static me.grudzien.patryk.TestsUtils.TEST_EMAIL;
@@ -69,11 +72,11 @@ class AuthenticationResourceImplIT {
                 testRestTemplate.postForEntity(AUTHENTICATION_RESOURCE_ROOT + LOGIN, loginRequest, JwtAuthenticationResponse.class);
 
 		// then
-		Assertions.assertAll(
-                () -> Assertions.assertNotNull(response.getBody()),
-                () -> Assertions.assertNotNull(Objects.requireNonNull(response.getBody()).getAccessToken()),
-                () -> Assertions.assertNotNull(Objects.requireNonNull(response.getBody()).getRefreshToken()),
-                () -> Assertions.assertTrue(Objects.requireNonNull(response.getBody()).isSuccessful())
+		assertAll(
+                () -> assertNotNull(response.getBody()),
+                () -> assertNotNull(Objects.requireNonNull(response.getBody()).getAccessToken()),
+                () -> assertNotNull(Objects.requireNonNull(response.getBody()).getRefreshToken()),
+                () -> assertTrue(Objects.requireNonNull(response.getBody()).isSuccessful())
         );
 	}
 
@@ -85,10 +88,10 @@ class AuthenticationResourceImplIT {
 	    final String noCredentialsProvided = prepareAuthJSONBody("", "", ENABLE_ENCODING);
 
         return Stream.of(
-                Arguments.arguments(Method.POST, emptyEmail, 2, new String[] {"Email address cannot be empty.", "Provided email has incorrect format."}),
-                Arguments.arguments(Method.POST, invalidEmailFormat, 1, new String[] {"Provided email has incorrect format."}),
-                Arguments.arguments(Method.POST, emptyPassword, 1, new String[] {"Password cannot be empty."}),
-                Arguments.arguments(Method.POST, noCredentialsProvided, 3,
+                arguments(Method.POST, emptyEmail, 2, new String[] {"Email address cannot be empty.", "Provided email has incorrect format."}),
+                arguments(Method.POST, invalidEmailFormat, 1, new String[] {"Provided email has incorrect format."}),
+                arguments(Method.POST, emptyPassword, 1, new String[] {"Password cannot be empty."}),
+                arguments(Method.POST, noCredentialsProvided, 3,
                                     new String[] {"Email address cannot be empty.", "Password cannot be empty.", "Provided email has incorrect format."})
         );
     }
@@ -121,10 +124,10 @@ class AuthenticationResourceImplIT {
         final String noCredentialsProvided = prepareAuthJSONBody("", "", ENABLE_ENCODING);
 
         return Stream.of(
-                Arguments.arguments(Method.POST, emptyEmail, 2, new String[] {"Adres email nie może być pusty.", "Wprowadzony email ma nieprawidłowy format."}),
-                Arguments.arguments(Method.POST, invalidEmailFormat, 1, new String[] {"Wprowadzony email ma nieprawidłowy format."}),
-                Arguments.arguments(Method.POST, emptyPassword, 1, new String[] {"Hasło nie może być puste."}),
-                Arguments.arguments(Method.POST, noCredentialsProvided, 3,
+                arguments(Method.POST, emptyEmail, 2, new String[] {"Adres email nie może być pusty.", "Wprowadzony email ma nieprawidłowy format."}),
+                arguments(Method.POST, invalidEmailFormat, 1, new String[] {"Wprowadzony email ma nieprawidłowy format."}),
+                arguments(Method.POST, emptyPassword, 1, new String[] {"Hasło nie może być puste."}),
+                arguments(Method.POST, noCredentialsProvided, 3,
                                     new String[] {"Adres email nie może być pusty.", "Hasło nie może być puste.", "Wprowadzony email ma nieprawidłowy format."})
         );
     }

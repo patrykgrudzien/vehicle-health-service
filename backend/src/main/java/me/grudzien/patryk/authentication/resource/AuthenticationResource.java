@@ -12,6 +12,7 @@ import org.springframework.web.context.request.WebRequest;
 
 import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationRequest;
 import me.grudzien.patryk.authentication.model.dto.JwtUser;
+import me.grudzien.patryk.utils.aop.aspect.LoggingAspect;
 
 import static me.grudzien.patryk.authentication.resource.AuthenticationResourceDefinitions.AUTHENTICATION_RESOURCE_ROOT;
 import static me.grudzien.patryk.authentication.resource.AuthenticationResourceDefinitions.LOGIN;
@@ -28,7 +29,7 @@ public interface AuthenticationResource {
      *
      * @param authenticationRequest Credentials of the user who is being authenticated.
      * @param device A model for the user agent or device that submitted the current request.
-     * @param webRequest Parameter used for the purpose of {@link me.grudzien.patryk.utils.aop.aspect.LoggingAspect}.
+     * @param webRequest Parameter used for the purpose of {@link LoggingAspect}.
      * @return {@link org.springframework.http.HttpStatus#OK} if authentication was successful, otherwise:
      * {@link org.springframework.http.HttpStatus#BAD_REQUEST}.
      */
@@ -38,9 +39,9 @@ public interface AuthenticationResource {
     /**
      * Retrieves current principal user {@link org.springframework.security.core.Authentication#getPrincipal()}.
      *
-     * @param webRequest Parameter used for the purpose of {@link me.grudzien.patryk.utils.aop.aspect.LoggingAspect}.
-     * @param jwtUser authenticated principal user of type {@link me.grudzien.patryk.authentication.model.dto.JwtUser}.
-     * @return {@link me.grudzien.patryk.authentication.model.dto.JwtUser}.
+     * @param webRequest Parameter used for the purpose of {@link LoggingAspect}.
+     * @param jwtUser authenticated principal user of type {@link JwtUser}.
+     * @return {@link JwtUser}.
      */
     @GetMapping(PRINCIPAL_USER)
     @PreAuthorize("isAuthenticated()")

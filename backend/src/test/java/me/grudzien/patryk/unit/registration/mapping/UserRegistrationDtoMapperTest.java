@@ -35,7 +35,7 @@ class UserRegistrationDtoMapperTest {
         final UserRegistrationDto encodedRegistrationDto = prepareUserRegistrationDto("John", "Snow", TEST_EMAIL, TEST_PASSWORD, ENABLE_ENCODING);
 
         // when
-        final UserRegistrationDto decodedRegistrationDto = ObjectDecoder.decodeUserRegistrationDto().apply(encodedRegistrationDto, userRegistrationDtoMapper);
+        final UserRegistrationDto decodedRegistrationDto = ObjectDecoder.userRegistrationDtoDecoder().apply(encodedRegistrationDto, userRegistrationDtoMapper);
 
         // then
         Assertions.assertAll(

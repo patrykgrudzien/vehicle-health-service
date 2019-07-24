@@ -13,13 +13,13 @@ final class ValidationGroups {
 
     /**
      * Group of validations to be executed after {@link javax.validation.GroupSequence} ones.
-     * @see me.grudzien.patryk.utils.validation.ValidationSequence
+     * @see ValidationSequence
      */
     interface Step2 {}
 
     /**
      * Group of validations to be executed after {@link Step2} ones.
-     * @see me.grudzien.patryk.utils.validation.ValidationSequence
+     * @see ValidationSequence
      */
     interface Step3 {}
 }

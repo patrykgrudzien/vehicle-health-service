@@ -20,6 +20,7 @@ import me.grudzien.patryk.jwt.exception.CustomAuthenticationUnknownException;
 import me.grudzien.patryk.jwt.exception.MissingAuthenticationResultException;
 import me.grudzien.patryk.jwt.exception.NoEmailProvidedException;
 import me.grudzien.patryk.jwt.exception.NoRefreshTokenProvidedException;
+import me.grudzien.patryk.utils.exception.CustomConstraintViolationException;
 import me.grudzien.patryk.utils.web.model.ExceptionResponse;
 import me.grudzien.patryk.vehicle.exception.VehicleNotFoundException;
 import me.grudzien.patryk.oauth2.exception.JwtTokenNotFoundException;
@@ -89,6 +90,13 @@ public class ExceptionHandlingController {
 		response.setErrors(exception.getValidationErrors());
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}
+
+    @ExceptionHandler(CustomConstraintViolationException.class)
+    public ResponseEntity<ExceptionResponse> test(final CustomConstraintViolationException exception) {
+        final ExceptionResponse response = ExceptionResponse.buildBodyMessage(exception);
+        response.setErrors(exception.getValidationErrors());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
 
 	@ExceptionHandler(EmailVerificationTokenNotFoundException.class)
 	public ResponseEntity<ExceptionResponse> emailVerificationTokenNotFoundException(final EmailVerificationTokenNotFoundException exception) {
