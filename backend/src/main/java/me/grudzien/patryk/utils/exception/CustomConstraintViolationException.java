@@ -1,5 +1,6 @@
 package me.grudzien.patryk.utils.exception;
 
+import lombok.Builder;
 import lombok.Getter;
 
 import org.springframework.lang.NonNull;
@@ -21,10 +22,7 @@ public class CustomConstraintViolationException extends ConstraintViolationExcep
     private final List<String> validationErrors;
     private final String messageCode;
 
-    private CustomConstraintViolationException(final Builder builder) {
-        this(builder.validationMessage, builder.constraintViolations, builder.messageCode, builder.localeMessagesCreator);
-    }
-
+    @Builder(builderClassName = "LombokBuilder")
     private CustomConstraintViolationException(final String validationMessage,
                                                final Set<? extends ConstraintViolation<?>> constraintViolations,
                                                final String messageCode,
@@ -40,41 +38,5 @@ public class CustomConstraintViolationException extends ConstraintViolationExcep
                         .map(ConstraintViolation::getMessage)
                         .map(localeMessagesCreator::buildLocaleMessage)
                         .collect(Collectors.toList());
-    }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    public static class Builder {
-
-        private String validationMessage;
-        private Set<? extends ConstraintViolation<?>> constraintViolations;
-        private String messageCode;
-        private LocaleMessagesCreator localeMessagesCreator;
-
-        public Builder validationMessage(final String validationMessage) {
-            this.validationMessage = validationMessage;
-            return this;
-        }
-
-        public Builder constraintViolations(final Set<? extends ConstraintViolation<?>> constraintViolations) {
-            this.constraintViolations = constraintViolations;
-            return this;
-        }
-
-        public Builder messageCode(final String messageCode) {
-            this.messageCode = messageCode;
-            return this;
-        }
-
-        public Builder localeMessagesCreator(final LocaleMessagesCreator localeMessagesCreator) {
-            this.localeMessagesCreator = localeMessagesCreator;
-            return this;
-        }
-
-        public CustomConstraintViolationException build() {
-            return new CustomConstraintViolationException(this);
-        }
     }
 }
