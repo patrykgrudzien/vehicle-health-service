@@ -34,7 +34,7 @@ import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationRequest;
 import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationResponse;
 import me.grudzien.patryk.authentication.resource.AuthenticationResourceImpl;
 import me.grudzien.patryk.authentication.service.UserAuthenticationService;
-import me.grudzien.patryk.utils.validation.CustomValidator;
+import me.grudzien.patryk.utils.validation.to.remove.CustomValidator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;

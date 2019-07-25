@@ -45,11 +45,11 @@ import static me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases
 import static me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases.UserAccountIsLockedExceptionCase;
 import static me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases.UserIsDisabledExceptionCase;
 import static me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases.UsernameNotFoundExceptionCase;
-import static me.grudzien.patryk.utils.common.Predicates.isListEmpty;
-import static me.grudzien.patryk.utils.common.Predicates.isListNotEmpty;
+import static me.grudzien.patryk.utils.common.Predicates.isCollectionEmpty;
+import static me.grudzien.patryk.utils.common.Predicates.isCollectionNotEmpty;
 import static me.grudzien.patryk.utils.factory.FactoryType.JWT_AUTH_RESPONSE;
-import static me.grudzien.patryk.utils.mapping.ObjectDecoder.authRequestDecoder;
-import static me.grudzien.patryk.utils.validation.CustomValidator.getTranslatedValidationResult;
+import static me.grudzien.patryk.utils.web.ObjectDecoder.authRequestDecoder;
+import static me.grudzien.patryk.utils.validation.to.remove.CustomValidator.getTranslatedValidationResult;
 
 @Log4j2
 @Service
@@ -83,13 +83,13 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 		final JwtAuthenticationRequest decodedAuthRequest = authRequestDecoder().apply(authenticationRequest, jwtAuthenticationRequestMapper);
 		final List<String> translatedValidationResult = getTranslatedValidationResult(decodedAuthRequest, localeMessagesCreator);
 		return Match(translatedValidationResult).of(
-		        Case($(isListNotEmpty()), () -> {
+		        Case($(isCollectionNotEmpty()), () -> {
                     log.error("Validation errors present during login.");
                     // TODO:
                     throw new CustomUserValidationException(localeMessagesCreator.buildLocaleMessage("login-form-validation-errors"),
                                                             translatedValidationResult);
                 }),
-                Case($(isListEmpty()), () -> {
+                Case($(isCollectionEmpty()), () -> {
                     final String email = decodedAuthRequest.getEmail();
                     log.info("Login request is correct. Starting authenticating the user with ({}) email.", email);
                     return authenticateUser(authenticationRequest)

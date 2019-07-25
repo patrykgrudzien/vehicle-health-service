@@ -19,32 +19,32 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static org.springframework.http.ResponseEntity.badRequest;
 import static org.springframework.http.ResponseEntity.ok;
 
-import static me.grudzien.patryk.utils.mapping.ObjectDecoder.authRequestDecoder;
+import static me.grudzien.patryk.utils.web.ObjectDecoder.authRequestDecoder;
 
 @Log4j2
 @RestController
 public class AuthenticationResourceImpl implements AuthenticationResource {
 
     private final UserAuthenticationService userAuthenticationService;
-    private final JwtAuthenticationRequestMapper jwtAuthenticationRequestMapper;
+    private final JwtAuthenticationRequestMapper authRequestMapper;
     private final ValidationService validationService;
 
     public AuthenticationResourceImpl(final UserAuthenticationService userAuthenticationService,
-                                      final JwtAuthenticationRequestMapper jwtAuthenticationRequestMapper,
+                                      final JwtAuthenticationRequestMapper authRequestMapper,
                                       final ValidationService validationService) {
         checkNotNull(userAuthenticationService, "userAuthenticationService cannot be null!");
-        checkNotNull(jwtAuthenticationRequestMapper, "jwtAuthenticationRequestMapper cannot be null!");
+        checkNotNull(authRequestMapper, "authRequestMapper cannot be null!");
         checkNotNull(validationService, "validationService cannot be null!");
 
         this.userAuthenticationService = userAuthenticationService;
-        this.jwtAuthenticationRequestMapper = jwtAuthenticationRequestMapper;
+        this.authRequestMapper = authRequestMapper;
         this.validationService = validationService;
     }
 
     @Override
     public ResponseEntity<?> login(final JwtAuthenticationRequest authenticationRequest, final Device device, final WebRequest webRequest) {
-        // TODO:
-        validationService.validate(authenticationRequest, authRequestDecoder(), jwtAuthenticationRequestMapper);
+        validationService.validate(authenticationRequest, authRequestDecoder(), authRequestMapper, "login-form-validation-errors")
+                         .onErrors();
         final JwtAuthenticationResponse authenticationResponse = userAuthenticationService.login(authenticationRequest, device);
         return authenticationResponse.isSuccessful() ?
                 ok(authenticationResponse) : badRequest().body(authenticationResponse);

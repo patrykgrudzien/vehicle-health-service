@@ -11,7 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import me.grudzien.patryk.registration.mapping.UserRegistrationDtoMapper;
 import me.grudzien.patryk.registration.mapping.UserRegistrationDtoMapperImpl;
 import me.grudzien.patryk.registration.model.dto.UserRegistrationDto;
-import me.grudzien.patryk.utils.mapping.ObjectDecoder;
+import me.grudzien.patryk.utils.web.ObjectDecoder;
 import me.grudzien.patryk.utils.web.RequestsDecoder;
 
 import static org.assertj.core.api.Assertions.assertThat;
