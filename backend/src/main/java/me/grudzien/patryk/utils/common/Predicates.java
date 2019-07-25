@@ -2,7 +2,9 @@ package me.grudzien.patryk.utils.common;
 
 import lombok.NoArgsConstructor;
 
+import org.springframework.lang.Nullable;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Objects;
@@ -26,11 +28,35 @@ public final class Predicates {
         return list.stream().anyMatch(clazz::isInstance);
     }
 
-    public static <E> Predicate<List<E>> isListEmpty() {
+    public static Predicate<Object> isCollectionEmpty() {
         return ObjectUtils::isEmpty;
     }
 
-    public static <E> Predicate<List<E>> isListNotEmpty() {
+    public static Predicate<Object> isCollectionNotEmpty() {
         return list -> !ObjectUtils.isEmpty(list);
+    }
+
+    public static boolean isEmpty(final @Nullable Object str) {
+        return StringUtils.isEmpty(str);
+    }
+
+    public static boolean isNotEmpty(final @Nullable Object str) {
+        return !isEmpty(str);
+    }
+
+    public static boolean isNotNumeric(final CharSequence cs) {
+        return !isNumeric(cs);
+    }
+
+    public static boolean isNotAlpha(final CharSequence cs) {
+        return !isAlpha(cs);
+    }
+
+    private static boolean isAlpha(final CharSequence cs) {
+        return org.apache.commons.lang3.StringUtils.isAlpha(cs);
+    }
+
+    private static boolean isNumeric(final CharSequence cs) {
+        return org.apache.commons.lang3.StringUtils.isNumeric(cs);
     }
 }

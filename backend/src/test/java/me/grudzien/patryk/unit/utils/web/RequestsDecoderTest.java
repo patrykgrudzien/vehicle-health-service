@@ -1,6 +1,5 @@
 package me.grudzien.patryk.unit.utils.web;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -11,8 +10,10 @@ import java.util.stream.Stream;
 import me.grudzien.patryk.utils.web.RequestsDecoder;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 class RequestsDecoderTest {
 
@@ -20,17 +21,17 @@ class RequestsDecoderTest {
 
     private static Stream<Arguments> correctInputParams() {
         return Stream.of(
-                Arguments.arguments("Patryk"),
-                Arguments.arguments("Grudzień"),
-                Arguments.arguments("ąźćżóęść"),
-                Arguments.arguments("John"),
-                Arguments.arguments("Snow"),
-                Arguments.arguments("test@email.com"),
-                Arguments.arguments("password"),
-                Arguments.arguments("test."),
-                Arguments.arguments(".test"),
-                Arguments.arguments("_test"),
-                Arguments.arguments("test_")
+                arguments("Patryk"),
+                arguments("Grudzień"),
+                arguments("ąźćżóęść"),
+                arguments("John"),
+                arguments("Snow"),
+                arguments("test@email.com"),
+                arguments("password"),
+                arguments("test."),
+                arguments(".test"),
+                arguments("_test"),
+                arguments("test_")
         );
     }
 
@@ -44,7 +45,7 @@ class RequestsDecoderTest {
         final String decodedInput = requestsDecoder.decodeStringParam(encodedInput);
 
         // then
-        Assertions.assertAll(
+        assertAll(
                 () -> assertFalse(requestsDecoder.isParamEncoded(inputParam)),
                 () -> assertTrue(requestsDecoder.isParamEncoded(encodedInput)),
                 () -> assertFalse(requestsDecoder.isParamEncoded(decodedInput)),
@@ -54,8 +55,8 @@ class RequestsDecoderTest {
 
 	private static Stream<Arguments> incorrectInputParams() {
 		return Stream.of(
-				Arguments.arguments(""),
-				Arguments.arguments((Object) null)
+				arguments(""),
+				arguments((Object) null)
 		);
 	}
 
@@ -63,7 +64,7 @@ class RequestsDecoderTest {
 	@MethodSource("incorrectInputParams")
 	void testRequestDecoder_incorrectInputParam(final String inputParam) {
 		// then
-		Assertions.assertAll(
+		assertAll(
 				() -> assertFalse(requestsDecoder.isParamEncoded(inputParam)),
 				() -> assertThat(requestsDecoder.decodeStringParam(inputParam)).isEqualTo(inputParam)
 		);
