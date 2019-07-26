@@ -1,7 +1,7 @@
 package me.grudzien.patryk.utils.validation;
 
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import org.springframework.stereotype.Service;
 
@@ -93,26 +93,26 @@ public class ValidationService {
         final Set<? extends ConstraintViolation<?>> violations = beanValidator.validate(objectDecoder.apply(bean, mapper), groups);
         final String message = VALIDATION_FAILED_MSG.apply(bean.getClass().getSimpleName(), violations.size());
         return violations.isEmpty() ?
-                validationResult().ok() : validationResult().failedWith(message, violations);
+                validationResult() : validationResult().failedWith(message, violations);
     }
 
     private <T> ValidationResult validateObjectWithResult(final T bean, final Class... groups) {
         final Set<? extends ConstraintViolation<?>> violations = beanValidator.validate(bean, groups);
         final String message = VALIDATION_FAILED_MSG.apply(bean.getClass().getSimpleName(), violations.size());
         return violations.isEmpty() ?
-                validationResult().ok() : validationResult().failedWith(message, violations);
+                validationResult() : validationResult().failedWith(message, violations);
     }
 
     private ValidationResult validationResult() {
         return new ValidationResult();
     }
 
-    @NoArgsConstructor(access = PRIVATE, force = true)
-    @RequiredArgsConstructor(access = PRIVATE)
+    @NoArgsConstructor(access = PRIVATE)
+    @Setter(PRIVATE)
     public class ValidationResult {
 
-        private final String message;
-        private final Set<? extends ConstraintViolation<?>> violations;
+        private String message;
+        private Set<? extends ConstraintViolation<?>> violations;
 
         public final void onErrorsSetExceptionMessageCode(final String messageCode) {
             if (nonNull(violations) && !violations.isEmpty())
@@ -129,12 +129,10 @@ public class ValidationService {
                                 .build();
         }
 
-        private ValidationResult ok() {
-            return new ValidationResult();
-        }
-
         private ValidationResult failedWith(final String message, final Set<? extends ConstraintViolation<?>> violations) {
-            return new ValidationResult(message, violations);
+            setMessage(message);
+            setViolations(violations);
+            return this;
         }
     }
 }
