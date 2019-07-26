@@ -1,4 +1,4 @@
-package me.grudzien.patryk.utils.validation;
+package me.grudzien.patryk.utils.validation.to.remove;
 
 import org.springframework.lang.NonNull;
 
@@ -18,6 +18,7 @@ public interface CustomValidator {
 		return Validation.buildDefaultValidatorFactory().getValidator();
 	}
 
+	// TODO: to be removed
 	static <T> List<String> getTranslatedValidationResult(@NonNull final T input, @NonNull final LocaleMessagesCreator localeMessagesCreator) {
 		final Set<ConstraintViolation<T>> validation = getDefaultValidator().validate(input);
 		return validation.stream()

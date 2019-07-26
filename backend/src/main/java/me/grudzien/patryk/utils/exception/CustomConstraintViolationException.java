@@ -1,5 +1,6 @@
 package me.grudzien.patryk.utils.exception;
 
+import lombok.Builder;
 import lombok.Getter;
 
 import org.springframework.lang.NonNull;
@@ -16,17 +17,23 @@ import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 @Getter
 public class CustomConstraintViolationException extends ConstraintViolationException {
 
-    public final List<String> validationErrors;
+    private static final long serialVersionUID = -345792305372280930L;
 
-    public CustomConstraintViolationException(final String message,
-                                              final Set<? extends ConstraintViolation<?>> constraintViolations,
-                                              final LocaleMessagesCreator localeMessagesCreator) {
-        super(message, constraintViolations);
-        this.validationErrors = translateViolationsToMessages(constraintViolations, localeMessagesCreator);
+    private final List<String> validationErrors;
+    private final String messageCode;
+
+    @Builder(builderClassName = "LombokBuilder")
+    private CustomConstraintViolationException(final String validationMessage,
+                                               final Set<? extends ConstraintViolation<?>> constraintViolations,
+                                               final String messageCode,
+                                               final LocaleMessagesCreator localeMessagesCreator) {
+        super(validationMessage, constraintViolations);
+        this.validationErrors = translateValidationErrors(constraintViolations, localeMessagesCreator);
+        this.messageCode = messageCode;
     }
 
-    private static List<String> translateViolationsToMessages(@NonNull final Set<? extends ConstraintViolation<?>> constraintViolations,
-                                                              @NonNull final LocaleMessagesCreator localeMessagesCreator) {
+    private static List<String> translateValidationErrors(@NonNull final Set<? extends ConstraintViolation<?>> constraintViolations,
+                                                          @NonNull final LocaleMessagesCreator localeMessagesCreator) {
         return constraintViolations.stream()
                         .map(ConstraintViolation::getMessage)
                         .map(localeMessagesCreator::buildLocaleMessage)

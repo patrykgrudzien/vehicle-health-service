@@ -30,11 +30,13 @@ import java.io.IOException;
 import java.util.Set;
 
 import me.grudzien.patryk.TestsUtils;
+import me.grudzien.patryk.authentication.mapping.JwtAuthenticationRequestMapper;
 import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationRequest;
 import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationResponse;
 import me.grudzien.patryk.authentication.resource.AuthenticationResourceImpl;
 import me.grudzien.patryk.authentication.service.UserAuthenticationService;
-import me.grudzien.patryk.utils.validation.CustomValidator;
+import me.grudzien.patryk.utils.validation.ValidationService;
+import me.grudzien.patryk.utils.validation.to.remove.CustomValidator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -63,13 +65,19 @@ class AuthenticationResourceImplTest {
 	@MockBean
 	private UserAuthenticationService userAuthenticationService;
 
+    @MockBean
+	private JwtAuthenticationRequestMapper authRequestMapper;
+
+    @MockBean
+	private ValidationService validationService;
+
     private final Validator validator = CustomValidator.getDefaultValidator();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private static final String TEST_EMAIL = "test@email.com";
     private static final String TEST_PASSWORD = "password";
 
-	@Test
+    @Test
     @DisplayName("Login successful. Response status -> 200 OK.")
 	void testLoginSuccessful() throws Exception {
 	    // given

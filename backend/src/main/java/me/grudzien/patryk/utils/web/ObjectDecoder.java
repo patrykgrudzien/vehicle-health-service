@@ -1,4 +1,4 @@
-package me.grudzien.patryk.utils.mapping;
+package me.grudzien.patryk.utils.web;
 
 import org.springframework.lang.NonNull;
 
