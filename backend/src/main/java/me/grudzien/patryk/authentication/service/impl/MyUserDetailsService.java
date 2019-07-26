@@ -11,13 +11,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.base.Preconditions;
-
 import java.util.Optional;
 
 import me.grudzien.patryk.authentication.model.factory.JwtUserFactory;
 import me.grudzien.patryk.registration.model.entity.CustomUser;
 import me.grudzien.patryk.registration.repository.CustomUserRepository;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 @Log4j2
 @Service
@@ -32,12 +32,12 @@ public class MyUserDetailsService implements UserDetailsService {
 
 	@Autowired
 	public MyUserDetailsService(final CustomUserRepository customUserRepository) {
-		Preconditions.checkNotNull(customUserRepository, "customUserRepository cannot be null!");
+		checkNotNull(customUserRepository, "customUserRepository cannot be null!");
 		this.customUserRepository = customUserRepository;
 	}
 
 	/**
-	 * Method returning object that implements {@link org.springframework.security.core.userdetails.UserDetails} interface, null otherwise.
+	 * Method returning object that implements {@link UserDetails} interface, null otherwise.
 	 *
 	 * @param email used to retrieve {@link CustomUser} entity.
 	 * @return {@link CustomUser} entity, null otherwise.

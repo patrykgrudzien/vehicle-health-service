@@ -9,13 +9,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.util.Objects;
 import java.util.Optional;
 
-import me.grudzien.patryk.authentication.exception.BadCredentialsAuthenticationException;
-import me.grudzien.patryk.authentication.exception.UserDisabledAuthenticationException;
 import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationRequest;
 import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationResponse;
 import me.grudzien.patryk.authentication.service.UserAuthenticationService;
@@ -23,6 +20,7 @@ import me.grudzien.patryk.jwt.service.JwtTokenService;
 import me.grudzien.patryk.oauth2.authentication.model.CustomAuthenticationToken;
 import me.grudzien.patryk.utils.factory.FactoryProvider;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
+import me.grudzien.patryk.utils.validation.ValidationService;
 import me.grudzien.patryk.utils.web.RequestsDecoder;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -40,6 +38,7 @@ import static me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases
 import static me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases.UserAccountIsLockedExceptionCase;
 import static me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases.UserIsDisabledExceptionCase;
 import static me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases.UsernameNotFoundExceptionCase;
+import static me.grudzien.patryk.utils.common.Predicates.isEmpty;
 import static me.grudzien.patryk.utils.factory.FactoryType.JWT_AUTH_RESPONSE;
 
 @Log4j2
@@ -50,19 +49,23 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 	private final LocaleMessagesCreator localeMessagesCreator;
 	private final RequestsDecoder requestsDecoder;
 	private final JwtTokenService jwtTokenService;
+	private final ValidationService validationService;
 
 	@Autowired
 	public UserAuthenticationServiceImpl(final AuthenticationManager authenticationManager, final LocaleMessagesCreator localeMessagesCreator,
-                                         final RequestsDecoder requestsDecoder, final JwtTokenService jwtTokenService) {
+                                         final RequestsDecoder requestsDecoder, final JwtTokenService jwtTokenService,
+                                         final ValidationService validationService) {
         checkNotNull(authenticationManager, "authenticationManager cannot be null!");
         checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
         checkNotNull(requestsDecoder, "requestsDecoder cannot be null!");
         checkNotNull(jwtTokenService, "jwtTokenService cannot be null!");
+        checkNotNull(validationService, "validationService cannot be null!");
 
         this.authenticationManager = authenticationManager;
         this.localeMessagesCreator = localeMessagesCreator;
         this.requestsDecoder = requestsDecoder;
         this.jwtTokenService = jwtTokenService;
+        this.validationService = validationService;
     }
 
 	@Override
@@ -73,19 +76,6 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
                 .orElse((JwtAuthenticationResponse) FactoryProvider.getFactory(JWT_AUTH_RESPONSE).create(FAILED_RESPONSE));
 	}
 
-    private JwtAuthenticationResponse createSuccessResponse(final JwtAuthenticationRequest decodedAuthRequest, final Device device) {
-        return (JwtAuthenticationResponse) FactoryProvider.getFactory(JWT_AUTH_RESPONSE).create(
-                SUCCESS_RESPONSE,
-                jwtTokenService.generateAccessToken(decodedAuthRequest, device),
-                jwtTokenService.generateRefreshToken(decodedAuthRequest, device)
-        );
-    }
-
-    /**
-	 * Authenticates the user. If something is wrong, an
-	 * {@link BadCredentialsAuthenticationException} or
-	 * {@link UserDisabledAuthenticationException} will be thrown
-	 */
 	@Override
 	public Optional<Authentication> authenticateUser(final JwtAuthenticationRequest authenticationRequest) {
 		final String email = requestsDecoder.decodeStringParam(authenticationRequest.getEmail());
@@ -95,18 +85,9 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 		Objects.requireNonNull(password);
 
 		final String idToken = authenticationRequest.getIdToken();
-		/*
-		 * (AuthenticationManager) in authenticate() method will use (DaoAuthenticationProvider).
-		 * (DaoAuthenticationProvider) is an (AuthenticationProvider interface) implementation that receives user details
-		 * from a (MyUserDetailsService).
-		 *
-		 * authenticationManager.authenticate() returns fully authenticated (Authentication) object
-		 * (it includes credentials and granted authorities if successful).
-		 * It attempts to authenticate the passed (Authentication) object, returning a fully populated "Authentication" object.
-		 */
-		return Try.of(() -> Optional.ofNullable(authenticationManager.authenticate(StringUtils.isEmpty(idToken) ?
-				                                                                           new UsernamePasswordAuthenticationToken(email, password) :
-				                                                                           new CustomAuthenticationToken(idToken))))
+		return Try.of(() -> Optional.ofNullable(authenticationManager.authenticate(isEmpty(idToken) ?
+                                                                                           new UsernamePasswordAuthenticationToken(email, password) :
+                                                                                           new CustomAuthenticationToken(idToken))))
 		          .onSuccess(Optional::get)
 		          .onFailure(throwable -> Match(throwable).of(
                           UsernameNotFoundExceptionCase(email, localeMessagesCreator),
@@ -122,4 +103,12 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 		          ))
 		          .getOrElse(Optional.empty());
 	}
+
+    private JwtAuthenticationResponse createSuccessResponse(final JwtAuthenticationRequest decodedAuthRequest, final Device device) {
+        return (JwtAuthenticationResponse) FactoryProvider.getFactory(JWT_AUTH_RESPONSE).create(
+                SUCCESS_RESPONSE,
+                jwtTokenService.generateAccessToken(decodedAuthRequest, device),
+                jwtTokenService.generateRefreshToken(decodedAuthRequest, device)
+        );
+    }
 }

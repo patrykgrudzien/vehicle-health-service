@@ -50,12 +50,12 @@ public class RequestsDecoder {
 
     private Long toPlainLong(final String arg) {
         log.info("String param is NOT encoded!");
-        return new Long(arg);
+        return Long.valueOf(arg);
     }
 
     private Long toDecodedLong(final String arg) {
         log.info("Decoding String param -> {} and converting to Long.", arg);
-        return new Long(new String(Base64.getDecoder().decode(arg)));
+        return Long.valueOf(new String(Base64.getDecoder().decode(arg)));
     }
 
 	private boolean isBase64(final String param) {
