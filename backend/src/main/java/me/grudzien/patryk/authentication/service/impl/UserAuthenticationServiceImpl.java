@@ -1,5 +1,8 @@
 package me.grudzien.patryk.authentication.service.impl;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static io.vavr.API.Match;
+
 import io.vavr.control.Try;
 import lombok.extern.log4j.Log4j2;
 
@@ -12,19 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 import java.util.Optional;
-
-import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationRequest;
-import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationResponse;
-import me.grudzien.patryk.authentication.service.UserAuthenticationService;
-import me.grudzien.patryk.jwt.service.JwtTokenService;
-import me.grudzien.patryk.oauth2.authentication.model.CustomAuthenticationToken;
-import me.grudzien.patryk.utils.factory.FactoryProvider;
-import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
-import me.grudzien.patryk.utils.validation.ValidationService;
-import me.grudzien.patryk.utils.web.RequestsDecoder;
-
-import static com.google.common.base.Preconditions.checkNotNull;
-import static io.vavr.API.Match;
 
 import static me.grudzien.patryk.jwt.model.factory.JwtAuthResponseType.FAILED_RESPONSE;
 import static me.grudzien.patryk.jwt.model.factory.JwtAuthResponseType.SUCCESS_RESPONSE;
@@ -41,6 +31,15 @@ import static me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases
 import static me.grudzien.patryk.utils.common.Predicates.isEmpty;
 import static me.grudzien.patryk.utils.factory.FactoryType.JWT_AUTH_RESPONSE;
 
+import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationRequest;
+import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationResponse;
+import me.grudzien.patryk.authentication.service.UserAuthenticationService;
+import me.grudzien.patryk.jwt.service.JwtTokenService;
+import me.grudzien.patryk.oauth2.authentication.model.CustomAuthenticationToken;
+import me.grudzien.patryk.utils.factory.FactoryProvider;
+import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
+import me.grudzien.patryk.utils.web.RequestsDecoder;
+
 @Log4j2
 @Service
 public class UserAuthenticationServiceImpl implements UserAuthenticationService {
@@ -49,23 +48,21 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 	private final LocaleMessagesCreator localeMessagesCreator;
 	private final RequestsDecoder requestsDecoder;
 	private final JwtTokenService jwtTokenService;
-	private final ValidationService validationService;
 
 	@Autowired
-	public UserAuthenticationServiceImpl(final AuthenticationManager authenticationManager, final LocaleMessagesCreator localeMessagesCreator,
-                                         final RequestsDecoder requestsDecoder, final JwtTokenService jwtTokenService,
-                                         final ValidationService validationService) {
+	public UserAuthenticationServiceImpl(final AuthenticationManager authenticationManager,
+	                                     final LocaleMessagesCreator localeMessagesCreator,
+	                                     final RequestsDecoder requestsDecoder,
+	                                     final JwtTokenService jwtTokenService) {
         checkNotNull(authenticationManager, "authenticationManager cannot be null!");
         checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
         checkNotNull(requestsDecoder, "requestsDecoder cannot be null!");
         checkNotNull(jwtTokenService, "jwtTokenService cannot be null!");
-        checkNotNull(validationService, "validationService cannot be null!");
 
         this.authenticationManager = authenticationManager;
         this.localeMessagesCreator = localeMessagesCreator;
         this.requestsDecoder = requestsDecoder;
         this.jwtTokenService = jwtTokenService;
-        this.validationService = validationService;
     }
 
 	@Override
