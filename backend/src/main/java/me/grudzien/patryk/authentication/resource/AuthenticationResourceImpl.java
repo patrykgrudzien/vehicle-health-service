@@ -43,9 +43,9 @@ public class AuthenticationResourceImpl implements AuthenticationResource {
 
     @Override
     public ResponseEntity<?> login(final JwtAuthenticationRequest authenticationRequest, final Device device, final WebRequest webRequest) {
-        validationService.validateWithResult(authenticationRequest, authRequestDecoder(), authRequestMapper)
-                         .onErrorsSetMessageCode("login-form-validation-errors");
-        final JwtAuthenticationResponse authenticationResponse = userAuthenticationService.login(authenticationRequest, device);
+        final JwtAuthenticationRequest decodedAuthRequest = authRequestDecoder().apply(authenticationRequest, authRequestMapper);
+        validationService.validateWithResult(decodedAuthRequest).onErrorsSetExceptionMessageCode("login-form-validation-errors");
+        final JwtAuthenticationResponse authenticationResponse = userAuthenticationService.login(decodedAuthRequest, device);
         return authenticationResponse.isSuccessful() ?
                 ok(authenticationResponse) : badRequest().body(authenticationResponse);
     }

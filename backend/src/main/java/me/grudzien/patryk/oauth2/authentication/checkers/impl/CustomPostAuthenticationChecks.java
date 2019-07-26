@@ -10,7 +10,8 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.base.Preconditions;
 
-import me.grudzien.patryk.utils.handler.ExceptionHandlingController;
+import me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases;
+import me.grudzien.patryk.oauth2.exception.handler.OAuth2ExceptionsHandler;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 
 @Log4j2
@@ -27,8 +28,8 @@ public class CustomPostAuthenticationChecks implements UserDetailsChecker {
 
     /**
      * In case of the Exceptions thrown below, code flow is caught by one of the "Case" inside:
-     * {@link me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases} and translation to JSON format is done by:
-     * {@link ExceptionHandlingController}
+     * {@link FailedAuthenticationCases} and translation to JSON format is done by:
+     * {@link OAuth2ExceptionsHandler}.
      */
 	@Override
 	public void check(final UserDetails user) {

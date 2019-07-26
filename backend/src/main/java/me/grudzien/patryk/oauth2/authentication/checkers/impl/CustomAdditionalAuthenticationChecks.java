@@ -11,11 +11,12 @@ import org.springframework.util.StringUtils;
 
 import me.grudzien.patryk.authentication.exception.BadCredentialsAuthenticationException;
 import me.grudzien.patryk.authentication.model.dto.JwtUser;
+import me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases;
 import me.grudzien.patryk.oauth2.authentication.checkers.AdditionalChecks;
 import me.grudzien.patryk.oauth2.exception.JwtTokenNotFoundException;
 import me.grudzien.patryk.oauth2.exception.RegistrationProviderMismatchException;
+import me.grudzien.patryk.oauth2.exception.handler.OAuth2ExceptionsHandler;
 import me.grudzien.patryk.registration.model.enums.RegistrationProvider;
-import me.grudzien.patryk.utils.handler.ExceptionHandlingController;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -38,8 +39,8 @@ public class CustomAdditionalAuthenticationChecks implements AdditionalChecks<Jw
 
     /**
      * In case of the Exceptions thrown below, code flow is caught by one of the "Case" inside:
-     * {@link me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases} and translation to JSON format is done by:
-     * {@link ExceptionHandlingController}
+     * {@link FailedAuthenticationCases} and translation to JSON format is done by:
+     * {@link OAuth2ExceptionsHandler}.
      */
 	@Override
 	public void additionalAuthenticationChecks(final JwtUser jwtUser, final Authentication authentication, final String jwtSubjectIdentifier) {

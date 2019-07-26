@@ -11,26 +11,21 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 import me.grudzien.patryk.authentication.exception.BadCredentialsAuthenticationException;
 import me.grudzien.patryk.authentication.exception.UserDisabledAuthenticationException;
-import me.grudzien.patryk.authentication.mapping.JwtAuthenticationRequestMapper;
 import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationRequest;
 import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationResponse;
 import me.grudzien.patryk.authentication.service.UserAuthenticationService;
 import me.grudzien.patryk.jwt.service.JwtTokenService;
 import me.grudzien.patryk.oauth2.authentication.model.CustomAuthenticationToken;
-import me.grudzien.patryk.registration.exception.CustomUserValidationException;
 import me.grudzien.patryk.utils.factory.FactoryProvider;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.web.RequestsDecoder;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static io.vavr.API.$;
-import static io.vavr.API.Case;
 import static io.vavr.API.Match;
 
 import static me.grudzien.patryk.jwt.model.factory.JwtAuthResponseType.FAILED_RESPONSE;
@@ -45,11 +40,7 @@ import static me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases
 import static me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases.UserAccountIsLockedExceptionCase;
 import static me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases.UserIsDisabledExceptionCase;
 import static me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases.UsernameNotFoundExceptionCase;
-import static me.grudzien.patryk.utils.common.Predicates.isCollectionEmpty;
-import static me.grudzien.patryk.utils.common.Predicates.isCollectionNotEmpty;
 import static me.grudzien.patryk.utils.factory.FactoryType.JWT_AUTH_RESPONSE;
-import static me.grudzien.patryk.utils.web.ObjectDecoder.authRequestDecoder;
-import static me.grudzien.patryk.utils.validation.to.remove.CustomValidator.getTranslatedValidationResult;
 
 @Log4j2
 @Service
@@ -59,44 +50,27 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 	private final LocaleMessagesCreator localeMessagesCreator;
 	private final RequestsDecoder requestsDecoder;
 	private final JwtTokenService jwtTokenService;
-	private final JwtAuthenticationRequestMapper jwtAuthenticationRequestMapper;
 
 	@Autowired
 	public UserAuthenticationServiceImpl(final AuthenticationManager authenticationManager, final LocaleMessagesCreator localeMessagesCreator,
-                                         final RequestsDecoder requestsDecoder, final JwtTokenService jwtTokenService,
-                                         final JwtAuthenticationRequestMapper jwtAuthenticationRequestMapper) {
+                                         final RequestsDecoder requestsDecoder, final JwtTokenService jwtTokenService) {
         checkNotNull(authenticationManager, "authenticationManager cannot be null!");
         checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
         checkNotNull(requestsDecoder, "requestsDecoder cannot be null!");
         checkNotNull(jwtTokenService, "jwtTokenService cannot be null!");
-        checkNotNull(jwtAuthenticationRequestMapper, "jwtAuthenticationRequestMapper cannot be null!");
 
         this.authenticationManager = authenticationManager;
         this.localeMessagesCreator = localeMessagesCreator;
         this.requestsDecoder = requestsDecoder;
         this.jwtTokenService = jwtTokenService;
-        this.jwtAuthenticationRequestMapper = jwtAuthenticationRequestMapper;
     }
 
 	@Override
 	public JwtAuthenticationResponse login(final JwtAuthenticationRequest authenticationRequest, final Device device) {
-		final JwtAuthenticationRequest decodedAuthRequest = authRequestDecoder().apply(authenticationRequest, jwtAuthenticationRequestMapper);
-		final List<String> translatedValidationResult = getTranslatedValidationResult(decodedAuthRequest, localeMessagesCreator);
-		return Match(translatedValidationResult).of(
-		        Case($(isCollectionNotEmpty()), () -> {
-                    log.error("Validation errors present during login.");
-                    // TODO:
-                    throw new CustomUserValidationException(localeMessagesCreator.buildLocaleMessage("login-form-validation-errors"),
-                                                            translatedValidationResult);
-                }),
-                Case($(isCollectionEmpty()), () -> {
-                    final String email = decodedAuthRequest.getEmail();
-                    log.info("Login request is correct. Starting authenticating the user with ({}) email.", email);
-                    return authenticateUser(authenticationRequest)
-                            .map(authentication -> createSuccessResponse(decodedAuthRequest, device))
-                            .orElse((JwtAuthenticationResponse) FactoryProvider.getFactory(JWT_AUTH_RESPONSE).create(FAILED_RESPONSE));
-                })
-        );
+        log.info("Login request is correct. Starting authenticating the user with ({}) email.", authenticationRequest.getEmail());
+        return authenticateUser(authenticationRequest)
+                .map(authentication -> createSuccessResponse(authenticationRequest, device))
+                .orElse((JwtAuthenticationResponse) FactoryProvider.getFactory(JWT_AUTH_RESPONSE).create(FAILED_RESPONSE));
 	}
 
     private JwtAuthenticationResponse createSuccessResponse(final JwtAuthenticationRequest decodedAuthRequest, final Device device) {

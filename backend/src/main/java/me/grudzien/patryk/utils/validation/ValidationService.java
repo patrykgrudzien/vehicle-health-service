@@ -35,16 +35,14 @@ public class ValidationService {
         this.localeMessagesCreator = localeMessagesCreator;
     }
 
+    public <T> void validate(final T bean) {
+        this.validateObject(bean, ValidationSequence.class);
+    }
+
     public <T, Mapper> void validate(final T bean,
                                      final ObjectDecoder<T, Mapper> objectDecoder,
                                      final Mapper mapper) {
         this.validateObject(objectDecoder, bean, mapper, ValidationSequence.class);
-    }
-
-    public <T, Mapper> ValidationResult validateWithResult(final T bean,
-                                                           final ObjectDecoder<T, Mapper> objectDecoder,
-                                                           final Mapper mapper) {
-        return this.validateObjectWithResult(objectDecoder, bean, mapper, ValidationSequence.class);
     }
 
     public <T, Mapper> void validate(final T bean,
@@ -52,6 +50,16 @@ public class ValidationService {
                                      final Mapper mapper,
                                      final Class... groups) {
         this.validateObject(objectDecoder, bean, mapper, ArrayUtils.add(groups, ValidationSequence.class));
+    }
+
+    public <T> ValidationResult validateWithResult(final T bean) {
+        return this.validateObjectWithResult(bean, ValidationSequence.class);
+    }
+
+    public <T, Mapper> ValidationResult validateWithResult(final T bean,
+                                                           final ObjectDecoder<T, Mapper> objectDecoder,
+                                                           final Mapper mapper) {
+        return this.validateObjectWithResult(objectDecoder, bean, mapper, ValidationSequence.class);
     }
 
     public <T, Mapper> ValidationResult validateWithResult(final T bean,
@@ -71,11 +79,25 @@ public class ValidationService {
             validationResult().throwViolationException(message, violations, null);
     }
 
+    private <T> void validateObject(final T bean, final Class... groups) {
+        final Set<? extends ConstraintViolation<?>> violations = beanValidator.validate(bean, groups);
+        final String message = VALIDATION_FAILED_MSG.apply(bean.getClass().getSimpleName(), violations.size());
+        if (!violations.isEmpty())
+            validationResult().throwViolationException(message, violations, null);
+    }
+
     private <T, Mapper> ValidationResult validateObjectWithResult(final ObjectDecoder<T, Mapper> objectDecoder,
                                                                   final T bean,
                                                                   final Mapper mapper,
                                                                   final Class... groups) {
         final Set<? extends ConstraintViolation<?>> violations = beanValidator.validate(objectDecoder.apply(bean, mapper), groups);
+        final String message = VALIDATION_FAILED_MSG.apply(bean.getClass().getSimpleName(), violations.size());
+        return violations.isEmpty() ?
+                validationResult().ok() : validationResult().failedWith(message, violations);
+    }
+
+    private <T> ValidationResult validateObjectWithResult(final T bean, final Class... groups) {
+        final Set<? extends ConstraintViolation<?>> violations = beanValidator.validate(bean, groups);
         final String message = VALIDATION_FAILED_MSG.apply(bean.getClass().getSimpleName(), violations.size());
         return violations.isEmpty() ?
                 validationResult().ok() : validationResult().failedWith(message, violations);
@@ -92,7 +114,7 @@ public class ValidationService {
         private final String message;
         private final Set<? extends ConstraintViolation<?>> violations;
 
-        public final void onErrorsSetMessageCode(final String messageCode) {
+        public final void onErrorsSetExceptionMessageCode(final String messageCode) {
             if (nonNull(violations) && !violations.isEmpty())
                 throwViolationException(message, violations, messageCode);
         }

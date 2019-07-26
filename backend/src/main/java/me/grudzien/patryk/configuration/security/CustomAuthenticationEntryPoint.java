@@ -13,18 +13,19 @@ import com.google.common.base.Preconditions;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import me.grudzien.patryk.utils.web.model.AuthenticationEntryPointResponse;
-import me.grudzien.patryk.utils.web.model.CustomResponse.SecurityStatus;
-import me.grudzien.patryk.utils.handler.ExceptionHandlingController;
+import me.grudzien.patryk.configuration.filters.ServletExceptionHandlerFilter;
+import me.grudzien.patryk.jwt.exception.handler.JwtExceptionsHandler;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.web.HttpResponseCustomizer;
+import me.grudzien.patryk.utils.web.model.AuthenticationEntryPointResponse;
+import me.grudzien.patryk.utils.web.model.CustomResponse.SecurityStatus;
 
 /**
  * IMPORTANT NOTE:
- * {@link ExceptionHandlingController} only handles exceptions come from @Controller classes that's
+ * {@link JwtExceptionsHandler} only handles exceptions come from @Controller classes that's
  * why all exceptions which come from JWT will be omitted (they are specific to Servlet itself) !!!
  *
- * Exceptions come from JWT are handled by {@link me.grudzien.patryk.configuration.filters.ServletExceptionHandlerFilter}
+ * Exceptions come from JWT are handled by {@link ServletExceptionHandlerFilter}
  */
 @Log4j2
 @Component
