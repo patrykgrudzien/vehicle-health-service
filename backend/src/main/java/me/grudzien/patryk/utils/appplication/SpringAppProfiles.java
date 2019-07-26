@@ -1,7 +1,10 @@
 package me.grudzien.patryk.utils.appplication;
 
+import static lombok.AccessLevel.NONE;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor
@@ -13,12 +16,8 @@ public enum SpringAppProfiles {
 
 	private final String ymlName;
 
+	@NoArgsConstructor(access = NONE)
 	public static final class YmlName {
-
-		// disabling class object creation
-		private YmlName() {
-			throw new UnsupportedOperationException("Creating object of this class is not allowed!");
-		}
 
 		public static final String DEV_HOME = "dev-home";
 		public static final String H2_IN_MEMORY = "h2-in-memory";
