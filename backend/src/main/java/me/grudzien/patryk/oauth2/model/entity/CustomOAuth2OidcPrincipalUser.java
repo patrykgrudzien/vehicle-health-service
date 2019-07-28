@@ -36,7 +36,7 @@ import me.grudzien.patryk.oauth2.model.factory.CustomOAuth2OidcPrincipalUserFact
  * {@link CustomOAuth2OidcPrincipalUser} object in:
  * {@link CustomOAuth2OidcPrincipalUserFactory#create(JwtUser)}.
  */
-@Builder(builderMethodName = "hiddenBuilder")
+@Builder(builderMethodName = "hiddenBuilder", builderClassName = "Builder")
 @NoArgsConstructor
 @AllArgsConstructor
 public class CustomOAuth2OidcPrincipalUser implements OidcUser, UserDetails, Serializable {
@@ -87,7 +87,7 @@ public class CustomOAuth2OidcPrincipalUser implements OidcUser, UserDetails, Ser
         }
 	}
 
-	public static CustomOAuth2OidcPrincipalUserBuilder Builder(final JwtUser jwtUser) {
+	public static Builder Builder(final JwtUser jwtUser) {
 		return hiddenBuilder().jwtUser(jwtUser);
 	}
 

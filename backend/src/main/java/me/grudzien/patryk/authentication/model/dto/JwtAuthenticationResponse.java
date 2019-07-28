@@ -10,12 +10,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
 
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.*;
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(builderMethodName = "Builder")
+@Builder(builderMethodName = "Builder", builderClassName = "Builder")
 @JsonInclude(NON_NULL)
 public class JwtAuthenticationResponse implements Serializable {
 
