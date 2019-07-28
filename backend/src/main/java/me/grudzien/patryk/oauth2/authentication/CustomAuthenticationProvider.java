@@ -32,10 +32,10 @@ import static io.vavr.API.Case;
 import static io.vavr.API.Match;
 import static io.vavr.Predicates.is;
 
-import static me.grudzien.patryk.authentication.model.factory.ExceptionType.DYNAMIC_BASED_ON_INPUT;
+import static me.grudzien.patryk.authentication.model.factory.ExceptionFactory.ExceptionType.DYNAMIC_BASED_ON_INPUT;
 import static me.grudzien.patryk.oauth2.authentication.chain.AuthenticationResult.Status.FAILED;
 import static me.grudzien.patryk.oauth2.authentication.chain.AuthenticationResult.Status.OK;
-import static me.grudzien.patryk.utils.factory.FactoryType.EXCEPTION;
+import static me.grudzien.patryk.utils.factory.FactoryProvider.FactoryType.EXCEPTION_FACTORY;
 
 @Log4j2
 @Component
@@ -104,7 +104,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 	}
 
 	private RuntimeException dynamicRuntimeException(final AuthenticationResult authenticationResult) {
-	    return (RuntimeException) FactoryProvider.getFactory(EXCEPTION).create(
+	    return (RuntimeException) FactoryProvider.getFactory(EXCEPTION_FACTORY).create(
 	            DYNAMIC_BASED_ON_INPUT,
                 authenticationResult.getExceptionClass().getName(),
                 authenticationResult.getExceptionMessage()

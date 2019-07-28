@@ -49,7 +49,7 @@ public class MyUserDetailsService implements UserDetailsService {
 		return Optional.ofNullable(customUserRepository.findByEmail(email))
 		               .map(foundUser -> {
 		               	    log.info("User with {} address found.", email);
-		               	    return JwtUserFactory.create(foundUser);
+		               	    return JwtUserFactory.createFrom(foundUser);
 		               })
 		               .orElseGet(() -> {
 		               	    log.error("No user found for specified email: {}", email);

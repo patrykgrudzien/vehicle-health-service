@@ -16,7 +16,7 @@ public final class JwtUserFactory {
 		throw new UnsupportedOperationException("Creating object of this class is not allowed!");
 	}
 
-	public static JwtUser create(final CustomUser customUser) {
+	public static JwtUser createFrom(final CustomUser customUser) {
 		return JwtUser.Builder()
 		              .id(customUser.getId())
 		              .firstname(customUser.getFirstName())

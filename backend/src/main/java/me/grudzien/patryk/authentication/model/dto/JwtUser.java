@@ -1,6 +1,5 @@
 package me.grudzien.patryk.authentication.model.dto;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,6 +16,8 @@ import java.util.Collection;
 
 import me.grudzien.patryk.registration.model.enums.RegistrationProvider;
 
+import static lombok.AccessLevel.NONE;
+
 @Getter
 @AllArgsConstructor
 @Builder(builderMethodName = "Builder")
@@ -32,17 +33,19 @@ public class JwtUser implements UserDetails, Serializable {
 	private final String password;
 	private final String email;
 	private final ZonedDateTime lastPasswordResetDate;
+
 	@Setter
 	private String profilePictureUrl;
+
 	@Setter
     private RegistrationProvider registrationProvider;
 
 	// disabling getter for "roles" to stay consistent and force usage of "getAuthorities()" instead
-	@Getter(AccessLevel.NONE)
+	@Getter(NONE)
 	private final Collection<? extends GrantedAuthority> roles;
 
 	// disabling getter for "enabled" to stay consistent and force usage of overriden "isEnabled()" instead
-	@Getter(AccessLevel.NONE)
+	@Getter(NONE)
 	private final boolean enabled;
 
 	@Override

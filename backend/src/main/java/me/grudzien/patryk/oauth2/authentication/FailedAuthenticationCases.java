@@ -13,8 +13,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import me.grudzien.patryk.authentication.exception.BadCredentialsAuthenticationException;
-import me.grudzien.patryk.authentication.exception.UserDisabledAuthenticationException;
 import me.grudzien.patryk.authentication.service.impl.MyUserDetailsService;
 import me.grudzien.patryk.jwt.exception.CustomAuthenticationUnknownException;
 import me.grudzien.patryk.jwt.exception.MissingAuthenticationResultException;
@@ -56,7 +54,7 @@ public final class FailedAuthenticationCases {
              * {@link AbstractUserDetailsAuthenticationProvider.DefaultPreAuthenticationChecks#check(UserDetails)}
              */
             log.error("User with {} is disabled! Error message -> {}", email, exception.getMessage());
-            throw new UserDisabledAuthenticationException(localeMessagesCreator.buildLocaleMessage("user-disabled-exception"));
+            throw new DisabledException(localeMessagesCreator.buildLocaleMessage("user-disabled-exception"));
         }));
     }
 
@@ -96,7 +94,7 @@ public final class FailedAuthenticationCases {
 			 * which tries to retrieve user using:
 			 * {@link MyUserDetailsService}
 			 */
-			throw new BadCredentialsAuthenticationException(localeMessagesCreator.buildLocaleMessage("bad-credentials-exception"));
+			throw new BadCredentialsException(localeMessagesCreator.buildLocaleMessage("bad-credentials-exception"));
 		}));
 	}
 

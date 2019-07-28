@@ -3,14 +3,14 @@ package me.grudzien.patryk.authentication.service;
 import org.springframework.mobile.device.Device;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Optional;
 
-import me.grudzien.patryk.authentication.exception.BadCredentialsAuthenticationException;
-import me.grudzien.patryk.authentication.exception.UserDisabledAuthenticationException;
 import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationRequest;
 import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationResponse;
 import me.grudzien.patryk.authentication.service.impl.MyUserDetailsService;
@@ -36,8 +36,8 @@ public interface UserAuthenticationService {
 
     /**
      * Authenticates the user. If something is wrong, the
-     * {@link BadCredentialsAuthenticationException} or
-     * {@link UserDisabledAuthenticationException} will be thrown.
+     * {@link BadCredentialsException} or
+     * {@link DisabledException} will be thrown.
      *
      * <br><br>
      * {@link AuthenticationManager} in {@link AuthenticationManager#authenticate(Authentication)} method

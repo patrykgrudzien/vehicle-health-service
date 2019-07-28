@@ -4,12 +4,12 @@ import lombok.extern.log4j.Log4j2;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import me.grudzien.patryk.authentication.exception.BadCredentialsAuthenticationException;
 import me.grudzien.patryk.authentication.model.dto.JwtUser;
 import me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases;
 import me.grudzien.patryk.oauth2.authentication.checkers.AdditionalChecks;
@@ -55,7 +55,7 @@ public class CustomAdditionalAuthenticationChecks implements AdditionalChecks<Jw
                 throw new RegistrationProviderMismatchException(localeMessagesCreator.buildLocaleMessage("registration-provider-mismatch-exception"));
             }
 			log.debug("Authentication failed: JWT Subject Identifier which acts as a password does not match stored value!");
-			throw new BadCredentialsAuthenticationException(localeMessagesCreator.buildLocaleMessage("bad-credentials-exception"));
+			throw new BadCredentialsException(localeMessagesCreator.buildLocaleMessage("bad-credentials-exception"));
 		}
 	}
 }

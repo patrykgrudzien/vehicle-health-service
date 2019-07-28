@@ -15,12 +15,14 @@ import java.io.Serializable;
 
 import me.grudzien.patryk.registration.model.annotation.ValidEmail;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(builderMethodName = "Builder")
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@Builder(builderMethodName = "Builder", builderClassName = "Builder")
+@JsonInclude(NON_NULL)
 public class JwtAuthenticationRequest implements Serializable {
 
 	private static final long serialVersionUID = 5980286062602002568L;

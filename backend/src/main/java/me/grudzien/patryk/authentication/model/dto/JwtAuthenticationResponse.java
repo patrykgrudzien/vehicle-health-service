@@ -23,6 +23,7 @@ public class JwtAuthenticationResponse implements Serializable {
 
 	private String accessToken;
 	private String refreshToken;
+
 	@JsonProperty("successful")
 	private boolean isSuccessful;
 }

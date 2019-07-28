@@ -10,6 +10,7 @@ import me.grudzien.patryk.jwt.exception.CustomAuthenticationUnknownException;
 import me.grudzien.patryk.jwt.exception.MissingAuthenticationResultException;
 import me.grudzien.patryk.oauth2.authentication.CustomAuthenticationProvider;
 import me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases;
+import me.grudzien.patryk.oauth2.exception.JwtTokenNotFoundException;
 import me.grudzien.patryk.oauth2.exception.RegistrationProviderMismatchException;
 import me.grudzien.patryk.oauth2.exception.UnknownOAuth2FlowException;
 import me.grudzien.patryk.oauth2.model.entity.CustomOAuth2OidcPrincipalUser.AccountStatus;
@@ -60,5 +61,10 @@ public class OAuth2ExceptionsHandler {
     @ExceptionHandler(CustomAuthenticationUnknownException.class)
     public ResponseEntity<ExceptionResponse> customAuthenticationUnknownException(final CustomAuthenticationUnknownException exception) {
         return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(JwtTokenNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> jwtTokenNotFound(final JwtTokenNotFoundException exception) {
+        return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception, AccountStatus.JWT_TOKEN_NOT_FOUND), BAD_REQUEST);
     }
 }

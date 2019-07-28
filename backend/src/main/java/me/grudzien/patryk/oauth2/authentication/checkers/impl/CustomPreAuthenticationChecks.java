@@ -4,6 +4,7 @@ import lombok.extern.log4j.Log4j2;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AccountExpiredException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.base.Preconditions;
 
-import me.grudzien.patryk.authentication.exception.UserDisabledAuthenticationException;
 import me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases;
 import me.grudzien.patryk.oauth2.exception.handler.OAuth2ExceptionsHandler;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
@@ -42,7 +42,7 @@ public class CustomPreAuthenticationChecks implements UserDetailsChecker {
 		}
 		if (!user.isEnabled()) {
 			log.debug("User account is disabled!");
-			throw new UserDisabledAuthenticationException(localeMessagesCreator.buildLocaleMessage("user-disabled-exception"));
+			throw new DisabledException(localeMessagesCreator.buildLocaleMessage("user-disabled-exception"));
 		}
 		if (!user.isAccountNonExpired()) {
 			log.debug("User account is expired!");
