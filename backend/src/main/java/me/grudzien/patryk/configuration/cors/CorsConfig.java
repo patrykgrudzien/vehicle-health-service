@@ -6,10 +6,16 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import me.grudzien.patryk.utils.appplication.SpringAppProfiles;
+import static org.springframework.http.HttpMethod.DELETE;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.PUT;
+
+import static me.grudzien.patryk.utils.appplication.SpringAppProfiles.YmlName.DEV_HOME;
+import static me.grudzien.patryk.utils.appplication.SpringAppProfiles.YmlName.H2_IN_MEMORY;
 
 @Configuration
-@Profile({SpringAppProfiles.YmlName.DEV_HOME, SpringAppProfiles.YmlName.H2_IN_MEMORY})
+@Profile({DEV_HOME, H2_IN_MEMORY})
 public class CorsConfig {
 
 	@Bean
@@ -18,7 +24,7 @@ public class CorsConfig {
 			@Override
 			public void addCorsMappings(final CorsRegistry registry) {
 				registry.addMapping("/**")
-				        .allowedMethods("GET", "POST", "PUT", "DELETE")
+				        .allowedMethods(GET.name(), POST.name(), PUT.name(), DELETE.name())
 				        .allowedOrigins("*")
 				        .allowedHeaders("*")
 				        .exposedHeaders("X-Auth-Token", "Authorization", "Access-Control-Allow-Origin", "Access-Control-Allow-Credentials");
