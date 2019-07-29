@@ -1,7 +1,7 @@
 package me.grudzien.patryk.oauth2.authentication;
 
 import lombok.NoArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -28,7 +28,7 @@ import static io.vavr.API.run;
 import static io.vavr.Predicates.instanceOf;
 import static lombok.AccessLevel.NONE;
 
-@Log4j2
+@Slf4j
 @NoArgsConstructor(access = NONE)
 public final class FailedAuthenticationCases {
 

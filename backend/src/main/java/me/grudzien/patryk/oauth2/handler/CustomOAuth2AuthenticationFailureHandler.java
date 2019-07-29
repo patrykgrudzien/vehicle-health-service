@@ -1,6 +1,6 @@
 package me.grudzien.patryk.oauth2.handler;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticationException;
@@ -40,7 +40,7 @@ import static me.grudzien.patryk.oauth2.resource.google.GoogleResourceDefinition
 import static me.grudzien.patryk.oauth2.service.CustomOAuth2UserService.UNKNOWN_OAUTH2_USER_ERROR_CODE;
 import static me.grudzien.patryk.oauth2.service.CustomOidcUserService.UNKNOWN_OIDC_USER_ERROR_CODE;
 
-@Log4j2
+@Slf4j
 @Component
 public class CustomOAuth2AuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 

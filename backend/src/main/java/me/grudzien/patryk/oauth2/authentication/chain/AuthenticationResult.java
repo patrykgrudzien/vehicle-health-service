@@ -3,11 +3,11 @@ package me.grudzien.patryk.oauth2.authentication.chain;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import me.grudzien.patryk.oauth2.authentication.model.CustomAuthenticationToken;
 
-@Log4j2
+@Slf4j
 @Getter
 @NoArgsConstructor(access = AccessLevel.NONE)
 public final class AuthenticationResult {

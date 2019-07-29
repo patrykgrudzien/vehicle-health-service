@@ -1,6 +1,6 @@
 package me.grudzien.patryk.authentication.service.impl;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
@@ -19,7 +19,7 @@ import me.grudzien.patryk.registration.repository.CustomUserRepository;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-@Log4j2
+@Slf4j
 @Service
 @Transactional
 @CacheConfig(cacheNames = MyUserDetailsService.PRINCIPAL_USER_CACHE_NAME)

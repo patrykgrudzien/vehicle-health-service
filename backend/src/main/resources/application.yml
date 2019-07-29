@@ -53,3 +53,5 @@ custom:
       token-expiration: ENC@[CO+LPJFX3FQihtdXpUzvPg==]
     oauth2:
       short-lived-token-expiration: ENC@[kQ8ebSYapZr63l18OKqkeQ==]
+    ui-message-codes:
+      login-form-validation-errors: "login-form-validation-errors"

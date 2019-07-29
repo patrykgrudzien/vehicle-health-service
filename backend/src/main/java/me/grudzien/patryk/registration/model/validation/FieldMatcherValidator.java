@@ -1,7 +1,7 @@
 package me.grudzien.patryk.registration.model.validation;
 
 import io.vavr.control.Try;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.beanutils.BeanUtils;
 
@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import me.grudzien.patryk.registration.model.annotation.FieldMatcher;
 
-@Log4j2
+@Slf4j
 public class FieldMatcherValidator implements ConstraintValidator<FieldMatcher, Object> {
 
 	private String firstFieldName;

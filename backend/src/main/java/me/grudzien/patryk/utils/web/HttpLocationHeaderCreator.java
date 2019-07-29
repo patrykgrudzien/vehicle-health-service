@@ -1,7 +1,7 @@
 package me.grudzien.patryk.utils.web;
 
 import io.vavr.Tuple2;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -28,7 +28,7 @@ import static me.grudzien.patryk.utils.web.FrontendRoutesDefinitions.REGISTRATIO
 import static me.grudzien.patryk.utils.web.FrontendRoutesDefinitions.REGISTRATION_CONFIRMED_TOKEN_NOT_FOUND;
 import static me.grudzien.patryk.utils.web.FrontendRoutesDefinitions.REGISTRATION_CONFIRMED_USER_ALREADY_ENABLED;
 
-@Log4j2
+@Slf4j
 @Component
 public class HttpLocationHeaderCreator {
 

@@ -1,6 +1,6 @@
 package me.grudzien.patryk.utils.web;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,7 @@ import static me.grudzien.patryk.utils.appplication.AppFLow.SYSTEM_COULD_NOT_ENA
 import static me.grudzien.patryk.utils.appplication.AppFLow.USER_LOGGED_IN_USING_GOOGLE;
 import static me.grudzien.patryk.utils.appplication.AppFLow.VERIFICATION_TOKEN_CREATION;
 
-@Log4j2
+@Slf4j
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class ContextPathsResolver implements InitializingBean {

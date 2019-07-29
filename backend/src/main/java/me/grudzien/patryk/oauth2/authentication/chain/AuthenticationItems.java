@@ -4,7 +4,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.jwt.Jwt;
@@ -15,7 +15,7 @@ import java.util.Map;
 import me.grudzien.patryk.authentication.model.dto.JwtUser;
 import me.grudzien.patryk.oauth2.authentication.model.CustomAuthenticationToken;
 
-@Log4j2
+@Slf4j
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.NONE)

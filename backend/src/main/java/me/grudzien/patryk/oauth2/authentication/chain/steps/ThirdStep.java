@@ -1,7 +1,7 @@
 package me.grudzien.patryk.oauth2.authentication.chain.steps;
 
 import io.vavr.control.Try;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.jwt.crypto.sign.RsaVerifier;
@@ -13,7 +13,7 @@ import me.grudzien.patryk.oauth2.service.google.impl.GooglePrincipalServiceProxy
 
 import static me.grudzien.patryk.oauth2.authentication.model.enums.AuthenticationStepOrder.THIRD;
 
-@Log4j2
+@Slf4j
 public final class ThirdStep extends AbstractAuthenticationStepBuilder<RsaVerifier> {
 
     private final GooglePrincipalServiceProxy googlePrincipalServiceProxy;

@@ -1,6 +1,6 @@
 package me.grudzien.patryk.oauth2.authentication;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.env.Environment;
@@ -37,7 +37,7 @@ import static me.grudzien.patryk.oauth2.authentication.chain.AuthenticationResul
 import static me.grudzien.patryk.oauth2.authentication.chain.AuthenticationResult.Status.OK;
 import static me.grudzien.patryk.utils.factory.FactoryProvider.FactoryType.EXCEPTION_FACTORY;
 
-@Log4j2
+@Slf4j
 @Component
 public class CustomAuthenticationProvider implements AuthenticationProvider {
 

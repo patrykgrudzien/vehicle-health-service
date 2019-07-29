@@ -3,7 +3,7 @@ package me.grudzien.patryk.configuration.filters;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.impl.DefaultClaims;
 import io.jsonwebtoken.impl.DefaultJwsHeader;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -56,7 +56,7 @@ import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
  * {@link LocaleDeterminerFilter}
  */
 @SuppressWarnings("JavadocReference")
-@Log4j2
+@Slf4j
 public class GenericJwtTokenFilter extends OncePerRequestFilter {
 
     private final UserDetailsService userDetailsService;

@@ -1,7 +1,7 @@
 package me.grudzien.patryk.oauth2.resource.google.impl;
 
 import io.vavr.Tuple2;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,8 +9,6 @@ import org.springframework.mobile.device.Device;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RestController;
 
-import me.grudzien.patryk.utils.web.model.ExceptionResponse;
-import me.grudzien.patryk.utils.web.model.SuccessResponse;
 import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationRequest;
 import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationResponse;
 import me.grudzien.patryk.authentication.model.dto.JwtUser;
@@ -18,13 +16,15 @@ import me.grudzien.patryk.jwt.service.JwtTokenService;
 import me.grudzien.patryk.oauth2.model.entity.CustomOAuth2OidcPrincipalUser.AccountStatus;
 import me.grudzien.patryk.oauth2.resource.google.GoogleResource;
 import me.grudzien.patryk.utils.web.HttpLocationHeaderCreator;
+import me.grudzien.patryk.utils.web.model.ExceptionResponse;
+import me.grudzien.patryk.utils.web.model.SuccessResponse;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import static me.grudzien.patryk.utils.appplication.AppFLow.USER_LOGGED_IN_USING_GOOGLE;
 import static me.grudzien.patryk.oauth2.handler.CustomOAuth2AuthenticationSuccessHandler.SHORT_LIVED_AUTH_TOKEN_NAME;
+import static me.grudzien.patryk.utils.appplication.AppFLow.USER_LOGGED_IN_USING_GOOGLE;
 
-@Log4j2
+@Slf4j
 @RestController
 public class GoogleResourceImpl implements GoogleResource {
 

@@ -2,7 +2,7 @@ package me.grudzien.patryk.utils.i18n;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -18,7 +18,7 @@ import java.util.Optional;
 import me.grudzien.patryk.jwt.service.JwtTokenClaimsRetriever;
 import me.grudzien.patryk.jwt.service.JwtTokenValidator;
 
-@Log4j2
+@Slf4j
 @Component
 public class LocaleMessagesHelper {
 

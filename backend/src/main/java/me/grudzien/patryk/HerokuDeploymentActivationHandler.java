@@ -1,7 +1,7 @@
 package me.grudzien.patryk;
 
 import io.vavr.control.Try;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.core.io.FileSystemResource;
 
@@ -22,7 +22,7 @@ import static me.grudzien.patryk.utils.appplication.SpringAppProfiles.HEROKU_DEP
  * {@link me.grudzien.patryk.HerokuDeploymentActivationHandler#main(String[])}
  * method and create activation files which trigger (heroku-maven-plugin) to start deployment process on Heroku.
  */
-@Log4j2
+@Slf4j
 public final class HerokuDeploymentActivationHandler {
 
 	private static final String FRONTEND_MODULE_NAME = "frontend";

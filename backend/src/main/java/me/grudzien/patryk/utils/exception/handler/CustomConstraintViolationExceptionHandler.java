@@ -10,6 +10,8 @@ import me.grudzien.patryk.utils.web.model.ExceptionResponse;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
+import static me.grudzien.patryk.utils.web.model.ExceptionResponse.buildBodyMessage;
+
 /**
  * The {@link ControllerAdvice} annotation is a component annotation allowing
  * implementation classes to be auto-detected through classpath scanning.
@@ -21,15 +23,13 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 public class CustomConstraintViolationExceptionHandler {
 
     @ExceptionHandler(CustomConstraintViolationException.class)
-    public ResponseEntity<ExceptionResponse> test(final CustomConstraintViolationException exception) {
-        final ExceptionResponse response = ExceptionResponse.buildBodyMessage(exception);
-        response.setErrors(exception.getValidationErrors());
-        return new ResponseEntity<>(response, BAD_REQUEST);
+    public ResponseEntity<ExceptionResponse> test(final CustomConstraintViolationException e) {
+        return new ResponseEntity<>(buildBodyMessage(e, e.getValidationErrors(), e.getMessageCode()), BAD_REQUEST);
     }
 
     @ExceptionHandler(CustomUserValidationException.class)
     public ResponseEntity<ExceptionResponse> customUserFieldsValidationException(final CustomUserValidationException exception) {
-        final ExceptionResponse response = ExceptionResponse.buildBodyMessage(exception);
+        final ExceptionResponse response = buildBodyMessage(exception);
         response.setErrors(exception.getValidationErrors());
         return new ResponseEntity<>(response, BAD_REQUEST);
     }

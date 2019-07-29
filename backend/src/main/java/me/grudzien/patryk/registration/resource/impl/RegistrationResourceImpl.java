@@ -1,6 +1,6 @@
 package me.grudzien.patryk.registration.resource.impl;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -12,12 +12,12 @@ import java.net.URI;
 
 import me.grudzien.patryk.registration.model.dto.RegistrationResponse;
 import me.grudzien.patryk.registration.model.dto.UserRegistrationDto;
+import me.grudzien.patryk.registration.model.event.RegistrationEventPublisher;
 import me.grudzien.patryk.registration.resource.RegistrationResource;
+import me.grudzien.patryk.registration.service.UserRegistrationService;
 import me.grudzien.patryk.utils.web.model.CustomResponse;
 import me.grudzien.patryk.utils.web.model.ExceptionResponse;
 import me.grudzien.patryk.utils.web.model.SuccessResponse;
-import me.grudzien.patryk.registration.service.UserRegistrationService;
-import me.grudzien.patryk.registration.model.event.RegistrationEventPublisher;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -26,7 +26,7 @@ import static org.springframework.http.ResponseEntity.badRequest;
 import static org.springframework.http.ResponseEntity.ok;
 import static org.springframework.http.ResponseEntity.status;
 
-@Log4j2
+@Slf4j
 @RestController
 public class RegistrationResourceImpl implements RegistrationResource {
 

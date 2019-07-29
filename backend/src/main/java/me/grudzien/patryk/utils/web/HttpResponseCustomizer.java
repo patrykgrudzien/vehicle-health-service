@@ -1,7 +1,7 @@
 package me.grudzien.patryk.utils.web;
 
 import io.vavr.control.Try;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -20,7 +20,7 @@ import me.grudzien.patryk.utils.web.model.CustomResponse;
 import static me.grudzien.patryk.utils.appplication.SpringAppProfiles.DEV_HOME;
 import static me.grudzien.patryk.utils.appplication.SpringAppProfiles.H2_IN_MEMORY;
 
-@Log4j2
+@Slf4j
 @Component
 public class HttpResponseCustomizer {
 

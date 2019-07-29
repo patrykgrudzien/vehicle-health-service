@@ -1,19 +1,19 @@
 package me.grudzien.patryk.vehicle.resource.impl;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 
+import me.grudzien.patryk.utils.web.RequestsDecoder;
 import me.grudzien.patryk.vehicle.model.dto.VehicleDto;
 import me.grudzien.patryk.vehicle.resource.VehicleResource;
 import me.grudzien.patryk.vehicle.service.VehicleService;
-import me.grudzien.patryk.utils.web.RequestsDecoder;
 import me.grudzien.patryk.vehicle.service.impl.VehicleServiceImpl;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-@Log4j2
+@Slf4j
 @RestController
 public class VehicleResourceImpl implements VehicleResource {
 

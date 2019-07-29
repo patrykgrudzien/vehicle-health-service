@@ -1,6 +1,6 @@
 package me.grudzien.patryk.oauth2.service.google.impl;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.core.oidc.StandardClaimNames;
@@ -44,7 +44,7 @@ import static me.grudzien.patryk.oauth2.utils.OAuth2FlowDelegator.OAuth2Flow.UNK
 import static me.grudzien.patryk.registration.resource.RegistrationResourceDefinitions.CREATE_USER_ACCOUNT;
 import static me.grudzien.patryk.registration.resource.RegistrationResourceDefinitions.REGISTRATION_RESOURCE_ROOT;
 
-@Log4j2
+@Slf4j
 @Service
 public class GooglePrincipalServiceImpl implements GooglePrincipalService {
 

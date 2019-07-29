@@ -13,4 +13,5 @@ public final class PrefixesDefinitions {
     public static final String CUSTOM_OAUTH2_PROPERTIES_PREFIX = CUSTOM_PROPERTIES_BASE_PREFIX + "oauth2";
     public static final String CUSTOM_CORS_PROPERTIES_PREFIX = CUSTOM_PROPERTIES_BASE_PREFIX + "cors";
     public static final String CUSTOM_HEROKU_PROPERTIES_PREFIX = CUSTOM_PROPERTIES_BASE_PREFIX + "heroku";
+    public static final String CUSTOM_UI_MESSAGE_CODES_PROPERTIES_PREFIX = CUSTOM_PROPERTIES_BASE_PREFIX + "ui-message-codes";
 }

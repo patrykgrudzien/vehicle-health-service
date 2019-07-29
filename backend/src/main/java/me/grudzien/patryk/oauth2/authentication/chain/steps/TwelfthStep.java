@@ -1,7 +1,7 @@
 package me.grudzien.patryk.oauth2.authentication.chain.steps;
 
 import io.vavr.control.Try;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.security.core.Authentication;
 
@@ -14,7 +14,7 @@ import me.grudzien.patryk.oauth2.authentication.model.enums.AuthenticationStepOr
 
 import static me.grudzien.patryk.oauth2.authentication.model.enums.AuthenticationStepOrder.TWELFTH;
 
-@Log4j2
+@Slf4j
 public final class TwelfthStep extends AbstractAuthenticationStepBuilder<CustomAuthenticationToken> {
 
     private final AdditionalChecks<JwtUser> additionalChecks;

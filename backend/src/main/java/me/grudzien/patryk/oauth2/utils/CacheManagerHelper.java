@@ -1,6 +1,6 @@
 package me.grudzien.patryk.oauth2.utils;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
@@ -13,7 +13,7 @@ import com.google.common.base.Preconditions;
 
 import java.util.Optional;
 
-@Log4j2
+@Slf4j
 @Component
 public class CacheManagerHelper {
 

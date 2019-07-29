@@ -1,6 +1,6 @@
 package me.grudzien.patryk.configuration.filters;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -46,7 +46,7 @@ import me.grudzien.patryk.utils.i18n.LocaleMessagesHelper;
  * {@link ServletExceptionHandlerFilter}
  */
 @SuppressWarnings("JavadocReference")
-@Log4j2
+@Slf4j
 public class LocaleDeterminerFilter extends OncePerRequestFilter {
 
 	private final LocaleMessagesHelper localeMessagesHelper;

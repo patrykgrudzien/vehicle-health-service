@@ -1,6 +1,6 @@
 package me.grudzien.patryk.oauth2.authentication.checkers.impl;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.CredentialsExpiredException;
@@ -14,7 +14,7 @@ import me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases;
 import me.grudzien.patryk.oauth2.exception.handler.OAuth2ExceptionsHandler;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 
-@Log4j2
+@Slf4j
 @Component
 public class CustomPostAuthenticationChecks implements UserDetailsChecker {
 

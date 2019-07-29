@@ -16,14 +16,9 @@ import me.grudzien.patryk.utils.web.RequestsDecoder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import static me.grudzien.patryk.TestsUtils.ENABLE_ENCODING;
-import static me.grudzien.patryk.TestsUtils.TEST_EMAIL;
-import static me.grudzien.patryk.TestsUtils.TEST_PASSWORD;
-import static me.grudzien.patryk.TestsUtils.prepareLoginRequest;
-
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JwtAuthenticationRequestMapperImpl.class, RequestsDecoder.class})
-class JwtAuthenticationRequestMapperTest {
+class JwtAuthenticationRequestMapperTest extends BaseJwtAuthRequestMapper {
 
     @Autowired
     private JwtAuthenticationRequestMapper jwtAuthenticationRequestMapper;
@@ -31,7 +26,7 @@ class JwtAuthenticationRequestMapperTest {
     @Test
     void toDecodedAuthRequest() {
         // given
-        final JwtAuthenticationRequest encodedAuthRequest = prepareLoginRequest(TEST_EMAIL, TEST_PASSWORD, ENABLE_ENCODING);
+        final JwtAuthenticationRequest encodedAuthRequest = prepareLoginRequest(TEST_EMAIL, TEST_PASSWORD).doEncoding(true);
 
         // when
         final JwtAuthenticationRequest decodedAuthRequest = ObjectDecoder.authRequestDecoder().apply(encodedAuthRequest, jwtAuthenticationRequestMapper);

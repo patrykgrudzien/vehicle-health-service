@@ -5,7 +5,7 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.vavr.control.Try;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -14,10 +14,10 @@ import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import me.grudzien.patryk.utils.web.model.CustomResponse.SecurityStatus;
-import me.grudzien.patryk.utils.web.model.ExceptionResponse;
 import me.grudzien.patryk.jwt.service.impl.JwtTokenClaimsRetrieverImpl;
 import me.grudzien.patryk.utils.web.HttpResponseCustomizer;
+import me.grudzien.patryk.utils.web.model.CustomResponse.SecurityStatus;
+import me.grudzien.patryk.utils.web.model.ExceptionResponse;
 
 import static io.vavr.API.$;
 import static io.vavr.API.Case;
@@ -57,7 +57,7 @@ import static io.vavr.Predicates.instanceOf;
  * In such case one of the exceptions listed below is thrown.
  */
 @SuppressWarnings("JavadocReference")
-@Log4j2
+@Slf4j
 public class ServletExceptionHandlerFilter extends OncePerRequestFilter {
 
 	@SuppressWarnings("NullableProblems")

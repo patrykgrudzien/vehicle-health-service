@@ -66,13 +66,6 @@ public final class TestsUtils {
                                        .build();
     }
 
-    public static JwtAuthenticationRequest prepareLoginRequest(final String email, final String password, final boolean doEncoding) {
-        return JwtAuthenticationRequest.Builder()
-                                       .email(doEncoding ? encodeNotNullValue(email) : email)
-                                       .password(doEncoding ? encodeNotNullValue(password) : password)
-                                       .build();
-    }
-
 	public static JwtAuthenticationRequest prepareAccessTokenRequest(final String email, final String refreshToken, final boolean doEncoding) {
 		return JwtAuthenticationRequest.Builder()
 		                               .email(doEncoding ? encodeNotNullValue(email) : email)

@@ -1,7 +1,7 @@
 package me.grudzien.patryk.vehicle.service.impl;
 
 import lombok.Getter;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
@@ -22,7 +22,7 @@ import me.grudzien.patryk.vehicle.service.VehicleService;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-@Log4j2
+@Slf4j
 @Service
 @CacheConfig(cacheNames = VehicleServiceImpl.VEHICLE_MILEAGE_CACHE_NAME)
 public class VehicleServiceImpl implements VehicleService {

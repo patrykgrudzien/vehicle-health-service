@@ -1,7 +1,7 @@
 package me.grudzien.patryk.oauth2.authentication.chain;
 
 import io.vavr.control.Try;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.security.core.Authentication;
 
@@ -15,7 +15,7 @@ import static io.vavr.Patterns.$Failure;
 import static io.vavr.Patterns.$Success;
 import static java.util.Objects.nonNull;
 
-@Log4j2
+@Slf4j
 public abstract class AbstractAuthenticationStepBuilder<OperationResultType> extends AbstractAuthenticationStepTemplate<OperationResultType> {
 
     /**

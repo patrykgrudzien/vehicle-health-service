@@ -1,6 +1,6 @@
 package me.grudzien.patryk.jwt.resource.impl;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.mobile.device.Device;
@@ -17,7 +17,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static org.springframework.http.ResponseEntity.badRequest;
 import static org.springframework.http.ResponseEntity.ok;
 
-@Log4j2
+@Slf4j
 @RestController
 public class JwtResourceImpl implements JwtResource {
 

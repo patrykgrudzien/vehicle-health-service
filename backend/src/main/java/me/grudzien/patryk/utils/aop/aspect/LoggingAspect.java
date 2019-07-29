@@ -1,6 +1,6 @@
 package me.grudzien.patryk.utils.aop.aspect;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.ServletWebRequest;
@@ -11,7 +11,7 @@ import org.aspectj.lang.annotation.Before;
 
 import java.util.stream.Stream;
 
-@Log4j2
+@Slf4j
 @Component
 @Aspect
 public class LoggingAspect {

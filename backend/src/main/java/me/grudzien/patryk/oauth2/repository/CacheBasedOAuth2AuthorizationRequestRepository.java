@@ -1,6 +1,6 @@
 package me.grudzien.patryk.oauth2.repository;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -28,7 +28,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * That will not work if my backend is stateless, because there'll be no session.
  * Implementation below is a "cache-based".
  */
-@Log4j2
+@Slf4j
 @Repository
 public class CacheBasedOAuth2AuthorizationRequestRepository implements AuthorizationRequestRepository<OAuth2AuthorizationRequest> {
 

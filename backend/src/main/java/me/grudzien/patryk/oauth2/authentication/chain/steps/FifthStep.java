@@ -2,7 +2,7 @@ package me.grudzien.patryk.oauth2.authentication.chain.steps;
 
 import io.vavr.Function1;
 import io.vavr.control.Try;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.security.core.Authentication;
 
@@ -19,7 +19,7 @@ import static io.vavr.CheckedFunction1.liftTry;
 
 import static me.grudzien.patryk.oauth2.authentication.model.enums.AuthenticationStepOrder.FIFTH;
 
-@Log4j2
+@Slf4j
 public final class FifthStep extends AbstractAuthenticationStepBuilder<Map<Object, Object>> {
 
 	/**

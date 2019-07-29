@@ -1,7 +1,7 @@
 package me.grudzien.patryk.registration.model.event;
 
 import io.vavr.control.Try;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -16,7 +16,7 @@ import me.grudzien.patryk.registration.model.dto.RegistrationResponse;
 import me.grudzien.patryk.registration.model.entity.CustomUser;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 
-@Log4j2
+@Slf4j
 @Component
 public class RegistrationEventPublisher {
 

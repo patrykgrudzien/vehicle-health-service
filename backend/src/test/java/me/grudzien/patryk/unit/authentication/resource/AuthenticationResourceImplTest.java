@@ -30,12 +30,10 @@ import java.io.IOException;
 import java.util.Set;
 
 import me.grudzien.patryk.TestsUtils;
-import me.grudzien.patryk.authentication.mapping.JwtAuthenticationRequestMapper;
 import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationRequest;
 import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationResponse;
-import me.grudzien.patryk.authentication.resource.AuthenticationResourceImpl;
+import me.grudzien.patryk.authentication.resource.impl.AuthenticationResourceImpl;
 import me.grudzien.patryk.authentication.service.UserAuthenticationService;
-import me.grudzien.patryk.utils.validation.ValidationService;
 import me.grudzien.patryk.utils.validation.to.remove.CustomValidator;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -54,7 +52,7 @@ import static me.grudzien.patryk.authentication.resource.AuthenticationResourceD
 import static me.grudzien.patryk.authentication.resource.AuthenticationResourceDefinitions.LOGIN;
 
 @WebMvcTest(controllers = AuthenticationResourceImpl.class, secure = false)
-class AuthenticationResourceImplTest {
+class AuthenticationResourceImplTest extends BaseAuthenticationResource {
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -62,14 +60,8 @@ class AuthenticationResourceImplTest {
     @Autowired
     private WebApplicationContext webApplicationContext;
 
-	@MockBean
+    @MockBean
 	private UserAuthenticationService userAuthenticationService;
-
-    @MockBean
-	private JwtAuthenticationRequestMapper authRequestMapper;
-
-    @MockBean
-	private ValidationService validationService;
 
     private final Validator validator = CustomValidator.getDefaultValidator();
     private final ObjectMapper objectMapper = new ObjectMapper();

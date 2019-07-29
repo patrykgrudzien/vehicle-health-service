@@ -1,6 +1,6 @@
 package me.grudzien.patryk.registration.model.event;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
@@ -29,7 +29,7 @@ import static me.grudzien.patryk.utils.appplication.AppFLow.VERIFICATION_TOKEN_C
  * That listener is going to handle {@link RegistrationCompleteEvent} which is published by
  * {@link CustomUser} object in {@link UserRegistrationServiceImpl} after saving new user to database.
  */
-@Log4j2
+@Slf4j
 @Component
 public class RegistrationEventListener implements ApplicationListener<RegistrationCompleteEvent> {
 

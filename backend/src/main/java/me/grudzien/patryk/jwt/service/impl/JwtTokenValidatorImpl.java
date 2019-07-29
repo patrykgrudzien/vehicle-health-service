@@ -1,7 +1,7 @@
 package me.grudzien.patryk.jwt.service.impl;
 
 import io.jsonwebtoken.ExpiredJwtException;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,13 +15,13 @@ import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import me.grudzien.patryk.utils.appplication.ApplicationZone;
 import me.grudzien.patryk.authentication.model.dto.JwtUser;
 import me.grudzien.patryk.jwt.service.JwtTokenClaimsRetriever;
 import me.grudzien.patryk.jwt.service.JwtTokenValidator;
+import me.grudzien.patryk.utils.appplication.ApplicationZone;
 import me.grudzien.patryk.utils.date.DateOperationsHelper;
 
-@Log4j2
+@Slf4j
 @Component
 public class JwtTokenValidatorImpl implements JwtTokenValidator {
 

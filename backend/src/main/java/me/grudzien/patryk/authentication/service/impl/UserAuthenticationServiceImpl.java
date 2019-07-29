@@ -1,7 +1,7 @@
 package me.grudzien.patryk.authentication.service.impl;
 
 import io.vavr.control.Try;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mobile.device.Device;
@@ -40,7 +40,7 @@ import static me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases
 import static me.grudzien.patryk.utils.common.Predicates.isEmpty;
 import static me.grudzien.patryk.utils.factory.FactoryProvider.FactoryType.JWT_AUTH_RESPONSE_FACTORY;
 
-@Log4j2
+@Slf4j
 @Service
 public class UserAuthenticationServiceImpl implements UserAuthenticationService {
 

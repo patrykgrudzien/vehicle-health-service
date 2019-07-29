@@ -1,6 +1,6 @@
 package me.grudzien.patryk.authentication.model.factory;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationRequest;
 import me.grudzien.patryk.authentication.model.factory.JwtAuthRequestFactory.JwtAuthType;
@@ -15,7 +15,7 @@ import static java.lang.String.valueOf;
 import static me.grudzien.patryk.authentication.model.factory.JwtAuthRequestFactory.JwtAuthType.EMAIL_PASSWORD_REQUEST;
 import static me.grudzien.patryk.authentication.model.factory.JwtAuthRequestFactory.JwtAuthType.FULL_REQUEST;
 
-@Log4j2
+@Slf4j
 public final class JwtAuthRequestFactory implements AbstractFactory<JwtAuthType, JwtAuthenticationRequest> {
 
     private JwtAuthenticationRequest.Builder authRequest = JwtAuthenticationRequest.Builder();

@@ -1,6 +1,6 @@
 package me.grudzien.patryk.oauth2.service.google.helper;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.security.oauth2.core.oidc.StandardClaimNames;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
@@ -10,14 +10,14 @@ import java.util.Map;
 
 import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationRequest;
 import me.grudzien.patryk.authentication.model.dto.JwtUser;
-import me.grudzien.patryk.registration.model.dto.UserRegistrationDto;
-import me.grudzien.patryk.registration.model.enums.RegistrationProvider;
 import me.grudzien.patryk.oauth2.model.entity.CustomOAuth2OidcPrincipalUser;
 import me.grudzien.patryk.oauth2.model.factory.CustomOAuth2OidcPrincipalUserFactory;
+import me.grudzien.patryk.registration.model.dto.UserRegistrationDto;
+import me.grudzien.patryk.registration.model.enums.RegistrationProvider;
 
 import static me.grudzien.patryk.oauth2.utils.OAuth2OidcAttributesExtractor.getOAuth2AttributeValue;
 
-@Log4j2
+@Slf4j
 public class GooglePrincipalServiceHelper {
 
 	public JwtAuthenticationRequest prepareLoginPayload(final OAuth2User oAuth2User, final String password) {

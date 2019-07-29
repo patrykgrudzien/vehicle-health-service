@@ -1,7 +1,7 @@
 package me.grudzien.patryk.registration.service.impl;
 
 import io.vavr.control.Try;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -15,8 +15,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import me.grudzien.patryk.registration.service.UserRegistrationService;
-import me.grudzien.patryk.utils.appplication.ApplicationZone;
 import me.grudzien.patryk.authentication.service.impl.MyUserDetailsService;
 import me.grudzien.patryk.oauth2.utils.CacheManagerHelper;
 import me.grudzien.patryk.registration.exception.CustomUserValidationException;
@@ -35,10 +33,12 @@ import me.grudzien.patryk.registration.model.enums.RegistrationProvider;
 import me.grudzien.patryk.registration.model.enums.RoleName;
 import me.grudzien.patryk.registration.repository.CustomUserRepository;
 import me.grudzien.patryk.registration.repository.EmailVerificationTokenRepository;
-import me.grudzien.patryk.utils.web.ObjectDecoder;
+import me.grudzien.patryk.registration.service.UserRegistrationService;
+import me.grudzien.patryk.utils.appplication.ApplicationZone;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.validation.to.remove.CustomValidator;
 import me.grudzien.patryk.utils.web.HttpLocationHeaderCreator;
+import me.grudzien.patryk.utils.web.ObjectDecoder;
 import me.grudzien.patryk.vehicle.model.entity.Engine;
 import me.grudzien.patryk.vehicle.model.entity.Vehicle;
 import me.grudzien.patryk.vehicle.model.enums.EngineType;
@@ -52,7 +52,7 @@ import static me.grudzien.patryk.utils.appplication.AppFLow.SYSTEM_COULD_NOT_ENA
 import static me.grudzien.patryk.utils.appplication.AppFLow.VERIFICATION_TOKEN_EXPIRED;
 import static me.grudzien.patryk.utils.appplication.AppFLow.VERIFICATION_TOKEN_NOT_FOUND;
 
-@Log4j2
+@Slf4j
 @Service
 @Transactional
 public class UserRegistrationServiceImpl implements UserRegistrationService {

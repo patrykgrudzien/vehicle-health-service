@@ -1,6 +1,6 @@
 package me.grudzien.patryk.oauth2.service;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
@@ -35,7 +35,7 @@ import static me.grudzien.patryk.oauth2.repository.CacheBasedOAuth2Authorization
  *
  * Logs in or registers a user after OpenID Connect SignIn/Up.
  */
-@Log4j2
+@Slf4j
 @Service
 public class CustomOidcUserService extends OidcUserService {
 

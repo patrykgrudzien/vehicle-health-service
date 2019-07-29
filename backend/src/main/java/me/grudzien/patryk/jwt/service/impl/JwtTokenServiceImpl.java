@@ -1,7 +1,7 @@
 package me.grudzien.patryk.jwt.service.impl;
 
 import io.jsonwebtoken.Jwts;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -20,12 +20,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import me.grudzien.patryk.configuration.properties.jwt.CustomJwtProperties;
-import me.grudzien.patryk.configuration.properties.oauth2.CustomOAuth2Properties;
-import me.grudzien.patryk.utils.appplication.ApplicationZone;
 import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationRequest;
 import me.grudzien.patryk.authentication.model.dto.JwtUser;
 import me.grudzien.patryk.authentication.service.impl.MyUserDetailsService;
+import me.grudzien.patryk.configuration.properties.jwt.CustomJwtProperties;
+import me.grudzien.patryk.configuration.properties.oauth2.CustomOAuth2Properties;
 import me.grudzien.patryk.jwt.exception.NoEmailProvidedException;
 import me.grudzien.patryk.jwt.exception.NoRefreshTokenProvidedException;
 import me.grudzien.patryk.jwt.model.enums.JwtTokenClaims;
@@ -35,12 +34,13 @@ import me.grudzien.patryk.jwt.utils.JwtTokenConstants;
 import me.grudzien.patryk.jwt.utils.JwtTokenHelper;
 import me.grudzien.patryk.oauth2.model.entity.CustomOAuth2OidcPrincipalUser;
 import me.grudzien.patryk.oauth2.utils.OAuth2OidcAttributesExtractor;
+import me.grudzien.patryk.utils.appplication.ApplicationZone;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.web.RequestsDecoder;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-@Log4j2
+@Slf4j
 @Service
 public class JwtTokenServiceImpl implements JwtTokenService {
 

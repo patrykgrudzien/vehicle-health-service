@@ -1,6 +1,6 @@
 package me.grudzien.patryk.oauth2.utils.rest;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
@@ -20,7 +20,7 @@ import me.grudzien.patryk.registration.resource.RegistrationResource;
  * I override {@link DefaultResponseErrorHandler} and I don't handle any errors what allows OAuth2 flow to catch failures by:
  * {@link CustomOAuth2AuthenticationFailureHandler}.
  */
-@Log4j2
+@Slf4j
 public class CustomRestTemplateResponseErrorHandler extends DefaultResponseErrorHandler {
 
 	@Override

@@ -1,6 +1,6 @@
-package me.grudzien.patryk.authentication.resource;
+package me.grudzien.patryk.authentication.resource.impl;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.mobile.device.Device;
@@ -11,7 +11,9 @@ import me.grudzien.patryk.authentication.mapping.JwtAuthenticationRequestMapper;
 import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationRequest;
 import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationResponse;
 import me.grudzien.patryk.authentication.model.dto.JwtUser;
+import me.grudzien.patryk.authentication.resource.AuthenticationResource;
 import me.grudzien.patryk.authentication.service.UserAuthenticationService;
+import me.grudzien.patryk.configuration.properties.ui.CustomUIMessageCodesProperties;
 import me.grudzien.patryk.utils.validation.ValidationService;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -21,30 +23,34 @@ import static org.springframework.http.ResponseEntity.ok;
 
 import static me.grudzien.patryk.utils.web.ObjectDecoder.authRequestDecoder;
 
-@Log4j2
+@Slf4j
 @RestController
 public class AuthenticationResourceImpl implements AuthenticationResource {
 
-    private final UserAuthenticationService userAuthenticationService;
     private final JwtAuthenticationRequestMapper authRequestMapper;
+    private final CustomUIMessageCodesProperties uiMessageCodesProperties;
+    private final UserAuthenticationService userAuthenticationService;
     private final ValidationService validationService;
 
-    public AuthenticationResourceImpl(final UserAuthenticationService userAuthenticationService,
-                                      final JwtAuthenticationRequestMapper authRequestMapper,
+    public AuthenticationResourceImpl(final JwtAuthenticationRequestMapper authRequestMapper,
+                                      final CustomUIMessageCodesProperties uiMessageCodesProperties,
+                                      final UserAuthenticationService userAuthenticationService,
                                       final ValidationService validationService) {
-        checkNotNull(userAuthenticationService, "userAuthenticationService cannot be null!");
         checkNotNull(authRequestMapper, "authRequestMapper cannot be null!");
+        checkNotNull(uiMessageCodesProperties, "uiMessageCodesProperties cannot be null!");
+        checkNotNull(userAuthenticationService, "userAuthenticationService cannot be null!");
         checkNotNull(validationService, "validationService cannot be null!");
 
-        this.userAuthenticationService = userAuthenticationService;
         this.authRequestMapper = authRequestMapper;
+        this.uiMessageCodesProperties = uiMessageCodesProperties;
+        this.userAuthenticationService = userAuthenticationService;
         this.validationService = validationService;
     }
 
     @Override
     public ResponseEntity<?> login(final JwtAuthenticationRequest authenticationRequest, final Device device, final WebRequest webRequest) {
         final JwtAuthenticationRequest decodedAuthRequest = authRequestDecoder().apply(authenticationRequest, authRequestMapper);
-        validationService.validateWithResult(decodedAuthRequest).onErrorsSetExceptionMessageCode("login-form-validation-errors");
+        validationService.validateWithResult(decodedAuthRequest).onErrorsSetExceptionMessageCode(uiMessageCodesProperties.getLoginFormValidationErrors());
         final JwtAuthenticationResponse authenticationResponse = userAuthenticationService.login(decodedAuthRequest, device);
         return authenticationResponse.isSuccessful() ?
                 ok(authenticationResponse) : badRequest().body(authenticationResponse);

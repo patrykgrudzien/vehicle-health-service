@@ -1,6 +1,6 @@
 package me.grudzien.patryk.configuration.security;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,7 +27,7 @@ import me.grudzien.patryk.utils.web.model.CustomResponse.SecurityStatus;
  *
  * Exceptions come from JWT are handled by {@link ServletExceptionHandlerFilter}
  */
-@Log4j2
+@Slf4j
 @Component
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 

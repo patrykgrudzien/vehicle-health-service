@@ -1,6 +1,6 @@
 package me.grudzien.patryk.configuration.security;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -51,7 +51,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * </p>
  */
 @SuppressWarnings("JavadocReference")   // disabling errors caused by "security.basic.enabled" mentioned above
-@Log4j2
+@Slf4j
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {

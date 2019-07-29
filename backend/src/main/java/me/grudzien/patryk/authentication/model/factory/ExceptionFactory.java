@@ -1,6 +1,6 @@
 package me.grudzien.patryk.authentication.model.factory;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.function.Supplier;
 
@@ -16,7 +16,7 @@ import static io.vavr.Predicates.is;
 import static me.grudzien.patryk.authentication.model.factory.ExceptionFactory.ExceptionType.DYNAMIC_BASED_ON_INPUT;
 import static me.grudzien.patryk.authentication.model.factory.ExceptionFactory.ExceptionType.UNKNOWN;
 
-@Log4j2
+@Slf4j
 public final class ExceptionFactory implements AbstractFactory<ExceptionType, Throwable> {
 
 	@Override

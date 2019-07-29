@@ -1,7 +1,7 @@
 package me.grudzien.patryk.oauth2.handler;
 
 import io.vavr.Tuple2;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,7 +30,7 @@ import static me.grudzien.patryk.oauth2.resource.google.GoogleResourceDefinition
 import static me.grudzien.patryk.oauth2.resource.google.GoogleResourceDefinitions.USER_LOGGED_IN_USING_GOOGLE;
 import static me.grudzien.patryk.oauth2.resource.google.GoogleResourceDefinitions.USER_REGISTERED_USING_GOOGLE;
 
-@Log4j2
+@Slf4j
 @Component
 public class CustomOAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 

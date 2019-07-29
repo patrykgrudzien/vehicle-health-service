@@ -1,6 +1,6 @@
 package me.grudzien.patryk.utils.web;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -16,7 +16,7 @@ import static me.grudzien.patryk.utils.common.Predicates.isNotAlpha;
 import static me.grudzien.patryk.utils.common.Predicates.isNotEmpty;
 import static me.grudzien.patryk.utils.common.Predicates.isNotNumeric;
 
-@Log4j2
+@Slf4j
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class RequestsDecoder {
