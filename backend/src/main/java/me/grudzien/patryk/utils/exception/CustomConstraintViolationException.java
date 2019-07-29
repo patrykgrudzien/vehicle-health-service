@@ -17,7 +17,7 @@ import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 @Getter
 public class CustomConstraintViolationException extends ConstraintViolationException {
 
-    private static final long serialVersionUID = -345792305372280930L;
+    private static final long serialVersionUID = 2257797681054773142L;
 
     private final List<String> validationErrors;
     private final String messageCode;

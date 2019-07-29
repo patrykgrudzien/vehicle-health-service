@@ -1,5 +1,20 @@
 package me.grudzien.patryk.integration.authentication.resource;
 
+import static io.restassured.RestAssured.given;
+import static io.restassured.http.ContentType.JSON;
+import static io.restassured.http.Method.POST;
+import static java.util.Objects.requireNonNull;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.OK;
+
 import io.restassured.RestAssured;
 import io.restassured.http.Method;
 
@@ -22,22 +37,6 @@ import java.util.stream.Stream;
 import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationRequest;
 import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationResponse;
 
-import static io.restassured.RestAssured.given;
-import static io.restassured.http.ContentType.JSON;
-import static io.restassured.http.Method.POST;
-import static java.util.Objects.requireNonNull;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
-
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.OK;
-
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @DirtiesContext
 class AuthenticationResourceImplIT extends BaseAuthenticationResourceIT {
@@ -55,7 +54,7 @@ class AuthenticationResourceImplIT extends BaseAuthenticationResourceIT {
 	}
 
 	@Test
-	@DisplayName("Login successful. 200 OK.")
+	@DisplayName("Login successful. Response status: 200 OK.")
 	void shouldReturn200withAccessAndRefreshTokensOnLogin() {
         // given
 		final JwtAuthenticationRequest loginRequest = createLoginRequest().doEncoding(false);

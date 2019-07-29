@@ -1,57 +1,57 @@
 package me.grudzien.patryk.unit.authentication.resource;
 
-import io.restassured.http.ContentType;
+import static io.restassured.http.ContentType.JSON;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+import org.springframework.boot.test.mock.mockito.MockBeans;
+import org.springframework.context.annotation.Import;
+import org.springframework.mobile.device.Device;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import org.apache.commons.lang3.RandomStringUtils;
-import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
-
-import java.io.IOException;
-import java.util.Set;
-
-import me.grudzien.patryk.TestsUtils;
+import me.grudzien.patryk.authentication.mapping.JwtAuthenticationRequestMapper;
 import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationRequest;
 import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationResponse;
 import me.grudzien.patryk.authentication.resource.impl.AuthenticationResourceImpl;
 import me.grudzien.patryk.authentication.service.UserAuthenticationService;
-import me.grudzien.patryk.utils.validation.to.remove.CustomValidator;
+import me.grudzien.patryk.configuration.i18n.LocaleMessagesConfig;
+import me.grudzien.patryk.configuration.properties.ui.CustomUIMessageCodesProperties;
+import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
+import me.grudzien.patryk.utils.i18n.LocaleMessagesHelper;
+import me.grudzien.patryk.utils.validation.ValidationService;
+import me.grudzien.patryk.utils.web.model.ExceptionResponse;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import static me.grudzien.patryk.TestsUtils.DISABLE_ENCODING;
-import static me.grudzien.patryk.authentication.resource.AuthenticationResourceDefinitions.AUTHENTICATION_RESOURCE_ROOT;
-import static me.grudzien.patryk.authentication.resource.AuthenticationResourceDefinitions.LOGIN;
-
-@WebMvcTest(controllers = AuthenticationResourceImpl.class, secure = false)
+@WebMvcTest(
+	controllers = AuthenticationResourceImpl.class,
+	secure = false
+)
+@MockBeans({
+	@MockBean(CustomUIMessageCodesProperties.class)
+})
+@Import({
+	ValidationService.class,
+	LocaleMessagesHelper.class,
+	LocaleMessagesCreator.class,
+	LocaleMessagesConfig.class
+})
 class AuthenticationResourceImplTest extends BaseAuthenticationResource {
 
 	@Autowired
@@ -61,107 +61,81 @@ class AuthenticationResourceImplTest extends BaseAuthenticationResource {
     private WebApplicationContext webApplicationContext;
 
     @MockBean
+    private JwtAuthenticationRequestMapper authRequestMapper;
+
+    @MockBean
 	private UserAuthenticationService userAuthenticationService;
 
-    private final Validator validator = CustomValidator.getDefaultValidator();
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
-    private static final String TEST_EMAIL = "test@email.com";
-    private static final String TEST_PASSWORD = "password";
-
     @Test
-    @DisplayName("Login successful. Response status -> 200 OK.")
-	void testLoginSuccessful() throws Exception {
+    @DisplayName("Login successful. Response status: 200 OK.")
+	void shouldReturn200withAccessAndRefreshTokensOnLogin() throws Exception {
 	    // given
-		final JwtAuthenticationResponse expectedResponse = JwtAuthenticationResponse.Builder()
-		                                                                            .accessToken(RandomStringUtils.randomAlphanumeric(25))
-		                                                                            .refreshToken(RandomStringUtils.randomAlphanumeric(25))
-		                                                                            .isSuccessful(Boolean.TRUE)
-		                                                                            .build();
+	    final JwtAuthenticationRequest decodedAuthRequest = createLoginRequest(TEST_EMAIL, TEST_PASSWORD).doEncoding(false);
+	    final JwtAuthenticationResponse expectedResponse = createLoginResponse();
+		given(authRequestMapper.toDecodedAuthRequest(any(JwtAuthenticationRequest.class))).willReturn(decodedAuthRequest);
+	    given(userAuthenticationService.login(any(JwtAuthenticationRequest.class), any(Device.class))).willReturn(expectedResponse);
+
 		// when
-		when(userAuthenticationService.login(any(), any())).thenReturn(expectedResponse);
-		final RequestBuilder requestBuilder = MockMvcRequestBuilders.post(AUTHENTICATION_RESOURCE_ROOT + LOGIN)
-		                                                            .accept(MediaType.APPLICATION_JSON)
-		                                                            .content(TestsUtils.prepareAuthJSONBody(TEST_EMAIL, TEST_PASSWORD, DISABLE_ENCODING))
-		                                                            .contentType(MediaType.APPLICATION_JSON);
-		final MvcResult mvcResult = mockMvc.perform(requestBuilder)
+	    final MvcResult mvcResult = mockMvc.perform(loginPostRequestBuilder(tryConvertObjectToJson(decodedAuthRequest)))
 		                                   .andDo(print())
 		                                   .andExpect(status().isOk())
 		                                   .andReturn();
 		// then
-        final JwtAuthenticationResponse actualResponse = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), JwtAuthenticationResponse.class);
-
-		verify(userAuthenticationService, times(1)).login(any(), any());
-        Assertions.assertAll(
-                () -> assertThat(actualResponse.getAccessToken()).hasSize(25),
+        final JwtAuthenticationResponse actualResponse = tryConvertJsonToObject(mvcResult.getResponse().getContentAsString(), JwtAuthenticationResponse.class);
+		verify(userAuthenticationService).login(any(JwtAuthenticationRequest.class), any(Device.class));
+        assertAll(
+        		() -> assertThat(actualResponse.getAccessToken()).hasSize(25),
                 () -> assertThat(actualResponse.getRefreshToken()).hasSize(25),
-                () -> assertEquals(expectedResponse.getAccessToken(), actualResponse.getAccessToken()),
-                () -> assertEquals(expectedResponse.getRefreshToken(), actualResponse.getRefreshToken()),
-                () -> assertTrue(actualResponse.isSuccessful()),
-                () -> assertEquals(expectedResponse.isSuccessful(), actualResponse.isSuccessful())
+		        () -> assertThat(actualResponse.getAccessToken()).isEqualTo(expectedResponse.getAccessToken()),
+		        () -> assertThat(actualResponse.getRefreshToken()).isEqualTo(expectedResponse.getRefreshToken()),
+		        () -> assertThat(actualResponse.isSuccessful()).isTrue(),
+		        () -> assertThat(actualResponse.isSuccessful()).isEqualTo(expectedResponse.isSuccessful())
         );
 	}
 
 	@Test
-    @DisplayName("Login failed. Empty email! Response status -> 400 Bad Request.")
-	void testLoginFailed_emptyEmail() throws Exception {
+    @DisplayName("Login failed. Empty email! Response status: 400 Bad Request.")
+	void shouldReturn400onLoginWhenEmptyEmail() throws Exception {
         // given
-		final String jsonLoginRequest = TestsUtils.prepareAuthJSONBody("", TEST_PASSWORD, DISABLE_ENCODING);
+		final JwtAuthenticationRequest decodedAuthRequest = createLoginRequest("", TEST_PASSWORD).doEncoding(false);
+		given(authRequestMapper.toDecodedAuthRequest(any(JwtAuthenticationRequest.class))).willReturn(decodedAuthRequest);
+		given(userAuthenticationService.login(any(JwtAuthenticationRequest.class), any(Device.class))).willReturn(null);
 
 		// when
-		when(userAuthenticationService.login(any(), any())).thenReturn(new JwtAuthenticationResponse());
-        final RequestBuilder requestBuilder = MockMvcRequestBuilders.post(AUTHENTICATION_RESOURCE_ROOT + LOGIN)
-                                                                    .accept(MediaType.APPLICATION_JSON)
-                                                                    .content(jsonLoginRequest)
-                                                                    .contentType(MediaType.APPLICATION_JSON);
-		final MvcResult mvcResult = mockMvc.perform(requestBuilder)
+		final MvcResult mvcResult = mockMvc.perform(loginPostRequestBuilder(tryConvertObjectToJson(decodedAuthRequest)))
 		                                   .andDo(print())
 		                                   .andExpect(status().isBadRequest())
 		                                   .andReturn();
 		// then
-        final Set<ConstraintViolation<JwtAuthenticationRequest>> loginValidationResult = 
-                validator.validate(objectMapper.readValue(jsonLoginRequest, JwtAuthenticationRequest.class));
-        final JwtAuthenticationResponse actualResponse = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
-                                                                                new TypeReference<JwtAuthenticationResponse>() {});
-
-        verify(userAuthenticationService, times(1)).login(any(), any());
-		Assertions.assertAll(
-                () -> Assertions.assertNotNull(loginValidationResult),
-                () -> assertThat(loginValidationResult).hasSize(2),
-                () -> Assertions.assertFalse(actualResponse.isSuccessful())
-        );
+		final ExceptionResponse exceptionResponse = tryConvertJsonToObject(mvcResult.getResponse().getContentAsString(), ExceptionResponse.class);
+		assertThat(exceptionResponse).isNotNull();
+		assertThat(exceptionResponse.getErrors()).isNotEmpty();
+		assertThat(exceptionResponse.getErrors()).hasSize(2);
+        verify(userAuthenticationService, never()).login(any(JwtAuthenticationRequest.class), any(Device.class));
     }
 
     @Test
-    @DisplayName("Login failed. Empty password! Response status -> 400 Bad Request.")
-    void testLoginFailed_emptyPassword() throws IOException {
+    @DisplayName("Login failed. Empty password! Response status: 400 Bad Request.")
+    void shouldReturn400onLoginWhenEmptyPassword() {
 	    // given
-        final String jsonLoginRequest = TestsUtils.prepareAuthJSONBody(TEST_EMAIL, "", DISABLE_ENCODING);
+	    final JwtAuthenticationRequest decodedAuthRequest = createLoginRequest(TEST_EMAIL, "").doEncoding(false);
+	    given(authRequestMapper.toDecodedAuthRequest(any(JwtAuthenticationRequest.class))).willReturn(decodedAuthRequest);
+	    given(userAuthenticationService.login(any(JwtAuthenticationRequest.class), any(Device.class))).willReturn(null);
 
-        // when
-        when(userAuthenticationService.login(any(), any())).thenReturn(new JwtAuthenticationResponse());
-
-        // then
+        // when - then
         RestAssuredMockMvc.given()
                           .webAppContextSetup(webApplicationContext)
                           .log().all()
-                          .body(jsonLoginRequest)
-                          .contentType(ContentType.JSON)
-                          .accept(ContentType.JSON)
+                          .body(tryConvertObjectToJson(decodedAuthRequest))
+                          .contentType(JSON)
+                          .accept(JSON)
                           .when()
-                          .post(AUTHENTICATION_RESOURCE_ROOT + LOGIN)
+                          .post(AUTHENTICATION_LOGIN_URI)
                           .then()
                           .log().all()
-                          .statusCode(HttpStatus.BAD_REQUEST.value())
-                          .body("successful", Matchers.is(false));
-
-        final Set<ConstraintViolation<JwtAuthenticationRequest>> loginValidationResult =
-                validator.validate(objectMapper.readValue(jsonLoginRequest, JwtAuthenticationRequest.class));
-
-        verify(userAuthenticationService, times(1)).login(any(), any());
-        Assertions.assertAll(
-                () -> Assertions.assertNotNull(loginValidationResult),
-                () -> assertThat(loginValidationResult).hasSize(1)
-        );
+                          .statusCode(BAD_REQUEST.value())
+                          .body("message", notNullValue())
+                          .body("errors", notNullValue());
+	    verify(userAuthenticationService, never()).login(any(), any());
     }
 }

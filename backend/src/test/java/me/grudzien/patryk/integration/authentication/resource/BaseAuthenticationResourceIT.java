@@ -1,29 +1,19 @@
 package me.grudzien.patryk.integration.authentication.resource;
 
-import io.vavr.CheckedFunction0;
-import lombok.NoArgsConstructor;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.util.Base64;
-import java.util.Base64.Encoder;
-import java.util.Optional;
-
-import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationRequest;
-import me.grudzien.patryk.authentication.resource.AuthenticationResourceDefinitions;
-
 import static lombok.AccessLevel.NONE;
-
 import static org.springframework.web.util.UriComponentsBuilder.fromPath;
+
+import lombok.NoArgsConstructor;
 
 import static me.grudzien.patryk.authentication.resource.AuthenticationResourceDefinitions.AUTHENTICATION_RESOURCE_ROOT;
 import static me.grudzien.patryk.authentication.resource.AuthenticationResourceDefinitions.LOGIN;
 
-@NoArgsConstructor(access = NONE)
-abstract class BaseAuthenticationResourceIT {
+import me.grudzien.patryk.BaseResource;
+import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationRequest;
+import me.grudzien.patryk.authentication.resource.AuthenticationResourceDefinitions;
 
-    private static final Encoder encoder = Base64.getEncoder();
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+@NoArgsConstructor(access = NONE)
+abstract class BaseAuthenticationResourceIT extends BaseResource {
 
     static final String TEST_EMAIL = "admin.root@gmail.com";
     static final String TEST_PASSWORD = "admin";
@@ -33,21 +23,21 @@ abstract class BaseAuthenticationResourceIT {
      */
     static final String AUTHENTICATION_LOGIN_URI = fromPath(AUTHENTICATION_RESOURCE_ROOT).path(LOGIN).toUriString();
 
-    static AuthRequestWithEncoding createLoginRequest() {
+    static LoginRequestWithEncoding createLoginRequest() {
         return BaseAuthenticationResourceIT::buildJwtAuthRequest;
     }
 
-    static JsonRequestWithEncoding createLoginJsonRequest(final String email, final String password) {
-        return doEncoding -> tryConvertToJson(buildJwtAuthRequest(email, password, doEncoding));
+    static LoginJsonRequestWithEncoding createLoginJsonRequest(final String email, final String password) {
+        return doEncoding -> tryConvertObjectToJson(buildJwtAuthRequest(email, password, doEncoding));
     }
 
     @FunctionalInterface
-    interface AuthRequestWithEncoding {
+    interface LoginRequestWithEncoding {
         JwtAuthenticationRequest doEncoding(boolean doEncoding);
     }
 
     @FunctionalInterface
-    interface JsonRequestWithEncoding {
+    interface LoginJsonRequestWithEncoding {
         String doEncoding(boolean doEncoding);
     }
 
@@ -61,17 +51,5 @@ abstract class BaseAuthenticationResourceIT {
                                        .email(doEncoding ? encodeNotNullValue(email) : email)
                                        .password(doEncoding ? encodeNotNullValue(password) : password)
                                        .build();
-    }
-
-    private static String encodeNotNullValue(final String value) {
-        return Optional.ofNullable(value)
-                       .map(notEmptyValue -> encoder.encodeToString(notEmptyValue.getBytes()))
-                       .orElse(null);
-    }
-
-    private static String tryConvertToJson(final Object value) {
-        return CheckedFunction0.liftTry(() -> objectMapper.writeValueAsString(value))
-                               .apply()
-                               .get();
     }
 }
