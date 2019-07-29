@@ -10,7 +10,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
 import java.util.Optional;
 
 import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationRequest;
@@ -24,6 +23,7 @@ import me.grudzien.patryk.utils.web.RequestsDecoder;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static io.vavr.API.Match;
+import static java.util.Objects.requireNonNull;
 
 import static me.grudzien.patryk.jwt.model.factory.JwtAuthResponseFactory.JwtAuthResponseType.FAILED_RESPONSE;
 import static me.grudzien.patryk.jwt.model.factory.JwtAuthResponseFactory.JwtAuthResponseType.SUCCESS_ACCESS_REFRESH_TOKEN_RESPONSE;
@@ -77,9 +77,8 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 	public Optional<Authentication> authenticateUser(final JwtAuthenticationRequest authenticationRequest) {
 		final String email = requestsDecoder.decodeStringParam(authenticationRequest.getEmail());
 		final String password = requestsDecoder.decodeStringParam(authenticationRequest.getPassword());
-
-		Objects.requireNonNull(email);
-		Objects.requireNonNull(password);
+		requireNonNull(email);
+		requireNonNull(password);
 
 		final String idToken = authenticationRequest.getIdToken();
 		return Try.of(() -> Optional.ofNullable(authenticationManager.authenticate(isEmpty(idToken) ?

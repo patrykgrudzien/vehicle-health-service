@@ -21,8 +21,10 @@ import static lombok.AccessLevel.NONE;
 @Getter
 @AllArgsConstructor
 @Builder(builderMethodName = "Builder")
-@JsonIgnoreProperties({"accountNonExpired", "accountNonLocked", "credentialsNonExpired", "password", "lastPasswordResetDate",
-                       "authorities", "username", "enabled", "roles"})
+@JsonIgnoreProperties({
+        "accountNonExpired", "accountNonLocked", "credentialsNonExpired", "password",
+        "lastPasswordResetDate", "authorities", "username", "enabled", "roles"
+})
 public class JwtUser implements UserDetails, Serializable {
 
 	private static final long serialVersionUID = 8787822344111596162L;

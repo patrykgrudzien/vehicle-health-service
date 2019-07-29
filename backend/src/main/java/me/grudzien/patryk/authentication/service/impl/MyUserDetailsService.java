@@ -19,10 +19,12 @@ import me.grudzien.patryk.registration.repository.CustomUserRepository;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import static me.grudzien.patryk.authentication.service.impl.MyUserDetailsService.*;
+
 @Slf4j
 @Service
 @Transactional
-@CacheConfig(cacheNames = MyUserDetailsService.PRINCIPAL_USER_CACHE_NAME)
+@CacheConfig(cacheNames = PRINCIPAL_USER_CACHE_NAME)
 public class MyUserDetailsService implements UserDetailsService {
 
 	public static final String BEAN_NAME = "myUserDetailsService";
