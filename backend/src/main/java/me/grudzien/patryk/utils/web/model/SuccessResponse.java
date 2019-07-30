@@ -1,11 +1,16 @@
 package me.grudzien.patryk.utils.web.model;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import me.grudzien.patryk.oauth2.model.entity.CustomOAuth2OidcPrincipalUser.AccountStatus;
 
 @NoArgsConstructor
+@JsonInclude(NON_NULL)
 public class SuccessResponse extends CustomResponse {
 
 	public SuccessResponse(final String message) {

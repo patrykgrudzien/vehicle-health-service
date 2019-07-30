@@ -21,6 +21,7 @@ public abstract class UserRegistrationDtoMapper {
                                   .confirmedEmail(requestsDecoder.decodeStringParam(encodedDto.getConfirmedEmail()))
                                   .password(requestsDecoder.decodeStringParam(encodedDto.getPassword()))
                                   .confirmedPassword(requestsDecoder.decodeStringParam(encodedDto.getConfirmedPassword()))
+                                  .hasFakeEmail(encodedDto.isHasFakeEmail())
                                   .build();
     }
 }

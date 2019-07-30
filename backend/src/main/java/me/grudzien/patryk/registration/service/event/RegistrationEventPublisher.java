@@ -1,5 +1,7 @@
 package me.grudzien.patryk.registration.service.event;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
 
@@ -7,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.WebRequest;
-
-import com.google.common.base.Preconditions;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -25,9 +25,11 @@ public class RegistrationEventPublisher {
     private final LocaleMessagesCreator localeMessagesCreator;
 
     @Autowired
-    public RegistrationEventPublisher(final ApplicationEventPublisher eventPublisher, final LocaleMessagesCreator localeMessagesCreator) {
-        Preconditions.checkNotNull(eventPublisher, "eventPublisher cannot be null!");
-        Preconditions.checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
+    public RegistrationEventPublisher(final ApplicationEventPublisher eventPublisher,
+                                      final LocaleMessagesCreator localeMessagesCreator) {
+        checkNotNull(eventPublisher, "eventPublisher cannot be null!");
+        checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
+
         this.eventPublisher = eventPublisher;
         this.localeMessagesCreator = localeMessagesCreator;
     }
@@ -48,6 +50,7 @@ public class RegistrationEventPublisher {
             response.setSuccessful(true);
             response.setMessage(localeMessagesCreator.buildLocaleMessageWithParam("register-user-account-success", customUser.getEmail()));
         }).onFailure(throwable -> {
+        	// TODO: throw some meaningful exception in case of failure
             throw new RuntimeException(throwable.getMessage());
         });
         return atomicResponse.get();

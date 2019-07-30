@@ -1,5 +1,16 @@
 package me.grudzien.patryk.registration.unit.resource;
 
+import static io.restassured.http.ContentType.JSON;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -12,17 +23,6 @@ import me.grudzien.patryk.registration.model.dto.RegistrationResponse;
 import me.grudzien.patryk.registration.model.dto.UserRegistrationDto;
 import me.grudzien.patryk.registration.resource.impl.RegistrationResourceImpl;
 import me.grudzien.patryk.registration.service.UserRegistrationService;
-
-import static io.restassured.http.ContentType.JSON;
-import static org.hamcrest.Matchers.is;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.verify;
-
-import static org.springframework.http.HttpStatus.OK;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(
     controllers = RegistrationResourceImpl.class,
@@ -45,12 +45,12 @@ class RegistrationResourceImplTest extends BaseRegistrationResource {
         given(userRegistrationService.createUserAccount(any(UserRegistrationDto.class))).willReturn(expectedResponse);
 
         // when - then
-        mockMvc.perform(createUserAccountRequestBuilder(tryConvertObjectToJson(decodedRegistrationDto)))
+        mockMvc.perform(createUserAccountPostRequestBuilder(tryConvertObjectToJson(decodedRegistrationDto)))
                .andDo(print())
                .andExpect(status().isOk())
                .andExpect(jsonPath("$.message", is("Registration success!")));
         verifyRegistrationMapper();
-        verifyRegistrationPublisher();
+        verifyRegistrationPublisher(never());
         verify(userRegistrationService).createUserAccount(any(UserRegistrationDto.class));
 	}
 
@@ -79,7 +79,7 @@ class RegistrationResourceImplTest extends BaseRegistrationResource {
                           .statusCode(OK.value())
                           .body("message", is("Registration success!"));
         verifyRegistrationMapper();
-        verifyRegistrationPublisher();
+        verifyRegistrationPublisher(never());
         verify(userRegistrationService).createUserAccount(any(UserRegistrationDto.class));
     }
 }

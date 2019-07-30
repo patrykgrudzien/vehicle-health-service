@@ -1,5 +1,11 @@
 package me.grudzien.patryk.registration.resource.impl;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static org.springframework.http.HttpStatus.MOVED_PERMANENTLY;
+import static org.springframework.http.ResponseEntity.badRequest;
+import static org.springframework.http.ResponseEntity.ok;
+import static org.springframework.http.ResponseEntity.status;
+
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.http.HttpHeaders;
@@ -9,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 
 import java.net.URI;
+
+import static me.grudzien.patryk.utils.web.ObjectDecoder.userRegistrationDtoDecoder;
 
 import me.grudzien.patryk.configuration.properties.ui.CustomUIMessageCodesProperties;
 import me.grudzien.patryk.registration.mapping.UserRegistrationDtoMapper;
@@ -21,15 +29,6 @@ import me.grudzien.patryk.utils.validation.ValidationService;
 import me.grudzien.patryk.utils.web.model.CustomResponse;
 import me.grudzien.patryk.utils.web.model.ExceptionResponse;
 import me.grudzien.patryk.utils.web.model.SuccessResponse;
-
-import static com.google.common.base.Preconditions.checkNotNull;
-
-import static org.springframework.http.HttpStatus.MOVED_PERMANENTLY;
-import static org.springframework.http.ResponseEntity.badRequest;
-import static org.springframework.http.ResponseEntity.ok;
-import static org.springframework.http.ResponseEntity.status;
-
-import static me.grudzien.patryk.utils.web.ObjectDecoder.userRegistrationDtoDecoder;
 
 @Slf4j
 @RestController
@@ -66,9 +65,12 @@ public class RegistrationResourceImpl implements RegistrationResource {
                          .onErrorsSetExceptionMessageCode(uiMessageCodesProperties.getRegistrationFormValidationErrors());
         final RegistrationResponse registrationResponse = userRegistrationService.createUserAccount(decodedRegistrationDto);
         if (registrationResponse.isSuccessful()) {
-            final RegistrationResponse emailSent = registrationEventPublisher.publishRegistrationEven(registrationResponse.getRegisteredUser(), webRequest);
-            return emailSent.isSuccessful() ?
-                    ok().body(new SuccessResponse(emailSent.getMessage())) : badRequest().build();
+        	if (decodedRegistrationDto.isHasFakeEmail()) {
+        		return ok(new SuccessResponse(registrationResponse.getMessage()));
+	        } else {
+		        final RegistrationResponse emailSent = registrationEventPublisher.publishRegistrationEven(registrationResponse.getRegisteredUser(), webRequest);
+		        return emailSent.isSuccessful() ? ok(new SuccessResponse(emailSent.getMessage())) : badRequest().build();
+	        }
         }
         return badRequest().body(new ExceptionResponse(registrationResponse.getMessage()));
     }

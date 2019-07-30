@@ -1,5 +1,7 @@
 package me.grudzien.patryk.utils.exception;
 
+import static java.util.stream.Collectors.toList;
+
 import lombok.Builder;
 import lombok.Getter;
 
@@ -10,7 +12,6 @@ import javax.validation.ConstraintViolationException;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 
@@ -36,7 +37,8 @@ public class CustomConstraintViolationException extends ConstraintViolationExcep
                                                           @NonNull final LocaleMessagesCreator localeMessagesCreator) {
         return constraintViolations.stream()
                         .map(ConstraintViolation::getMessage)
+						.distinct()
                         .map(localeMessagesCreator::buildLocaleMessage)
-                        .collect(Collectors.toList());
+                        .collect(toList());
     }
 }

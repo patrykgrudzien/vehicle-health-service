@@ -1,5 +1,9 @@
 package me.grudzien.patryk.utils.validation;
 
+import static java.lang.String.format;
+import static java.util.Objects.nonNull;
+import static lombok.AccessLevel.PRIVATE;
+
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
@@ -11,21 +15,17 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 
 import java.util.Set;
-import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import me.grudzien.patryk.utils.exception.CustomConstraintViolationException;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.web.ObjectDecoder;
 
-import static java.util.Objects.nonNull;
-import static lombok.AccessLevel.PRIVATE;
-
 @Service
 public class ValidationService {
 
-    private static final String VALIDATION_FAILED_MSG_TEMPLATE = "Bean of type '%s' failed validation, number of violations=%d";
-    private static final BiFunction<String, Integer, String> VALIDATION_FAILED_MSG =
-            (beanType, violations) -> String.format(VALIDATION_FAILED_MSG_TEMPLATE, beanType, violations);
+    private static final String VALIDATION_FAILED_MSG_TEMPLATE = "Bean of type '%s' failed validation!";
+    private static final Function<String, String> VALIDATION_FAILED_MSG = beanType -> format(VALIDATION_FAILED_MSG_TEMPLATE, beanType);
 
     private final Validator beanValidator;
     private final LocaleMessagesCreator localeMessagesCreator;
@@ -74,14 +74,14 @@ public class ValidationService {
                                             final Mapper mapper,
                                             final Class... groups) {
         final Set<? extends ConstraintViolation<?>> violations = beanValidator.validate(objectDecoder.apply(bean, mapper), groups);
-        final String message = VALIDATION_FAILED_MSG.apply(bean.getClass().getSimpleName(), violations.size());
+        final String message = VALIDATION_FAILED_MSG.apply(bean.getClass().getSimpleName());
         if (!violations.isEmpty())
             validationResult().throwViolationException(message, violations, null);
     }
 
     private <T> void validateObject(final T bean, final Class... groups) {
         final Set<? extends ConstraintViolation<?>> violations = beanValidator.validate(bean, groups);
-        final String message = VALIDATION_FAILED_MSG.apply(bean.getClass().getSimpleName(), violations.size());
+        final String message = VALIDATION_FAILED_MSG.apply(bean.getClass().getSimpleName());
         if (!violations.isEmpty())
             validationResult().throwViolationException(message, violations, null);
     }
@@ -91,14 +91,14 @@ public class ValidationService {
                                                                   final Mapper mapper,
                                                                   final Class... groups) {
         final Set<? extends ConstraintViolation<?>> violations = beanValidator.validate(objectDecoder.apply(bean, mapper), groups);
-        final String message = VALIDATION_FAILED_MSG.apply(bean.getClass().getSimpleName(), violations.size());
+        final String message = VALIDATION_FAILED_MSG.apply(bean.getClass().getSimpleName());
         return violations.isEmpty() ?
                 validationResult() : validationResult().failedWith(message, violations);
     }
 
     private <T> ValidationResult validateObjectWithResult(final T bean, final Class... groups) {
         final Set<? extends ConstraintViolation<?>> violations = beanValidator.validate(bean, groups);
-        final String message = VALIDATION_FAILED_MSG.apply(bean.getClass().getSimpleName(), violations.size());
+        final String message = VALIDATION_FAILED_MSG.apply(bean.getClass().getSimpleName());
         return violations.isEmpty() ?
                 validationResult() : validationResult().failedWith(message, violations);
     }
