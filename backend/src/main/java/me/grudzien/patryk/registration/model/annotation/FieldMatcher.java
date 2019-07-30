@@ -7,7 +7,7 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import me.grudzien.patryk.registration.model.validation.FieldMatcherValidator;
+import me.grudzien.patryk.registration.model.annotation.validation.FieldMatcherValidator;
 
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.ElementType.TYPE;

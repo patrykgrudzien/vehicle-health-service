@@ -13,4 +13,5 @@ import static me.grudzien.patryk.configuration.properties.PrefixesDefinitions.CU
 public class CustomUIMessageCodesProperties {
 
     private String loginFormValidationErrors;
+    private String registrationFormValidationErrors;
 }

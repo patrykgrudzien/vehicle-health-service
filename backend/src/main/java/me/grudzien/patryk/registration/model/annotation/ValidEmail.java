@@ -7,7 +7,7 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import me.grudzien.patryk.registration.model.validation.EmailValidator;
+import me.grudzien.patryk.registration.model.annotation.validation.EmailValidator;
 
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.ElementType.FIELD;

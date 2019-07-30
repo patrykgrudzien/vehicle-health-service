@@ -7,9 +7,9 @@ import me.grudzien.patryk.registration.model.entity.EmailVerificationToken;
 
 public interface UserRegistrationService {
 
-	Boolean doesEmailExist(String email);
+	boolean doesEmailExist(String email);
 
-	RegistrationResponse registerNewCustomUserAccount(UserRegistrationDto userRegistrationDto);
+	RegistrationResponse createUserAccount(UserRegistrationDto registrationDto);
 
     RegistrationResponse confirmRegistration(String tokenRequestParam);
 

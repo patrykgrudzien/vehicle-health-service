@@ -27,8 +27,8 @@ public class ExceptionResponse extends CustomResponse {
     }
 
 	@Builder(builderMethodName = "FullBuilder")
-	public ExceptionResponse(final String message, final SecurityStatus securityStatus, final AccountStatus accountStatus, final String lastRequestedPath,
-                             final String lastRequestMethod, final List<String> errors, final String messageCode) {
+	private ExceptionResponse(final String message, final SecurityStatus securityStatus, final AccountStatus accountStatus, final String lastRequestedPath,
+                              final String lastRequestMethod, final List<String> errors, final String messageCode) {
 		super(message, securityStatus, accountStatus, lastRequestedPath, lastRequestMethod);
 		this.errors = errors;
 		this.messageCode = messageCode;

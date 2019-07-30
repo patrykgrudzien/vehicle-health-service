@@ -2,15 +2,11 @@ package me.grudzien.patryk.unit.authentication.resource;
 
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.MockBeans;
-import org.springframework.context.annotation.Import;
 import org.springframework.mobile.device.Device;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.web.context.WebApplicationContext;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,11 +16,7 @@ import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationRequest;
 import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationResponse;
 import me.grudzien.patryk.authentication.resource.impl.AuthenticationResourceImpl;
 import me.grudzien.patryk.authentication.service.UserAuthenticationService;
-import me.grudzien.patryk.configuration.i18n.LocaleMessagesConfig;
 import me.grudzien.patryk.configuration.properties.ui.CustomUIMessageCodesProperties;
-import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
-import me.grudzien.patryk.utils.i18n.LocaleMessagesHelper;
-import me.grudzien.patryk.utils.validation.ValidationService;
 import me.grudzien.patryk.utils.web.model.ExceptionResponse;
 
 import static io.restassured.http.ContentType.JSON;
@@ -47,23 +39,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @MockBeans({
 	@MockBean(CustomUIMessageCodesProperties.class)
 })
-@Import({
-	ValidationService.class,
-	LocaleMessagesHelper.class,
-	LocaleMessagesCreator.class,
-	LocaleMessagesConfig.class
-})
 class AuthenticationResourceImplTest extends BaseAuthenticationResource {
-
-	@Autowired
-	private MockMvc mockMvc;
-
-    @Autowired
-    private WebApplicationContext webApplicationContext;
 
     @MockBean
     private JwtAuthenticationRequestMapper authRequestMapper;
-
     @MockBean
 	private UserAuthenticationService userAuthenticationService;
 

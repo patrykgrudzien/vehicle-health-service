@@ -1,4 +1,4 @@
-package me.grudzien.patryk.registration.model.event;
+package me.grudzien.patryk.registration.service.event;
 
 import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import me.grudzien.patryk.registration.model.dto.RegistrationResponse;
 import me.grudzien.patryk.registration.model.entity.CustomUser;
+import me.grudzien.patryk.registration.model.event.RegistrationCompleteEvent;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 
 @Slf4j
@@ -32,14 +33,13 @@ public class RegistrationEventPublisher {
     }
 
     public RegistrationResponse publishRegistrationEven(final CustomUser customUser, final WebRequest webRequest) {
-        final RegistrationResponse registrationResponse = RegistrationResponse.Builder(false).build();
         /**
          * I'm using Spring Event to create the token and send verification email (it should not be performed by controller directly).
          * One additional thing to notice is the Try<Void> wrapper surrounding the publishing of the event. This piece of code will set appropriate
          * {@link RegistrationResponse} based on either "success" or "failed" scenario after publishing
          * of the event, which in this case is the sending of the email.
          */
-        final AtomicReference<RegistrationResponse> atomicResponse = new AtomicReference<>(registrationResponse);
+        final AtomicReference<RegistrationResponse> atomicResponse = new AtomicReference<>(new RegistrationResponse());
         Try.run(() -> {
             log.info("Publisher published event for verification token generation.");
             eventPublisher.publishEvent(new RegistrationCompleteEvent(customUser, webRequest.getContextPath()));

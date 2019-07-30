@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import me.grudzien.patryk.registration.exception.EmailVerificationTokenExpiredException;
 import me.grudzien.patryk.registration.exception.EmailVerificationTokenNotFoundException;
+import me.grudzien.patryk.registration.exception.UserAlreadyExistsException;
 import me.grudzien.patryk.utils.web.model.ExceptionResponse;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -27,6 +28,11 @@ public class RegistrationExceptionsHandler {
 
     @ExceptionHandler(EmailVerificationTokenExpiredException.class)
     public ResponseEntity<ExceptionResponse> emailVerificationTokenExpiredException(final EmailVerificationTokenExpiredException exception) {
+        return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<ExceptionResponse> userAlreadyExistsException(final UserAlreadyExistsException exception) {
         return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), BAD_REQUEST);
     }
 }

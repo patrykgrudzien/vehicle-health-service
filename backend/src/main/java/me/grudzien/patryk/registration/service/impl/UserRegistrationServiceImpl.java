@@ -8,49 +8,36 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-
-import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
 
 import me.grudzien.patryk.authentication.service.impl.MyUserDetailsService;
 import me.grudzien.patryk.oauth2.utils.CacheManagerHelper;
-import me.grudzien.patryk.registration.exception.CustomUserValidationException;
 import me.grudzien.patryk.registration.exception.EmailVerificationTokenExpiredException;
 import me.grudzien.patryk.registration.exception.EmailVerificationTokenNotFoundException;
 import me.grudzien.patryk.registration.exception.UserAlreadyExistsException;
-import me.grudzien.patryk.registration.mapping.UserRegistrationDtoMapper;
 import me.grudzien.patryk.registration.model.dto.RegistrationResponse;
 import me.grudzien.patryk.registration.model.dto.UserRegistrationDto;
 import me.grudzien.patryk.registration.model.entity.CustomUser;
 import me.grudzien.patryk.registration.model.entity.EmailVerificationToken;
-import me.grudzien.patryk.registration.model.entity.Privilege;
-import me.grudzien.patryk.registration.model.entity.Role;
-import me.grudzien.patryk.registration.model.enums.PrivilegeName;
-import me.grudzien.patryk.registration.model.enums.RegistrationProvider;
-import me.grudzien.patryk.registration.model.enums.RoleName;
+import me.grudzien.patryk.registration.model.factory.CustomUserFactory;
 import me.grudzien.patryk.registration.repository.CustomUserRepository;
 import me.grudzien.patryk.registration.repository.EmailVerificationTokenRepository;
 import me.grudzien.patryk.registration.service.UserRegistrationService;
-import me.grudzien.patryk.utils.appplication.ApplicationZone;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
-import me.grudzien.patryk.utils.validation.to.remove.CustomValidator;
 import me.grudzien.patryk.utils.web.HttpLocationHeaderCreator;
-import me.grudzien.patryk.utils.web.ObjectDecoder;
-import me.grudzien.patryk.vehicle.model.entity.Engine;
 import me.grudzien.patryk.vehicle.model.entity.Vehicle;
-import me.grudzien.patryk.vehicle.model.enums.EngineType;
-import me.grudzien.patryk.vehicle.model.enums.VehicleType;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Collections.singletonList;
 
 import static me.grudzien.patryk.utils.appplication.AppFLow.ACCOUNT_ALREADY_ENABLED;
 import static me.grudzien.patryk.utils.appplication.AppFLow.CONFIRM_REGISTRATION;
 import static me.grudzien.patryk.utils.appplication.AppFLow.SYSTEM_COULD_NOT_ENABLE_USER_ACCOUNT;
 import static me.grudzien.patryk.utils.appplication.AppFLow.VERIFICATION_TOKEN_EXPIRED;
 import static me.grudzien.patryk.utils.appplication.AppFLow.VERIFICATION_TOKEN_NOT_FOUND;
+import static me.grudzien.patryk.utils.appplication.ApplicationZone.POLAND;
+import static me.grudzien.patryk.vehicle.model.entity.Engine.diesel;
+import static me.grudzien.patryk.vehicle.model.enums.VehicleType.CAR;
 
 @Slf4j
 @Service
@@ -63,13 +50,12 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 	private final HttpLocationHeaderCreator httpLocationHeaderCreator;
 	private final LocaleMessagesCreator localeMessagesCreator;
 	private final CacheManagerHelper cacheManagerHelper;
-	private final UserRegistrationDtoMapper userRegistrationDtoMapper;
-
+	
 	@Autowired
 	public UserRegistrationServiceImpl(final CustomUserRepository customUserRepository, final BCryptPasswordEncoder passwordEncoder,
                                        final EmailVerificationTokenRepository emailVerificationTokenRepository,
                                        final HttpLocationHeaderCreator httpLocationHeaderCreator, final LocaleMessagesCreator localeMessagesCreator,
-                                       final CacheManagerHelper cacheManagerHelper, final UserRegistrationDtoMapper userRegistrationDtoMapper) {
+                                       final CacheManagerHelper cacheManagerHelper) {
 
         checkNotNull(customUserRepository, "customUserRepository cannot be null!");
         checkNotNull(passwordEncoder, "passwordEncoder cannot be null!");
@@ -77,7 +63,6 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
         checkNotNull(httpLocationHeaderCreator, "httpLocationHeaderCreator cannot be null!");
         checkNotNull(localeMessagesCreator, "localeMessagesCreator cannot be null!");
         checkNotNull(cacheManagerHelper, "cacheManagerHelper cannot be null!");
-        checkNotNull(userRegistrationDtoMapper, "userRegistrationDtoMapper cannot be null!");
 
         this.customUserRepository = customUserRepository;
         this.passwordEncoder = passwordEncoder;
@@ -85,65 +70,36 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
         this.httpLocationHeaderCreator = httpLocationHeaderCreator;
         this.localeMessagesCreator = localeMessagesCreator;
         this.cacheManagerHelper = cacheManagerHelper;
-        this.userRegistrationDtoMapper = userRegistrationDtoMapper;
     }
 
-	@SuppressWarnings("Duplicates")
 	@Override
-	public RegistrationResponse registerNewCustomUserAccount(final UserRegistrationDto userRegistrationDto) {
-		final UserRegistrationDto decodedUserRegistrationDto = ObjectDecoder.userRegistrationDtoDecoder().apply(userRegistrationDto, userRegistrationDtoMapper);
-		final String email = decodedUserRegistrationDto.getEmail();
-		final RegistrationProvider registrationProvider = userRegistrationDto.getRegistrationProvider();
-		final RegistrationResponse registrationResponse = RegistrationResponse.Builder(false).build();
+	public RegistrationResponse createUserAccount(final UserRegistrationDto registrationDto) {
+        log.info("No validation errors during user registration.");
+        final String email = registrationDto.getEmail();
 		if (doesEmailExist(email)) {
 			log.error("User with specified email {} already exists.", email);
-            final String userAlreadyExistsMessage = localeMessagesCreator.buildLocaleMessageWithParam("user-already-exists", email);
-            registrationResponse.setMessage(userAlreadyExistsMessage);
-            throw new UserAlreadyExistsException(userAlreadyExistsMessage);
+            throw new UserAlreadyExistsException(localeMessagesCreator.buildLocaleMessageWithParam("user-already-exists", email));
 		}
-        final List<String> translatedValidationResult = CustomValidator.getTranslatedValidationResult(decodedUserRegistrationDto, localeMessagesCreator);
-		if (translatedValidationResult.isEmpty()) {
-			log.info("No validation errors during user registration.");
-            final CustomUser customUser = CustomUser.Builder()
-                                                    .firstName(decodedUserRegistrationDto.getFirstName())
-                                                    .lastName(decodedUserRegistrationDto.getLastName())
-                                                    .email(email)
-                                                    .hasFakeEmail(userRegistrationDto.isHasFakeEmail())
-                                                    .password(passwordEncoder.encode(decodedUserRegistrationDto.getPassword()))
-                                                    .profilePictureUrl(userRegistrationDto.getProfilePictureUrl())
-                                                    .registrationProvider(registrationProvider == null ? RegistrationProvider.CUSTOM : registrationProvider)
-                                                    .roles(Collections.singleton(Role.Builder()
-			                                                                         .roleName(RoleName.ROLE_ADMIN)
-			                                                                         .privileges(Sets.newHashSet(Privilege.Builder()
-			                                                                                                              .privilegeName(PrivilegeName.CAN_DO_EVERYTHING)
-			                                                                                                              .build()))
-			                                                                         .build()))
-                                                    .createdDate(ApplicationZone.POLAND.now())
-                                                    .build();
-
-            final Engine engine = Engine.Builder().engineType(EngineType.DIESEL).build();
-			final Vehicle vehicle = Vehicle.Builder().vehicleType(VehicleType.CAR).engine(engine).build();
-			vehicle.setMileage(0L);
-			vehicle.setCustomUser(customUser);
-			customUser.setVehicles(Lists.newArrayList(vehicle));
-
-			customUserRepository.save(customUser);
-			registrationResponse.setSuccessful(true);
-			registrationResponse.setRegisteredUser(customUser);
-			registrationResponse.setMessage(localeMessagesCreator.buildLocaleMessageWithParam("register-user-account-success", email));
-		} else {
-			log.error("Validation errors present during user registration.");
-            final String validationErrorsMessage = localeMessagesCreator.buildLocaleMessage("registration-form-validation-errors");
-            registrationResponse.setMessage(validationErrorsMessage);
-            throw new CustomUserValidationException(validationErrorsMessage, translatedValidationResult);
-		}
-		return registrationResponse;
+        final CustomUser customUser = CustomUserFactory.createFrom(registrationDto, passwordEncoder);
+        final Vehicle vehicle = Vehicle.Builder()
+                                       .vehicleType(CAR)
+                                       .engine(diesel())
+                                       .mileage(0L)
+                                       .customUser(customUser)
+                                       .build();
+        customUser.setVehicles(singletonList(vehicle));
+        customUserRepository.save(customUser);
+        return RegistrationResponse.Builder()
+                                   .isSuccessful(true)
+                                   .registeredUser(customUser)
+                                   .message(localeMessagesCreator.buildLocaleMessageWithParam("register-user-account-success", email))
+                                   .build();
 	}
 
 	@Override
 	public RegistrationResponse confirmRegistration(final String tokenRequestParam) {
 		final EmailVerificationToken token = getEmailVerificationToken(tokenRequestParam);
-		RegistrationResponse registrationResponse = RegistrationResponse.Builder(false).build();
+		RegistrationResponse registrationResponse = new RegistrationResponse();
 		if (token != null) {
 		    log.info("Email verification token successfully found.");
 			final CustomUser customUser = token.getCustomUser();
@@ -151,7 +107,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 				log.info("User account with e-mail address ({}) has been already enabled.", customUser.getEmail());
 				registrationResponse.setRedirectionUrl(httpLocationHeaderCreator.createRedirectionUrl(ACCOUNT_ALREADY_ENABLED));
 			} else {
-			    if (ApplicationZone.POLAND.now().isAfter(token.getExpiryDate())) {
+			    if (POLAND.now().isAfter(token.getExpiryDate())) {
 					log.error("Verification token has expired!");
 					registrationResponse.setRedirectionUrl(httpLocationHeaderCreator.createRedirectionUrl(VERIFICATION_TOKEN_EXPIRED));
 					throw new EmailVerificationTokenExpiredException(localeMessagesCreator.buildLocaleMessage("verification-token-expired"));
@@ -176,13 +132,13 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 	}
 
 	@Override
-	public Boolean doesEmailExist(final String email) {
+	public boolean doesEmailExist(final String email) {
 		return customUserRepository.findByEmail(email) != null;
 	}
 
 	@Override
 	public RegistrationResponse enableRegisteredCustomUser(final CustomUser customUser) {
-		final RegistrationResponse registrationResponse = RegistrationResponse.Builder(false).build();
+		final RegistrationResponse registrationResponse = new RegistrationResponse();
 
 		Try.run(() -> {
 		    log.info("Trying to enable newly created user...");

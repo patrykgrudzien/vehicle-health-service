@@ -1,4 +1,4 @@
-package me.grudzien.patryk.registration.model.validation;
+package me.grudzien.patryk.registration.model.annotation.validation;
 
 import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;

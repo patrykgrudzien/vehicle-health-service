@@ -2,12 +2,20 @@ package me.grudzien.patryk.unit.authentication.resource;
 
 import lombok.NoArgsConstructor;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import me.grudzien.patryk.BaseResource;
 import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationRequest;
 import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationResponse;
+import me.grudzien.patryk.configuration.i18n.LocaleMessagesConfig;
+import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
+import me.grudzien.patryk.utils.i18n.LocaleMessagesHelper;
+import me.grudzien.patryk.utils.validation.ValidationService;
 
 import static java.lang.Boolean.TRUE;
 import static lombok.AccessLevel.NONE;
@@ -19,8 +27,19 @@ import static org.springframework.web.util.UriComponentsBuilder.fromPath;
 import static me.grudzien.patryk.authentication.resource.AuthenticationResourceDefinitions.AUTHENTICATION_RESOURCE_ROOT;
 import static me.grudzien.patryk.authentication.resource.AuthenticationResourceDefinitions.LOGIN;
 
+@Import({
+    ValidationService.class,
+    LocaleMessagesHelper.class,
+    LocaleMessagesCreator.class,
+    LocaleMessagesConfig.class
+})
 @NoArgsConstructor(access = NONE)
 abstract class BaseAuthenticationResource extends BaseResource {
+
+    @Autowired
+    protected MockMvc mockMvc;
+    @Autowired
+    protected WebApplicationContext webApplicationContext;
 
 	static final String TEST_EMAIL = "test@email.com";
 	static final String TEST_PASSWORD = "password";
@@ -52,7 +71,6 @@ abstract class BaseAuthenticationResource extends BaseResource {
 	@FunctionalInterface
 	interface LoginRequestWithEncoding {
 		JwtAuthenticationRequest doEncoding(boolean doEncoding);
-
 	}
 
 	private static JwtAuthenticationRequest buildJwtAuthRequest(final String email, final String password,

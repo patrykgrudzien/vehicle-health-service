@@ -17,6 +17,8 @@ import javax.persistence.Table;
 
 import me.grudzien.patryk.vehicle.model.enums.EngineType;
 
+import static me.grudzien.patryk.vehicle.model.enums.EngineType.DIESEL;
+
 @Entity
 @Table(name = "ENGINE")
 @Data
@@ -34,4 +36,8 @@ public class Engine {
 	@Enumerated(EnumType.STRING)
 	@Column(name = "ENGINE_TYPE")
 	private EngineType engineType;
+
+	public static Engine diesel() {
+	    return Engine.Builder().engineType(DIESEL).build();
+    }
 }

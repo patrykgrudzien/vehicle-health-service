@@ -1,5 +1,6 @@
 package me.grudzien.patryk.authentication.resource;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mobile.device.Device;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.WebRequest;
 
 import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationRequest;
+import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationResponse;
 import me.grudzien.patryk.authentication.model.dto.JwtUser;
 import me.grudzien.patryk.utils.aop.aspect.LoggingAspect;
 
@@ -30,11 +32,12 @@ public interface AuthenticationResource {
      * @param authenticationRequest Credentials of the user who is being authenticated.
      * @param device A model for the user agent or device that submitted the current request.
      * @param webRequest Parameter used for the purpose of {@link LoggingAspect}.
-     * @return {@link org.springframework.http.HttpStatus#OK} if authentication was successful, otherwise:
-     * {@link org.springframework.http.HttpStatus#BAD_REQUEST}.
+     * @return {@link HttpStatus#OK} if authentication was successful,
+     * otherwise: {@link HttpStatus#BAD_REQUEST}.
      */
     @PostMapping(LOGIN)
-    ResponseEntity<?> login(@RequestBody JwtAuthenticationRequest authenticationRequest, Device device, WebRequest webRequest);
+    ResponseEntity<JwtAuthenticationResponse> login(@RequestBody JwtAuthenticationRequest authenticationRequest,
+                                                    Device device, WebRequest webRequest);
 
     /**
      * Retrieves current principal user {@link org.springframework.security.core.Authentication#getPrincipal()}.

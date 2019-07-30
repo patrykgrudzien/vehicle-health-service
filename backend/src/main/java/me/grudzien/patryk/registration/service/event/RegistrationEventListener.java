@@ -1,4 +1,4 @@
-package me.grudzien.patryk.registration.model.event;
+package me.grudzien.patryk.registration.service.event;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -13,6 +13,7 @@ import java.util.UUID;
 import me.grudzien.patryk.configuration.properties.cors.CustomCorsProperties;
 import me.grudzien.patryk.registration.model.dto.EmailDto;
 import me.grudzien.patryk.registration.model.entity.CustomUser;
+import me.grudzien.patryk.registration.model.event.RegistrationCompleteEvent;
 import me.grudzien.patryk.registration.service.EmailClientService;
 import me.grudzien.patryk.registration.service.UserRegistrationService;
 import me.grudzien.patryk.registration.service.impl.UserRegistrationServiceImpl;

@@ -1,4 +1,4 @@
-package me.grudzien.patryk.registration.model.validation;
+package me.grudzien.patryk.registration.model.annotation.validation;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

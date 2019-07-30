@@ -1,5 +1,7 @@
 package me.grudzien.patryk.authentication.model.factory;
 
+import lombok.NoArgsConstructor;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -10,11 +12,10 @@ import me.grudzien.patryk.authentication.model.dto.JwtUser;
 import me.grudzien.patryk.registration.model.entity.CustomUser;
 import me.grudzien.patryk.registration.model.entity.Role;
 
-public final class JwtUserFactory {
+import static lombok.AccessLevel.NONE;
 
-	private JwtUserFactory() {
-		throw new UnsupportedOperationException("Creating object of this class is not allowed!");
-	}
+@NoArgsConstructor(access = NONE)
+public final class JwtUserFactory {
 
 	public static JwtUser createFrom(final CustomUser customUser) {
 		return JwtUser.Builder()

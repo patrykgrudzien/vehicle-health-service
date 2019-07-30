@@ -19,7 +19,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(builderMethodName = "hiddenBuilder")
+@Builder(builderMethodName = "Builder", builderClassName = "Builder")
 @JsonInclude(NON_NULL)
 public final class RegistrationResponse implements Serializable {
 
@@ -33,8 +33,4 @@ public final class RegistrationResponse implements Serializable {
     private String redirectionUrl;
 
     private CustomUser registeredUser;
-
-    public static RegistrationResponseBuilder Builder(final boolean isSuccessful) {
-        return hiddenBuilder().isSuccessful(isSuccessful);
-    }
 }

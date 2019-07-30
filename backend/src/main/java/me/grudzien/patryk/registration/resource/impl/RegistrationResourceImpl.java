@@ -10,11 +10,14 @@ import org.springframework.web.context.request.WebRequest;
 
 import java.net.URI;
 
+import me.grudzien.patryk.configuration.properties.ui.CustomUIMessageCodesProperties;
+import me.grudzien.patryk.registration.mapping.UserRegistrationDtoMapper;
 import me.grudzien.patryk.registration.model.dto.RegistrationResponse;
 import me.grudzien.patryk.registration.model.dto.UserRegistrationDto;
-import me.grudzien.patryk.registration.model.event.RegistrationEventPublisher;
 import me.grudzien.patryk.registration.resource.RegistrationResource;
 import me.grudzien.patryk.registration.service.UserRegistrationService;
+import me.grudzien.patryk.registration.service.event.RegistrationEventPublisher;
+import me.grudzien.patryk.utils.validation.ValidationService;
 import me.grudzien.patryk.utils.web.model.CustomResponse;
 import me.grudzien.patryk.utils.web.model.ExceptionResponse;
 import me.grudzien.patryk.utils.web.model.SuccessResponse;
@@ -26,25 +29,42 @@ import static org.springframework.http.ResponseEntity.badRequest;
 import static org.springframework.http.ResponseEntity.ok;
 import static org.springframework.http.ResponseEntity.status;
 
+import static me.grudzien.patryk.utils.web.ObjectDecoder.userRegistrationDtoDecoder;
+
 @Slf4j
 @RestController
 public class RegistrationResourceImpl implements RegistrationResource {
 
-    private final UserRegistrationService userRegistrationService;
+    private final CustomUIMessageCodesProperties uiMessageCodesProperties;
     private final RegistrationEventPublisher registrationEventPublisher;
+    private final UserRegistrationDtoMapper registrationDtoMapper;
+    private final UserRegistrationService userRegistrationService;
+    private final ValidationService validationService;
 
-    public RegistrationResourceImpl(final UserRegistrationService userRegistrationService,
-                                    final RegistrationEventPublisher registrationEventPublisher) {
-        checkNotNull(userRegistrationService, "userRegistrationService cannot be null!");
+    public RegistrationResourceImpl(final CustomUIMessageCodesProperties uiMessageCodesProperties,
+                                    final RegistrationEventPublisher registrationEventPublisher,
+                                    final UserRegistrationDtoMapper registrationDtoMapper,
+                                    final UserRegistrationService userRegistrationService,
+                                    final ValidationService validationService) {
+        checkNotNull(uiMessageCodesProperties, "uiMessageCodesProperties cannot be null!");
         checkNotNull(registrationEventPublisher, "registrationEventPublisher cannot be null!");
+        checkNotNull(registrationDtoMapper, "registrationDtoMapper cannot be null!");
+        checkNotNull(userRegistrationService, "userRegistrationService cannot be null!");
+        checkNotNull(validationService, "validationService cannot be null!");
 
-        this.userRegistrationService = userRegistrationService;
+        this.uiMessageCodesProperties = uiMessageCodesProperties;
         this.registrationEventPublisher = registrationEventPublisher;
+        this.registrationDtoMapper = registrationDtoMapper;
+        this.userRegistrationService = userRegistrationService;
+        this.validationService = validationService;
     }
 
     @Override
-    public ResponseEntity<CustomResponse> createUserAccount(final UserRegistrationDto userRegistrationDto, final WebRequest webRequest) {
-        final RegistrationResponse registrationResponse = userRegistrationService.registerNewCustomUserAccount(userRegistrationDto);
+    public ResponseEntity<CustomResponse> createUserAccount(final UserRegistrationDto registrationDto, final WebRequest webRequest) {
+        final UserRegistrationDto decodedRegistrationDto = userRegistrationDtoDecoder().apply(registrationDto, registrationDtoMapper);
+        validationService.validateWithResult(decodedRegistrationDto)
+                         .onErrorsSetExceptionMessageCode(uiMessageCodesProperties.getRegistrationFormValidationErrors());
+        final RegistrationResponse registrationResponse = userRegistrationService.createUserAccount(decodedRegistrationDto);
         if (registrationResponse.isSuccessful()) {
             final RegistrationResponse emailSent = registrationEventPublisher.publishRegistrationEven(registrationResponse.getRegisteredUser(), webRequest);
             return emailSent.isSuccessful() ?
