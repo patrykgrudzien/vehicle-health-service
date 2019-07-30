@@ -4,19 +4,16 @@ import io.restassured.module.mockmvc.RestAssuredMockMvc;
 
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.mobile.device.Device;
 import org.springframework.test.web.servlet.MvcResult;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import me.grudzien.patryk.authentication.mapping.JwtAuthenticationRequestMapper;
 import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationRequest;
 import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationResponse;
 import me.grudzien.patryk.authentication.resource.impl.AuthenticationResourceImpl;
 import me.grudzien.patryk.authentication.service.UserAuthenticationService;
-import me.grudzien.patryk.configuration.properties.ui.CustomUIMessageCodesProperties;
 import me.grudzien.patryk.utils.web.model.ExceptionResponse;
 
 import static io.restassured.http.ContentType.JSON;
@@ -36,13 +33,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 	controllers = AuthenticationResourceImpl.class,
 	secure = false
 )
-@MockBeans({
-	@MockBean(CustomUIMessageCodesProperties.class)
-})
 class AuthenticationResourceImplTest extends BaseAuthenticationResource {
 
-    @MockBean
-    private JwtAuthenticationRequestMapper authRequestMapper;
     @MockBean
 	private UserAuthenticationService userAuthenticationService;
 
@@ -52,7 +44,7 @@ class AuthenticationResourceImplTest extends BaseAuthenticationResource {
 	    // given
 	    final JwtAuthenticationRequest decodedAuthRequest = createLoginRequest(TEST_EMAIL, TEST_PASSWORD).doEncoding(false);
 	    final JwtAuthenticationResponse expectedResponse = createLoginResponse();
-		given(authRequestMapper.toDecodedAuthRequest(any(JwtAuthenticationRequest.class))).willReturn(decodedAuthRequest);
+		setupAuthMapperToReturn(decodedAuthRequest);
 	    given(userAuthenticationService.login(any(JwtAuthenticationRequest.class), any(Device.class))).willReturn(expectedResponse);
 
 		// when
@@ -62,7 +54,6 @@ class AuthenticationResourceImplTest extends BaseAuthenticationResource {
 		                                   .andReturn();
 		// then
         final JwtAuthenticationResponse actualResponse = tryConvertJsonToObject(mvcResult.getResponse().getContentAsString(), JwtAuthenticationResponse.class);
-		verify(userAuthenticationService).login(any(JwtAuthenticationRequest.class), any(Device.class));
         assertAll(
         		() -> assertThat(actualResponse.getAccessToken()).hasSize(25),
                 () -> assertThat(actualResponse.getRefreshToken()).hasSize(25),
@@ -71,6 +62,8 @@ class AuthenticationResourceImplTest extends BaseAuthenticationResource {
 		        () -> assertThat(actualResponse.isSuccessful()).isTrue(),
 		        () -> assertThat(actualResponse.isSuccessful()).isEqualTo(expectedResponse.isSuccessful())
         );
+        verifyAuthMapper();
+        verify(userAuthenticationService).login(any(JwtAuthenticationRequest.class), any(Device.class));
 	}
 
 	@Test
@@ -78,7 +71,7 @@ class AuthenticationResourceImplTest extends BaseAuthenticationResource {
 	void shouldReturn400onLoginWhenEmptyEmail() throws Exception {
         // given
 		final JwtAuthenticationRequest decodedAuthRequest = createLoginRequest("", TEST_PASSWORD).doEncoding(false);
-		given(authRequestMapper.toDecodedAuthRequest(any(JwtAuthenticationRequest.class))).willReturn(decodedAuthRequest);
+		setupAuthMapperToReturn(decodedAuthRequest);
 		given(userAuthenticationService.login(any(JwtAuthenticationRequest.class), any(Device.class))).willReturn(null);
 
 		// when
@@ -91,6 +84,7 @@ class AuthenticationResourceImplTest extends BaseAuthenticationResource {
 		assertThat(exceptionResponse).isNotNull();
 		assertThat(exceptionResponse.getErrors()).isNotEmpty();
 		assertThat(exceptionResponse.getErrors()).hasSize(2);
+		verifyAuthMapper();
         verify(userAuthenticationService, never()).login(any(JwtAuthenticationRequest.class), any(Device.class));
     }
 
@@ -99,7 +93,7 @@ class AuthenticationResourceImplTest extends BaseAuthenticationResource {
     void shouldReturn400onLoginWhenEmptyPassword() {
 	    // given
 	    final JwtAuthenticationRequest decodedAuthRequest = createLoginRequest(TEST_EMAIL, "").doEncoding(false);
-	    given(authRequestMapper.toDecodedAuthRequest(any(JwtAuthenticationRequest.class))).willReturn(decodedAuthRequest);
+	    setupAuthMapperToReturn(decodedAuthRequest);
 	    given(userAuthenticationService.login(any(JwtAuthenticationRequest.class), any(Device.class))).willReturn(null);
 
         // when - then
@@ -116,6 +110,7 @@ class AuthenticationResourceImplTest extends BaseAuthenticationResource {
                           .statusCode(BAD_REQUEST.value())
                           .body("message", notNullValue())
                           .body("errors", notNullValue());
+        verifyAuthMapper();
 	    verify(userAuthenticationService, never()).login(any(), any());
     }
 }

@@ -23,8 +23,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
-@MockBean(CustomUIMessageCodesProperties.class)
 @Import(DefaultResourceConfiguration.class)
+@MockBean(CustomUIMessageCodesProperties.class)
 @NoArgsConstructor(access = NONE)
 abstract class BaseRegistrationResource extends AbstractRegistrationResourceHelper {
 

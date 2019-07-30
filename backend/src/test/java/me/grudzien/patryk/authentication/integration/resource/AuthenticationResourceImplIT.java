@@ -19,6 +19,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
+import me.grudzien.patryk.authentication.AbstractAuthenticationResourceHelper;
 import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationRequest;
 import me.grudzien.patryk.authentication.model.dto.JwtAuthenticationResponse;
 
@@ -40,7 +41,7 @@ import static org.springframework.http.HttpStatus.OK;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @DirtiesContext
-class AuthenticationResourceImplIT extends BaseAuthenticationResourceIT {
+class AuthenticationResourceImplIT extends AbstractAuthenticationResourceHelper {
 
 	@Autowired
 	private TestRestTemplate testRestTemplate;
@@ -58,7 +59,7 @@ class AuthenticationResourceImplIT extends BaseAuthenticationResourceIT {
 	@DisplayName("Login successful. Response status: 200 OK.")
 	void shouldReturn200withAccessAndRefreshTokensOnLogin() {
         // given
-		final JwtAuthenticationRequest loginRequest = createLoginRequest().doEncoding(false);
+		final JwtAuthenticationRequest loginRequest = createLoginRequest(TEST_EMAIL, TEST_PASSWORD).doEncoding(false);
 
 		// when
 		final ResponseEntity<JwtAuthenticationResponse> response =
