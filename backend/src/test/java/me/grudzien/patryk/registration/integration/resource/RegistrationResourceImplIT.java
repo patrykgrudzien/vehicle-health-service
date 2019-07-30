@@ -29,6 +29,7 @@ import javax.persistence.EntityManager;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import me.grudzien.patryk.registration.AbstractRegistrationResourceHelper;
 import me.grudzien.patryk.registration.model.entity.CustomUser;
 import me.grudzien.patryk.registration.model.entity.EmailVerificationToken;
 import me.grudzien.patryk.registration.repository.CustomUserRepository;
@@ -60,7 +61,7 @@ import static me.grudzien.patryk.TestsUtils.prepareRegistrationJSONBody;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Transactional
 @DirtiesContext
-class RegistrationResourceImplIT extends BaseRegistrationResource {
+class RegistrationResourceImplIT extends AbstractRegistrationResourceHelper {
 
     @LocalServerPort
     private int localServerPort;

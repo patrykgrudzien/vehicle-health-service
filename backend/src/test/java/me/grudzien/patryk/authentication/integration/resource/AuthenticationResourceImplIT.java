@@ -51,7 +51,7 @@ class AuthenticationResourceImplIT extends BaseAuthenticationResourceIT {
 	@BeforeEach
 	void setUp() {
 		RestAssured.port = localServerPort;
-		RestAssured.baseURI = "http://localhost";
+		RestAssured.baseURI = HTTP_LOCALHOST;
 	}
 
 	@Test

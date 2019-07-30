@@ -18,6 +18,7 @@ abstract class BaseAuthenticationResourceIT extends ObjectMapperEncoder {
 
     static final String TEST_EMAIL = "admin.root@gmail.com";
     static final String TEST_PASSWORD = "admin";
+    static final String HTTP_LOCALHOST = "http://localhost";
 
     /**
      * URI(s) for {@link AuthenticationResourceDefinitions}

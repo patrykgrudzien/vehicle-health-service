@@ -22,6 +22,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.util.stream.Stream;
 
+import me.grudzien.patryk.registration.AbstractRegistrationResourceHelper;
 import me.grudzien.patryk.registration.model.entity.CustomUser;
 import me.grudzien.patryk.registration.model.entity.EmailVerificationToken;
 import me.grudzien.patryk.registration.repository.CustomUserRepository;
@@ -46,7 +47,7 @@ import static me.grudzien.patryk.TestsUtils.prepareRegistrationJSONBody;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @DirtiesContext
-class RegistrationResourceImplNewIT extends BaseRegistrationResource {
+class RegistrationResourceImplNewIT extends AbstractRegistrationResourceHelper {
 
     @Autowired
     private EmailVerificationTokenRepository emailVerificationTokenRepository;
@@ -60,7 +61,7 @@ class RegistrationResourceImplNewIT extends BaseRegistrationResource {
     @BeforeEach
     void setUp() {
         RestAssured.port = localServerPort;
-        RestAssured.baseURI = "http://localhost";
+        RestAssured.baseURI = HTTP_LOCALHOST;
     }
 
     @AfterEach
@@ -69,7 +70,7 @@ class RegistrationResourceImplNewIT extends BaseRegistrationResource {
         customUserRepository.deleteAll();
     }
 
-    private static Stream<Arguments> registrationSuccessfulTestData() throws JsonProcessingException {
+    private static Stream<Arguments> registrationSuccessfulMethodSource() throws JsonProcessingException {
         // given
         final String registrationJSONBody = prepareRegistrationJSONBody("John", "Snow", NO_EXISTING_EMAIL, TEST_PASSWORD, ENABLE_ENCODING);
         final String registrationJSONBody1 = prepareRegistrationJSONBody("John", "Snow", NO_EXISTING_EMAIL_1, TEST_PASSWORD, ENABLE_ENCODING);
@@ -84,7 +85,7 @@ class RegistrationResourceImplNewIT extends BaseRegistrationResource {
 
     @DisplayName("Register user account. Successful. 200 OK.")
     @ParameterizedTest(name = "Response message created using ({0}) \"Language\" header.")
-    @MethodSource("registrationSuccessfulTestData")
+    @MethodSource("registrationSuccessfulMethodSource")
     void registerUserAccount_successful_differentLanguageHeader(final String language, final String email, final String jsonBody, final String responseMessage) {
         // then
         given().log().all()
