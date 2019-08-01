@@ -53,7 +53,7 @@ public abstract class AbstractRegistrationResourceHelper extends ObjectMapperEnc
             fromPath(REGISTRATION_RESOURCE_ROOT).path(CREATE_USER_ACCOUNT).toUriString();
 
     protected static final Function<String, String> REGISTRATION_CONFIRM_REGISTRATION_URI =
-            token -> REGISTRATION_RESOURCE_ROOT + CONFIRM_REGISTRATION + "?token=" + token;
+            token -> fromPath(REGISTRATION_RESOURCE_ROOT).path(CONFIRM_REGISTRATION).queryParam("token", token).toUriString();
 
     protected static RequestBuilder createUserAccountPostRequestBuilder(final String jsonContent) {
         return MockMvcRequestBuilders.post(REGISTRATION_CREATE_USER_ACCOUNT_URI)

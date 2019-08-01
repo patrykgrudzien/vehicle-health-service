@@ -3,6 +3,9 @@ package me.grudzien.patryk.registration.exception.handler;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+import java.util.Optional;
 
 import me.grudzien.patryk.registration.exception.EmailVerificationTokenExpiredException;
 import me.grudzien.patryk.registration.exception.EmailVerificationTokenNotFoundException;
@@ -21,18 +24,22 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 @ControllerAdvice
 public class RegistrationExceptionsHandler {
 
+    // TODO: consolidate those 3 methods into 1
     @ExceptionHandler(EmailVerificationTokenNotFoundException.class)
+    @ResponseStatus(BAD_REQUEST)
     public ResponseEntity<ExceptionResponse> emailVerificationTokenNotFoundException(final EmailVerificationTokenNotFoundException exception) {
-        return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), BAD_REQUEST);
+        return ResponseEntity.of(Optional.of(ExceptionResponse.buildBodyMessage(exception)));
     }
 
     @ExceptionHandler(EmailVerificationTokenExpiredException.class)
+    @ResponseStatus(BAD_REQUEST)
     public ResponseEntity<ExceptionResponse> emailVerificationTokenExpiredException(final EmailVerificationTokenExpiredException exception) {
-        return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), BAD_REQUEST);
+        return ResponseEntity.of(Optional.of(ExceptionResponse.buildBodyMessage(exception)));
     }
 
     @ExceptionHandler(UserAlreadyExistsException.class)
+    @ResponseStatus(BAD_REQUEST)
     public ResponseEntity<ExceptionResponse> userAlreadyExistsException(final UserAlreadyExistsException exception) {
-        return new ResponseEntity<>(ExceptionResponse.buildBodyMessage(exception), BAD_REQUEST);
+        return ResponseEntity.of(Optional.of(ExceptionResponse.buildBodyMessage(exception)));
     }
 }

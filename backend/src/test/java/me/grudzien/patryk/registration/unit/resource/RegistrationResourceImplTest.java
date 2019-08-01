@@ -1,5 +1,7 @@
 package me.grudzien.patryk.registration.unit.resource;
 
+import io.restassured.module.mockmvc.RestAssuredMockMvc;
+
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
@@ -11,7 +13,8 @@ import me.grudzien.patryk.registration.model.dto.UserRegistrationDto;
 import me.grudzien.patryk.registration.resource.impl.RegistrationResourceImpl;
 import me.grudzien.patryk.registration.service.UserRegistrationService;
 
-import static io.restassured.http.Method.POST;
+import static io.restassured.http.ContentType.JSON;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
@@ -40,6 +43,8 @@ class RegistrationResourceImplTest extends BaseRegistrationResource {
 
     @MockBean
     private UserRegistrationService userRegistrationService;
+
+    // -- createUserAccount()
 
     @Test
     @DisplayName("Registration successful. Response status: 200 OK (using MockMvc).")
@@ -79,9 +84,9 @@ class RegistrationResourceImplTest extends BaseRegistrationResource {
         given(userRegistrationService.createUserAccount(any(UserRegistrationDto.class))).willReturn(successResponse);
 
         // when - then
-        restAssuredInvoker()
+        restAssuredPostInvoker()
                 .jsonBody(tryConvertObjectToJson(decodedRegistrationDto))
-                .request(POST, REGISTRATION_CREATE_USER_ACCOUNT_URI)
+                .endpoint(REGISTRATION_CREATE_USER_ACCOUNT_URI)
                 .expectedStatusCode(OK)
                 .body(notNullValue())
                 .body("$", hasKey("message"))
@@ -108,9 +113,9 @@ class RegistrationResourceImplTest extends BaseRegistrationResource {
         given(userRegistrationService.createUserAccount(any(UserRegistrationDto.class))).willReturn(successResponse);
 
         // when - then
-        restAssuredInvoker()
+        restAssuredPostInvoker()
                 .jsonBody(tryConvertObjectToJson(decodedRegistrationDto))
-                .request(POST, REGISTRATION_CREATE_USER_ACCOUNT_URI)
+                .endpoint(REGISTRATION_CREATE_USER_ACCOUNT_URI)
                 .expectedStatusCode(OK)
                 .body(notNullValue())
                 .body("$", hasKey("message"))
@@ -138,9 +143,9 @@ class RegistrationResourceImplTest extends BaseRegistrationResource {
         given(userRegistrationService.createUserAccount(any(UserRegistrationDto.class))).willReturn(successResponse);
 
         // when - then
-        restAssuredInvoker()
+        restAssuredPostInvoker()
                 .jsonBody(tryConvertObjectToJson(decodedRegistrationDto))
-                .request(POST, REGISTRATION_CREATE_USER_ACCOUNT_URI)
+                .endpoint(REGISTRATION_CREATE_USER_ACCOUNT_URI)
                 .expectedStatusCode(BAD_REQUEST)
                 .body(isEmptyString());
         verifyRegistrationMapper();
@@ -160,9 +165,9 @@ class RegistrationResourceImplTest extends BaseRegistrationResource {
         given(userRegistrationService.createUserAccount(any(UserRegistrationDto.class))).willReturn(failedResponse);
 
         // when - then
-        restAssuredInvoker()
+        restAssuredPostInvoker()
                 .jsonBody(tryConvertObjectToJson(decodedRegistrationDto))
-                .request(POST, REGISTRATION_CREATE_USER_ACCOUNT_URI)
+                .endpoint(REGISTRATION_CREATE_USER_ACCOUNT_URI)
                 .expectedStatusCode(BAD_REQUEST)
                 .body(notNullValue())
                 .body("$", hasKey("message"))
@@ -174,5 +179,39 @@ class RegistrationResourceImplTest extends BaseRegistrationResource {
         verifyRegistrationMapper();
         verifyRegistrationPublisher(never());
         verify(userRegistrationService).createUserAccount(any(UserRegistrationDto.class));
+    }
+
+    // -- confirmRegistration()
+
+    @Test
+    @DisplayName("Confirm registration failed. Response status: 400 Bad Request - Email Verification Token is empty!")
+    void shouldReturn400onConfirmRegistrationWhenTokenIsEmpty() {
+        // when - then
+        RestAssuredMockMvc.given()
+                          .webAppContextSetup(webApplicationContext)
+                          .log().body(true)
+                          .accept(JSON)
+                          .when()
+                          .get(REGISTRATION_CONFIRM_REGISTRATION_URI.apply(EMPTY))
+                          .then()
+                          .log().body(true)
+                          .statusCode(BAD_REQUEST.value())
+                          .body(notNullValue());
+    }
+
+    @Test
+    @DisplayName("Confirm registration failed. Response status: 400 Bad Request - Email Verification Token is null!")
+    void shouldReturn400onConfirmRegistrationWhenTokenIsNull() {
+        // when - then
+        RestAssuredMockMvc.given()
+                          .webAppContextSetup(webApplicationContext)
+                          .log().body(true)
+                          .accept(JSON)
+                          .when()
+                          .get(REGISTRATION_CONFIRM_REGISTRATION_URI.apply(null))
+                          .then()
+                          .log().body(true)
+                          .statusCode(BAD_REQUEST.value())
+                          .body(notNullValue());
     }
 }

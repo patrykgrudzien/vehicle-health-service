@@ -2,12 +2,15 @@ package me.grudzien.patryk.registration.resource;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.WebRequest;
+
+import javax.validation.constraints.NotBlank;
 
 import me.grudzien.patryk.registration.model.dto.UserRegistrationDto;
 import me.grudzien.patryk.registration.model.entity.EmailVerificationToken;
@@ -46,7 +49,8 @@ public interface RegistrationResource {
      * otherwise: {@link HttpStatus#BAD_REQUEST} with {@link CustomResponse} in a body.
      */
     @GetMapping(CONFIRM_REGISTRATION)
-    ResponseEntity<CustomResponse> confirmRegistration(@RequestParam("token") String token,
+    @Validated
+    ResponseEntity<CustomResponse> confirmRegistration(@NotBlank @RequestParam("token") String token,
                                                        WebRequest webRequest);
 
     /**

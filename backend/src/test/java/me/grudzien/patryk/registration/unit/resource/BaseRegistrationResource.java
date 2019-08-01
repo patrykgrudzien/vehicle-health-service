@@ -1,6 +1,5 @@
 package me.grudzien.patryk.registration.unit.resource;
 
-import io.restassured.http.Method;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import io.restassured.module.mockmvc.response.ValidatableMockMvcResponse;
 import lombok.NoArgsConstructor;
@@ -61,8 +60,8 @@ abstract class BaseRegistrationResource extends AbstractRegistrationResourceHelp
         verify(registrationEventPublisher, verificationMode).publishRegistrationEven(any(CustomUser.class), any(WebRequest.class));
     }
 
-    JsonBody restAssuredInvoker() {
-        return jsonBody -> (method, uriPath) -> expectedStatusCode -> createRestAssuredClient(jsonBody, method, uriPath, expectedStatusCode);
+    JsonBody restAssuredPostInvoker() {
+        return jsonBody -> uriPath -> expectedStatusCode -> createRestAssuredClient(jsonBody, uriPath, expectedStatusCode);
     }
 
     @FunctionalInterface
@@ -72,7 +71,7 @@ abstract class BaseRegistrationResource extends AbstractRegistrationResourceHelp
 
     @FunctionalInterface
     interface Request {
-        ExpectedStatusCode request(Method method, String uriPath);
+        ExpectedStatusCode endpoint(String uriPath);
     }
 
     @FunctionalInterface
@@ -80,17 +79,15 @@ abstract class BaseRegistrationResource extends AbstractRegistrationResourceHelp
         ValidatableMockMvcResponse expectedStatusCode(HttpStatus expectedStatusCode);
     }
 
-    private ValidatableMockMvcResponse createRestAssuredClient(final String jsonBody, final Method method,
-                                                               final String uriPath, final HttpStatus expectedStatusCode) {
+    private ValidatableMockMvcResponse createRestAssuredClient(final String jsonBody, final String uriPath,
+                                                               final HttpStatus expectedStatusCode) {
         return RestAssuredMockMvc.given()
                                  .webAppContextSetup(webApplicationContext)
                                  .log().body(true)
                                  .body(jsonBody)
                                  .contentType(JSON).accept(JSON)
-                                 .when()
-                                 .request(method, uriPath)
-                                 .then()
-                                 .log().body(true)
+                                 .when().post(uriPath)
+                                 .then().log().body(true)
                                  .statusCode(expectedStatusCode.value());
     }
 }

@@ -1,19 +1,5 @@
 package me.grudzien.patryk.registration.integration.resource;
 
-import static io.restassured.RestAssured.given;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.http.Method;
@@ -43,14 +29,29 @@ import javax.persistence.EntityManager;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static me.grudzien.patryk.TestsUtils.ENABLE_ENCODING;
-import static me.grudzien.patryk.TestsUtils.prepareRegistrationJSONBody;
-
 import me.grudzien.patryk.registration.AbstractRegistrationResourceHelper;
 import me.grudzien.patryk.registration.model.entity.CustomUser;
 import me.grudzien.patryk.registration.model.entity.EmailVerificationToken;
 import me.grudzien.patryk.registration.repository.CustomUserRepository;
 import me.grudzien.patryk.registration.repository.EmailVerificationTokenRepository;
+
+import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
+
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+
+import static me.grudzien.patryk.TestsUtils.ENABLE_ENCODING;
+import static me.grudzien.patryk.TestsUtils.prepareRegistrationJSONBody;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Transactional
