@@ -36,12 +36,12 @@ public final class Predicates {
         return list -> !ObjectUtils.isEmpty(list);
     }
 
-    public static boolean isEmpty(final @Nullable Object str) {
+    public static boolean isNullOrEmpty(final @Nullable Object str) {
         return StringUtils.isEmpty(str);
     }
 
     public static boolean isNotEmpty(final @Nullable Object str) {
-        return !isEmpty(str);
+        return !isNullOrEmpty(str);
     }
 
     public static boolean isNotNumeric(final CharSequence cs) {

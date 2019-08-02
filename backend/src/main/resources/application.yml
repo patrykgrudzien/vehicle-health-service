@@ -54,5 +54,6 @@ custom:
     oauth2:
       short-lived-token-expiration: ENC@[kQ8ebSYapZr63l18OKqkeQ==]
     ui-message-codes:
-      login-form-validation-errors: "login-form-validation-errors"
-      registration-form-validation-errors: "registration-form-validation-errors"
+      login-form-errors: "login-form-validation-errors"
+      registration-form-errors: "registration-form-validation-errors"
+      email-verification-token-empty: "email-verification-token-cannot-be-empty"

@@ -2,6 +2,7 @@ package me.grudzien.patryk.configuration.properties.ui;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -9,9 +10,11 @@ import static me.grudzien.patryk.configuration.properties.PrefixesDefinitions.CU
 
 @Getter
 @Setter
+@Accessors(fluent = true)
 @ConfigurationProperties(prefix = CUSTOM_UI_MESSAGE_CODES_PROPERTIES_PREFIX)
 public class CustomUIMessageCodesProperties {
 
-    private String loginFormValidationErrors;
-    private String registrationFormValidationErrors;
+    private String loginFormErrors;
+    private String registrationFormErrors;
+    protected String emailVerificationTokenEmpty;
 }

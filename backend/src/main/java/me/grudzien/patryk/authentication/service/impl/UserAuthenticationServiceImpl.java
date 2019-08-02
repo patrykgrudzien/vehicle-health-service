@@ -37,7 +37,7 @@ import static me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases
 import static me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases.UserAccountIsLockedExceptionCase;
 import static me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases.UserIsDisabledExceptionCase;
 import static me.grudzien.patryk.oauth2.authentication.FailedAuthenticationCases.UsernameNotFoundExceptionCase;
-import static me.grudzien.patryk.utils.common.Predicates.isEmpty;
+import static me.grudzien.patryk.utils.common.Predicates.isNullOrEmpty;
 import static me.grudzien.patryk.utils.factory.FactoryProvider.FactoryType.JWT_AUTH_RESPONSE_FACTORY;
 
 @Slf4j
@@ -81,7 +81,7 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 		requireNonNull(password);
 
 		final String idToken = authenticationRequest.getIdToken();
-		return Try.of(() -> Optional.ofNullable(authenticationManager.authenticate(isEmpty(idToken) ?
+		return Try.of(() -> Optional.ofNullable(authenticationManager.authenticate(isNullOrEmpty(idToken) ?
                                                                                            new UsernamePasswordAuthenticationToken(email, password) :
                                                                                            new CustomAuthenticationToken(idToken))))
 		          .onSuccess(Optional::get)

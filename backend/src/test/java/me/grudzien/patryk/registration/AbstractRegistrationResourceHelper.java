@@ -75,10 +75,17 @@ public abstract class AbstractRegistrationResourceHelper extends ObjectMapperEnc
 
     protected static RegistrationResponse createRegistrationResponse(final RegistrationResponseType responseType,
                                                                      final String message) {
+        return createRegistrationResponse(responseType, message, null);
+    }
+
+    protected static RegistrationResponse createRegistrationResponse(final RegistrationResponseType responseType,
+                                                                     final String message, final String redirectionUrl) {
+        final boolean isSuccessful = SUCCESSFUL == responseType;
         return RegistrationResponse.Builder()
-                                   .isSuccessful(responseType == SUCCESSFUL)
-                                   .registeredUser(new CustomUser())
+                                   .isSuccessful(isSuccessful)
+                                   .registeredUser(isSuccessful ? new CustomUser() : null)
                                    .message(message)
+                                   .redirectionUrl(isSuccessful ? redirectionUrl : null)
                                    .build();
     }
 

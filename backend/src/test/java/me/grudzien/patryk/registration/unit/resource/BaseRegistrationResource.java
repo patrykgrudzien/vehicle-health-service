@@ -15,7 +15,6 @@ import org.springframework.web.context.request.WebRequest;
 import org.mockito.verification.VerificationMode;
 
 import me.grudzien.patryk.DefaultResourceConfiguration;
-import me.grudzien.patryk.configuration.properties.ui.CustomUIMessageCodesProperties;
 import me.grudzien.patryk.registration.AbstractRegistrationResourceHelper;
 import me.grudzien.patryk.registration.mapping.UserRegistrationDtoMapper;
 import me.grudzien.patryk.registration.model.dto.RegistrationResponse;
@@ -30,7 +29,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 @Import(DefaultResourceConfiguration.class)
-@MockBean(CustomUIMessageCodesProperties.class)
 @NoArgsConstructor(access = NONE)
 abstract class BaseRegistrationResource extends AbstractRegistrationResourceHelper {
 
@@ -61,7 +59,11 @@ abstract class BaseRegistrationResource extends AbstractRegistrationResourceHelp
     }
 
     JsonBody restAssuredPostInvoker() {
-        return jsonBody -> uriPath -> expectedStatusCode -> createRestAssuredClient(jsonBody, uriPath, expectedStatusCode);
+        return jsonBody -> uriPath -> expectedStatusCode -> createRestAssuredPostClient(jsonBody, uriPath, expectedStatusCode);
+    }
+
+    Request restAssuredGetInvoker() {
+        return uriPath -> expectedStatusCode -> createRestAssuredGetClient(uriPath, expectedStatusCode);
     }
 
     @FunctionalInterface
@@ -79,8 +81,8 @@ abstract class BaseRegistrationResource extends AbstractRegistrationResourceHelp
         ValidatableMockMvcResponse expectedStatusCode(HttpStatus expectedStatusCode);
     }
 
-    private ValidatableMockMvcResponse createRestAssuredClient(final String jsonBody, final String uriPath,
-                                                               final HttpStatus expectedStatusCode) {
+    private ValidatableMockMvcResponse createRestAssuredPostClient(final String jsonBody, final String uriPath,
+                                                                   final HttpStatus expectedStatusCode) {
         return RestAssuredMockMvc.given()
                                  .webAppContextSetup(webApplicationContext)
                                  .log().body(true)
@@ -88,6 +90,19 @@ abstract class BaseRegistrationResource extends AbstractRegistrationResourceHelp
                                  .contentType(JSON).accept(JSON)
                                  .when().post(uriPath)
                                  .then().log().body(true)
+                                 .assertThat()
+                                 .statusCode(expectedStatusCode.value());
+    }
+
+    private ValidatableMockMvcResponse createRestAssuredGetClient(final String uriPath,
+                                                                  final HttpStatus expectedStatusCode) {
+        return RestAssuredMockMvc.given()
+                                 .webAppContextSetup(webApplicationContext)
+                                 .log().body(true)
+                                 .accept(JSON)
+                                 .when().get(uriPath)
+                                 .then().log().body(true)
+                                 .assertThat()
                                  .statusCode(expectedStatusCode.value());
     }
 }

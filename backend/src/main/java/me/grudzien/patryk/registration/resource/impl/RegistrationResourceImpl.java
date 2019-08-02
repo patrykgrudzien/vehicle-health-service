@@ -29,7 +29,7 @@ import static org.springframework.http.ResponseEntity.badRequest;
 import static org.springframework.http.ResponseEntity.ok;
 import static org.springframework.http.ResponseEntity.status;
 
-import static me.grudzien.patryk.utils.common.Predicates.isEmpty;
+import static me.grudzien.patryk.utils.common.Predicates.isNullOrEmpty;
 import static me.grudzien.patryk.utils.web.ObjectDecoder.userRegistrationDtoDecoder;
 
 @Slf4j
@@ -64,7 +64,7 @@ public class RegistrationResourceImpl implements RegistrationResource {
     public ResponseEntity<CustomResponse> createUserAccount(final UserRegistrationDto registrationDto, final WebRequest webRequest) {
         final UserRegistrationDto decodedRegistrationDto = userRegistrationDtoDecoder().apply(registrationDto, registrationDtoMapper);
         validationService.validateWithResult(decodedRegistrationDto)
-                         .onErrorsSetExceptionMessageCode(uiMessageCodesProperties.getRegistrationFormValidationErrors());
+                         .onErrorsSetExceptionMessageCode(uiMessageCodesProperties.registrationFormErrors());
         final RegistrationResponse response = userRegistrationService.createUserAccount(decodedRegistrationDto);
         if (response.isSuccessful()) {
         	if (decodedRegistrationDto.isHasFakeEmail()) {
@@ -79,17 +79,17 @@ public class RegistrationResourceImpl implements RegistrationResource {
 
     @Override
     public ResponseEntity<CustomResponse> confirmRegistration(final String token, final WebRequest webRequest) {
-        // TODO: research for better solution
-        if (isEmpty(token)) {
-            return badRequest().body(new ExceptionResponse("email-verification-token-cannot-be-empty"));
+        if (isNullOrEmpty(token)) {
+            return badRequest().body(new ExceptionResponse(uiMessageCodesProperties.emailVerificationTokenEmpty()));
         }
         final RegistrationResponse response = userRegistrationService.confirmRegistration(token);
-		final HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(URI.create(response.getRedirectionUrl()));
         final String responseMessage = response.getMessage();
-        return response.isSuccessful() ?
-                status(MOVED_PERMANENTLY).headers(httpHeaders).body(new SuccessResponse(responseMessage)) :
-                badRequest().body(new ExceptionResponse(responseMessage));
+        if (response.isSuccessful()) {
+            final HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.setLocation(URI.create(response.getRedirectionUrl()));
+            return status(MOVED_PERMANENTLY).headers(httpHeaders).body(new SuccessResponse(responseMessage));
+        }
+        return badRequest().body(new ExceptionResponse(responseMessage));
     }
 
     @Override
