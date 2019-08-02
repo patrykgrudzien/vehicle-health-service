@@ -64,7 +64,7 @@ public class RegistrationResourceImpl implements RegistrationResource {
     public ResponseEntity<CustomResponse> createUserAccount(final UserRegistrationDto registrationDto, final WebRequest webRequest) {
         final UserRegistrationDto decodedRegistrationDto = userRegistrationDtoDecoder().apply(registrationDto, registrationDtoMapper);
         validationService.validateWithResult(decodedRegistrationDto)
-                         .onErrorsSetExceptionMessageCode(uiMessageCodesProperties.registrationFormErrors());
+                         .onErrorsSetExceptionMessageCode(uiMessageCodesProperties.getRegistrationFormErrors());
         final RegistrationResponse response = userRegistrationService.createUserAccount(decodedRegistrationDto);
         if (response.isSuccessful()) {
         	if (decodedRegistrationDto.isHasFakeEmail()) {
@@ -80,7 +80,7 @@ public class RegistrationResourceImpl implements RegistrationResource {
     @Override
     public ResponseEntity<CustomResponse> confirmRegistration(final String token, final WebRequest webRequest) {
         if (isNullOrEmpty(token)) {
-            return badRequest().body(new ExceptionResponse(uiMessageCodesProperties.emailVerificationTokenEmpty()));
+            return badRequest().body(new ExceptionResponse(uiMessageCodesProperties.getEmailVerificationTokenEmpty()));
         }
         final RegistrationResponse response = userRegistrationService.confirmRegistration(token);
         final String responseMessage = response.getMessage();

@@ -125,7 +125,7 @@ public abstract class AbstractRegistrationResourceHelper extends ObjectMapperEnc
     }
 
     /**
-     * Base
+     * Base {@link UserRegistrationDto}
      */
     private static UserRegistrationDto buildRegistrationDto(final String firstName, final String lastName,
                                                             final String email, final String confirmedEmail,

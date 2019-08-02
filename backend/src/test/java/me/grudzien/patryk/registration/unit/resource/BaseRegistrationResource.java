@@ -24,6 +24,7 @@ import me.grudzien.patryk.registration.service.event.RegistrationEventPublisher;
 
 import static io.restassured.http.ContentType.JSON;
 import static lombok.AccessLevel.NONE;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -58,6 +59,9 @@ abstract class BaseRegistrationResource extends AbstractRegistrationResourceHelp
         verify(registrationEventPublisher, verificationMode).publishRegistrationEven(any(CustomUser.class), any(WebRequest.class));
     }
 
+    /**
+     * RestAssured helpers
+     */
     JsonBody restAssuredPostInvoker() {
         return jsonBody -> uriPath -> expectedStatusCode -> createRestAssuredPostClient(jsonBody, uriPath, expectedStatusCode);
     }
@@ -79,6 +83,10 @@ abstract class BaseRegistrationResource extends AbstractRegistrationResourceHelp
     @FunctionalInterface
     interface ExpectedStatusCode {
         ValidatableMockMvcResponse expectedStatusCode(HttpStatus expectedStatusCode);
+    }
+
+    void assertResponseHasSize(final ValidatableMockMvcResponse response, final int expectedSize) {
+        assertThat(response.extract().jsonPath().getMap("$", String.class, String.class)).hasSize(expectedSize);
     }
 
     private ValidatableMockMvcResponse createRestAssuredPostClient(final String jsonBody, final String uriPath,

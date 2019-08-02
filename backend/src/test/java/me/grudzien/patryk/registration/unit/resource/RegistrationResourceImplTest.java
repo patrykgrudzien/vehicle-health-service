@@ -91,17 +91,18 @@ class RegistrationResourceImplTest extends BaseRegistrationResource {
         given(userRegistrationService.createUserAccount(any(UserRegistrationDto.class))).willReturn(successResponse);
 
         // when - then
-        restAssuredPostInvoker()
-                .jsonBody(tryConvertObjectToJson(decodedRegistrationDto))
-                .endpoint(REGISTRATION_CREATE_USER_ACCOUNT_URI)
-                .expectedStatusCode(OK)
-                .body(notNullValue())
-                .body("$", hasKey("message"))
-                .body("message", is("Registration success."))
-                .body("$", not(hasKey("securityStatus")))
-                .body("$", not(hasKey("accountStatus")))
-                .body("$", not(hasKey("lastRequestedPath")))
-                .body("$", not(hasKey("lastRequestMethod")));
+        final ValidatableMockMvcResponse response =
+                restAssuredPostInvoker().jsonBody(tryConvertObjectToJson(decodedRegistrationDto))
+                                        .endpoint(REGISTRATION_CREATE_USER_ACCOUNT_URI)
+                                        .expectedStatusCode(OK)
+                                        .body(notNullValue())
+                                        .body("$", hasKey("message"))
+                                        .body("message", is("Registration success."))
+                                        .body("$", not(hasKey("securityStatus")))
+                                        .body("$", not(hasKey("accountStatus")))
+                                        .body("$", not(hasKey("lastRequestedPath")))
+                                        .body("$", not(hasKey("lastRequestMethod")));
+        assertResponseHasSize(response, 1);
         verifyRegistrationMapper();
         verifyRegistrationPublisher(never());
         verify(userRegistrationService).createUserAccount(any(UserRegistrationDto.class));
@@ -120,17 +121,18 @@ class RegistrationResourceImplTest extends BaseRegistrationResource {
         given(userRegistrationService.createUserAccount(any(UserRegistrationDto.class))).willReturn(successResponse);
 
         // when - then
-        restAssuredPostInvoker()
-                .jsonBody(tryConvertObjectToJson(decodedRegistrationDto))
-                .endpoint(REGISTRATION_CREATE_USER_ACCOUNT_URI)
-                .expectedStatusCode(OK)
-                .body(notNullValue())
-                .body("$", hasKey("message"))
-                .body("message", is("Registration success."))
-                .body("$", not(hasKey("securityStatus")))
-                .body("$", not(hasKey("accountStatus")))
-                .body("$", not(hasKey("lastRequestedPath")))
-                .body("$", not(hasKey("lastRequestMethod")));
+        final ValidatableMockMvcResponse response =
+                restAssuredPostInvoker().jsonBody(tryConvertObjectToJson(decodedRegistrationDto))
+                                        .endpoint(REGISTRATION_CREATE_USER_ACCOUNT_URI)
+                                        .expectedStatusCode(OK)
+                                        .body(notNullValue())
+                                        .body("$", hasKey("message"))
+                                        .body("message", is("Registration success."))
+                                        .body("$", not(hasKey("securityStatus")))
+                                        .body("$", not(hasKey("accountStatus")))
+                                        .body("$", not(hasKey("lastRequestedPath")))
+                                        .body("$", not(hasKey("lastRequestMethod")));
+        assertResponseHasSize(response, 1);
         verifyRegistrationMapper();
         verifyRegistrationPublisher(times(1));
         verify(userRegistrationService).createUserAccount(any(UserRegistrationDto.class));
@@ -172,17 +174,18 @@ class RegistrationResourceImplTest extends BaseRegistrationResource {
         given(userRegistrationService.createUserAccount(any(UserRegistrationDto.class))).willReturn(failedResponse);
 
         // when - then
-        restAssuredPostInvoker()
-                .jsonBody(tryConvertObjectToJson(decodedRegistrationDto))
-                .endpoint(REGISTRATION_CREATE_USER_ACCOUNT_URI)
-                .expectedStatusCode(BAD_REQUEST)
-                .body(notNullValue())
-                .body("$", hasKey("message"))
-                .body("message", is("Registration failed!"))
-                .body("$", not(hasKey("securityStatus")))
-                .body("$", not(hasKey("accountStatus")))
-                .body("$", not(hasKey("lastRequestedPath")))
-                .body("$", not(hasKey("lastRequestMethod")));
+        final ValidatableMockMvcResponse response =
+                restAssuredPostInvoker().jsonBody(tryConvertObjectToJson(decodedRegistrationDto))
+                                                                        .endpoint(REGISTRATION_CREATE_USER_ACCOUNT_URI)
+                                        .expectedStatusCode(BAD_REQUEST)
+                                        .body(notNullValue())
+                                        .body("$", hasKey("message"))
+                                        .body("message", is("Registration failed!"))
+                                        .body("$", not(hasKey("securityStatus")))
+                                        .body("$", not(hasKey("accountStatus")))
+                                        .body("$", not(hasKey("lastRequestedPath")))
+                                        .body("$", not(hasKey("lastRequestMethod")));
+        assertResponseHasSize(response, 1);
         verifyRegistrationMapper();
         verifyRegistrationPublisher(never());
         verify(userRegistrationService).createUserAccount(any(UserRegistrationDto.class));
@@ -194,7 +197,7 @@ class RegistrationResourceImplTest extends BaseRegistrationResource {
     @DisplayName("Confirm registration failed. Response status: 400 Bad Request - Email Verification Token is empty!")
     void shouldReturn400onConfirmRegistrationWhenTokenIsEmpty() {
         // given
-        given(uiMessageCodesProperties.emailVerificationTokenEmpty()).willReturn("email-verification-token-cannot-be-empty");
+        given(uiMessageCodesProperties.getEmailVerificationTokenEmpty()).willReturn("email-verification-token-cannot-be-empty");
 
         // when - then
         final ValidatableMockMvcResponse response = restAssuredGetInvoker()
@@ -203,8 +206,8 @@ class RegistrationResourceImplTest extends BaseRegistrationResource {
                 .body(notNullValue())
                 .body("$", hasKey("message"))
                 .body("message", is("email-verification-token-cannot-be-empty"));
-        assertThat(response.extract().jsonPath().getMap("$", String.class, String.class)).hasSize(1);
-        verify(uiMessageCodesProperties).emailVerificationTokenEmpty();
+        assertResponseHasSize(response, 1);
+        verify(uiMessageCodesProperties).getEmailVerificationTokenEmpty();
         verify(userRegistrationService, never()).confirmRegistration(anyString());
     }
 
@@ -234,7 +237,7 @@ class RegistrationResourceImplTest extends BaseRegistrationResource {
                 .body(notNullValue())
                 .body("$", hasKey("message"))
                 .body("message", is("Confirm registration failed!"));
-        assertThat(response.extract().jsonPath().getMap("$", String.class, String.class)).hasSize(1);
+        assertResponseHasSize(response, 1);
         verify(userRegistrationService).confirmRegistration(anyString());
     }
 
@@ -254,7 +257,7 @@ class RegistrationResourceImplTest extends BaseRegistrationResource {
                 .body("$", hasKey("message"))
                 .body("message", is("Confirm registration successful."))
                 .headers(LOCATION, "www.redirection-url.com");
-        assertThat(response.extract().jsonPath().getMap("$", String.class, String.class)).hasSize(1);
+        assertResponseHasSize(response, 1);
         verify(userRegistrationService).confirmRegistration(anyString());
     }
 }

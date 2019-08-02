@@ -52,7 +52,7 @@ public class AuthenticationResourceImpl implements AuthenticationResource {
                                                            final Device device, final WebRequest webRequest) {
         final JwtAuthenticationRequest decodedAuthRequest = authRequestDecoder().apply(authenticationRequest, authRequestMapper);
         validationService.validateWithResult(decodedAuthRequest)
-                         .onErrorsSetExceptionMessageCode(uiMessageCodesProperties.loginFormErrors());
+                         .onErrorsSetExceptionMessageCode(uiMessageCodesProperties.getLoginFormErrors());
         final JwtAuthenticationResponse authenticationResponse = userAuthenticationService.login(decodedAuthRequest, device);
         return authenticationResponse.isSuccessful() ?
                 ok(authenticationResponse) : badRequest().body(authenticationResponse);
