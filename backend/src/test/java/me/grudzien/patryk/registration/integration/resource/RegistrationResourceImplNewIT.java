@@ -12,7 +12,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -35,6 +34,7 @@ import me.grudzien.patryk.registration.repository.EmailVerificationTokenReposito
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static io.restassured.http.Method.POST;
+import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -78,25 +78,33 @@ class RegistrationResourceImplNewIT extends AbstractRegistrationResourceHelper {
 
     private static Stream<Arguments> registrationSuccessfulMethodSource() {
 	    return Stream.of(
-                arguments("en",
-                          NO_EXISTING_EMAIL,
-                          createUserRegistrationDtoJson(NO_EXISTING_EMAIL, TEST_PASSWORD).doEncoding(true),
-                          String.format("Thank you for registration! Check (%s) to confirm newly created account.", NO_EXISTING_EMAIL)),
-                arguments("pl",
-                          NO_EXISTING_EMAIL_1,
-                          createUserRegistrationDtoJson(NO_EXISTING_EMAIL_1, TEST_PASSWORD).doEncoding(true),
-                          String.format("Dziękuję! Rejestracja przebiegła pomyślnie. Sprawdź (%s) aby potwierdzić nowo utworzone konto.", NO_EXISTING_EMAIL_1))
+	            arguments(
+                        RegistrationResourceTestDataBuilder.builder()
+                                .language("en")
+                                .email(NO_EXISTING_EMAIL)
+                                .jsonBody(createUserRegistrationDtoJson(NO_EXISTING_EMAIL, TEST_PASSWORD).doEncoding(true))
+                                .responseMessage(format("Thank you for registration! Check (%s) to confirm newly created account.", NO_EXISTING_EMAIL))
+                                .build()
+                ),
+                arguments(
+                        RegistrationResourceTestDataBuilder.builder()
+                                .language("pl")
+                                .email(NO_EXISTING_EMAIL_1)
+                                .jsonBody(createUserRegistrationDtoJson(NO_EXISTING_EMAIL_1, TEST_PASSWORD).doEncoding(true))
+                                .responseMessage(format("Dziękuję! Rejestracja przebiegła pomyślnie. Sprawdź (%s) aby potwierdzić nowo utworzone konto.", NO_EXISTING_EMAIL_1))
+                                .build()
+                )
         );
     }
 
     @DisplayName("Register user account. Successful. 200 OK.")
-    @ParameterizedTest(name = "{index}. Response message created using ({0}) \"Language\" header.")
     @MethodSource("registrationSuccessfulMethodSource")
-    void shouldReturn200onCreateUserAccountWithoutSendingEmailLanguageEnAndPl(final String language, final String email,
-                                                                              final String jsonBody, final String responseMessage) {
+    @ParameterizedTest
+    void shouldReturn200onCreateUserAccountWithoutSendingEmailLanguageEnAndPl(final RegistrationResourceTestDataBuilder builder) {
+        final String email = builder.getEmail();
         given().log().all()
-               .header("Language", language)
-               .with().body(jsonBody)
+               .header("Language", builder.getLanguage())
+               .with().body(builder.getJsonBody())
                .contentType(JSON)
                .accept(JSON)
                .when()
@@ -106,7 +114,7 @@ class RegistrationResourceImplNewIT extends AbstractRegistrationResourceHelper {
                .assertThat().statusCode(OK.value())
                .body(notNullValue())
                .body("$", hasKey("message"))
-               .body("message", is(responseMessage))
+               .body("message", is(builder.getResponseMessage()))
                .body("$", not(hasKey("securityStatus")))
                .body("$", not(hasKey("accountStatus")))
                .body("$", not(hasKey("lastRequestedPath")))
@@ -126,25 +134,32 @@ class RegistrationResourceImplNewIT extends AbstractRegistrationResourceHelper {
 
     private static Stream<Arguments> registrationFailedEmailExistMethodSource() {
 	    return Stream.of(
-                arguments("en",
-                          createUserRegistrationDtoJson(TEST_EMAIL, TEST_PASSWORD).doEncoding(true),
-                          String.format("User with specified email (%s) already exists!", TEST_EMAIL),
-                          false),
-                arguments("pl",
-                          createUserRegistrationDtoJson(TEST_EMAIL, TEST_PASSWORD).doEncoding(true),
-                          String.format("Użytkownik o podanym adresie e-mail (%s) już istnieje!", TEST_EMAIL),
-                          true)
+	            arguments(
+	                    RegistrationResourceTestDataBuilder.builder()
+                                .language("en")
+                                .jsonBody(createUserRegistrationDtoJson(TEST_EMAIL, TEST_PASSWORD).doEncoding(true))
+                                .responseMessage(format("User with specified email (%s) already exists!", TEST_EMAIL))
+                                .shouldDelete(false)
+                                .build()
+                ),
+                arguments(
+                        RegistrationResourceTestDataBuilder.builder()
+                                .language("pl")
+                                .jsonBody(createUserRegistrationDtoJson(TEST_EMAIL, TEST_PASSWORD).doEncoding(true))
+                                .responseMessage(format("Użytkownik o podanym adresie e-mail (%s) już istnieje!", TEST_EMAIL))
+                                .shouldDelete(true)
+                                .build()
+                )
         );
     }
 
     @DisplayName("Register user account. Failed. Email already exists! 400 Bad request!")
-    @ParameterizedTest(name = "{index}. Response message created using ({0}) \"Language\" header.")
     @MethodSource("registrationFailedEmailExistMethodSource")
-    void shouldReturn400onCreateUserAccountWhenEmailExistsLanguageEnAndPl(final String language, final String jsonBody,
-                                                                          final String responseMessage, final boolean shouldDelete) {
+    @ParameterizedTest
+    void shouldReturn400onCreateUserAccountWhenEmailExistsLanguageEnAndPl(final RegistrationResourceTestDataBuilder builder) {
         given().log().all()
-               .header("Language", language)
-               .with().body(jsonBody)
+               .header("Language", builder.getLanguage())
+               .with().body(builder.getJsonBody())
                .contentType(JSON)
                .accept(JSON)
                .when()
@@ -154,14 +169,14 @@ class RegistrationResourceImplNewIT extends AbstractRegistrationResourceHelper {
                .assertThat().statusCode(BAD_REQUEST.value())
                .body(notNullValue())
                .body("$", hasKey("message"))
-               .body("message", is(responseMessage))
+               .body("message", is(builder.getResponseMessage()))
                .body("$", not(hasKey("securityStatus")))
                .body("$", not(hasKey("accountStatus")))
                .body("$", not(hasKey("lastRequestedPath")))
                .body("$", not(hasKey("lastRequestMethod")));
 
         final CustomUser user = customUserRepository.findByEmail(TEST_EMAIL);
-        Assertions.assertAll(
+        assertAll(
                 () -> assertThat(user).isNotNull(),
                 () -> assertTrue(user.isEnabled()),
                 () -> assertThat(user.isHasFakeEmail()).isTrue(),
@@ -169,7 +184,7 @@ class RegistrationResourceImplNewIT extends AbstractRegistrationResourceHelper {
                 () -> assertThat(emailVerificationTokenRepository.findByCustomUser_Email(TEST_EMAIL)).isNull()
         );
         // don't want to perform deleteAll() after first test for "en" language header
-	    if (shouldDelete) {
+	    if (builder.isShouldDelete()) {
 		    emailVerificationTokenRepository.deleteAll();
 		    customUserRepository.deleteAll();
 	    }
@@ -187,51 +202,149 @@ class RegistrationResourceImplNewIT extends AbstractRegistrationResourceHelper {
 	    		"bad-email-5@gmail.com", "bad-email-5@gmail.com", "password", "test").doEncoding(true);
 
         return Stream.of(
-                arguments("en", emptyEmail, 3, EMPTY,
-                          new String[]{"Provided email has incorrect format.", "Confirmed email address cannot be empty.",
-                                       "Email address cannot be empty."}),
-                arguments("pl", emptyEmail, 3, EMPTY,
-                          new String[]{"Wprowadzony email ma nieprawidłowy format.",
-                                       "Potwierdzający adres email nie może być pusty.",
-                                       "Adres email nie może być pusty."}),
-                arguments("en", invalidEmailFormat, 1, "invalid-email-format",
-                          new String[]{"Provided email has incorrect format."}),
-                arguments("pl", invalidEmailFormat, 1, "invalid-email-format",
-                          new String[]{"Wprowadzony email ma nieprawidłowy format."}),
-                arguments("en", emptyPassword, 2, NO_EXISTING_EMAIL_2,
-                          new String[]{"Password cannot be empty.", "Confirmed password cannot be empty."}),
-                arguments("pl", emptyPassword, 2, NO_EXISTING_EMAIL_2,
-                          new String[]{"Hasło nie może być puste.", "Hasło potwierdzające nie może być puste."}),
-                arguments("en", noCredentialsProvided, 7, EMPTY,
-                          new String[]{"Last name cannot be empty.", "Email address cannot be empty.",
-                                       "Provided email has incorrect format.", "Confirmed password cannot be empty.",
-                                       "Confirmed email address cannot be empty.", "First name cannot be empty.",
-                                       "Password cannot be empty."}),
-                arguments("pl", noCredentialsProvided, 7, EMPTY,
-                          new String[]{"Adres email nie może być pusty.", "Nazwisko nie może być puste.",
-                                       "Hasło potwierdzające nie może być puste.", "Hasło nie może być puste.",
-                                       "Wprowadzony email ma nieprawidłowy format.", "Potwierdzający adres email nie może być pusty.",
-                                       "Imię nie może być puste."}),
-                arguments("en", emailsDoNotMatch, 1, "bad-email-3@gmail.com",
-                          new String[]{"The email fields must match."}),
-                arguments("pl", emailsDoNotMatch, 1, "bad-email-3@gmail.com",
-                          new String[]{"Pola z adresami email muszą być identyczne."}),
-                arguments("en", passwordsDoNotMatch, 1, "bad-email-5@gmail.com",
-                          new String[]{"The password fields must match."}),
-                arguments("pl", passwordsDoNotMatch, 1, "bad-email-5@gmail.com",
-                          new String[]{"Pola z hasłami muszą być identyczne."})
+                arguments(
+                        RegistrationResourceTestDataBuilder.builder()
+                                .language("en")
+                                .jsonBody(emptyEmail)
+                                .errorsSize(3)
+                                .email(EMPTY)
+                                .errorItems(new String[]{
+                                        "Provided email has incorrect format.",
+                                        "Confirmed email address cannot be empty.",
+                                        "Email address cannot be empty."})
+                                .build()
+                ),
+                arguments(
+                        RegistrationResourceTestDataBuilder.builder()
+                                .language("pl")
+                                .jsonBody(emptyEmail)
+                                .errorsSize(3)
+                                .email(EMPTY)
+                                .errorItems(new String[]{
+                                        "Wprowadzony email ma nieprawidłowy format.",
+                                        "Potwierdzający adres email nie może być pusty.",
+                                        "Adres email nie może być pusty."})
+                                .build()
+                ),
+                arguments(
+                        RegistrationResourceTestDataBuilder.builder()
+                                .language("en")
+                                .jsonBody(invalidEmailFormat)
+                                .errorsSize(1)
+                                .email("invalid-email-format")
+                                .errorItems(new String[]{"Provided email has incorrect format."})
+                                .build()
+                ),
+                arguments(
+                        RegistrationResourceTestDataBuilder.builder()
+                                .language("pl")
+                                .jsonBody(invalidEmailFormat)
+                                .errorsSize(1)
+                                .email("invalid-email-format")
+                                .errorItems(new String[]{"Wprowadzony email ma nieprawidłowy format."})
+                                .build()
+                ),
+                arguments(
+                        RegistrationResourceTestDataBuilder.builder()
+                                .language("en")
+                                .jsonBody(emptyPassword)
+                                .errorsSize(2)
+                                .email(NO_EXISTING_EMAIL_2)
+                                .errorItems(new String[]{
+                                        "Password cannot be empty.",
+                                        "Confirmed password cannot be empty."})
+                                .build()
+                ),
+                arguments(
+                        RegistrationResourceTestDataBuilder.builder()
+                                .language("pl")
+                                .jsonBody(emptyPassword)
+                                .errorsSize(2)
+                                .email(NO_EXISTING_EMAIL_2)
+                                .errorItems(new String[]{
+                                        "Hasło nie może być puste.",
+                                        "Hasło potwierdzające nie może być puste."})
+                                .build()
+                ),
+                arguments(
+                        RegistrationResourceTestDataBuilder.builder()
+                                .language("en")
+                                .jsonBody(noCredentialsProvided)
+                                .errorsSize(7)
+                                .email(EMPTY)
+                                .errorItems(new String[]{
+                                        "Last name cannot be empty.",
+                                        "Email address cannot be empty.",
+                                        "Provided email has incorrect format.",
+                                        "Confirmed password cannot be empty.",
+                                        "Confirmed email address cannot be empty.",
+                                        "First name cannot be empty.",
+                                        "Password cannot be empty."})
+                                .build()
+                ),
+                arguments(
+                        RegistrationResourceTestDataBuilder.builder()
+                                .language("pl")
+                                .jsonBody(noCredentialsProvided)
+                                .errorsSize(7)
+                                .email(EMPTY)
+                                .errorItems(new String[]{
+                                        "Adres email nie może być pusty.",
+                                        "Nazwisko nie może być puste.",
+                                        "Hasło potwierdzające nie może być puste.",
+                                        "Hasło nie może być puste.",
+                                        "Wprowadzony email ma nieprawidłowy format.",
+                                        "Potwierdzający adres email nie może być pusty.",
+                                        "Imię nie może być puste."})
+                                .build()
+                ),
+                arguments(
+                        RegistrationResourceTestDataBuilder.builder()
+                                .language("en")
+                                .jsonBody(emailsDoNotMatch)
+                                .errorsSize(1)
+                                .email("bad-email-3@gmail.com")
+                                .errorItems(new String[]{"The email fields must match."})
+                                .build()
+                ),
+                arguments(
+                        RegistrationResourceTestDataBuilder.builder()
+                                .language("pl")
+                                .jsonBody(emailsDoNotMatch)
+                                .errorsSize(1)
+                                .email("bad-email-3@gmail.com")
+                                .errorItems(new String[]{"Pola z adresami email muszą być identyczne."})
+                                .build()
+                ),
+                arguments(
+                        RegistrationResourceTestDataBuilder.builder()
+                                .language("en")
+                                .jsonBody(passwordsDoNotMatch)
+                                .errorsSize(1)
+                                .email("bad-email-5@gmail.com")
+                                .errorItems(new String[]{"The password fields must match."})
+                                .build()
+                ),
+                arguments(
+                        RegistrationResourceTestDataBuilder.builder()
+                                .language("pl")
+                                .jsonBody(passwordsDoNotMatch)
+                                .errorsSize(1)
+                                .email("bad-email-5@gmail.com")
+                                .errorItems(new String[]{"Pola z hasłami muszą być identyczne."})
+                                .build()
+                )
         );
     }
 
     @DisplayName("Register user account. Failed. Validation errors! 400 Bad request!")
-    @ParameterizedTest(name = "{index}. Response message created using ({0}) \"Language\" header.")
     @MethodSource("registrationFailedValidationErrorsMethodSource")
-    void shouldReturn400onCreateUserAccountWhenValidationErrorsLanguageEnAndPl(final String language, final String jsonBody,
-                                                                               final int errorsSize, final String email,
-                                                                               final String... errorItems) {
+    @ParameterizedTest
+    void shouldReturn400onCreateUserAccountWhenValidationErrorsLanguageEnAndPl(final RegistrationResourceTestDataBuilder builder) {
+        final String email = builder.getEmail();
         given().log().all()
-               .header("Language", language)
-               .with().body(jsonBody)
+               .header("Language", builder.getLanguage())
+               .with().body(builder.getJsonBody())
                .contentType(JSON)
                .accept(JSON)
                .when()
@@ -240,8 +353,8 @@ class RegistrationResourceImplNewIT extends AbstractRegistrationResourceHelper {
                .log().body()
                .assertThat().statusCode(BAD_REQUEST.value())
                .body(notNullValue())
-               .body("errors", hasSize(errorsSize))
-               .body("errors", hasItems(errorItems))
+               .body("errors", hasSize(builder.getErrorsSize()))
+               .body("errors", hasItems(builder.getErrorItems()))
                .body("messageCode", equalTo("registration-form-validation-errors"))
                .body("message", notNullValue())
                .body("securityStatus", nullValue())
@@ -250,7 +363,7 @@ class RegistrationResourceImplNewIT extends AbstractRegistrationResourceHelper {
                .body("lastRequestedMethod", nullValue());
 
         final CustomUser user = customUserRepository.findByEmail(email);
-        Assertions.assertAll(
+        assertAll(
                 () -> assertThat(user).isNull(),
                 () -> assertFalse(Optional.ofNullable(user).map(CustomUser::isEnabled).orElse(false)),
                 () -> assertThat(emailVerificationTokenRepository.findByCustomUser(user)).isNull(),
@@ -316,7 +429,7 @@ class RegistrationResourceImplNewIT extends AbstractRegistrationResourceHelper {
 //        entityManager.clear();
 
         final CustomUser user = customUserRepository.findByEmail(NO_EXISTING_EMAIL);
-        Assertions.assertAll(
+        assertAll(
                 () -> assertThat(user).isNotNull(),
                 () -> assertTrue(user.isEnabled()),
                 () -> assertThat(emailVerificationTokenRepository.findByCustomUser(user)).isNull(),

@@ -1,9 +1,13 @@
 package me.grudzien.patryk.registration;
 
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.function.Function;
 
@@ -16,6 +20,7 @@ import me.grudzien.patryk.registration.resource.RegistrationResourceDefinitions;
 
 import static lombok.AccessLevel.NONE;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.builder.ToStringStyle.NO_CLASS_NAME_STYLE;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.web.util.UriComponentsBuilder.fromPath;
@@ -140,5 +145,30 @@ public abstract class AbstractRegistrationResourceHelper extends ObjectMapperEnc
                                   .password(doEncoding ? encodeNotNullValue(password) : password)
                                   .confirmedPassword(doEncoding ? encodeNotNullValue(confirmedPassword) : confirmedPassword)
                                   .build();
+    }
+
+    @Builder
+    @Getter
+    protected static class RegistrationResourceTestDataBuilder {
+        private String email;
+        private String[] errorItems;
+        private int errorsSize;
+        private String jsonBody;
+        private String language;
+        private String responseMessage;
+        private boolean shouldDelete;
+
+        @Override
+        public String toString() {
+            return new ToStringBuilder(this, NO_CLASS_NAME_STYLE)
+                    .append("email", email)
+                    .append("errorItems", errorItems)
+                    .append("errorsSize", errorsSize)
+                    .append("jsonBody", jsonBody)
+                    .append("language", language)
+                    .append("responseMessage", responseMessage)
+                    .append("shouldDelete", shouldDelete)
+                    .toString();
+        }
     }
 }
