@@ -1,33 +1,25 @@
 package me.grudzien.patryk.registration.integration.resource;
 
 import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
-import io.restassured.http.Method;
 import io.restassured.response.ValidatableResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import me.grudzien.patryk.registration.AbstractRegistrationResourceHelper;
 import me.grudzien.patryk.registration.model.entity.CustomUser;
-import me.grudzien.patryk.registration.model.entity.EmailVerificationToken;
 import me.grudzien.patryk.registration.repository.CustomUserRepository;
 import me.grudzien.patryk.registration.repository.EmailVerificationTokenRepository;
 
@@ -54,18 +46,15 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
 
-import static me.grudzien.patryk.TestsUtils.ENABLE_ENCODING;
-import static me.grudzien.patryk.TestsUtils.prepareRegistrationJSONBody;
-
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @DirtiesContext
 class RegistrationResourceImplNewIT extends AbstractRegistrationResourceHelper {
 
     @Autowired
-    private EmailVerificationTokenRepository emailVerificationTokenRepository;
+    private CustomUserRepository customUserRepository;
 
     @Autowired
-    private CustomUserRepository customUserRepository;
+    private EmailVerificationTokenRepository emailVerificationTokenRepository;
 
     @LocalServerPort
     private int localServerPort;
@@ -385,65 +374,7 @@ class RegistrationResourceImplNewIT extends AbstractRegistrationResourceHelper {
                 .assertThat()
                 .statusCode(BAD_REQUEST.value())
                 .body("$", hasKey("message"))
-                .body("message", is("email-verification-token-cannot-be-empty"));;
+                .body("message", is("email-verification-token-cannot-be-empty"));
         assertThat(response.extract().jsonPath().getMap("$", String.class, String.class)).hasSize(1);
-    }
-
-    @Test
-    @Disabled
-    void confirmRegistration_successful() throws JsonProcessingException {
-        // given
-
-        registerTestUser();
-        final EmailVerificationToken emailVerificationToken = emailVerificationTokenRepository.findByCustomUser_Email(NO_EXISTING_EMAIL);
-        final String confirmationEndpoint = REGISTRATION_CONFIRM_REGISTRATION_URI.apply(emailVerificationToken.getToken());
-
-        // then
-        given().header("Language", "en")
-               .with()
-               .contentType(ContentType.JSON)
-               .accept(ContentType.JSON)
-               .redirects().follow(false)
-               .when()
-               .request(Method.GET, confirmationEndpoint)
-               .then()
-               .assertThat()
-               .statusCode(HttpStatus.MOVED_PERMANENTLY.value())
-               .body("message", is("Your account has been confirmed and activated!"))
-               .header(HttpHeaders.LOCATION, equalTo("http://localhost:8080/ui/registration-confirmed"));
-
-        /**
-         * If your test is @Transactional, it rolls back the transaction at the end of each test method by default. However,
-         * as using this arrangement with either RANDOM_PORT or DEFINED_PORT implicitly provides a real servlet environment,
-         * the HTTP client and server run in separate threads and, thus, in separate transactions.
-         * Any transaction initiated on the server does not roll back in this case.
-         *
-         * Since the test transaction is separate from the HTTP server transaction, the controller won't see changes made from within the test
-         * method until the test transaction is actually committed. Conversely, you won't be able to roll back changes made as a result to the server call.
-         *
-         * You will seriously make your life easier by providing a mock implementation for whatever service/repository your controller uses.
-         * Alternatively, you could use a tool like DBUnit to setup and tear down the database around each test case.
-         */
-
-//        entityManager.flush();
-//        entityManager.clear();
-
-        final CustomUser user = customUserRepository.findByEmail(NO_EXISTING_EMAIL);
-        assertAll(
-                () -> assertThat(user).isNotNull(),
-                () -> assertTrue(user.isEnabled()),
-                () -> assertThat(emailVerificationTokenRepository.findByCustomUser(user)).isNull(),
-                () -> assertThat(emailVerificationTokenRepository.findByCustomUser_Email(NO_EXISTING_EMAIL)).isNull()
-        );
-    }
-
-    private void registerTestUser() throws JsonProcessingException {
-        final String jsonBody = prepareRegistrationJSONBody("John", "Snow", NO_EXISTING_EMAIL, TEST_PASSWORD, ENABLE_ENCODING);
-        given().header("Language", "en")
-               .with().body(jsonBody)
-               .contentType(ContentType.JSON)
-               .accept(ContentType.JSON)
-               .when()
-               .request(Method.POST, REGISTRATION_CREATE_USER_ACCOUNT_URI);
     }
 }
