@@ -11,5 +11,5 @@ public interface EmailVerificationTokenRepository extends CrudRepository<EmailVe
 
 	EmailVerificationToken findByCustomUser(CustomUser customUser);
 
-	EmailVerificationToken findByCustomUser_Email(String customUserEmail);
+	EmailVerificationToken findByCustomUserEmail(String customUserEmail);
 }

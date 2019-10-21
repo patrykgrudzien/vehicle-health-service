@@ -1,5 +1,27 @@
 package me.grudzien.patryk.registration.integration.resource;
 
+import static io.restassured.RestAssured.given;
+import static io.restassured.http.ContentType.JSON;
+import static io.restassured.http.Method.POST;
+import static java.lang.String.format;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.OK;
+
 import io.restassured.RestAssured;
 import io.restassured.response.ValidatableResponse;
 
@@ -22,29 +44,6 @@ import me.grudzien.patryk.registration.AbstractRegistrationResourceHelper;
 import me.grudzien.patryk.registration.model.entity.CustomUser;
 import me.grudzien.patryk.registration.repository.CustomUserRepository;
 import me.grudzien.patryk.registration.repository.EmailVerificationTokenRepository;
-
-import static io.restassured.RestAssured.given;
-import static io.restassured.http.ContentType.JSON;
-import static io.restassured.http.Method.POST;
-import static java.lang.String.format;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
-
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.OK;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @DirtiesContext
@@ -115,7 +114,7 @@ class RegistrationResourceImplNewIT extends AbstractRegistrationResourceHelper {
                 () -> assertThat(user.isEnabled()).isFalse(),
                 () -> assertThat(user.isHasFakeEmail()).isTrue(),
                 () -> assertThat(emailVerificationTokenRepository.findByCustomUser(user)).isNull(),
-                () -> assertThat(emailVerificationTokenRepository.findByCustomUser_Email(email)).isNull()
+                () -> assertThat(emailVerificationTokenRepository.findByCustomUserEmail(email)).isNull()
         );
 	    emailVerificationTokenRepository.deleteAll();
         customUserRepository.deleteAll();
@@ -170,7 +169,7 @@ class RegistrationResourceImplNewIT extends AbstractRegistrationResourceHelper {
                 () -> assertTrue(user.isEnabled()),
                 () -> assertThat(user.isHasFakeEmail()).isTrue(),
                 () -> assertThat(emailVerificationTokenRepository.findByCustomUser(user)).isNull(),
-                () -> assertThat(emailVerificationTokenRepository.findByCustomUser_Email(TEST_EMAIL)).isNull()
+                () -> assertThat(emailVerificationTokenRepository.findByCustomUserEmail(TEST_EMAIL)).isNull()
         );
         // don't want to perform deleteAll() after first test for "en" language header
 	    if (builder.isShouldDelete()) {
@@ -356,7 +355,7 @@ class RegistrationResourceImplNewIT extends AbstractRegistrationResourceHelper {
                 () -> assertThat(user).isNull(),
                 () -> assertFalse(Optional.ofNullable(user).map(CustomUser::isEnabled).orElse(false)),
                 () -> assertThat(emailVerificationTokenRepository.findByCustomUser(user)).isNull(),
-                () -> assertThat(emailVerificationTokenRepository.findByCustomUser_Email(email)).isNull()
+                () -> assertThat(emailVerificationTokenRepository.findByCustomUserEmail(email)).isNull()
         );
     }
 

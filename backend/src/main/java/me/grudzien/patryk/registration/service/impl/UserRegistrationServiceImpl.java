@@ -1,5 +1,8 @@
 package me.grudzien.patryk.registration.service.impl;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Collections.singletonList;
+
 import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
 
@@ -8,7 +11,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
+import static me.grudzien.patryk.utils.appplication.AppFLow.ACCOUNT_ALREADY_ENABLED;
+import static me.grudzien.patryk.utils.appplication.AppFLow.CONFIRM_REGISTRATION;
+import static me.grudzien.patryk.utils.appplication.AppFLow.SYSTEM_COULD_NOT_ENABLE_USER_ACCOUNT;
+import static me.grudzien.patryk.utils.appplication.AppFLow.VERIFICATION_TOKEN_EXPIRED;
+import static me.grudzien.patryk.utils.appplication.AppFLow.VERIFICATION_TOKEN_NOT_FOUND;
+import static me.grudzien.patryk.utils.appplication.ApplicationZone.POLAND;
+import static me.grudzien.patryk.vehicle.model.entity.Engine.diesel;
+import static me.grudzien.patryk.vehicle.model.enums.VehicleType.CAR;
 
 import me.grudzien.patryk.authentication.service.impl.MyUserDetailsService;
 import me.grudzien.patryk.oauth2.utils.CacheManagerHelper;
@@ -26,18 +36,6 @@ import me.grudzien.patryk.registration.service.UserRegistrationService;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.web.HttpLocationHeaderCreator;
 import me.grudzien.patryk.vehicle.model.entity.Vehicle;
-
-import static com.google.common.base.Preconditions.checkNotNull;
-import static java.util.Collections.singletonList;
-
-import static me.grudzien.patryk.utils.appplication.AppFLow.ACCOUNT_ALREADY_ENABLED;
-import static me.grudzien.patryk.utils.appplication.AppFLow.CONFIRM_REGISTRATION;
-import static me.grudzien.patryk.utils.appplication.AppFLow.SYSTEM_COULD_NOT_ENABLE_USER_ACCOUNT;
-import static me.grudzien.patryk.utils.appplication.AppFLow.VERIFICATION_TOKEN_EXPIRED;
-import static me.grudzien.patryk.utils.appplication.AppFLow.VERIFICATION_TOKEN_NOT_FOUND;
-import static me.grudzien.patryk.utils.appplication.ApplicationZone.POLAND;
-import static me.grudzien.patryk.vehicle.model.entity.Engine.diesel;
-import static me.grudzien.patryk.vehicle.model.enums.VehicleType.CAR;
 
 @Slf4j
 @Service
@@ -76,7 +74,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 	public RegistrationResponse createUserAccount(final UserRegistrationDto registrationDto) {
         log.info("No validation errors during user registration.");
         final String email = registrationDto.getEmail();
-		if (doesEmailExist(email)) {
+		if (customUserRepository.existsByEmail(email)) {
 			log.error("User with specified email {} already exists.", email);
             throw new UserAlreadyExistsException(localeMessagesCreator.buildLocaleMessageWithParam("user-already-exists", email));
 		}
@@ -98,7 +96,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 
 	@Override
 	public RegistrationResponse confirmRegistration(final String tokenRequestParam) {
-		final EmailVerificationToken token = getEmailVerificationToken(tokenRequestParam);
+		final EmailVerificationToken token = emailVerificationTokenRepository.findByToken(tokenRequestParam);
 		RegistrationResponse registrationResponse = new RegistrationResponse();
 		if (token != null) {
 		    log.info("Email verification token successfully found.");
@@ -132,11 +130,6 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 	}
 
 	@Override
-	public boolean doesEmailExist(final String email) {
-		return customUserRepository.findByEmail(email) != null;
-	}
-
-	@Override
 	public RegistrationResponse enableRegisteredCustomUser(final CustomUser customUser) {
 		final RegistrationResponse registrationResponse = new RegistrationResponse();
 
@@ -165,25 +158,5 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
         })
            .onSuccess(successVoid -> log.info("Email verification token successfully saved into database."))
            .onFailure(throwable -> log.error("Email verification token has NOT been persisted!"));
-    }
-
-    @Override
-    public EmailVerificationToken getEmailVerificationToken(final String tokenRequestParam) {
-        return emailVerificationTokenRepository.findByToken(tokenRequestParam);
-    }
-
-    @Override
-    public CustomUser getCustomUserFromEmailVerificationToken(final String tokenRequestParam) {
-        final EmailVerificationToken token = emailVerificationTokenRepository.findByToken(tokenRequestParam);
-        return token != null ? token.getCustomUser() : null;
-    }
-
-    @Override
-    public EmailVerificationToken generateNewEmailVerificationToken(final String existingTokenRequestParam) {
-        final EmailVerificationToken existingToken = emailVerificationTokenRepository.findByToken(existingTokenRequestParam);
-        log.info("Found expired token for user: {}", existingToken.getCustomUser().getEmail());
-        existingToken.updateToken(UUID.randomUUID().toString());
-        log.info("New token: {} generated successfully.", existingToken.getToken());
-        return emailVerificationTokenRepository.save(existingToken);
     }
 }

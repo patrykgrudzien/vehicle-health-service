@@ -9,11 +9,12 @@ import org.springframework.transaction.annotation.Transactional;
 import me.grudzien.patryk.vehicle.model.dto.VehicleDto;
 import me.grudzien.patryk.vehicle.model.entity.Vehicle;
 
+@Transactional(readOnly = true)
 public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 
-	Vehicle findByCustomUser_Id(Long customUserId);
+	Vehicle findByCustomUserId(Long customUserId);
 
-	Vehicle findByCustomUser_Email(String customUserEmail);
+	Vehicle findByCustomUserEmail(String customUserEmail);
 
 	@SuppressWarnings("SpringDataRepositoryMethodReturnTypeInspection")
 	@Query("SELECT new me.grudzien.patryk.vehicle.model.dto.VehicleDto(v.vehicleType, v.engine.engineType, v.mileage, v.customUser.id, v.customUser.email) "

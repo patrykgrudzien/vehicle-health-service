@@ -1,5 +1,7 @@
 package me.grudzien.patryk.vehicle.service.impl;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,8 +21,6 @@ import me.grudzien.patryk.vehicle.model.dto.VehicleDto;
 import me.grudzien.patryk.vehicle.model.entity.Vehicle;
 import me.grudzien.patryk.vehicle.repository.VehicleRepository;
 import me.grudzien.patryk.vehicle.service.VehicleService;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 @Slf4j
 @Service
@@ -46,14 +46,14 @@ public class VehicleServiceImpl implements VehicleService {
 	@Override
 	public Vehicle findByCustomUserId(final String customUserId) {
 		final Long decodedCustomUserId = requestsDecoder.decodeStringParamAndConvertToLong(customUserId);
-		return Optional.ofNullable(vehicleRepository.findByCustomUser_Id(decodedCustomUserId))
+		return Optional.ofNullable(vehicleRepository.findByCustomUserId(decodedCustomUserId))
 		               .orElseThrow(() -> new VehicleNotFoundException("No vehicle found for specified userId: " + decodedCustomUserId));
 	}
 
 	@Override
 	public Vehicle findByCustomUserEmail(final String customUserEmail) {
 		final String decodedCustomUserEmail = requestsDecoder.decodeStringParam(customUserEmail);
-		return Optional.ofNullable(vehicleRepository.findByCustomUser_Email(decodedCustomUserEmail))
+		return Optional.ofNullable(vehicleRepository.findByCustomUserEmail(decodedCustomUserEmail))
 		               .orElseThrow(() -> new VehicleNotFoundException("No vehicle found for specified user email: " + decodedCustomUserEmail));
 	}
 

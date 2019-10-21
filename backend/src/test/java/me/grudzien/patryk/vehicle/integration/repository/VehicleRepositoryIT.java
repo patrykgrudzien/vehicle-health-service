@@ -1,5 +1,7 @@
 package me.grudzien.patryk.vehicle.integration.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -9,16 +11,14 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import me.grudzien.patryk.registration.model.entity.CustomUser;
+import me.grudzien.patryk.utils.appplication.ApplicationZone;
 import me.grudzien.patryk.vehicle.model.dto.VehicleDto;
 import me.grudzien.patryk.vehicle.model.entity.Engine;
-import me.grudzien.patryk.registration.model.entity.CustomUser;
 import me.grudzien.patryk.vehicle.model.entity.Vehicle;
-import me.grudzien.patryk.utils.appplication.ApplicationZone;
 import me.grudzien.patryk.vehicle.model.enums.EngineType;
 import me.grudzien.patryk.vehicle.model.enums.VehicleType;
 import me.grudzien.patryk.vehicle.repository.VehicleRepository;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 class VehicleRepositoryIT {
@@ -78,7 +78,9 @@ class VehicleRepositoryIT {
 		vehicleRepository.updateCurrentMileage(newMileage, OWNER_EMAIL_ADDRESS);
 
 		// then
-		final Vehicle updatedVehicle = testEntityManager.persistFlushFind(vehicleRepository.findByCustomUser_Email(savedVehicle.getCustomUser().getEmail()));
+		final Vehicle updatedVehicle = testEntityManager.persistFlushFind(
+				vehicleRepository.findByCustomUserEmail(savedVehicle.getCustomUser().getEmail())
+		);
 		assertThat(updatedVehicle.getMileage()).isEqualTo(newMileage);
 	}
 

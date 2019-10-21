@@ -117,7 +117,7 @@ class RegistrationResourceImplIT extends AbstractRegistrationResourceHelper {
                .body("redirectionUrl", nullValue());
 
         final CustomUser user = customUserRepository.findByEmail(email);
-        final EmailVerificationToken emailVerificationToken = emailVerificationTokenRepository.findByCustomUser_Email(email);
+        final EmailVerificationToken emailVerificationToken = emailVerificationTokenRepository.findByCustomUserEmail(email);
         Assertions.assertAll(
                 () -> assertThat(user).isNotNull(),
                 () -> assertFalse(user.isEnabled()),
@@ -165,7 +165,7 @@ class RegistrationResourceImplIT extends AbstractRegistrationResourceHelper {
                 () -> assertThat(user).isNotNull(),
                 () -> assertTrue(user.isEnabled()),
                 () -> assertThat(emailVerificationTokenRepository.findByCustomUser(user)).isNull(),
-                () -> assertThat(emailVerificationTokenRepository.findByCustomUser_Email(TEST_EMAIL)).isNull()
+                () -> assertThat(emailVerificationTokenRepository.findByCustomUserEmail(TEST_EMAIL)).isNull()
         );
     }
 
@@ -240,7 +240,7 @@ class RegistrationResourceImplIT extends AbstractRegistrationResourceHelper {
                 () -> assertThat(user).isNull(),
                 () -> assertFalse(Optional.ofNullable(user).map(CustomUser::isEnabled).orElse(false)),
                 () -> assertThat(emailVerificationTokenRepository.findByCustomUser(user)).isNull(),
-                () -> assertThat(emailVerificationTokenRepository.findByCustomUser_Email(email)).isNull()
+                () -> assertThat(emailVerificationTokenRepository.findByCustomUserEmail(email)).isNull()
         );
     }
 
@@ -248,7 +248,7 @@ class RegistrationResourceImplIT extends AbstractRegistrationResourceHelper {
     void confirmRegistration_successful() throws JsonProcessingException {
         // given
         registerTestUser();
-        final EmailVerificationToken emailVerificationToken = emailVerificationTokenRepository.findByCustomUser_Email(NO_EXISTING_EMAIL);
+        final EmailVerificationToken emailVerificationToken = emailVerificationTokenRepository.findByCustomUserEmail(NO_EXISTING_EMAIL);
         final String confirmationEndpoint = REGISTRATION_CONFIRM_REGISTRATION_URI.apply(emailVerificationToken.getToken());
 
         // then
@@ -285,7 +285,7 @@ class RegistrationResourceImplIT extends AbstractRegistrationResourceHelper {
                 () -> assertThat(user).isNotNull(),
                 () -> assertTrue(user.isEnabled()),
                 () -> assertThat(emailVerificationTokenRepository.findByCustomUser(user)).isNull(),
-                () -> assertThat(emailVerificationTokenRepository.findByCustomUser_Email(NO_EXISTING_EMAIL)).isNull()
+                () -> assertThat(emailVerificationTokenRepository.findByCustomUserEmail(NO_EXISTING_EMAIL)).isNull()
         );
     }
 

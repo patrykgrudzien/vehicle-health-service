@@ -7,4 +7,6 @@ import me.grudzien.patryk.registration.model.entity.CustomUser;
 public interface CustomUserRepository extends CrudRepository<CustomUser, Long> {
 
 	CustomUser findByEmail(String email);
+
+	boolean existsByEmail(String email);
 }
