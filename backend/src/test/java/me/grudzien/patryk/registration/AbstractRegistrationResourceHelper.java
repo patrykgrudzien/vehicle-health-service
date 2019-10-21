@@ -1,5 +1,11 @@
 package me.grudzien.patryk.registration;
 
+import static lombok.AccessLevel.NONE;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.builder.ToStringStyle.NO_CLASS_NAME_STYLE;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.web.util.UriComponentsBuilder.fromPath;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,24 +17,17 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.function.Function;
 
+import static me.grudzien.patryk.registration.model.enums.RegistrationResponseType.SUCCESSFUL;
+import static me.grudzien.patryk.registration.resource.RegistrationResourceDefinitions.CONFIRM_REGISTRATION;
+import static me.grudzien.patryk.registration.resource.RegistrationResourceDefinitions.CREATE_USER_ACCOUNT;
+import static me.grudzien.patryk.registration.resource.RegistrationResourceDefinitions.REGISTRATION_RESOURCE_ROOT;
+
 import me.grudzien.patryk.ObjectMapperEncoder;
 import me.grudzien.patryk.registration.model.dto.RegistrationResponse;
 import me.grudzien.patryk.registration.model.dto.UserRegistrationDto;
 import me.grudzien.patryk.registration.model.entity.CustomUser;
 import me.grudzien.patryk.registration.model.enums.RegistrationResponseType;
 import me.grudzien.patryk.registration.resource.RegistrationResourceDefinitions;
-
-import static lombok.AccessLevel.NONE;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.apache.commons.lang3.builder.ToStringStyle.NO_CLASS_NAME_STYLE;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.web.util.UriComponentsBuilder.fromPath;
-
-import static me.grudzien.patryk.registration.model.enums.RegistrationResponseType.SUCCESSFUL;
-import static me.grudzien.patryk.registration.resource.RegistrationResourceDefinitions.CONFIRM_REGISTRATION;
-import static me.grudzien.patryk.registration.resource.RegistrationResourceDefinitions.CREATE_USER_ACCOUNT;
-import static me.grudzien.patryk.registration.resource.RegistrationResourceDefinitions.REGISTRATION_RESOURCE_ROOT;
 
 @NoArgsConstructor(access = NONE)
 public abstract class AbstractRegistrationResourceHelper extends ObjectMapperEncoder {
@@ -45,6 +44,7 @@ public abstract class AbstractRegistrationResourceHelper extends ObjectMapperEnc
 	protected static final String NO_EXISTING_EMAIL = "bad-email@gmail.com";
 	protected static final String NO_EXISTING_EMAIL_1 = "bad-email-1@gmail.com";
 	protected static final String NO_EXISTING_EMAIL_2 = "bad-email-2@gmail.com";
+	protected static final String NO_EXISTING_EMAIL_3 = "bad-email-3@gmail.com";
 
 	protected static final String TEST_PASSWORD = "admin";
 	protected static final String EMPTY_PASSWORD = EMPTY;

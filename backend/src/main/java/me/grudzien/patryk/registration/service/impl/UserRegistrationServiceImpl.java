@@ -150,12 +150,13 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 	}
 
     @Override
-    public void createEmailVerificationTokenForUser(final CustomUser customUser, final String uuidToken) {
-        Try.run(() -> {
-            final EmailVerificationToken emailVerificationToken = new EmailVerificationToken(uuidToken, customUser);
-            log.info("Trying to persist email verification token...");
-            emailVerificationTokenRepository.save(emailVerificationToken);
-        })
+    public void createEmailVerificationTokenForUser(final Long customUserId, final String uuidToken) {
+        Try.run(() -> customUserRepository.findById(customUserId)
+                                          .map(customUser -> new EmailVerificationToken(uuidToken, customUser))
+                                          .ifPresent(emailVerificationToken -> {
+                                          	log.info("Trying to persist email verification token...");
+                                          	emailVerificationTokenRepository.save(emailVerificationToken);
+                                          }))
            .onSuccess(successVoid -> log.info("Email verification token successfully saved into database."))
            .onFailure(throwable -> log.error("Email verification token has NOT been persisted!"));
     }

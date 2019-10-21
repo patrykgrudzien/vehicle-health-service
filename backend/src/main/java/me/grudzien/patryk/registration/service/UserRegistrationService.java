@@ -12,5 +12,5 @@ public interface UserRegistrationService {
 
     RegistrationResponse enableRegisteredCustomUser(CustomUser customUser);
 
-    void createEmailVerificationTokenForUser(CustomUser customUser, String uuidToken);
+    void createEmailVerificationTokenForUser(Long customUserId, String uuidToken);
 }

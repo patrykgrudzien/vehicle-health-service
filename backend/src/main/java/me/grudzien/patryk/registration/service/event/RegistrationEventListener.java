@@ -1,5 +1,7 @@
 package me.grudzien.patryk.registration.service.event;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,10 @@ import com.google.common.collect.ImmutableMap;
 
 import java.util.UUID;
 
+import static me.grudzien.patryk.registration.resource.RegistrationResourceDefinitions.CONFIRM_REGISTRATION;
+import static me.grudzien.patryk.registration.resource.RegistrationResourceDefinitions.REGISTRATION_RESOURCE_ROOT;
+import static me.grudzien.patryk.utils.appplication.AppFLow.VERIFICATION_TOKEN_CREATION;
+
 import me.grudzien.patryk.configuration.properties.cors.CustomCorsProperties;
 import me.grudzien.patryk.registration.model.dto.EmailDto;
 import me.grudzien.patryk.registration.model.entity.CustomUser;
@@ -19,12 +25,6 @@ import me.grudzien.patryk.registration.service.UserRegistrationService;
 import me.grudzien.patryk.registration.service.impl.UserRegistrationServiceImpl;
 import me.grudzien.patryk.utils.i18n.LocaleMessagesCreator;
 import me.grudzien.patryk.utils.web.ContextPathsResolver;
-
-import static com.google.common.base.Preconditions.checkNotNull;
-
-import static me.grudzien.patryk.registration.resource.RegistrationResourceDefinitions.CONFIRM_REGISTRATION;
-import static me.grudzien.patryk.registration.resource.RegistrationResourceDefinitions.REGISTRATION_RESOURCE_ROOT;
-import static me.grudzien.patryk.utils.appplication.AppFLow.VERIFICATION_TOKEN_CREATION;
 
 /**
  * That listener is going to handle {@link RegistrationCompleteEvent} which is published by
@@ -68,7 +68,7 @@ public class RegistrationEventListener implements ApplicationListener<Registrati
 		final CustomUser userBeingRegistered = event.getCustomUser();
 
 		final String uuidToken = UUID.randomUUID().toString();
-		userRegistrationService.createEmailVerificationTokenForUser(event.getCustomUser(), uuidToken);
+		userRegistrationService.createEmailVerificationTokenForUser(event.getCustomUser().getId(), uuidToken);
 
 		final String recipientAddress = userBeingRegistered.getEmail();
 		final String subject = localeMessagesCreator.buildLocaleMessage("registration-email-subject");
